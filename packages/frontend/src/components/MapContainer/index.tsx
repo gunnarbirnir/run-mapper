@@ -7,7 +7,7 @@ export const MapContainer = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+    mapboxgl.accessToken = 'TOKEN';
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       center: [-74.0242, 40.6941],
