@@ -1,6 +1,6 @@
 {
-  "buildCommand": "yarn workspace map-creator build",
+  "buildCommand": "cd packages/map-creator && yarn build",
   "framework": "tanstack-start",
   "installCommand": "yarn install",
-  "outputDirectory": "packages/map-creator/.output/public"
+  "outputDirectory": ".output"
 }
