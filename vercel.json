@@ -1,6 +1,6 @@
 {
-  "buildCommand": "yarn workspace map-creator build",
-  "framework": "tanstack-start",
+  "buildCommand": "yarn workspace map-display build",
+  "framework": "vite",
   "installCommand": "yarn install",
-  "outputDirectory": "packages/map-creator/.output"
+  "outputDirectory": "packages/map-display/dist"
 }
