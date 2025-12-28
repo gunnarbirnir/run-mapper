@@ -6,4 +6,17 @@ dist
 .env
 .env.local
 .env.*.local
+
+# Vite
+logs
+yarn-debug.log*
+yarn-error.log*
+dist-ssr
+*.local
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 .tool-versions

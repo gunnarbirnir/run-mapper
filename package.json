@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "dev": "yarn workspace map-creator dev",
-    "backend-dev": "yarn workspace backend dev"
+    "backend-dev": "yarn workspace backend dev",
+    "dev-display": "yarn workspace map-display dev"
   },
   "devDependencies": {
     "@tanstack/react-router-devtools": "^1.144.0",
