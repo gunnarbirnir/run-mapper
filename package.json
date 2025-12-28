@@ -10,9 +10,6 @@
   "scripts": {
     "dev": "yarn workspace map-creator dev"
   },
-  "dependencies": {
-    "firebase": "^12.7.0"
-  },
   "devDependencies": {
     "@tanstack/react-router-devtools": "^1.144.0",
     "@types/node": "^20.14.0",
