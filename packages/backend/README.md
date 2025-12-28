@@ -1,6 +1,6 @@
-# Run Mapper
+# Run Mapper Backend API
 
-A TanStack Start application for organizers to input running paths and generate interactive iframe visualizations.
+A lightweight API server for the Run Mapper application, providing backend services with Firebase Admin integration.
 
 ## Getting Started
 
@@ -16,7 +16,7 @@ yarn install
 yarn dev
 ```
 
-The app will be available at `http://localhost:3000`
+The API server will be available at `http://localhost:3001`
 
 ### Build
 
@@ -32,15 +32,14 @@ yarn start
 
 ## Project Structure
 
-- `src/routes/` - File-based routing
-- `src/app.tsx` - Main application entry
-- `src/client.tsx` - Client-side entry point
-- `src/server.tsx` - Server-side entry point
+- `src/index.ts` - Main server entry point
+- `src/firebase/admin.ts` - Firebase Admin SDK setup
+- `src/routes/` - API route handlers (to be added)
 
 ## Features
 
-- Full-stack React framework with TanStack Start
-- Type-safe routing with TanStack Router
-- Server-side rendering (SSR)
-- File-based routing
-- Database integration ready
+- Lightweight Hono framework
+- Firebase Admin SDK integration
+- CORS enabled
+- TypeScript support
+- Health check endpoint

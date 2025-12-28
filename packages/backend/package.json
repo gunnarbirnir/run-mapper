@@ -3,18 +3,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "start": "node .output/server/index.mjs"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.114.3",
-    "@tanstack/react-start": "^1.145.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "firebase-admin": "^13.6.0"
+    "@hono/node-server": "^1.12.0",
+    "firebase-admin": "^13.6.0",
+    "hono": "^4.6.11"
   },
   "devDependencies": {
-    "@tanstack/react-router-devtools": "^1.144.0"
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.3"
   }
 }
