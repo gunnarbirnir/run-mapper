@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: Home,
-})
+});
 
 function Home() {
   return (
@@ -11,12 +11,10 @@ function Home() {
       <p className="text-lg mb-6">
         Create and visualize your running routes with interactive iframes
       </p>
-      <div className="space-y-4">
-        <p>
-          Welcome to Run Mapper! This app helps organizers of runs input their
-          paths and get cool visual iframes for their runs.
-        </p>
-      </div>
+      <p className="text-gray-600">
+        Welcome to Run Mapper! This app helps organizers of runs input their
+        paths and get cool visual iframes for their runs.
+      </p>
     </div>
-  )
+  );
 }

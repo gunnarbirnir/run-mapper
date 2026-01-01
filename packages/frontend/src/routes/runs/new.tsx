@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/runs/new')({
   component: NewRun,
-})
+});
 
 function NewRun() {
   return (
@@ -35,11 +35,11 @@ function NewRun() {
         </div>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Create Run
         </button>
       </form>
     </div>
-  )
+  );
 }

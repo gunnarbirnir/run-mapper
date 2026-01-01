@@ -5,10 +5,12 @@ import {
   Outlet,
   Scripts,
   createRootRoute,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import * as React from 'react'
-import appCss from '~/styles/app.css?url'
+  useMatchRoute,
+} from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import * as React from 'react';
+
+import appCss from '~/styles/app.css?url';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -28,19 +30,17 @@ export const Route = createRootRoute({
         content: 'Create and visualize running routes with interactive iframes',
       },
     ],
-    links: [
-      { rel: 'stylesheet', href: appCss },
-    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
   component: RootComponent,
-})
+});
 
 function RootComponent() {
   return (
     <RootDocument>
       <Outlet />
     </RootDocument>
-  )
+  );
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -50,41 +50,58 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <nav className="p-4 border-b">
-          <div className="container mx-auto flex gap-4">
-            <Link
-              to="/"
-              activeProps={{
-                className: 'font-bold',
-              }}
-              activeOptions={{ exact: true }}
-            >
-              Home
-            </Link>
-            <Link
-              to="/runs"
-              activeProps={{
-                className: 'font-bold',
-              }}
-            >
-              Runs
-            </Link>
-            <Link
-              to="/runs/new"
-              activeProps={{
-                className: 'font-bold',
-              }}
-            >
-              New Run
-            </Link>
-          </div>
-        </nav>
-        <main className="container mx-auto p-4">
-          {children}
-        </main>
+        <RootBody>{children}</RootBody>
         <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
     </html>
-  )
+  );
+}
+
+function RootBody({ children }: { children: React.ReactNode }) {
+  const matchRoute = useMatchRoute();
+  const params = matchRoute({ to: '/runs/$runId' });
+  const isRunDisplay = params && params.runId !== 'new';
+
+  if (isRunDisplay) {
+    return <main className="h-screen w-screen">{children}</main>;
+  }
+
+  return (
+    <>
+      <nav className="p-4 border-b border-gray-300">
+        <div className="container mx-auto flex gap-6">
+          <Link
+            to="/"
+            activeProps={{
+              className: 'font-bold',
+            }}
+            activeOptions={{ exact: true }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/runs"
+            activeProps={{
+              className: 'font-bold',
+            }}
+            activeOptions={{ exact: true }}
+          >
+            Runs
+          </Link>
+          <Link
+            to="/runs/new"
+            activeProps={{
+              className: 'font-bold',
+            }}
+          >
+            New Run
+          </Link>
+        </div>
+      </nav>
+      <main className="px-4 py-6">
+        <div className="container mx-auto">{children}</div>
+      </main>
+    </>
+  );
 }
