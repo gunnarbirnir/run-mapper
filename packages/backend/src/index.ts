@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import { firebaseAdmin } from './firebase/admin';
+// import { firebaseAdmin } from './firebase/admin';
 
 const app = new Hono();
 
