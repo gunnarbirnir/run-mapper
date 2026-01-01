@@ -1,6 +1,6 @@
 {
-  "buildCommand": "yarn workspace map-display build",
+  "buildCommand": "yarn workspace run-mapper-frontend build",
   "framework": "vite",
   "installCommand": "yarn install",
-  "outputDirectory": "packages/map-display/dist"
+  "outputDirectory": "packages/frontend/.output"
 }

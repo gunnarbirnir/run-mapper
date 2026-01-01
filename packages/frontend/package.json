@@ -9,11 +9,13 @@
     "lint": "eslint --config eslint.config.js"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router": "^1.114.3",
     "@tanstack/react-start": "^1.145.0",
     "mapbox-gl": "^3.17.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@tanstack/react-router-devtools": "^1.144.0",

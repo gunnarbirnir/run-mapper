@@ -1,13 +1,13 @@
+import { useRef, useEffect } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useRef, useEffect } from 'react';
 
 export const MapContainer = () => {
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    mapboxgl.accessToken = 'TOKEN';
+    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       center: [-74.0242, 40.6941],
@@ -20,10 +20,6 @@ export const MapContainer = () => {
   }, []);
 
   return (
-    <div
-      id="map-container"
-      ref={mapContainerRef}
-      style={{ height: 500, width: 800 }}
-    />
+    <div id="map-container" ref={mapContainerRef} className="h-full w-full" />
   );
 };
