@@ -7,16 +7,9 @@ dist
 .env.local
 .env.*.local
 
-# Vite
-logs
-yarn-debug.log*
-yarn-error.log*
-dist-ssr
-*.local
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.tool-versions
+# Yarn
+.yarn/cache
+.yarn/install-state.gz
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/*.log

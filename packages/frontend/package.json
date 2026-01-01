@@ -1,0 +1,27 @@
+{
+  "name": "run-mapper-frontend",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "node .output/server/index.mjs",
+    "lint": "eslint --config eslint.config.js"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.114.3",
+    "@tanstack/react-start": "^1.145.0",
+    "mapbox-gl": "^3.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tanstack/react-router-devtools": "^1.144.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "vite-tsconfig-paths": "^5.1.0"
+  }
+}
