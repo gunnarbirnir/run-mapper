@@ -13,11 +13,11 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths(),
-    tanstackStart({
+    tanstackStart(/* {
       server: {
         preset: 'vercel',
       },
-    }),
+    } */),
     viteReact(),
   ],
   resolve: {
