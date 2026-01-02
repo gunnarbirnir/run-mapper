@@ -1,0 +1,6 @@
+{
+  "buildCommand": "yarn build",
+  "framework": "tanstack-start",
+  "installCommand": "yarn install",
+  "outputDirectory": ".output"
+}
