@@ -1,6 +1,0 @@
-{
-  "buildCommand": "yarn workspace run-mapper-frontend build",
-  "framework": "vite",
-  "installCommand": "yarn install",
-  "outputDirectory": "packages/frontend/.output"
-}
