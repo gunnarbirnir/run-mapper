@@ -12,10 +12,12 @@
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router": "^1.114.3",
     "@tanstack/react-start": "^1.145.0",
+    "clsx": "^2.1.1",
     "mapbox-gl": "^3.17.0",
     "nitro": "^3.0.1-alpha.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {

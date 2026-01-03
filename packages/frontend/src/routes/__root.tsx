@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
 import {
   HeadContent,
-  Link,
   Outlet,
   Scripts,
   createRootRoute,
@@ -11,6 +10,8 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
 
 import appCss from '~/styles/app.css?url';
+
+import { NavBar } from '~/components/NavBar';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -69,36 +70,7 @@ function RootBody({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <nav className="p-4 border-b border-gray-300">
-        <div className="container mx-auto flex gap-6">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/runs"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Runs
-          </Link>
-          <Link
-            to="/runs/new"
-            activeProps={{
-              className: 'font-bold',
-            }}
-          >
-            New Run
-          </Link>
-        </div>
-      </nav>
+      <NavBar />
       <main className="px-4 py-6">
         <div className="container mx-auto">{children}</div>
       </main>
