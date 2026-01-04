@@ -18,6 +18,8 @@ function NewRun() {
           name="name"
           label="Run Name"
           placeholder="Enter run name"
+          value=""
+          onChange={() => {}}
         />
         <Form.TextArea
           id="path"
