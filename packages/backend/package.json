@@ -6,7 +6,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "lint": "eslint --config eslint.config.js"
+    "lint": "eslint --config eslint.config.js",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",
