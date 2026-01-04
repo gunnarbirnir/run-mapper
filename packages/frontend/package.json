@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@base-ui/react": "^1.0.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router": "^1.114.3",
     "@tanstack/react-start": "^1.145.0",
