@@ -30,8 +30,8 @@ export const TextArea = ({
         rows={6}
         placeholder={placeholder}
         className={cn(
-          'w-full px-3 py-2 border border-gray-300 rounded',
-          className
+          'w-full rounded border border-gray-300 px-3 py-2',
+          className,
         )}
       />
     </div>
