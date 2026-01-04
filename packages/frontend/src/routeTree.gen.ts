@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RunsIndexRouteImport } from './routes/runs/index'
+import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as RunsNewRouteImport } from './routes/runs/new'
 import { Route as RunsRunIdRouteImport } from './routes/runs/$runId'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const RunsIndexRoute = RunsIndexRouteImport.update({
   id: '/runs/',
   path: '/runs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
+  id: '/playground/',
+  path: '/playground/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeIndexRoute = HomeIndexRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home': typeof HomeIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/runs': typeof RunsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home': typeof HomeIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/runs': typeof RunsIndexRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,28 @@ export interface FileRoutesById {
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home/': typeof HomeIndexRoute
+  '/playground/': typeof PlaygroundIndexRoute
   '/runs/': typeof RunsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/runs/$runId' | '/runs/new' | '/home' | '/runs'
+  fullPaths:
+    | '/'
+    | '/runs/$runId'
+    | '/runs/new'
+    | '/home'
+    | '/playground'
+    | '/runs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/runs/$runId' | '/runs/new' | '/home' | '/runs'
-  id: '__root__' | '/' | '/runs/$runId' | '/runs/new' | '/home/' | '/runs/'
+  to: '/' | '/runs/$runId' | '/runs/new' | '/home' | '/playground' | '/runs'
+  id:
+    | '__root__'
+    | '/'
+    | '/runs/$runId'
+    | '/runs/new'
+    | '/home/'
+    | '/playground/'
+    | '/runs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +98,7 @@ export interface RootRouteChildren {
   RunsRunIdRoute: typeof RunsRunIdRoute
   RunsNewRoute: typeof RunsNewRoute
   HomeIndexRoute: typeof HomeIndexRoute
+  PlaygroundIndexRoute: typeof PlaygroundIndexRoute
   RunsIndexRoute: typeof RunsIndexRoute
 }
 
@@ -93,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/runs'
       fullPath: '/runs'
       preLoaderRoute: typeof RunsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground/': {
+      id: '/playground/'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home/': {
@@ -124,6 +154,7 @@ const rootRouteChildren: RootRouteChildren = {
   RunsRunIdRoute: RunsRunIdRoute,
   RunsNewRoute: RunsNewRoute,
   HomeIndexRoute: HomeIndexRoute,
+  PlaygroundIndexRoute: PlaygroundIndexRoute,
   RunsIndexRoute: RunsIndexRoute,
 }
 export const routeTree = rootRouteImport

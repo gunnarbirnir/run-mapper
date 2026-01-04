@@ -45,32 +45,43 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const matchRoute = useMatchRoute();
+  const isPlayground = Boolean(matchRoute({ to: '/playground' }));
+  const runParams = matchRoute({ to: '/runs/$runId' });
+  const isRunDisplay = runParams && runParams.runId !== 'new';
+
   return (
     <html>
       <head>
         <HeadContent />
       </head>
       <body>
-        <RootBody>{children}</RootBody>
-        <TanStackRouterDevtools position="bottom-right" />
+        <RootBody isRunDisplay={isRunDisplay} isPlayground={isPlayground}>
+          {children}
+        </RootBody>
+        {!isPlayground && <TanStackRouterDevtools position="bottom-right" />}
         <Scripts />
       </body>
     </html>
   );
 }
 
-function RootBody({ children }: { children: React.ReactNode }) {
-  const matchRoute = useMatchRoute();
-  const params = matchRoute({ to: '/runs/$runId' });
-  const isRunDisplay = params && params.runId !== 'new';
-
+function RootBody({
+  children,
+  isRunDisplay,
+  isPlayground,
+}: {
+  children: React.ReactNode;
+  isRunDisplay: boolean;
+  isPlayground: boolean;
+}) {
   if (isRunDisplay) {
     return <main className="h-screen w-screen">{children}</main>;
   }
 
   return (
     <>
-      <NavBar />
+      {!isPlayground && <NavBar />}
       <main className="px-4 py-6">
         <div className="container mx-auto">{children}</div>
       </main>
