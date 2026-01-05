@@ -1,18 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import type { MapContainerProps } from './types';
+import type { RouteMapProps } from './types';
 import { getPaddedBounds, getLineFeature, getRouteLayer } from './utils';
 
-export const MapContainer = ({
-  routeId,
-  bounds,
-  routeFeatures,
-}: MapContainerProps) => {
+export const RouteMap = ({ bounds, coordinates }: RouteMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const paddedBounds = getPaddedBounds(bounds);
+  const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
 
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -28,7 +24,7 @@ export const MapContainer = ({
 
       mapRef.current.addSource('route-source', {
         type: 'geojson',
-        data: getLineFeature(routeFeatures),
+        data: getLineFeature(coordinates),
       });
       mapRef.current.addLayer(getRouteLayer());
     });
@@ -36,11 +32,7 @@ export const MapContainer = ({
     return () => {
       mapRef.current?.remove();
     };
-    // Only update map when routeId changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeId]);
+  }, [coordinates, paddedBounds]);
 
   return <div ref={mapContainerRef} className="h-full w-full" />;
 };
-
-export type { MapContainerProps };

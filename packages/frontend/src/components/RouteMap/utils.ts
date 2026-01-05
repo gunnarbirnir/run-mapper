@@ -1,12 +1,12 @@
 import { getCssVariableValue } from '~/utils';
+import type { Bounds, Coordinates } from '~/types';
 
-import type { LineFeature, RouteFeature } from './types';
+import type { LineFeature } from './types';
 import { BOUNDS_PADDING, LINE_WIDTH, LINE_OPACITY } from './constants';
 
-export const getPaddedBounds = (
-  bounds: [number, number, number, number],
-): [[number, number], [number, number]] => {
-  const [minLng, minLat, maxLng, maxLat] = bounds;
+export const getPaddedBounds = (bounds: Bounds): Bounds => {
+  const [minLng, minLat] = bounds[0];
+  const [maxLng, maxLat] = bounds[1];
   const lngRange = maxLng - minLng;
   const latRange = maxLat - minLat;
   const lngPadding = lngRange * BOUNDS_PADDING;
@@ -18,16 +18,7 @@ export const getPaddedBounds = (
   ];
 };
 
-export const getLineFeature = (routeFeatures: RouteFeature[]): LineFeature => {
-  const coordinates = routeFeatures
-    .map((feature) => {
-      if (feature.geometry.type === 'Point') {
-        return feature.geometry.coordinates;
-      }
-      return null;
-    })
-    .filter((coord): coord is [number, number] => coord !== null);
-
+export const getLineFeature = (coordinates: Coordinates[]): LineFeature => {
   return {
     type: 'Feature',
     geometry: {
