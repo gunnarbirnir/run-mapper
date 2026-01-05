@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "yarn workspace run-mapper-frontend dev",
+    "start": "yarn dev",
     "backend-dev": "yarn workspace run-mapper-backend dev",
     "lint": "yarn workspace run-mapper-frontend lint && yarn workspace run-mapper-backend lint",
     "type-check": "yarn workspace run-mapper-frontend type-check && yarn workspace run-mapper-backend type-check"
