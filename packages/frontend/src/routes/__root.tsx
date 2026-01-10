@@ -31,7 +31,10 @@ export const Route = createRootRoute({
         content: 'Create and visualize running routes with interactive iframes',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: '/favicon.ico' },
+    ],
   }),
   component: RootComponent,
 });

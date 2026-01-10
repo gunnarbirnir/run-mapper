@@ -12,7 +12,8 @@ type ButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
-  'inline-block px-4 py-2 bg-primary-500 text-white rounded';
+  'inline-block px-6 py-2 bg-black text-white rounded-full transition-scale duration-100';
+const ENABLED_CLASS_NAME = 'hover:bg-gray-700 cursor-pointer active:scale-95';
 
 export const Button = ({
   children,
@@ -23,8 +24,8 @@ export const Button = ({
 }: ButtonProps) => {
   const combinedClassName = cn(
     BASE_CLASS_NAME,
-    { 'bg-primary-300': disabled },
-    { 'hover:bg-primary-600 cursor-pointer': !disabled },
+    { 'bg-gray-400': disabled },
+    { [ENABLED_CLASS_NAME]: !disabled },
     className,
   );
 

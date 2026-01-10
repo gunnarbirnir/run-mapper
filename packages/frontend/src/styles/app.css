@@ -1,27 +1,79 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-primary-50: #eef0ff;
-  --color-primary-100: #e0e3ff;
-  --color-primary-200: #c7cbfe;
-  --color-primary-300: #a6aafb;
-  --color-primary-400: #9491f8;
-  --color-primary-500: #7264f0;
-  --color-primary-600: #6347e4;
-  --color-primary-700: #5639c9;
-  --color-primary-800: #4631a2;
-  --color-primary-900: #3c2f80;
-  --color-primary-950: #241b4b;
+/* For elevation graph */
+svg:focus,
+g:focus,
+path:focus {
+  outline: none;
+}
 
-  --color-secondary-50: #edf7ff;
-  --color-secondary-100: #d6ebff;
-  --color-secondary-200: #b6deff;
-  --color-secondary-300: #84cbff;
-  --color-secondary-400: #4aadff;
-  --color-secondary-500: #2188ff;
-  --color-secondary-600: #0966ff;
-  --color-secondary-700: #034ef2;
-  --color-secondary-800: #093cba;
-  --color-secondary-900: #0f3a99;
-  --color-secondary-950: #0e245d;
+@theme {
+  /* Disable default Tailwind colors */
+  --color-*: initial;
+
+  --color-black: #000;
+  --color-white: #fff;
+
+  --color-primary-50: #fff1f5;
+  --color-primary-100: #ffe3eb;
+  --color-primary-200: #ffc9da;
+  --color-primary-300: #ffa2c0;
+  --color-primary-400: #fe6e9f;
+  --color-primary-500: #f83b80;
+  --color-primary-600: #e5196d;
+  --color-primary-700: #c20e5d;
+  --color-primary-800: #a20f54;
+  --color-primary-900: #8a114d;
+  --color-primary-950: #4d0426;
+
+  --color-secondary-50: #edf9ff;
+  --color-secondary-100: #d7f0ff;
+  --color-secondary-200: #b8e7ff;
+  --color-secondary-300: #88d9ff;
+  --color-secondary-400: #50c2ff;
+  --color-secondary-500: #27a4ff;
+  --color-secondary-600: #1086ff;
+  --color-secondary-700: #096eec;
+  --color-secondary-800: #105fcf;
+  --color-secondary-900: #134c95;
+  --color-secondary-950: #112f5a;
+
+  /* Gray from Tailwind */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5dc;
+  --color-gray-400: #99a1af;
+  --color-gray-500: #6a7282;
+  --color-gray-600: #4a5565;
+  --color-gray-700: #364153;
+  --color-gray-800: #1e2939;
+  --color-gray-900: #101828;
+  --color-gray-950: #030712;
+
+  /* Emerald from Tailwind */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d0fae5;
+  --color-success-200: #a4f4cf;
+  --color-success-300: #5ee9b5;
+  --color-success-400: #00d492;
+  --color-success-500: #00bc7d;
+  --color-success-600: #009966;
+  --color-success-700: #007a55;
+  --color-success-800: #006045;
+  --color-success-900: #004f3b;
+  --color-success-950: #002c22;
+
+  /* Rose from Tailwind */
+  --color-error-50: #fff1f2;
+  --color-error-100: #ffe4e6;
+  --color-error-200: #ffccd3;
+  --color-error-300: #ffa1ad;
+  --color-error-400: #ff637e;
+  --color-error-500: #ff2056;
+  --color-error-600: #ec003f;
+  --color-error-700: #c70036;
+  --color-error-800: #a50036;
+  --color-error-900: #8b0836;
+  --color-error-950: #4d0218;
 }

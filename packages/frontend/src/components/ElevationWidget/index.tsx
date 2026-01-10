@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 
 import { WidgetContainer } from '~/components/WidgetContainer';
+import type { Elevation } from '~/types';
 
 import { calculateElevationGain } from './utils';
 
 export interface ElevationWidgetProps {
-  elevations: number[];
+  elevations: Elevation[];
 }
 
 export const ElevationWidget = ({ elevations }: ElevationWidgetProps) => {

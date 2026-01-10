@@ -15,7 +15,7 @@ export const WidgetContent = ({
     return (
       <div className="flex flex-col gap-1 text-center">
         <Text className="text-xs text-gray-500 uppercase">{label}</Text>
-        <Text className="text-primary-800 text-xl font-bold">{text}</Text>
+        <Text className="text-xl font-bold text-black">{text}</Text>
       </div>
     );
   }

@@ -32,7 +32,7 @@ export const RunRoute = ({ routeId, routeData }: RunRouteProps) => {
         </div>
         <RouteMap routeId={routeId} bounds={bounds} coordinates={coordinates} />
       </div>
-      <ElevationGraph />
+      <ElevationGraph elevations={elevations} />
     </div>
   );
 };

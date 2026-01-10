@@ -39,7 +39,7 @@ export const getRouteLayer = () => {
       'line-cap': 'round',
     },
     paint: {
-      'line-color': getCssVariableValue('--color-secondary-700'),
+      'line-color': getCssVariableValue('--color-primary-500'),
       'line-width': LINE_WIDTH,
       'line-opacity': LINE_OPACITY,
     },
