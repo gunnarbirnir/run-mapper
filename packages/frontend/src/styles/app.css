@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/* For elevation graph */
+svg:focus,
+g:focus,
+path:focus {
+  outline: none;
+}
+
 @theme {
   /* Disable default Tailwind colors */
   --color-*: initial;

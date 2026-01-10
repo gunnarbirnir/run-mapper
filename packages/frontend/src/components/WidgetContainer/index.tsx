@@ -1,6 +1,6 @@
 import { WidgetContent } from './WidgetContent';
 
-const WIDGET_WIDTH = 150;
+const WIDGET_WIDTH = 130;
 const WIDGET_HEIGHT = 80;
 
 type WidgetContainerProps = {

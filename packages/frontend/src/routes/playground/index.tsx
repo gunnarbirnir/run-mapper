@@ -40,7 +40,7 @@ export function Playground() {
           >
             Update
           </Button>
-          <Text>Current ID: {runId}</Text>
+          <Text className="text-gray-400">Current ID: {runId}</Text>
         </div>
       </Form>
       <iframe

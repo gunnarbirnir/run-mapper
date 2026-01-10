@@ -1,4 +1,5 @@
-import type { Bounds, Coordinates } from '~/types';
+import type { Bounds, Coordinates, Elevation } from '~/types';
+import { haversineDistance } from '~/utils';
 
 export const getRouteBounds = (
   bbox: [number, number, number, number],
@@ -12,16 +13,23 @@ export const getRouteBounds = (
 
 export const processRouteFeatures = (
   features: GeoJSON.Feature[],
-): { coordinates: Coordinates[]; elevations: number[] } => {
+): { coordinates: Coordinates[]; elevations: Elevation[] } => {
   const coordinates: Coordinates[] = [];
-  const elevations: number[] = [];
+  const elevations: Elevation[] = [];
+  let distance = 0;
+  let prevCoord: Coordinates | null = null;
 
   features.forEach((feature) => {
     if (feature.geometry.type === 'Point') {
-      coordinates.push(feature.geometry.coordinates as Coordinates);
+      const currentCoord = feature.geometry.coordinates as Coordinates;
+      if (prevCoord) {
+        distance += haversineDistance(prevCoord, currentCoord);
+      }
+      coordinates.push(currentCoord);
+      prevCoord = currentCoord;
     }
     if (feature.properties?.ele !== undefined) {
-      elevations.push(feature.properties.ele);
+      elevations.push({ value: feature.properties.ele, distance });
     }
   });
 

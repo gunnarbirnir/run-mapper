@@ -62,7 +62,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <RootBody isRunDisplay={isRunDisplay} isPlayground={isPlayground}>
           {children}
         </RootBody>
-        {isPlayground && <TanStackRouterDevtools position="bottom-right" />}
+        {!isPlayground && <TanStackRouterDevtools position="bottom-right" />}
         <Scripts />
       </body>
     </html>
