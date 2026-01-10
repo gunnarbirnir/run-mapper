@@ -31,7 +31,10 @@ export const Route = createRootRoute({
         content: 'Create and visualize running routes with interactive iframes',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: '/favicon.ico' },
+    ],
   }),
   component: RootComponent,
 });
@@ -59,7 +62,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <RootBody isRunDisplay={isRunDisplay} isPlayground={isPlayground}>
           {children}
         </RootBody>
-        {!isPlayground && <TanStackRouterDevtools position="bottom-right" />}
+        {isPlayground && <TanStackRouterDevtools position="bottom-right" />}
         <Scripts />
       </body>
     </html>

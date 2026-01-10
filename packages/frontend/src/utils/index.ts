@@ -6,6 +6,10 @@ export const cn = (...inputs: ClassValue[]) => {
 };
 
 export const getCssVariableValue = (variable: string) => {
-  const styles = getComputedStyle(document.documentElement);
-  return styles.getPropertyValue(variable);
+  try {
+    const styles = getComputedStyle(document.documentElement);
+    return styles.getPropertyValue(variable);
+  } catch {
+    return '';
+  }
 };
