@@ -26,17 +26,17 @@ path:focus {
   --color-primary-900: #8a114d;
   --color-primary-950: #4d0426;
 
-  --color-secondary-50: #edf9ff;
-  --color-secondary-100: #d7f0ff;
-  --color-secondary-200: #b8e7ff;
-  --color-secondary-300: #88d9ff;
-  --color-secondary-400: #50c2ff;
-  --color-secondary-500: #27a4ff;
-  --color-secondary-600: #1086ff;
-  --color-secondary-700: #096eec;
-  --color-secondary-800: #105fcf;
-  --color-secondary-900: #134c95;
-  --color-secondary-950: #112f5a;
+  --color-secondary-50: #f0f7ff;
+  --color-secondary-100: #e1eefd;
+  --color-secondary-200: #bbddfc;
+  --color-secondary-300: #7fc1fa;
+  --color-secondary-400: #3ba3f5;
+  --color-secondary-500: #1288e5;
+  --color-secondary-600: #0562b6;
+  --color-secondary-700: #06549e;
+  --color-secondary-800: #094883;
+  --color-secondary-900: #0e3d6c;
+  --color-secondary-950: #092748;
 
   /* Gray from Tailwind */
   --color-gray-50: #f9fafb;

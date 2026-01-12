@@ -27,6 +27,25 @@ export const convertRemToPixels = (rem: string) => {
   }
 };
 
+const BASE_SPACING = 0.25;
+
+export const spacingRem = (factor: number) => {
+  return `${BASE_SPACING * factor}rem`;
+};
+
+export const spacingPx = (factor: number) => {
+  try {
+    const spacingVal = BASE_SPACING * factor;
+
+    return (
+      spacingVal *
+      parseFloat(getComputedStyle(document.documentElement).fontSize)
+    );
+  } catch {
+    return 0;
+  }
+};
+
 export const haversineDistance = (
   coord1: Coordinates,
   coord2: Coordinates,
