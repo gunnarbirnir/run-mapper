@@ -15,6 +15,8 @@ import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as RunsNewRouteImport } from './routes/runs/new'
 import { Route as RunsRunIdRouteImport } from './routes/runs/$runId'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,9 +48,21 @@ const RunsRunIdRoute = RunsRunIdRouteImport.update({
   path: '/runs/$runId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home': typeof HomeIndexRoute
@@ -57,6 +71,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home': typeof HomeIndexRoute
@@ -66,6 +82,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/runs/$runId': typeof RunsRunIdRoute
   '/runs/new': typeof RunsNewRoute
   '/home/': typeof HomeIndexRoute
@@ -76,16 +94,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/runs/$runId'
     | '/runs/new'
     | '/home'
     | '/playground'
     | '/runs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/runs/$runId' | '/runs/new' | '/home' | '/playground' | '/runs'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/runs/$runId'
+    | '/runs/new'
+    | '/home'
+    | '/playground'
+    | '/runs'
   id:
     | '__root__'
     | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/runs/$runId'
     | '/runs/new'
     | '/home/'
@@ -95,6 +125,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   RunsRunIdRoute: typeof RunsRunIdRoute
   RunsNewRoute: typeof RunsNewRoute
   HomeIndexRoute: typeof HomeIndexRoute
@@ -146,11 +178,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RunsRunIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
   RunsRunIdRoute: RunsRunIdRoute,
   RunsNewRoute: RunsNewRoute,
   HomeIndexRoute: HomeIndexRoute,

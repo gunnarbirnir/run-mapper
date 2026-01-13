@@ -7,6 +7,7 @@ interface TextInputProps {
   name: string;
   value: string;
   label: string;
+  type?: string;
   placeholder?: string;
   className?: string;
   labelClassName?: string;
@@ -19,6 +20,7 @@ export const TextInput = ({
   name,
   value,
   label,
+  type = 'text',
   placeholder,
   className,
   labelClassName,
@@ -31,7 +33,7 @@ export const TextInput = ({
         {label}
       </InputLabel>
       <input
-        type="text"
+        type={type}
         id={id}
         name={name}
         value={value}
