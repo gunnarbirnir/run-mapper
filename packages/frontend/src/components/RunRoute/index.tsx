@@ -6,17 +6,17 @@ import { DistanceWidget } from '~/components/DistanceWidget';
 import { ElevationWidget } from '~/components/ElevationWidget';
 
 import type { RunRouteProps } from './types';
-import { getRouteBounds, processRouteFeatures } from './utils';
+import { getRouteBounds, processRunRoute } from './utils';
 
-export const RunRoute = ({ routeId, routeData }: RunRouteProps) => {
+export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const bounds = useMemo(
-    () => getRouteBounds(routeData.bbox as [number, number, number, number]),
+    () => getRouteBounds(run.boundingBox),
     // Only update map if routeId changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [routeId],
   );
   const { coordinates, elevations } = useMemo(
-    () => processRouteFeatures(routeData.features),
+    () => processRunRoute(run.coordinates),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [routeId],
   );

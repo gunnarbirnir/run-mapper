@@ -6,6 +6,7 @@ import {
   createRootRoute,
   useMatchRoute,
 } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
 
@@ -40,12 +41,16 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
+const queryClient = new QueryClient();
+
 function RootComponent() {
   return (
     <AuthProvider>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
+      <QueryClientProvider client={queryClient}>
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </QueryClientProvider>
     </AuthProvider>
   );
 }

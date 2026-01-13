@@ -1,6 +1,6 @@
-type RouteData = GeoJSON.FeatureCollection;
+import type { Run } from '~/types';
 
 export interface RunRouteProps {
   routeId: string;
-  routeData: RouteData;
+  run: Run;
 }
