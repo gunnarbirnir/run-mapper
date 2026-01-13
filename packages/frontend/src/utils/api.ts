@@ -46,7 +46,7 @@ export const apiRequest = async <T>(
 
   if (!response.ok) {
     if (response.status === 401 && retryOn401) {
-      const refreshedHeaders = await getAuthHeaders();
+      const refreshedHeaders = await getAuthHeaders(true);
       const retryResponse = await fetch(url, {
         ...options,
         headers: {

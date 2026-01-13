@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { api } from '~/utils/api';
 import { ProtectedRoute } from '~/components/ProtectedRoute';
+import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text } from '~/primitives';
 
 export const Route = createFileRoute('/runs/')({
@@ -20,8 +21,13 @@ function RunsList() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
+    if (authLoading || !user) {
+      return;
+    }
+
     const fetchRuns = async () => {
       try {
         setLoading(true);
@@ -39,7 +45,7 @@ function RunsList() {
     };
 
     fetchRuns();
-  }, []);
+  }, [user, authLoading]);
 
   return (
     <ProtectedRoute>
