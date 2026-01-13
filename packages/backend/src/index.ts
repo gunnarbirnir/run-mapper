@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
 import { db } from './firebase/admin';
+import auth from './routes/auth';
 import runs from './routes/runs';
 
 const app = new Hono();
@@ -18,7 +19,6 @@ app.get('/', (c) => {
 
 app.get('/health', async (c) => {
   try {
-    // Test Firebase connection
     await db.collection('_health').limit(1).get();
     return c.json({
       status: 'ok',
@@ -36,7 +36,7 @@ app.get('/health', async (c) => {
   }
 });
 
-// Mount routes
+app.route('/auth', auth);
 app.route('/runs', runs);
 
 const port = 3001;

@@ -12,6 +12,7 @@ import * as React from 'react';
 import appCss from '~/styles/app.css?url';
 
 import { NavBar } from '~/components/NavBar';
+import { AuthProvider } from '~/contexts/AuthContext';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -41,9 +42,11 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
+    <AuthProvider>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </AuthProvider>
   );
 }
 
