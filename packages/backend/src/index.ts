@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-// import { firebaseAdmin } from './firebase/admin';
+import { db } from './firebase/admin';
+import runs from './routes/runs';
 
 const app = new Hono();
 
@@ -14,9 +16,28 @@ app.get('/', (c) => {
   });
 });
 
-app.get('/health', (c) => {
-  return c.json({ status: 'ok' });
+app.get('/health', async (c) => {
+  try {
+    // Test Firebase connection
+    await db.collection('_health').limit(1).get();
+    return c.json({
+      status: 'ok',
+      firebase: 'connected',
+    });
+  } catch (error) {
+    return c.json(
+      {
+        status: 'ok',
+        firebase: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      503,
+    );
+  }
 });
+
+// Mount routes
+app.route('/runs', runs);
 
 const port = 3001;
 console.log(`Server is running on port ${port}`);
