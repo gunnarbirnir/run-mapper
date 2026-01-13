@@ -1,36 +1,37 @@
-import type { Bounds, Coordinates, Elevation } from '~/types';
+import type {
+  BoundingBox,
+  Coordinates,
+  Elevation,
+  Bounds,
+  RunCoordinates,
+} from '~/types';
 import { haversineDistance } from '~/utils';
 
-export const getRouteBounds = (
-  bbox: [number, number, number, number],
-): Bounds => {
-  const [minLng, minLat, maxLng, maxLat] = bbox;
+// TODO: delete function and update Bounds type
+export const getRouteBounds = (bbox: BoundingBox): Bounds => {
   return [
-    [minLng, minLat],
-    [maxLng, maxLat],
+    // TODO: Wrong order (lat first)?
+    [bbox[0].lng, bbox[0].lat],
+    [bbox[1].lng, bbox[1].lat],
   ];
 };
 
-export const processRouteFeatures = (
-  features: GeoJSON.Feature[],
+export const processRunRoute = (
+  runCoordinates: RunCoordinates[],
 ): { coordinates: Coordinates[]; elevations: Elevation[] } => {
   const coordinates: Coordinates[] = [];
   const elevations: Elevation[] = [];
   let distance = 0;
   let prevCoord: Coordinates | null = null;
 
-  features.forEach((feature) => {
-    if (feature.geometry.type === 'Point') {
-      const currentCoord = feature.geometry.coordinates as Coordinates;
-      if (prevCoord) {
-        distance += haversineDistance(prevCoord, currentCoord);
-      }
-      coordinates.push(currentCoord);
-      prevCoord = currentCoord;
+  runCoordinates.forEach((runCoordinate) => {
+    const currentCoord: Coordinates = [runCoordinate.lat, runCoordinate.lng];
+    if (prevCoord) {
+      distance += haversineDistance(prevCoord, currentCoord);
     }
-    if (feature.properties?.ele !== undefined) {
-      elevations.push({ value: feature.properties.ele, distance });
-    }
+    coordinates.push(currentCoord);
+    prevCoord = currentCoord;
+    elevations.push({ value: runCoordinate.elevation, distance });
   });
 
   return { coordinates, elevations };

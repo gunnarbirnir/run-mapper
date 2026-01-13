@@ -13,8 +13,8 @@ export const Route = createFileRoute('/playground/')({
 });
 
 export function Playground() {
-  const [runId, setRunId] = useState('test123');
-  const [runIdInput, setRunIdInput] = useState(runId);
+  const [runId, setRunId] = useState('');
+  const [runIdInput, setRunIdInput] = useState('');
 
   return (
     <div>
@@ -36,18 +36,20 @@ export function Playground() {
           <Button
             type="submit"
             onClick={() => setRunId(runIdInput)}
-            disabled={runIdInput === runId}
+            disabled={!runIdInput || runIdInput === runId}
           >
             Update
           </Button>
           <Text className="text-gray-400">Current ID: {runId}</Text>
         </div>
       </Form>
-      <iframe
-        height="500"
-        width="800"
-        src={`http://localhost:3000/runs/${runId}`}
-      />
+      {runId && (
+        <iframe
+          height="500"
+          width="800"
+          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/runs/${runId}`}
+        />
+      )}
     </div>
   );
 }
