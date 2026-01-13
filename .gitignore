@@ -15,3 +15,5 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/*.log
+
+route-*.json

@@ -12,7 +12,8 @@
     "start": "yarn dev",
     "backend-dev": "yarn workspace run-mapper-backend dev",
     "lint": "yarn workspace run-mapper-frontend lint && yarn workspace run-mapper-backend lint",
-    "type-check": "yarn workspace run-mapper-frontend type-check && yarn workspace run-mapper-backend type-check"
+    "type-check": "yarn workspace run-mapper-frontend type-check && yarn workspace run-mapper-backend type-check",
+    "process-gpx": "node scripts/processGpx.js $INPUT_FILE"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
