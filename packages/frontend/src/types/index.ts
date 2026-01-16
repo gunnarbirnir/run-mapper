@@ -11,11 +11,14 @@ export type RunCoordinates = BaseCoordinate & {
   elevation: number;
 };
 
+export type WayPointType = 'energy' | 'entertainment';
+
 export type Waypoint = {
   id: string;
   name: string;
   description?: string;
   coordinates: BaseCoordinate;
+  type: WayPointType;
 };
 
 export interface Run {

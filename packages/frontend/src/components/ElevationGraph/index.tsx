@@ -11,7 +11,7 @@ import {
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
 
-import { processElevationData } from './utils';
+import { processElevationData, getActiveIndexValue } from './utils';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
@@ -24,15 +24,6 @@ const GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
-
-const getActiveIndexValue = (
-  activeIndex: string | number | null | undefined,
-) => {
-  if (activeIndex === null || activeIndex === undefined) {
-    return null;
-  }
-  return typeof activeIndex === 'number' ? activeIndex : parseInt(activeIndex);
-};
 
 export const ElevationGraph = ({
   elevations,

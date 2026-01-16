@@ -10,6 +10,8 @@ import {
   getLineFeature,
   getRouteLayer,
   getMarkerElement,
+  getActiveMarkerElement,
+  getWaypointMarkerElement,
 } from './utils';
 
 export const RouteMap = ({
@@ -48,7 +50,7 @@ export const RouteMap = ({
         }
       };
 
-      const activeMarkerElement = getMarkerElement('--color-black', 'small');
+      const activeMarkerElement = getActiveMarkerElement();
       const activeMarker = addMarker(activeMarkerElement, [
         coordinates[0][0],
         coordinates[0][1],
@@ -65,7 +67,7 @@ export const RouteMap = ({
       ]);
 
       for (const waypoint of waypoints) {
-        addMarker(getMarkerElement('--color-secondary-500', 'medium'), [
+        addMarker(getWaypointMarkerElement(waypoint.type), [
           waypoint.coordinates.lat,
           waypoint.coordinates.lng,
         ]);
