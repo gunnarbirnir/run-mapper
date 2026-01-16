@@ -1,5 +1,12 @@
-import { useMemo } from 'react';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { useMemo, type MutableRefObject } from 'react';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
@@ -8,16 +15,33 @@ import { processElevationData } from './utils';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
+  setActiveIndexRef: MutableRefObject<
+    ((updatedIndex: number | null) => void) | null
+  >;
 }
 
 const GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
+const ACTIVE_LINE_WIDTH = 2;
 
-export const ElevationGraph = ({ elevations }: ElevationGraphProps) => {
+const getActiveIndexValue = (
+  activeIndex: string | number | null | undefined,
+) => {
+  if (activeIndex === null || activeIndex === undefined) {
+    return null;
+  }
+  return typeof activeIndex === 'number' ? activeIndex : parseInt(activeIndex);
+};
+
+export const ElevationGraph = ({
+  elevations,
+  setActiveIndexRef,
+}: ElevationGraphProps) => {
   const lineColor = getCssVariableValue('--color-secondary-500');
   const gridColor = getCssVariableValue('--color-gray-300');
   const textColor = getCssVariableValue('--color-gray-500');
+  const activeLineColor = getCssVariableValue('--color-black');
   const xsText = getCssVariableValue('--text-xs');
 
   const lastDistance = Math.floor(elevations[elevations.length - 1].distance);
@@ -38,8 +62,23 @@ export const ElevationGraph = ({ elevations }: ElevationGraphProps) => {
           bottom: 0,
           left: 0,
         }}
+        onMouseEnter={(event) => {
+          setActiveIndexRef.current?.(getActiveIndexValue(event.activeIndex));
+        }}
+        onMouseLeave={() => {
+          setActiveIndexRef.current?.(null);
+        }}
+        onMouseMove={(event) => {
+          if (event.activeIndex) {
+            setActiveIndexRef.current?.(getActiveIndexValue(event.activeIndex));
+          }
+        }}
       >
         <CartesianGrid stroke={gridColor} />
+        <Tooltip
+          cursor={{ stroke: activeLineColor, strokeWidth: ACTIVE_LINE_WIDTH }}
+          content={<></>}
+        />
         <Line
           dataKey="value"
           stroke={lineColor}
@@ -47,6 +86,7 @@ export const ElevationGraph = ({ elevations }: ElevationGraphProps) => {
           strokeLinecap="butt"
           strokeLinejoin="round"
           dot={false}
+          activeDot={false}
         />
         <XAxis
           dataKey="distance"

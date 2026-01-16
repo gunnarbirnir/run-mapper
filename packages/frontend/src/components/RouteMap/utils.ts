@@ -48,10 +48,12 @@ export const getRouteLayer = () => {
 
 export const getMarkerElement = (
   color: string,
-  size: 'small' | 'large' = 'large',
+  size: 'small' | 'medium' | 'large' = 'large',
 ): HTMLElement => {
   const marker = document.createElement('div');
   if (size === 'small') {
+    marker.className = `w-3 h-3 rounded-full`;
+  } else if (size === 'medium') {
     marker.className = `w-5 h-5 rounded-full border-3 border-white shadow-md/30`;
   } else {
     marker.className = `w-6 h-6 rounded-full border-4 border-white shadow-md/30`;

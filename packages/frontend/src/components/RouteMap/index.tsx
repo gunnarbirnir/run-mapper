@@ -2,6 +2,8 @@ import { useRef, useEffect, useMemo } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import type { Coordinates } from '~/types';
+
 import type { RouteMapProps } from './types';
 import {
   getPaddedBounds,
@@ -10,7 +12,12 @@ import {
   getMarkerElement,
 } from './utils';
 
-export const RouteMap = ({ bounds, coordinates, waypoints }: RouteMapProps) => {
+export const RouteMap = ({
+  bounds,
+  coordinates,
+  waypoints,
+  setActiveIndexRef,
+}: RouteMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
@@ -33,33 +40,55 @@ export const RouteMap = ({ bounds, coordinates, waypoints }: RouteMapProps) => {
       });
       mapRef.current.addLayer(getRouteLayer());
 
-      new mapboxgl.Marker({ element: getMarkerElement('--color-success-500') })
-        .setLngLat([coordinates[0][0], coordinates[0][1]])
-        .addTo(mapRef.current);
-      new mapboxgl.Marker({ element: getMarkerElement('--color-error-500') })
-        .setLngLat([
-          coordinates[coordinates.length - 1][0],
-          coordinates[coordinates.length - 1][1],
-        ])
-        .addTo(mapRef.current);
+      const addMarker = (element: HTMLElement, markerCoords: Coordinates) => {
+        if (mapRef.current) {
+          return new mapboxgl.Marker({ element })
+            .setLngLat([markerCoords[0], markerCoords[1]])
+            .addTo(mapRef.current);
+        }
+      };
+
+      const activeMarkerElement = getMarkerElement('--color-black', 'small');
+      const activeMarker = addMarker(activeMarkerElement, [
+        coordinates[0][0],
+        coordinates[0][1],
+      ]);
+      activeMarkerElement.style.display = 'none';
+
+      addMarker(getMarkerElement('--color-success-500'), [
+        coordinates[0][0],
+        coordinates[0][1],
+      ]);
+      addMarker(getMarkerElement('--color-error-500'), [
+        coordinates[coordinates.length - 1][0],
+        coordinates[coordinates.length - 1][1],
+      ]);
 
       for (const waypoint of waypoints) {
-        new mapboxgl.Marker({
-          element: getMarkerElement('--color-secondary-500', 'small'),
-        })
-          .setLngLat([waypoint.coordinates.lat, waypoint.coordinates.lng])
-          .addTo(mapRef.current);
+        addMarker(getMarkerElement('--color-secondary-500', 'medium'), [
+          waypoint.coordinates.lat,
+          waypoint.coordinates.lng,
+        ]);
       }
+
+      setActiveIndexRef.current = (updatedIndex: number | null) => {
+        if (updatedIndex !== null) {
+          activeMarkerElement.style.display = 'block';
+          activeMarker?.setLngLat([
+            coordinates[updatedIndex][0],
+            coordinates[updatedIndex][1],
+          ]);
+        } else {
+          activeMarkerElement.style.display = 'none';
+        }
+      };
     });
 
     return () => {
       mapRef.current?.remove();
+      setActiveIndexRef.current = null;
     };
-  }, [coordinates, waypoints, paddedBounds]);
+  }, [coordinates, waypoints, paddedBounds, setActiveIndexRef]);
 
-  return (
-    <>
-      <div ref={mapContainerRef} className="h-full w-full" />
-    </>
-  );
+  return <div ref={mapContainerRef} className="h-full w-full" />;
 };

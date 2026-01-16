@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { RouteMap } from '~/components/RouteMap';
 import { ElevationGraph } from '~/components/ElevationGraph';
@@ -22,6 +22,9 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const waypoints = useMemo(() => run.waypoints, [routeId]);
+  const setActiveIndexRef = useRef<
+    ((updatedIndex: number | null) => void) | null
+  >(null);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -37,9 +40,13 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
+          setActiveIndexRef={setActiveIndexRef}
         />
       </div>
-      <ElevationGraph elevations={elevations} />
+      <ElevationGraph
+        elevations={elevations}
+        setActiveIndexRef={setActiveIndexRef}
+      />
     </div>
   );
 };
