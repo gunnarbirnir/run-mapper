@@ -1,5 +1,5 @@
 import type {
-  BoundingBox,
+  BaseCoordinate,
   Coordinates,
   Elevation,
   Bounds,
@@ -8,7 +8,9 @@ import type {
 import { haversineDistance } from '~/utils';
 
 // TODO: delete function and update Bounds type
-export const getRouteBounds = (bbox: BoundingBox): Bounds => {
+export const getRouteBounds = (
+  bbox: [BaseCoordinate, BaseCoordinate],
+): Bounds => {
   return [
     // TODO: Wrong order (lat first)?
     [bbox[0].lng, bbox[0].lat],

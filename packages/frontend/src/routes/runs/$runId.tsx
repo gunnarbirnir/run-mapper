@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { RunRoute } from '~/components/RunRoute';
-import { getRun } from '~/service';
-import type { QueryResponse, Run } from '~/types';
+import { api } from '~/service';
+import type { ApiResponse, Run } from '~/types';
 
 export const Route = createFileRoute('/runs/$runId')({
   component: RunDetail,
@@ -11,9 +11,9 @@ export const Route = createFileRoute('/runs/$runId')({
 
 function RunDetail() {
   const { runId } = Route.useParams();
-  const { data, isPending, error } = useQuery<QueryResponse<Run>>({
+  const { data, isPending, error } = useQuery<ApiResponse<Run>>({
     queryKey: ['run', runId],
-    queryFn: () => getRun(runId),
+    queryFn: () => api.get(`/runs/${runId}`),
   });
 
   if (isPending) {

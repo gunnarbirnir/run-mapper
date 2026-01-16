@@ -13,8 +13,8 @@ export const Route = createFileRoute('/playground/')({
 });
 
 export function Playground() {
-  const [runId, setRunId] = useState('');
-  const [runIdInput, setRunIdInput] = useState('');
+  const [runId, setRunId] = useState('N4zQOJc8HpKLfxz3KgvS');
+  const [runIdInput, setRunIdInput] = useState(runId);
 
   return (
     <div>

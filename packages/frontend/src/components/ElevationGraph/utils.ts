@@ -32,3 +32,12 @@ export const processElevationData = (elevations: Elevation[]): Elevation[] => {
 
   return elevationData;
 };
+
+export const getActiveIndexValue = (
+  activeIndex: string | number | null | undefined,
+) => {
+  if (activeIndex === null || activeIndex === undefined) {
+    return null;
+  }
+  return typeof activeIndex === 'number' ? activeIndex : parseInt(activeIndex);
+};
