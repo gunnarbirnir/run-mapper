@@ -20,6 +20,8 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [routeId],
   );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const waypoints = useMemo(() => run.waypoints, [routeId]);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -30,7 +32,12 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
             <ElevationWidget elevations={elevations} />
           </div>
         </div>
-        <RouteMap routeId={routeId} bounds={bounds} coordinates={coordinates} />
+        <RouteMap
+          routeId={routeId}
+          bounds={bounds}
+          coordinates={coordinates}
+          waypoints={waypoints}
+        />
       </div>
       <ElevationGraph elevations={elevations} />
     </div>

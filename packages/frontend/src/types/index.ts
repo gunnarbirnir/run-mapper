@@ -2,20 +2,30 @@ export type Coordinates = [number, number];
 export type Bounds = [Coordinates, Coordinates];
 export type Elevation = { value: number; distance: number };
 
-export type BoundingBox = [
-  { lat: number; lng: number },
-  { lat: number; lng: number },
-];
+export type BaseCoordinate = {
+  lat: number;
+  lng: number;
+};
 
-export type RunCoordinates = { lat: number; lng: number; elevation: number };
+export type RunCoordinates = BaseCoordinate & {
+  elevation: number;
+};
+
+export type Waypoint = {
+  id: string;
+  name: string;
+  description?: string;
+  coordinates: BaseCoordinate;
+};
 
 export interface Run {
   id: string;
   userId: string;
   createdAt: string;
   name: string;
-  boundingBox: BoundingBox;
+  boundingBox: [BaseCoordinate, BaseCoordinate];
   coordinates: RunCoordinates[];
+  waypoints: Waypoint[];
 }
 
 export type ApiResponse<T> = {

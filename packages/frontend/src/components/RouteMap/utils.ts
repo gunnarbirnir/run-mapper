@@ -45,3 +45,18 @@ export const getRouteLayer = () => {
     },
   } as const;
 };
+
+export const getMarkerElement = (
+  color: string,
+  size: 'small' | 'large' = 'large',
+): HTMLElement => {
+  const marker = document.createElement('div');
+  if (size === 'small') {
+    marker.className = `w-5 h-5 rounded-full border-3 border-white shadow-md/30`;
+  } else {
+    marker.className = `w-6 h-6 rounded-full border-4 border-white shadow-md/30`;
+  }
+  marker.style.backgroundColor = getCssVariableValue(color);
+
+  return marker;
+};
