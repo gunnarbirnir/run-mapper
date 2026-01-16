@@ -10,12 +10,15 @@ export type BoundingBox = [
 export type RunCoordinates = { lat: number; lng: number; elevation: number };
 
 export interface Run {
+  id: string;
+  userId: string;
+  createdAt: string;
   name: string;
   boundingBox: BoundingBox;
   coordinates: RunCoordinates[];
 }
 
-export type QueryResponse<T> = {
+export type ApiResponse<T> = {
   data: T;
   success: boolean;
 };

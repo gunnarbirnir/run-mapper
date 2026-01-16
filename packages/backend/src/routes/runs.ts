@@ -51,16 +51,6 @@ runs.get('/:id', async (c: AuthContext) => {
     }
 
     const runData = runDoc.data();
-    if (runData?.userId !== c.user.uid) {
-      return c.json(
-        {
-          success: false,
-          error: 'Forbidden',
-          message: 'You do not have access to this run',
-        },
-        403,
-      );
-    }
 
     return c.json({
       success: true,

@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { api } from '~/utils/api';
+
+import { api } from '~/service';
 import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { Text, Button, Form } from '~/primitives';
+import type { ApiResponse } from '~/types';
 
 export const Route = createFileRoute('/runs/new')({
   component: NewRun,
@@ -32,10 +34,7 @@ function NewRun() {
         }
       }
 
-      const response = await api.post<{
-        success: boolean;
-        data: { id: string };
-      }>('/runs', {
+      const response = await api.post<ApiResponse<{ id: string }>>('/runs', {
         name: name || undefined,
         routeData: parsedPathData,
       });

@@ -1,21 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { api } from '~/utils/api';
+
+import { api } from '~/service';
 import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text } from '~/primitives';
+import type { Run, ApiResponse } from '~/types';
 
 export const Route = createFileRoute('/runs/')({
   component: RunsList,
 });
-
-interface Run {
-  id: string;
-  name?: string;
-  userId: string;
-  createdAt?: string;
-  [key: string]: unknown;
-}
 
 function RunsList() {
   const [runs, setRuns] = useState<Run[]>([]);
@@ -31,9 +25,7 @@ function RunsList() {
     const fetchRuns = async () => {
       try {
         setLoading(true);
-        const response = await api.get<{ success: boolean; data: Run[] }>(
-          '/runs',
-        );
+        const response = await api.get<ApiResponse<Run[]>>('/runs');
         if (response.success) {
           setRuns(response.data);
         }
