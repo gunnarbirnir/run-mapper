@@ -14,8 +14,10 @@ export const WidgetContent = ({
   if (label && text) {
     return (
       <div className="flex flex-col gap-1 text-center">
-        <Text className="text-xs text-gray-500 uppercase">{label}</Text>
-        <Text className="text-xl font-bold text-black">{text}</Text>
+        <Text className="text-xs text-gray-500 uppercase select-none">
+          {label}
+        </Text>
+        <Text className="text-xl font-bold text-black select-none">{text}</Text>
       </div>
     );
   }

@@ -1,9 +1,9 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
-import { RouteMap } from '~/components/RouteMap';
 import { ElevationGraph } from '~/components/ElevationGraph';
-import { DistanceWidget } from '~/components/DistanceWidget';
-import { ElevationWidget } from '~/components/ElevationWidget';
+import { RouteMap } from '~/components/RouteMap';
+import { RouteOverlay } from '~/components/RouteOverlay';
+import type { WidgetType } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -26,15 +26,12 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     ((updatedIndex: number | null) => void) | null
   >(null);
 
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [activeWidget, setActiveWidget] = useState<WidgetType | null>(null);
+
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="relative isolate flex-1">
-        <div className="absolute top-4 left-4 z-100">
-          <div className="flex flex-col gap-4">
-            <DistanceWidget coordinates={coordinates} />
-            <ElevationWidget elevations={elevations} />
-          </div>
-        </div>
+      <div className="flex-1" ref={mapContainerRef}>
         <RouteMap
           routeId={routeId}
           bounds={bounds}
@@ -46,6 +43,14 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
       <ElevationGraph
         elevations={elevations}
         setActiveIndexRef={setActiveIndexRef}
+        isExpanded={activeWidget === 'elevation'}
+      />
+      <RouteOverlay
+        coordinates={coordinates}
+        elevations={elevations}
+        mapContainerRef={mapContainerRef}
+        activeWidget={activeWidget}
+        setActiveWidget={setActiveWidget}
       />
     </div>
   );
