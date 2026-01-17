@@ -1,0 +1,2 @@
+export const ELEVATION_GRAPH_HEIGHT = 120;
+export const WIDGET_ANIMATION_DURATION = 0.2;

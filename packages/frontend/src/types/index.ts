@@ -35,3 +35,16 @@ export type ApiResponse<T> = {
   data: T;
   success: boolean;
 };
+
+export interface WidgetBaseProps {
+  index: number;
+  mapContainerSize: {
+    width: number;
+    height: number;
+  };
+  showGraphWhileActive?: boolean;
+  isActive?: boolean;
+  setIsActive?: (isActive: boolean) => void;
+}
+
+export type WidgetType = 'distance' | 'elevation';

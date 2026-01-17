@@ -8,6 +8,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { ELEVATION_GRAPH_HEIGHT } from '~/constants';
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
 
@@ -20,7 +21,6 @@ interface ElevationGraphProps {
   >;
 }
 
-const GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
@@ -42,7 +42,7 @@ export const ElevationGraph = ({
   );
 
   return (
-    <div style={{ height: GRAPH_HEIGHT }}>
+    <div style={{ height: ELEVATION_GRAPH_HEIGHT }}>
       <LineChart
         style={{ width: '100%', height: '100%' }}
         responsive
