@@ -27,23 +27,32 @@ export const RouteOverlay = ({
   activeWidget,
   setActiveWidget,
 }: RouteOverlayProps) => {
+  // From start of open animation to end of close animation
   const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
+  // When the widget is fully expanded, so does not include animations
+  const [expandedWidget, setExpandedWidget] = useState<WidgetType | null>(null);
   const mapContainerSize = useElementSize(mapContainerRef);
 
-  const handleWidgetOpen =
-    (widget: WidgetType) => (updatedIsActive: boolean) => {
-      if (updatedIsActive) {
-        setOpenWidget(widget);
-      }
-      setActiveWidget(updatedIsActive ? widget : null);
-    };
+  const handleWidgetToggleActive = (widget: WidgetType) => () => {
+    if (!activeWidget) {
+      setOpenWidget(widget);
+    } else {
+      setExpandedWidget(null);
+    }
+    setActiveWidget(activeWidget ? null : widget);
+  };
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
       mapContainerSize,
       showGraphWhileActive: EXPAND_GRAPH_WIDGETS.includes(widget),
       isActive: activeWidget === widget,
-      setIsActive: handleWidgetOpen(widget),
+      isOpen: openWidget === widget,
+      isExpanded: expandedWidget === widget,
+      isAnyActive: activeWidget !== null,
+      isAnyOpen: openWidget !== null,
+      isAnyExpanded: expandedWidget !== null,
+      onToggleActive: handleWidgetToggleActive(widget),
     };
   };
 
@@ -72,6 +81,8 @@ export const RouteOverlay = ({
         onAnimationComplete={() => {
           if (!activeWidget) {
             setOpenWidget(null);
+          } else {
+            setExpandedWidget(activeWidget);
           }
         }}
       />

@@ -44,7 +44,12 @@ export interface WidgetBaseProps {
   };
   showGraphWhileActive?: boolean;
   isActive?: boolean;
-  setIsActive?: (isActive: boolean) => void;
+  isOpen?: boolean;
+  isExpanded?: boolean;
+  isAnyActive?: boolean;
+  isAnyOpen?: boolean;
+  isAnyExpanded?: boolean;
+  onToggleActive?: () => void;
 }
 
 export type WidgetType = 'distance' | 'elevation';

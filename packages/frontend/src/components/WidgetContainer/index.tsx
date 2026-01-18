@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import { useState } from 'react';
 
 import type { WidgetBaseProps } from '~/types';
 import {
@@ -9,6 +8,7 @@ import {
   SPRING_CONFIG,
 } from '~/constants';
 import { spacingPx, cn } from '~/utils';
+import { Button } from '~/primitives';
 
 import { WidgetContent } from './WidgetContent';
 
@@ -30,18 +30,19 @@ export const WidgetContainer = ({
   index,
   showGraphWhileActive = false,
   isActive = false,
+  isOpen = false,
+  isExpanded = false,
+  isAnyOpen = false,
   mapContainerSize,
-  setIsActive,
+  onToggleActive,
 }: WidgetContainerProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const activeSpacing = spacingPx(8);
   const baseSpacing = spacingPx(4);
   const top = baseSpacing + index * (WIDGET_HEIGHT + baseSpacing);
   const right = mapContainerSize.width - WIDGET_WIDTH - baseSpacing;
   const bottom =
     mapContainerSize.height + ELEVATION_GRAPH_HEIGHT - top - WIDGET_HEIGHT;
-  const isClickable = setIsActive && !isOpen;
+  const isClickable = onToggleActive && !isAnyOpen;
 
   return (
     <motion.div
@@ -75,23 +76,19 @@ export const WidgetContainer = ({
         zIndex: isOpen ? 1000 : index,
         cursor: isClickable ? 'pointer' : 'default',
       }}
-      onClick={
-        setIsActive
-          ? () => {
-              if (!isActive) {
-                setIsOpen(true);
-              }
-              setIsActive(!isActive);
-            }
-          : undefined
-      }
-      onAnimationComplete={() => {
-        if (!isActive) {
-          setIsOpen(false);
-        }
-      }}
+      onClick={isClickable ? onToggleActive : undefined}
     >
       <WidgetContent label={label} text={text} children={children} />
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="absolute top-4 right-4"
+        >
+          <Button onClick={onToggleActive}>Close</Button>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
