@@ -1,9 +1,10 @@
 import { Trophy } from './Trophy';
 import { Elevation } from './Elevation';
+import { Close } from './Close';
 
 import { cn } from '~/utils';
 
-export type IconName = 'trophy' | 'elevation';
+export type IconName = 'trophy' | 'elevation' | 'close';
 
 interface IconProps {
   name: IconName;
@@ -16,6 +17,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Trophy />;
     case 'elevation':
       return <Elevation />;
+    case 'close':
+      return <Close />;
     default:
       return null;
   }

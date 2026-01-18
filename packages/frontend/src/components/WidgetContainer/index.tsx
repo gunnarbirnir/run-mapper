@@ -8,7 +8,7 @@ import {
   SPRING_CONFIG,
 } from '~/constants';
 import { spacingPx, cn } from '~/utils';
-import { Button } from '~/primitives';
+import { RoundButton, Icon } from '~/primitives';
 
 import { WidgetContent } from './WidgetContent';
 
@@ -22,6 +22,7 @@ interface WidgetContainerProps extends WidgetBaseProps {
 }
 
 // TODO: trap focus while open
+// TODO: handle keyboard events, like esc
 
 export const WidgetContainer = ({
   children,
@@ -86,7 +87,9 @@ export const WidgetContainer = ({
           transition={{ duration: 0.2, ease: 'easeOut' }}
           className="absolute top-4 right-4"
         >
-          <Button onClick={onToggleActive}>Close</Button>
+          <RoundButton onClick={onToggleActive}>
+            <Icon name="close" className="size-7" />
+          </RoundButton>
         </motion.div>
       )}
     </motion.div>
