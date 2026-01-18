@@ -12,7 +12,7 @@ type RoundButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
-  'h-10 w-10 bg-black text-white rounded-full transition-scale duration-100 flex items-center justify-center';
+  'h-8 w-8 bg-black text-white rounded-full transition-scale duration-100 flex items-center justify-center';
 const ENABLED_CLASS_NAME = 'hover:bg-gray-700 cursor-pointer active:scale-90';
 
 export const RoundButton = ({

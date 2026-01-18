@@ -13,6 +13,8 @@ import {
   ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
+  DEFAULT_FADE_IN_DURATION,
+  DEFAULT_EASING,
 } from '~/constants';
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
@@ -67,7 +69,10 @@ export const ElevationGraph = ({
             }
           : undefined
       }
-      transition={{ duration: WIDGET_ANIMATION_DURATION, ease: 'easeOut' }}
+      transition={{
+        duration: WIDGET_ANIMATION_DURATION,
+        ease: DEFAULT_EASING,
+      }}
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -75,7 +80,10 @@ export const ElevationGraph = ({
           className="h-full w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.15, ease: 'easeOut' }}
+          transition={{
+            duration: DEFAULT_FADE_IN_DURATION,
+            ease: DEFAULT_EASING,
+          }}
         >
           <LineChart
             style={{ width: '100%', height: '100%' }}

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion } from 'motion/react';
 
 import type { WidgetBaseProps } from '~/types';
@@ -5,15 +6,19 @@ import {
   ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
-  SPRING_CONFIG,
+  DEFAULT_FADE_IN_DURATION,
+  DEFAULT_EASING,
 } from '~/constants';
 import { spacingPx, cn } from '~/utils';
 import { RoundButton, Icon } from '~/primitives';
+import { useElementSize } from '~/hooks/useElementSize';
 
 import { WidgetContent } from './WidgetContent';
 
-const WIDGET_WIDTH = 130;
-const WIDGET_HEIGHT = 80;
+const SPRING_STIFFNESS = 200;
+const SPRING_DAMPING = 10;
+const SPRING_MASS_EXPAND = 0.2;
+const SPRING_MASS_COLLAPSE = 0.1;
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: React.ReactNode;
@@ -37,16 +42,22 @@ export const WidgetContainer = ({
   mapContainerSize,
   onToggleActive,
 }: WidgetContainerProps) => {
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const { width: widgetWidth, height: widgetHeight } =
+    useElementSize(widgetRef);
+  const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
+
   const activeSpacing = spacingPx(8);
   const baseSpacing = spacingPx(4);
-  const top = baseSpacing + index * (WIDGET_HEIGHT + baseSpacing);
-  const right = mapContainerSize.width - WIDGET_WIDTH - baseSpacing;
+  const top = baseSpacing + index * (widgetHeight + baseSpacing);
+  const right = mapContainerSize.width - widgetWidth - baseSpacing;
   const bottom =
-    mapContainerSize.height + ELEVATION_GRAPH_HEIGHT - top - WIDGET_HEIGHT;
+    mapContainerSize.height + ELEVATION_GRAPH_HEIGHT - top - widgetHeight;
   const isClickable = onToggleActive && !isAnyOpen;
 
   return (
     <motion.div
+      ref={widgetRef}
       animate={
         isActive
           ? {
@@ -61,34 +72,50 @@ export const WidgetContainer = ({
       }
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
-        ...SPRING_CONFIG,
+        type: 'spring',
+        damping: SPRING_DAMPING,
+        stiffness: SPRING_STIFFNESS,
+        mass: isActive ? SPRING_MASS_EXPAND : SPRING_MASS_COLLAPSE,
       }}
       className={cn(
-        'pointer-events-auto absolute flex items-center justify-center rounded-lg bg-white p-4 shadow-md/20',
+        `pointer-events-auto absolute min-w-32 rounded-lg bg-white p-4 shadow-md/20`,
         {
           'hover:bg-gray-100': isClickable,
         },
       )}
-      style={{
-        top,
-        left: baseSpacing,
-        right,
-        bottom,
-        zIndex: isOpen ? 1000 : index,
-        cursor: isClickable ? 'pointer' : 'default',
-      }}
+      style={
+        hasCalculatedSize
+          ? {
+              top,
+              left: baseSpacing,
+              right,
+              bottom,
+              zIndex: isOpen ? 1000 : index,
+              cursor: isClickable ? 'pointer' : 'default',
+            }
+          : { visibility: 'hidden' }
+      }
       onClick={isClickable ? onToggleActive : undefined}
     >
-      <WidgetContent label={label} text={text} children={children} />
+      <WidgetContent
+        label={label}
+        text={text}
+        isActive={isActive}
+        isOpen={isOpen}
+        children={children}
+      />
       {isExpanded && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+          transition={{
+            duration: DEFAULT_FADE_IN_DURATION,
+            ease: DEFAULT_EASING,
+          }}
           className="absolute top-4 right-4"
         >
           <RoundButton onClick={onToggleActive}>
-            <Icon name="close" className="size-7" />
+            <Icon name="close" />
           </RoundButton>
         </motion.div>
       )}

@@ -6,6 +6,7 @@ import { ElevationWidget } from '~/components/ElevationWidget';
 import {
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
+  DEFAULT_EASING,
 } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
 import type { Coordinates, Elevation, WidgetType } from '~/types';
@@ -70,7 +71,10 @@ export const RouteOverlay = ({
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}
-        transition={{ duration: WIDGET_ANIMATION_DURATION, ease: 'easeOut' }}
+        transition={{
+          duration: WIDGET_ANIMATION_DURATION,
+          ease: DEFAULT_EASING,
+        }}
         className="absolute top-0 right-0 left-0 z-100 bg-black/50"
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
