@@ -15,11 +15,6 @@ import { useElementSize } from '~/hooks/useElementSize';
 
 import { WidgetContent } from './WidgetContent';
 
-const SPRING_STIFFNESS = 200;
-const SPRING_DAMPING = 10;
-const SPRING_MASS_EXPAND = 0.2;
-const SPRING_MASS_COLLAPSE = 0.1;
-
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: React.ReactNode;
   label?: string;
@@ -73,9 +68,7 @@ export const WidgetContainer = ({
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
         type: 'spring',
-        damping: SPRING_DAMPING,
-        stiffness: SPRING_STIFFNESS,
-        mass: isActive ? SPRING_MASS_EXPAND : SPRING_MASS_COLLAPSE,
+        bounce: isActive ? 0.2 : 0.1,
       }}
       className={cn(
         `pointer-events-auto absolute min-w-32 rounded-lg bg-white p-4 shadow-md/20`,
