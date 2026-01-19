@@ -18,11 +18,17 @@ export const RouteMap = ({
   bounds,
   coordinates,
   waypoints,
+  hideActiveMarker = false,
   setActiveIndexRef,
 }: RouteMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const hideActiveMarkerRef = useRef(hideActiveMarker);
   const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
+
+  useEffect(() => {
+    hideActiveMarkerRef.current = hideActiveMarker;
+  }, [hideActiveMarker]);
 
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -74,7 +80,7 @@ export const RouteMap = ({
       }
 
       setActiveIndexRef.current = (updatedIndex: number | null) => {
-        if (updatedIndex !== null) {
+        if (updatedIndex !== null && !hideActiveMarkerRef.current) {
           activeMarkerElement.style.display = 'block';
           activeMarker?.setLngLat([
             coordinates[updatedIndex][0],

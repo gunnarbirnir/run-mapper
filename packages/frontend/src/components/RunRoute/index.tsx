@@ -37,6 +37,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
+          hideActiveMarker={activeWidget === 'elevation'}
           setActiveIndexRef={setActiveIndexRef}
         />
       </div>
