@@ -26,17 +26,18 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     ((updatedIndex: number | null) => void) | null
   >(null);
 
-  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const runRouteRef = useRef<HTMLDivElement>(null);
   const [activeWidget, setActiveWidget] = useState<WidgetType | null>(null);
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <div className="flex-1" ref={mapContainerRef}>
+    <div className="flex h-full w-full flex-col" ref={runRouteRef}>
+      <div className="flex-1">
         <RouteMap
           routeId={routeId}
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
+          hideActiveMarker={activeWidget === 'elevation'}
           setActiveIndexRef={setActiveIndexRef}
         />
       </div>
@@ -48,7 +49,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
       <RouteOverlay
         coordinates={coordinates}
         elevations={elevations}
-        mapContainerRef={mapContainerRef}
+        runRouteRef={runRouteRef}
         activeWidget={activeWidget}
         setActiveWidget={setActiveWidget}
       />

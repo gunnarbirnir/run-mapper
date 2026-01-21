@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export const useElementSize = (ref: React.RefObject<HTMLElement>) => {
+export const useElementSize = (
+  ref: React.RefObject<HTMLElement>,
+  dependencies: unknown[] = [],
+) => {
   const [elementSize, setElementSize] = useState<{
     width: number;
     height: number;
@@ -14,9 +17,9 @@ export const useElementSize = (ref: React.RefObject<HTMLElement>) => {
   }, [ref]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     handleResize();
-  }, [handleResize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleResize, ...dependencies]);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);

@@ -10,9 +10,11 @@ import {
 import { motion } from 'motion/react';
 
 import {
-  ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
+  DEFAULT_FADE_IN_DURATION,
+  DEFAULT_EASING,
+  DEFAULT_SPRING_BOUNCE,
 } from '~/constants';
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
@@ -27,6 +29,7 @@ interface ElevationGraphProps {
   isExpanded?: boolean;
 }
 
+const ELEVATION_GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
@@ -67,7 +70,11 @@ export const ElevationGraph = ({
             }
           : undefined
       }
-      transition={{ duration: WIDGET_ANIMATION_DURATION, ease: 'easeOut' }}
+      transition={{
+        duration: WIDGET_ANIMATION_DURATION,
+        type: 'spring',
+        bounce: DEFAULT_SPRING_BOUNCE,
+      }}
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -75,7 +82,10 @@ export const ElevationGraph = ({
           className="h-full w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.15, ease: 'easeOut' }}
+          transition={{
+            duration: DEFAULT_FADE_IN_DURATION,
+            ease: DEFAULT_EASING,
+          }}
         >
           <LineChart
             style={{ width: '100%', height: '100%' }}

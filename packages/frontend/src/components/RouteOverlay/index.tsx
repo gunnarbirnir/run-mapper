@@ -6,6 +6,7 @@ import { ElevationWidget } from '~/components/ElevationWidget';
 import {
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
+  DEFAULT_EASING,
 } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
 import type { Coordinates, Elevation, WidgetType } from '~/types';
@@ -15,7 +16,7 @@ const EXPAND_GRAPH_WIDGETS = ['elevation'];
 interface RouteOverlayProps {
   coordinates: Coordinates[];
   elevations: Elevation[];
-  mapContainerRef: RefObject<HTMLDivElement>;
+  runRouteRef: RefObject<HTMLDivElement>;
   activeWidget: WidgetType | null;
   setActiveWidget: (widget: WidgetType | null) => void;
 }
@@ -23,27 +24,36 @@ interface RouteOverlayProps {
 export const RouteOverlay = ({
   coordinates,
   elevations,
-  mapContainerRef,
+  runRouteRef,
   activeWidget,
   setActiveWidget,
 }: RouteOverlayProps) => {
+  // From start of open animation to end of close animation
   const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
-  const mapContainerSize = useElementSize(mapContainerRef);
+  // When the widget is fully expanded, so does not include animations
+  const [expandedWidget, setExpandedWidget] = useState<WidgetType | null>(null);
+  const runRouteSize = useElementSize(runRouteRef);
 
-  const handleWidgetOpen =
-    (widget: WidgetType) => (updatedIsActive: boolean) => {
-      if (updatedIsActive) {
-        setOpenWidget(widget);
-      }
-      setActiveWidget(updatedIsActive ? widget : null);
-    };
+  const handleWidgetToggleActive = (widget: WidgetType | null) => () => {
+    if (!activeWidget) {
+      setOpenWidget(widget);
+    } else {
+      setExpandedWidget(null);
+    }
+    setActiveWidget(activeWidget ? null : widget);
+  };
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
-      mapContainerSize,
+      runRouteSize,
       showGraphWhileActive: EXPAND_GRAPH_WIDGETS.includes(widget),
       isActive: activeWidget === widget,
-      setIsActive: handleWidgetOpen(widget),
+      isOpen: openWidget === widget,
+      isExpanded: expandedWidget === widget,
+      isAnyActive: activeWidget !== null,
+      isAnyOpen: openWidget !== null,
+      isAnyExpanded: expandedWidget !== null,
+      onToggleActive: handleWidgetToggleActive(widget),
     };
   };
 
@@ -61,7 +71,10 @@ export const RouteOverlay = ({
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}
-        transition={{ duration: WIDGET_ANIMATION_DURATION, ease: 'easeOut' }}
+        transition={{
+          duration: WIDGET_ANIMATION_DURATION,
+          ease: DEFAULT_EASING,
+        }}
         className="absolute top-0 right-0 left-0 z-100 bg-black/50"
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
@@ -69,9 +82,12 @@ export const RouteOverlay = ({
             ? EXPANDED_ELEVATION_GRAPH_HEIGHT
             : 0,
         }}
+        onClick={handleWidgetToggleActive(null)}
         onAnimationComplete={() => {
           if (!activeWidget) {
             setOpenWidget(null);
+          } else {
+            setExpandedWidget(activeWidget);
           }
         }}
       />

@@ -9,6 +9,7 @@ export interface RouteMapProps {
   bounds: Bounds;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
+  hideActiveMarker?: boolean;
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
   >;

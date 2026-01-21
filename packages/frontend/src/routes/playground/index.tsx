@@ -46,7 +46,7 @@ export function Playground() {
       {runId && (
         <iframe
           height="500"
-          width="800"
+          style={{ width: '100%', maxWidth: 800 }}
           src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/runs/${runId}`}
         />
       )}
