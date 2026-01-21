@@ -1,10 +1,19 @@
 import { Trophy } from './Trophy';
 import { Elevation } from './Elevation';
 import { Close } from './Close';
+import { ElevationDown } from './ElevationDown';
+import { DoubleArrow } from './DoubleArrow';
+import { ArrowUpDown } from './ArrowUpDown';
 
 import { cn } from '~/utils';
 
-export type IconName = 'trophy' | 'elevation' | 'close';
+export type IconName =
+  | 'trophy'
+  | 'elevation'
+  | 'elevation-down'
+  | 'close'
+  | 'double-arrow'
+  | 'arrow-up-down';
 
 interface IconProps {
   name: IconName;
@@ -17,8 +26,14 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Trophy />;
     case 'elevation':
       return <Elevation />;
+    case 'elevation-down':
+      return <ElevationDown />;
     case 'close':
       return <Close />;
+    case 'double-arrow':
+      return <DoubleArrow />;
+    case 'arrow-up-down':
+      return <ArrowUpDown />;
     default:
       return null;
   }

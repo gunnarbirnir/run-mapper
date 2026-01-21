@@ -16,7 +16,7 @@ const EXPAND_GRAPH_WIDGETS = ['elevation'];
 interface RouteOverlayProps {
   coordinates: Coordinates[];
   elevations: Elevation[];
-  mapContainerRef: RefObject<HTMLDivElement>;
+  runRouteRef: RefObject<HTMLDivElement>;
   activeWidget: WidgetType | null;
   setActiveWidget: (widget: WidgetType | null) => void;
 }
@@ -24,7 +24,7 @@ interface RouteOverlayProps {
 export const RouteOverlay = ({
   coordinates,
   elevations,
-  mapContainerRef,
+  runRouteRef,
   activeWidget,
   setActiveWidget,
 }: RouteOverlayProps) => {
@@ -32,9 +32,9 @@ export const RouteOverlay = ({
   const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
   // When the widget is fully expanded, so does not include animations
   const [expandedWidget, setExpandedWidget] = useState<WidgetType | null>(null);
-  const mapContainerSize = useElementSize(mapContainerRef);
+  const runRouteSize = useElementSize(runRouteRef);
 
-  const handleWidgetToggleActive = (widget: WidgetType) => () => {
+  const handleWidgetToggleActive = (widget: WidgetType | null) => () => {
     if (!activeWidget) {
       setOpenWidget(widget);
     } else {
@@ -45,7 +45,7 @@ export const RouteOverlay = ({
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
-      mapContainerSize,
+      runRouteSize,
       showGraphWhileActive: EXPAND_GRAPH_WIDGETS.includes(widget),
       isActive: activeWidget === widget,
       isOpen: openWidget === widget,
@@ -82,6 +82,7 @@ export const RouteOverlay = ({
             ? EXPANDED_ELEVATION_GRAPH_HEIGHT
             : 0,
         }}
+        onClick={handleWidgetToggleActive(null)}
         onAnimationComplete={() => {
           if (!activeWidget) {
             setOpenWidget(null);

@@ -10,11 +10,11 @@ import {
 import { motion } from 'motion/react';
 
 import {
-  ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
+  DEFAULT_SPRING_BOUNCE,
 } from '~/constants';
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
@@ -29,6 +29,7 @@ interface ElevationGraphProps {
   isExpanded?: boolean;
 }
 
+const ELEVATION_GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
@@ -71,7 +72,8 @@ export const ElevationGraph = ({
       }
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
-        ease: DEFAULT_EASING,
+        type: 'spring',
+        bounce: DEFAULT_SPRING_BOUNCE,
       }}
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >

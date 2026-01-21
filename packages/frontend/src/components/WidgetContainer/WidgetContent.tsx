@@ -1,56 +1,98 @@
-import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
+import { type ReactNode, forwardRef } from 'react';
 
 import {
-  WIDGET_ANIMATION_DURATION,
-  DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
+  DEFAULT_FADE_IN_DURATION,
+  WIDGET_ANIMATION_DURATION,
 } from '~/constants';
 import { Text } from '~/primitives';
+import { cn, spacingPx } from '~/utils';
 
 interface WidgetContentProps {
-  children?: ReactNode;
   label?: string;
   text?: string;
+  customContent?: ReactNode;
   isActive: boolean;
   isOpen: boolean;
+  isExpanded: boolean;
+  isClickable: boolean;
+  hasScrolled: boolean;
 }
 
-export const WidgetContent = ({
-  children = null,
-  label,
-  text,
-  isActive,
-  isOpen,
-}: WidgetContentProps) => {
-  if (label && text) {
-    return (
-      <div className="flex flex-col gap-1 text-center">
-        <motion.div
-          animate={isActive ? { scale: 1.3, translateY: '50%' } : undefined}
-          transition={{
-            duration: WIDGET_ANIMATION_DURATION,
-            ease: DEFAULT_EASING,
-          }}
-        >
-          <Text className="text-xs whitespace-nowrap text-gray-500 uppercase select-none">
-            {label}
-          </Text>
-        </motion.div>
-        <motion.div
-          animate={isOpen ? { opacity: 0 } : undefined}
-          transition={{
-            duration: DEFAULT_FADE_IN_DURATION,
-            ease: DEFAULT_EASING,
-          }}
-        >
-          <Text className="text-xl font-bold whitespace-nowrap text-black select-none">
-            {text}
-          </Text>
-        </motion.div>
-      </div>
-    );
-  }
+const SCALE_TITLE = 1.3;
 
-  return children;
-};
+export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
+  function WidgetContent(
+    {
+      customContent = null,
+      label,
+      text,
+      isActive,
+      isOpen,
+      isExpanded,
+      isClickable,
+      hasScrolled,
+    },
+    ref,
+  ) {
+    if (label && text) {
+      return (
+        <div
+          ref={ref}
+          className={cn(
+            'absolute top-0 right-0 left-0 z-10 flex flex-col gap-1 overflow-hidden rounded-t-lg bg-white p-4 text-center',
+            {
+              'pb-6': isExpanded,
+              'rounded-b-lg': !isExpanded,
+              'shadow-md': hasScrolled && isExpanded,
+            },
+          )}
+        >
+          <motion.div
+            animate={
+              isActive
+                ? { scale: SCALE_TITLE, translateY: spacingPx(2) }
+                : undefined
+            }
+            transition={{
+              duration: WIDGET_ANIMATION_DURATION,
+              ease: DEFAULT_EASING,
+            }}
+          >
+            <Text
+              className={cn(
+                'text-xs whitespace-nowrap text-gray-500 uppercase',
+                {
+                  'select-none': isClickable,
+                },
+              )}
+            >
+              {label}
+            </Text>
+          </motion.div>
+          {!isOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                duration: DEFAULT_FADE_IN_DURATION,
+                ease: DEFAULT_EASING,
+              }}
+            >
+              <Text
+                className={cn('text-xl font-bold whitespace-nowrap', {
+                  'select-none': isClickable,
+                })}
+              >
+                {text}
+              </Text>
+            </motion.div>
+          )}
+        </div>
+      );
+    }
+
+    return customContent;
+  },
+);

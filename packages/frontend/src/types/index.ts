@@ -38,7 +38,7 @@ export type ApiResponse<T> = {
 
 export interface WidgetBaseProps {
   index: number;
-  mapContainerSize: {
+  runRouteSize: {
     width: number;
     height: number;
   };

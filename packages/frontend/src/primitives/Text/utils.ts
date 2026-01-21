@@ -5,6 +5,6 @@ export const pGetVariantClassName = (variant: PVariant = 'default') => {
     case 'subtitle':
       return 'text-lg';
     default:
-      return 'text-gray-600';
+      return 'text-black';
   }
 };
