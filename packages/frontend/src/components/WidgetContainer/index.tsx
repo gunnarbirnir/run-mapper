@@ -1,19 +1,20 @@
 import { motion } from 'motion/react';
-import { type ReactNode, useRef, useState, useEffect } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import {
+  DEFAULT_EASING,
+  DEFAULT_FADE_IN_DURATION,
+  DEFAULT_SPRING_BOUNCE,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
-  DEFAULT_SPRING_BOUNCE,
 } from '~/constants';
-import type { WidgetBaseProps } from '~/types';
-import { cn, spacingPx } from '~/utils';
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
-import { RoundButton, Icon } from '~/primitives';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { Icon, RoundButton } from '~/primitives';
+import type { WidgetBaseProps } from '~/types';
+import { spacingPx } from '~/utils';
 
-import { WidgetContent } from './WidgetContent';
 import { ModalContent } from './ModalContent';
+import { WidgetContent } from './WidgetContent';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
@@ -86,12 +87,7 @@ export const WidgetContainer = ({
         type: 'spring',
         bounce: isActive ? DEFAULT_SPRING_BOUNCE : COLLAPSE_SPRING_BOUNCE,
       }}
-      className={cn(
-        `pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20`,
-        {
-          'hover:bg-gray-100': isClickable,
-        },
-      )}
+      className="pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
         hasCalculatedSize
           ? {
@@ -132,7 +128,9 @@ export const WidgetContainer = ({
         </motion.div>
       )}
       {isExpanded && (
-        <ModalContent setHasScrolled={setHasScrolled}>{children}</ModalContent>
+        <ModalContent isOpen={isOpen} setHasScrolled={setHasScrolled}>
+          {children}
+        </ModalContent>
       )}
     </motion.div>
   );

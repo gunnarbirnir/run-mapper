@@ -1,18 +1,26 @@
 import { motion } from 'motion/react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 import { spacingPx } from '~/utils';
 
 interface ModalContentProps {
+  isOpen: boolean;
   children: ReactNode;
   setHasScrolled: (hasScrolled: boolean) => void;
 }
 
 export const ModalContent = ({
+  isOpen,
   children,
   setHasScrolled,
 }: ModalContentProps) => {
+  useEffect(() => {
+    if (isOpen) {
+      setHasScrolled(false);
+    }
+  }, [isOpen, setHasScrolled]);
+
   return (
     <motion.div
       initial={{ opacity: 0, translateY: spacingPx(3) }}
