@@ -46,6 +46,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
               'pb-6': isExpanded,
               'rounded-b-lg': !isExpanded,
               'shadow-md': hasScrolled && isExpanded,
+              'hover:bg-gray-100': isClickable,
             },
           )}
         >

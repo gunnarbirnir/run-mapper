@@ -9,7 +9,7 @@ import {
   calculateMaxElevation,
   calculateMinElevation,
 } from './utils';
-import { InformationItem } from './InformationItem';
+import { ListItem } from './ListItem';
 
 export interface ElevationWidgetProps extends WidgetBaseProps {
   elevations: Elevation[];
@@ -40,8 +40,7 @@ export const ElevationWidget = ({
   const formattedElevationLoss = `${Math.round(elevationLoss)} m`;
   const formattedMaxElevation = `${Math.round(maxElevation.value)} m`;
   const formattedMinElevation = `${Math.round(minElevation.value)} m`;
-  const formattedDifference = `${Math.round(elevationGain) - Math.round(elevationLoss)} m`;
-  const formattedNetElevation = `${elevations.length > 1 ? Math.round(elevations[0].value - elevations[elevations.length - 1].value) : 0} m`;
+  const formattedNetElevation = `${Math.round(elevationGain) - Math.round(elevationLoss)} m`;
 
   return (
     <WidgetContainer
@@ -51,44 +50,13 @@ export const ElevationWidget = ({
       showGraphWhileActive
     >
       <div className="flex flex-col items-center">
-        <div className="grid w-full max-w-xl gap-4 px-4 sm:grid-cols-2">
-          <InformationItem
-            label="Elevation gain"
-            value={formattedElevation}
-            icon="elevation"
-          />
-          <InformationItem
-            label="Elevation loss"
-            value={formattedElevationLoss}
-            icon="elevation-down"
-          />
-          <InformationItem
-            label="Difference"
-            value={formattedDifference}
-            icon="arrow-up-down"
-            iconClassName="size-5"
-          />
-          <InformationItem
-            label="Net elevation"
-            value={formattedNetElevation}
-            icon="arrow-up-down"
-            iconClassName="size-5 rotate-90"
-          />
-          <InformationItem
-            label="Max elevation"
-            value={formattedMaxElevation}
-            variant="success"
-            icon="double-arrow"
-            iconClassName="size-5"
-          />
-          <InformationItem
-            label="Min elevation"
-            value={formattedMinElevation}
-            variant="error"
-            icon="double-arrow"
-            iconClassName="size-5 rotate-180"
-          />
-        </div>
+        <ListItem.Container className="w-full max-w-lg px-4">
+          <ListItem label="Elevation gain" value={formattedElevation} />
+          <ListItem label="Elevation loss" value={formattedElevationLoss} />
+          <ListItem label="Net elevation" value={formattedNetElevation} />
+          <ListItem label="Max elevation" value={formattedMaxElevation} />
+          <ListItem label="Min elevation" value={formattedMinElevation} />
+        </ListItem.Container>
       </div>
     </WidgetContainer>
   );
