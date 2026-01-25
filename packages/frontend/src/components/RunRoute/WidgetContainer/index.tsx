@@ -4,7 +4,6 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_EASING,
   DEFAULT_FADE_IN_DURATION,
-  DEFAULT_SPRING_BOUNCE,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
 } from '~/constants';
@@ -26,7 +25,6 @@ interface WidgetContainerProps extends WidgetBaseProps {
 // TODO: trap focus while open
 // TODO: handle keyboard events, like esc
 
-const COLLAPSE_SPRING_BOUNCE = 0.1;
 // Create global constant for breakpoints
 // Import from Tailwind?
 const SMALL_SCREEN_BREAKPOINT = 600;
@@ -84,8 +82,7 @@ export const WidgetContainer = ({
       }
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
-        type: 'spring',
-        bounce: isActive ? DEFAULT_SPRING_BOUNCE : COLLAPSE_SPRING_BOUNCE,
+        ease: DEFAULT_EASING,
       }}
       className="pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
@@ -95,6 +92,7 @@ export const WidgetContainer = ({
               left: baseSpacing,
               right,
               bottom,
+              // 1000 to be above overlay, which is 100
               zIndex: isOpen ? 1000 : index,
               cursor: isClickable ? 'pointer' : undefined,
             }

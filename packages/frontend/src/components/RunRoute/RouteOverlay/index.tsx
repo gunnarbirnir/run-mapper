@@ -1,8 +1,6 @@
 import { motion } from 'motion/react';
 import { RefObject, useState } from 'react';
 
-import { DistanceWidget } from '~/components/DistanceWidget';
-import { ElevationWidget } from '~/components/ElevationWidget';
 import {
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
@@ -11,7 +9,9 @@ import {
 import { useElementSize } from '~/hooks/useElementSize';
 import type { Coordinates, Elevation, WidgetType } from '~/types';
 
-const EXPAND_GRAPH_WIDGETS = ['elevation'];
+import { DistanceWidget } from '../DistanceWidget';
+import { ElevationWidget } from '../ElevationWidget';
+import { OptionButton } from '../OptionButton';
 
 interface RouteOverlayProps {
   coordinates: Coordinates[];
@@ -20,6 +20,8 @@ interface RouteOverlayProps {
   activeWidget: WidgetType | null;
   setActiveWidget: (widget: WidgetType | null) => void;
 }
+
+const EXPAND_GRAPH_WIDGETS = ['elevation'];
 
 export const RouteOverlay = ({
   coordinates,
@@ -68,6 +70,19 @@ export const RouteOverlay = ({
         index={1}
         elevations={elevations}
         {...getWidgetProps('elevation')}
+      />
+      <OptionButton
+        index={0}
+        icon="settings"
+        runRouteSize={runRouteSize}
+        onClick={() => console.log('settings')}
+      />
+      <OptionButton
+        index={1}
+        icon="location"
+        runRouteSize={runRouteSize}
+        disabled
+        onClick={() => console.log('location')}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

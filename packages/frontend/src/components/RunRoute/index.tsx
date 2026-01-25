@@ -2,11 +2,11 @@ import { useMemo, useRef, useState } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
 import { RouteMap } from '~/components/RouteMap';
-import { RouteOverlay } from '~/components/RouteOverlay';
 import type { WidgetType } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
+import { RouteOverlay } from './RouteOverlay';
 
 export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const bounds = useMemo(
@@ -30,7 +30,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const [activeWidget, setActiveWidget] = useState<WidgetType | null>(null);
 
   return (
-    <div className="flex h-full w-full flex-col" ref={runRouteRef}>
+    <div className="isolate flex h-full w-full flex-col" ref={runRouteRef}>
       <div className="flex-1">
         <RouteMap
           routeId={routeId}
