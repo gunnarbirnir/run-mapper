@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
 import { RouteMap } from '~/components/RouteMap';
@@ -22,12 +22,19 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const waypoints = useMemo(() => run.waypoints, [routeId]);
+
+  const runRouteRef = useRef<HTMLDivElement>(null);
   const setActiveIndexRef = useRef<
     ((updatedIndex: number | null) => void) | null
   >(null);
+  const fitInitialBoundsRef = useRef<(() => void) | null>(null);
 
-  const runRouteRef = useRef<HTMLDivElement>(null);
   const [activeWidget, setActiveWidget] = useState<WidgetType | null>(null);
+  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
+
+  const handleFitInitialBounds = useCallback(() => {
+    fitInitialBoundsRef.current?.();
+  }, []);
 
   return (
     <div className="isolate flex h-full w-full flex-col" ref={runRouteRef}>
@@ -39,6 +46,8 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           waypoints={waypoints}
           hideActiveMarker={activeWidget === 'elevation'}
           setActiveIndexRef={setActiveIndexRef}
+          fitInitialBoundsRef={fitInitialBoundsRef}
+          setIsAtInitialBounds={setIsAtInitialBounds}
         />
       </div>
       <ElevationGraph
@@ -51,7 +60,9 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         elevations={elevations}
         runRouteRef={runRouteRef}
         activeWidget={activeWidget}
+        isAtInitialBounds={isAtInitialBounds}
         setActiveWidget={setActiveWidget}
+        onFitInitialBounds={handleFitInitialBounds}
       />
     </div>
   );

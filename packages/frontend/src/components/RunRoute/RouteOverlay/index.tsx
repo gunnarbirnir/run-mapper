@@ -18,7 +18,9 @@ interface RouteOverlayProps {
   elevations: Elevation[];
   runRouteRef: RefObject<HTMLDivElement>;
   activeWidget: WidgetType | null;
+  isAtInitialBounds: boolean;
   setActiveWidget: (widget: WidgetType | null) => void;
+  onFitInitialBounds: () => void;
 }
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
@@ -28,7 +30,9 @@ export const RouteOverlay = ({
   elevations,
   runRouteRef,
   activeWidget,
+  isAtInitialBounds,
   setActiveWidget,
+  onFitInitialBounds,
 }: RouteOverlayProps) => {
   // From start of open animation to end of close animation
   const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
@@ -81,8 +85,8 @@ export const RouteOverlay = ({
         index={1}
         icon="location"
         runRouteSize={runRouteSize}
-        disabled
-        onClick={() => console.log('location')}
+        disabled={isAtInitialBounds}
+        onClick={onFitInitialBounds}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

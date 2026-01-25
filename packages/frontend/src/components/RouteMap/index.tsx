@@ -14,14 +14,19 @@ import {
   getWaypointMarkerElement,
 } from './utils';
 
+const FIT_INITIAL_BOUNDS_DURATION = 200;
+
 export const RouteMap = ({
   bounds,
   coordinates,
   waypoints,
   hideActiveMarker = false,
   setActiveIndexRef,
+  fitInitialBoundsRef,
+  setIsAtInitialBounds,
 }: RouteMapProps) => {
   const mapRef = useRef<Map | null>(null);
+  const hasClickedFitInitialBoundsRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const hideActiveMarkerRef = useRef(hideActiveMarker);
   const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
@@ -90,13 +95,40 @@ export const RouteMap = ({
           activeMarkerElement.style.display = 'none';
         }
       };
+
+      // Initially at initial bounds
+      setIsAtInitialBounds(true);
     });
+
+    mapRef.current.on('moveend', () => {
+      if (hasClickedFitInitialBoundsRef.current) {
+        hasClickedFitInitialBoundsRef.current = false;
+        setIsAtInitialBounds(true);
+      } else {
+        setIsAtInitialBounds(false);
+      }
+    });
+
+    fitInitialBoundsRef.current = () => {
+      mapRef.current?.fitBounds(paddedBounds, {
+        duration: FIT_INITIAL_BOUNDS_DURATION,
+      });
+      hasClickedFitInitialBoundsRef.current = true;
+    };
 
     return () => {
       mapRef.current?.remove();
       setActiveIndexRef.current = null;
+      fitInitialBoundsRef.current = null;
     };
-  }, [coordinates, waypoints, paddedBounds, setActiveIndexRef]);
+  }, [
+    coordinates,
+    waypoints,
+    paddedBounds,
+    setActiveIndexRef,
+    fitInitialBoundsRef,
+    setIsAtInitialBounds,
+  ]);
 
   return <div ref={mapContainerRef} className="h-full w-full" />;
 };
