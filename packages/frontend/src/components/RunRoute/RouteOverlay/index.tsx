@@ -12,6 +12,9 @@ import type { Coordinates, Elevation, WidgetType } from '~/types';
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';
+import { SettingsDrawer } from '../SettingsDrawer';
+
+type DrawerType = 'settings';
 
 interface RouteOverlayProps {
   coordinates: Coordinates[];
@@ -24,6 +27,7 @@ interface RouteOverlayProps {
 }
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
+const SETTINGS_DRAWER_WIDTH = 200;
 
 export const RouteOverlay = ({
   coordinates,
@@ -38,7 +42,12 @@ export const RouteOverlay = ({
   const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
   // When the widget is fully expanded, so does not include animations
   const [expandedWidget, setExpandedWidget] = useState<WidgetType | null>(null);
+  const [activeDrawer, setActiveDrawer] = useState<DrawerType | null>(null);
   const runRouteSize = useElementSize(runRouteRef);
+
+  const isSettingsDrawerOpen = activeDrawer === 'settings';
+  const openDrawerSize =
+    activeDrawer === 'settings' ? SETTINGS_DRAWER_WIDTH : null;
 
   const handleWidgetToggleActive = (widget: WidgetType | null) => () => {
     if (!activeWidget) {
@@ -64,7 +73,7 @@ export const RouteOverlay = ({
   };
 
   return (
-    <div className="pointer-events-none absolute isolate z-100 h-full w-full">
+    <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
       <DistanceWidget
         index={0}
         coordinates={coordinates}
@@ -78,15 +87,25 @@ export const RouteOverlay = ({
       <OptionButton
         index={0}
         icon="settings"
-        runRouteSize={runRouteSize}
-        onClick={() => console.log('settings')}
+        secondaryIcon="close"
+        secondaryIconActive={isSettingsDrawerOpen}
+        openDrawerSize={openDrawerSize}
+        onClick={() =>
+          setActiveDrawer((current) =>
+            current === 'settings' ? null : 'settings',
+          )
+        }
       />
       <OptionButton
         index={1}
         icon="location"
-        runRouteSize={runRouteSize}
         disabled={isAtInitialBounds}
+        openDrawerSize={openDrawerSize}
         onClick={onFitInitialBounds}
+      />
+      <SettingsDrawer
+        isOpen={isSettingsDrawerOpen}
+        width={SETTINGS_DRAWER_WIDTH}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

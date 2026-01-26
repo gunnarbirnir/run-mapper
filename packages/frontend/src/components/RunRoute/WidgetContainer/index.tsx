@@ -68,18 +68,16 @@ export const WidgetContainer = ({
 
   return (
     <motion.div
-      animate={
-        isActive
-          ? {
-              top: activeSpacing,
-              left: activeSpacing,
-              right: activeSpacing,
-              bottom: showGraphWhileActive
-                ? EXPANDED_ELEVATION_GRAPH_HEIGHT + activeSpacing
-                : activeSpacing,
-            }
-          : undefined
-      }
+      animate={{
+        top: isActive ? activeSpacing : top,
+        left: isActive ? activeSpacing : baseSpacing,
+        right: isActive ? activeSpacing : right,
+        bottom: isActive
+          ? showGraphWhileActive
+            ? EXPANDED_ELEVATION_GRAPH_HEIGHT + activeSpacing
+            : activeSpacing
+          : bottom,
+      }}
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
@@ -88,10 +86,6 @@ export const WidgetContainer = ({
       style={
         hasCalculatedSize
           ? {
-              top,
-              left: baseSpacing,
-              right,
-              bottom,
               // 1000 to be above overlay, which is 100
               zIndex: isOpen ? 1000 : index,
               cursor: isClickable ? 'pointer' : undefined,

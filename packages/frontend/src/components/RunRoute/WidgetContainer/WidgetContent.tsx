@@ -54,7 +54,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
             animate={
               isActive
                 ? { scale: SCALE_TITLE, translateY: spacingPx(2) }
-                : undefined
+                : { scale: 1, translateY: 0 }
             }
             transition={{
               duration: WIDGET_ANIMATION_DURATION,
