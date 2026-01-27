@@ -2,11 +2,10 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
 import { RouteMap } from '~/components/RouteMap';
-import type { WidgetType } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
-import { RouteOverlay } from './RouteOverlay';
+import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
 
 export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const bounds = useMemo(
@@ -29,8 +28,10 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   >(null);
   const fitInitialBoundsRef = useRef<(() => void) | null>(null);
 
-  const [activeWidget, setActiveWidget] = useState<WidgetType | null>(null);
+  const routeOverlayState = useRouteOverlayState();
   const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
+  const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
+  const settingsDrawerActive = routeOverlayState.activeDrawer === 'settings';
 
   const handleFitInitialBounds = useCallback(() => {
     fitInitialBoundsRef.current?.();
@@ -44,7 +45,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
-          hideActiveMarker={activeWidget === 'elevation'}
+          hideActiveMarker={elevationWidgetActive || settingsDrawerActive}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
           setIsAtInitialBounds={setIsAtInitialBounds}
@@ -53,15 +54,14 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
       <ElevationGraph
         elevations={elevations}
         setActiveIndexRef={setActiveIndexRef}
-        isExpanded={activeWidget === 'elevation'}
+        isExpanded={elevationWidgetActive}
       />
       <RouteOverlay
+        {...routeOverlayState}
         coordinates={coordinates}
         elevations={elevations}
         runRouteRef={runRouteRef}
-        activeWidget={activeWidget}
         isAtInitialBounds={isAtInitialBounds}
-        setActiveWidget={setActiveWidget}
         onFitInitialBounds={handleFitInitialBounds}
       />
     </div>

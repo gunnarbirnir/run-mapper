@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { RefObject, useState } from 'react';
+import { RefObject } from 'react';
 
 import {
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
@@ -13,50 +13,37 @@ import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';
 import { SettingsDrawer } from '../SettingsDrawer';
+import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
-type DrawerType = 'settings';
-
-interface RouteOverlayProps {
+type RouteOverlayProps = RouteOverlayReducerState & {
   coordinates: Coordinates[];
   elevations: Elevation[];
   runRouteRef: RefObject<HTMLDivElement>;
-  activeWidget: WidgetType | null;
   isAtInitialBounds: boolean;
-  setActiveWidget: (widget: WidgetType | null) => void;
   onFitInitialBounds: () => void;
-}
+};
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
 const SETTINGS_DRAWER_WIDTH = 200;
 
 export const RouteOverlay = ({
+  activeWidget,
+  openWidget,
+  expandedWidget,
+  activeDrawer,
   coordinates,
   elevations,
   runRouteRef,
-  activeWidget,
   isAtInitialBounds,
-  setActiveWidget,
+  toggleActiveWidget,
+  onWidgetAnimationFinished,
+  toggleDrawer,
   onFitInitialBounds,
 }: RouteOverlayProps) => {
-  // From start of open animation to end of close animation
-  const [openWidget, setOpenWidget] = useState<WidgetType | null>(null);
-  // When the widget is fully expanded, so does not include animations
-  const [expandedWidget, setExpandedWidget] = useState<WidgetType | null>(null);
-  const [activeDrawer, setActiveDrawer] = useState<DrawerType | null>(null);
   const runRouteSize = useElementSize(runRouteRef);
-
   const isSettingsDrawerOpen = activeDrawer === 'settings';
   const openDrawerSize =
     activeDrawer === 'settings' ? SETTINGS_DRAWER_WIDTH : null;
-
-  const handleWidgetToggleActive = (widget: WidgetType | null) => () => {
-    if (!activeWidget) {
-      setOpenWidget(widget);
-    } else {
-      setExpandedWidget(null);
-    }
-    setActiveWidget(activeWidget ? null : widget);
-  };
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
@@ -68,7 +55,7 @@ export const RouteOverlay = ({
       isAnyActive: activeWidget !== null,
       isAnyOpen: openWidget !== null,
       isAnyExpanded: expandedWidget !== null,
-      onToggleActive: handleWidgetToggleActive(widget),
+      onToggleActive: () => toggleActiveWidget(widget),
     };
   };
 
@@ -90,11 +77,7 @@ export const RouteOverlay = ({
         secondaryIcon="close"
         secondaryIconActive={isSettingsDrawerOpen}
         openDrawerSize={openDrawerSize}
-        onClick={() =>
-          setActiveDrawer((current) =>
-            current === 'settings' ? null : 'settings',
-          )
-        }
+        onClick={() => toggleDrawer('settings')}
       />
       <OptionButton
         index={1}
@@ -120,15 +103,13 @@ export const RouteOverlay = ({
             ? EXPANDED_ELEVATION_GRAPH_HEIGHT
             : 0,
         }}
-        onClick={handleWidgetToggleActive(null)}
-        onAnimationComplete={() => {
-          if (!activeWidget) {
-            setOpenWidget(null);
-          } else {
-            setExpandedWidget(activeWidget);
-          }
-        }}
+        onClick={
+          activeWidget ? () => toggleActiveWidget(activeWidget) : undefined
+        }
+        onAnimationComplete={onWidgetAnimationFinished}
       />
     </div>
   );
 };
+
+export { useRouteOverlayState };
