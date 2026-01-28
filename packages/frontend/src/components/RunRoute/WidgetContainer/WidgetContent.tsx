@@ -46,7 +46,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
               'pb-6': isExpanded,
               'rounded-b-lg': !isExpanded,
               'shadow-md': hasScrolled && isExpanded,
-              'hover:bg-gray-100': isClickable,
+              'hover:bg-gray-200': isClickable,
             },
           )}
         >
@@ -54,7 +54,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
             animate={
               isActive
                 ? { scale: SCALE_TITLE, translateY: spacingPx(2) }
-                : undefined
+                : { scale: 1, translateY: 0 }
             }
             transition={{
               duration: WIDGET_ANIMATION_DURATION,

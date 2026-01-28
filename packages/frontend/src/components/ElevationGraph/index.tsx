@@ -14,7 +14,6 @@ import {
   WIDGET_ANIMATION_DURATION,
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
-  DEFAULT_SPRING_BOUNCE,
 } from '~/constants';
 import { getCssVariableValue, spacingPx } from '~/utils';
 import type { Elevation } from '~/types';
@@ -72,8 +71,7 @@ export const ElevationGraph = ({
       }
       transition={{
         duration: WIDGET_ANIMATION_DURATION,
-        type: 'spring',
-        bounce: DEFAULT_SPRING_BOUNCE,
+        ease: DEFAULT_EASING,
       }}
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >

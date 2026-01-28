@@ -1,10 +1,12 @@
-import { Trophy } from './Trophy';
-import { Elevation } from './Elevation';
 import { Close } from './Close';
+import { Location } from './Location';
+import { Settings } from './Settings';
+import { Visible } from './Visible';
+import { Hidden } from './Hidden';
 
 import { cn } from '~/utils';
 
-export type IconName = 'trophy' | 'elevation' | 'close';
+export type IconName = 'close' | 'location' | 'settings' | 'visible' | 'hidden';
 
 interface IconProps {
   name: IconName;
@@ -13,12 +15,16 @@ interface IconProps {
 
 const IconContent = ({ name }: { name: IconName }) => {
   switch (name) {
-    case 'trophy':
-      return <Trophy />;
-    case 'elevation':
-      return <Elevation />;
     case 'close':
       return <Close />;
+    case 'location':
+      return <Location />;
+    case 'settings':
+      return <Settings />;
+    case 'visible':
+      return <Visible />;
+    case 'hidden':
+      return <Hidden />;
     default:
       return null;
   }

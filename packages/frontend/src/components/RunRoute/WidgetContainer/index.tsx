@@ -4,7 +4,6 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_EASING,
   DEFAULT_FADE_IN_DURATION,
-  DEFAULT_SPRING_BOUNCE,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
 } from '~/constants';
@@ -26,7 +25,6 @@ interface WidgetContainerProps extends WidgetBaseProps {
 // TODO: trap focus while open
 // TODO: handle keyboard events, like esc
 
-const COLLAPSE_SPRING_BOUNCE = 0.1;
 // Create global constant for breakpoints
 // Import from Tailwind?
 const SMALL_SCREEN_BREAKPOINT = 600;
@@ -50,6 +48,7 @@ export const WidgetContainer = ({
   const [widgetWidth, setWidgetWidth] = useState(0);
   const [widgetHeight, setWidgetHeight] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
   const isSmallScreen = windowWidth < SMALL_SCREEN_BREAKPOINT;
@@ -68,33 +67,37 @@ export const WidgetContainer = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (hasCalculatedSize && !isInitialized) {
+      const initTimeout = setTimeout(() => {
+        setIsInitialized(true);
+      }, WIDGET_ANIMATION_DURATION * 1000);
+
+      return () => clearTimeout(initTimeout);
+    }
+  }, [hasCalculatedSize, isInitialized]);
+
   return (
     <motion.div
-      animate={
-        isActive
-          ? {
-              top: activeSpacing,
-              left: activeSpacing,
-              right: activeSpacing,
-              bottom: showGraphWhileActive
-                ? EXPANDED_ELEVATION_GRAPH_HEIGHT + activeSpacing
-                : activeSpacing,
-            }
-          : undefined
-      }
+      animate={{
+        top: isActive ? activeSpacing : top,
+        left: isActive ? activeSpacing : baseSpacing,
+        right: isActive ? activeSpacing : right,
+        bottom: isActive
+          ? showGraphWhileActive
+            ? EXPANDED_ELEVATION_GRAPH_HEIGHT + activeSpacing
+            : activeSpacing
+          : bottom,
+      }}
       transition={{
-        duration: WIDGET_ANIMATION_DURATION,
-        type: 'spring',
-        bounce: isActive ? DEFAULT_SPRING_BOUNCE : COLLAPSE_SPRING_BOUNCE,
+        duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
+        ease: DEFAULT_EASING,
       }}
       className="pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
-        hasCalculatedSize
+        isInitialized
           ? {
-              top,
-              left: baseSpacing,
-              right,
-              bottom,
+              // 1000 to be above overlay, which is 100
               zIndex: isOpen ? 1000 : index,
               cursor: isClickable ? 'pointer' : undefined,
             }

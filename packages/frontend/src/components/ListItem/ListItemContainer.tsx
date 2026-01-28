@@ -1,12 +1,15 @@
 import type { ReactNode } from 'react';
 import { cn } from '~/utils';
 
-interface ListItemProps {
+interface ListItemContainerProps {
   children: ReactNode;
   className?: string;
 }
 
-export const ListItemContainer = ({ children, className }: ListItemProps) => {
+export const ListItemContainer = ({
+  children,
+  className,
+}: ListItemContainerProps) => {
   return (
     <div
       className={cn(

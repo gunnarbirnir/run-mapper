@@ -13,4 +13,6 @@ export interface RouteMapProps {
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
   >;
+  fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
 }

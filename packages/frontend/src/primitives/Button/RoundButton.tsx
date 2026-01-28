@@ -4,27 +4,31 @@ import { Button as BaseUiButton } from '@base-ui/react/button';
 
 import { cn } from '~/utils';
 
+import { type ButtonColor, getColorClassName } from './utils';
+
 type RoundButtonProps = {
   children: ReactElement;
   className?: string;
   linkTo?: string;
   disabled?: boolean;
+  color?: ButtonColor;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
-  'h-8 w-8 bg-black text-white rounded-full transition-scale duration-100 flex items-center justify-center';
-const ENABLED_CLASS_NAME = 'hover:bg-gray-700 cursor-pointer active:scale-90';
+  'h-8 w-8 rounded-full transition-scale duration-100 flex items-center justify-center';
+const ENABLED_CLASS_NAME = 'cursor-pointer active:scale-90';
 
 export const RoundButton = ({
   children,
   className,
   linkTo,
-  disabled,
+  disabled = false,
+  color = 'black',
   ...props
 }: RoundButtonProps) => {
   const combinedClassName = cn(
     BASE_CLASS_NAME,
-    { 'bg-gray-400': disabled },
+    getColorClassName(color, { disabled }),
     { [ENABLED_CLASS_NAME]: !disabled },
     className,
   );

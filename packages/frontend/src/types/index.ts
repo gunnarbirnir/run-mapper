@@ -53,3 +53,4 @@ export interface WidgetBaseProps {
 }
 
 export type WidgetType = 'distance' | 'elevation';
+export type DrawerType = 'settings';
