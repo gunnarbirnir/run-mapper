@@ -49,6 +49,7 @@ export const OptionButton = ({
           : { visibility: 'hidden' }
       }
       animate={{ right }}
+      initial={false}
       transition={{
         duration: DRAWER_ANIMATION_DURATION,
         ease: DEFAULT_EASING,

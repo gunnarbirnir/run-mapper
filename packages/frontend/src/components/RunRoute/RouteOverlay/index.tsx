@@ -8,6 +8,7 @@ import {
 } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
 import type { Coordinates, Elevation, WidgetType } from '~/types';
+import { areCssVariablesLoaded } from '~/utils';
 
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
@@ -31,6 +32,7 @@ export const RouteOverlay = ({
   openWidget,
   expandedWidget,
   activeDrawer,
+  visibleWidgets,
   coordinates,
   elevations,
   runRouteRef,
@@ -39,6 +41,7 @@ export const RouteOverlay = ({
   onWidgetAnimationFinished,
   toggleDrawer,
   onFitInitialBounds,
+  toggleVisibleWidget,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
   const isSettingsDrawerOpen = activeDrawer === 'settings';
@@ -59,18 +62,26 @@ export const RouteOverlay = ({
     };
   };
 
+  if (!areCssVariablesLoaded()) {
+    return null;
+  }
+
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
-      <DistanceWidget
-        index={0}
-        coordinates={coordinates}
-        {...getWidgetProps('distance')}
-      />
-      <ElevationWidget
-        index={1}
-        elevations={elevations}
-        {...getWidgetProps('elevation')}
-      />
+      {visibleWidgets.distance && (
+        <DistanceWidget
+          index={0}
+          coordinates={coordinates}
+          {...getWidgetProps('distance')}
+        />
+      )}
+      {visibleWidgets.elevation && (
+        <ElevationWidget
+          index={visibleWidgets.distance ? 1 : 0}
+          elevations={elevations}
+          {...getWidgetProps('elevation')}
+        />
+      )}
       <OptionButton
         index={0}
         icon="settings"
@@ -89,6 +100,8 @@ export const RouteOverlay = ({
       <SettingsDrawer
         isOpen={isSettingsDrawerOpen}
         width={SETTINGS_DRAWER_WIDTH}
+        visibleWidgets={visibleWidgets}
+        toggleVisibleWidget={toggleVisibleWidget}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

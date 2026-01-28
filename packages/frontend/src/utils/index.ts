@@ -16,6 +16,10 @@ export const getCssVariableValue = (variable: string) => {
   }
 };
 
+export const areCssVariablesLoaded = () => {
+  return getCssVariableValue('--color-primary-500') !== '';
+};
+
 export const convertRemToPixels = (rem: string) => {
   try {
     const remNum = parseFloat(rem.replace('rem', ''));

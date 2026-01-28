@@ -24,7 +24,7 @@ export const Drawer = ({
         { 'drop-shadow-md/20': isOpen },
         className,
       )}
-      style={{ width }}
+      style={{ width, right: -width }}
       animate={{ right: isOpen ? 0 : -width }}
       transition={{ duration: DRAWER_ANIMATION_DURATION, ease: DEFAULT_EASING }}
     >

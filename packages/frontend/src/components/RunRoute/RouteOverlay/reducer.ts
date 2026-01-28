@@ -9,11 +9,12 @@ export interface RouteOverlayState {
   // When the widget is fully expanded, so does not include animations
   expandedWidget: WidgetType | null;
   activeDrawer: DrawerType | null;
+  visibleWidgets: Record<WidgetType, boolean>;
 }
 
 type RouteOverlayAction =
   | {
-      type: 'TOGGLE_WIDGET';
+      type: 'TOGGLE_ACTIVE_WIDGET';
       payload: WidgetType;
     }
   | {
@@ -22,6 +23,10 @@ type RouteOverlayAction =
   | {
       type: 'TOGGLE_DRAWER';
       payload: DrawerType;
+    }
+  | {
+      type: 'TOGGLE_VISIBLE_WIDGET';
+      payload: WidgetType;
     };
 
 const routeOverlayReducer = (
@@ -29,7 +34,7 @@ const routeOverlayReducer = (
   action: RouteOverlayAction,
 ) => {
   switch (action.type) {
-    case 'TOGGLE_WIDGET':
+    case 'TOGGLE_ACTIVE_WIDGET':
       return {
         ...state,
         ...(state.activeWidget
@@ -74,27 +79,43 @@ const routeOverlayReducer = (
               expandedWidget: null,
             }),
       };
+    case 'TOGGLE_VISIBLE_WIDGET':
+      return {
+        ...state,
+        visibleWidgets: {
+          ...state.visibleWidgets,
+          [action.payload]: !state.visibleWidgets[action.payload],
+        },
+      };
     default:
       return state;
   }
 };
 
+const initialState: RouteOverlayState = {
+  activeWidget: null,
+  openWidget: null,
+  expandedWidget: null,
+  activeDrawer: null,
+  visibleWidgets: {
+    distance: true,
+    elevation: true,
+  },
+};
+
 export const useRouteOverlayState = () => {
-  const [state, dispatch] = useReducer(routeOverlayReducer, {
-    activeWidget: null,
-    openWidget: null,
-    expandedWidget: null,
-    activeDrawer: null,
-  });
+  const [state, dispatch] = useReducer(routeOverlayReducer, initialState);
 
   return {
     ...state,
     toggleActiveWidget: (widget: WidgetType) =>
-      dispatch({ type: 'TOGGLE_WIDGET', payload: widget }),
+      dispatch({ type: 'TOGGLE_ACTIVE_WIDGET', payload: widget }),
     onWidgetAnimationFinished: () =>
       dispatch({ type: 'WIDGET_ANIMATION_FINISHED' }),
     toggleDrawer: (drawer: DrawerType) =>
       dispatch({ type: 'TOGGLE_DRAWER', payload: drawer }),
+    toggleVisibleWidget: (widget: WidgetType) =>
+      dispatch({ type: 'TOGGLE_VISIBLE_WIDGET', payload: widget }),
   };
 };
 

@@ -48,6 +48,7 @@ export const WidgetContainer = ({
   const [widgetWidth, setWidgetWidth] = useState(0);
   const [widgetHeight, setWidgetHeight] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
   const isSmallScreen = windowWidth < SMALL_SCREEN_BREAKPOINT;
@@ -66,6 +67,16 @@ export const WidgetContainer = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (hasCalculatedSize && !isInitialized) {
+      const initTimeout = setTimeout(() => {
+        setIsInitialized(true);
+      }, WIDGET_ANIMATION_DURATION * 1000);
+
+      return () => clearTimeout(initTimeout);
+    }
+  }, [hasCalculatedSize, isInitialized]);
+
   return (
     <motion.div
       animate={{
@@ -79,12 +90,12 @@ export const WidgetContainer = ({
           : bottom,
       }}
       transition={{
-        duration: WIDGET_ANIMATION_DURATION,
+        duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
       className="pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
-        hasCalculatedSize
+        isInitialized
           ? {
               // 1000 to be above overlay, which is 100
               zIndex: isOpen ? 1000 : index,

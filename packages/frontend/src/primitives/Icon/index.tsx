@@ -1,10 +1,12 @@
 import { Close } from './Close';
 import { Location } from './Location';
 import { Settings } from './Settings';
+import { Visible } from './Visible';
+import { Hidden } from './Hidden';
 
 import { cn } from '~/utils';
 
-export type IconName = 'close' | 'location' | 'settings';
+export type IconName = 'close' | 'location' | 'settings' | 'visible' | 'hidden';
 
 interface IconProps {
   name: IconName;
@@ -19,6 +21,10 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Location />;
     case 'settings':
       return <Settings />;
+    case 'visible':
+      return <Visible />;
+    case 'hidden':
+      return <Hidden />;
     default:
       return null;
   }
