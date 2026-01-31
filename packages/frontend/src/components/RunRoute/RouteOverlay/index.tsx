@@ -7,7 +7,7 @@ import {
   DEFAULT_EASING,
 } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
-import type { Coordinates, Elevation, WidgetType } from '~/types';
+import type { Coordinates, Elevation, WidgetType, MapStyle } from '~/types';
 import { areCssVariablesLoaded } from '~/utils';
 
 import { DistanceWidget } from '../DistanceWidget';
@@ -21,7 +21,9 @@ type RouteOverlayProps = RouteOverlayReducerState & {
   elevations: Elevation[];
   runRouteRef: RefObject<HTMLDivElement>;
   isAtInitialBounds: boolean;
+  mapStyle: MapStyle;
   onFitInitialBounds: () => void;
+  onMapStyleChange: (style: MapStyle) => void;
 };
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
@@ -37,10 +39,12 @@ export const RouteOverlay = ({
   elevations,
   runRouteRef,
   isAtInitialBounds,
+  mapStyle,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
   onFitInitialBounds,
+  onMapStyleChange,
   toggleVisibleWidget,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
@@ -101,7 +105,9 @@ export const RouteOverlay = ({
         isOpen={isSettingsDrawerOpen}
         width={SETTINGS_DRAWER_WIDTH}
         visibleWidgets={visibleWidgets}
+        mapStyle={mapStyle}
         toggleVisibleWidget={toggleVisibleWidget}
+        onMapStyleChange={onMapStyleChange}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

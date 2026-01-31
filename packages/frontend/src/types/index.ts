@@ -54,3 +54,5 @@ export interface WidgetBaseProps {
 
 export type WidgetType = 'distance' | 'elevation';
 export type DrawerType = 'settings';
+
+export type MapStyle = 'standard' | 'satellite';

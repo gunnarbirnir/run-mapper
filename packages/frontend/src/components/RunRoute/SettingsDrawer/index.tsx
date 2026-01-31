@@ -1,21 +1,26 @@
-import { Drawer, Text } from '~/primitives';
-import type { WidgetType } from '~/types';
+import { Drawer, Text, Radio } from '~/primitives';
+import type { WidgetType, MapStyle } from '~/types';
 
 import { SectionLabel } from './SectionLabel';
 import { VisibleToggle } from './VisibleToggle';
+import { SettingsRadio } from './SettingsRadio';
 
 interface SettingsDrawerProps {
   isOpen: boolean;
   width: number;
   visibleWidgets: Record<WidgetType, boolean>;
+  mapStyle: MapStyle;
   toggleVisibleWidget: (widget: WidgetType) => void;
+  onMapStyleChange: (style: MapStyle) => void;
 }
 
 export const SettingsDrawer = ({
   isOpen,
   width,
   visibleWidgets,
+  mapStyle,
   toggleVisibleWidget,
+  onMapStyleChange,
 }: SettingsDrawerProps) => {
   return (
     <Drawer
@@ -39,6 +44,14 @@ export const SettingsDrawer = ({
       >
         Elevation
       </VisibleToggle>
+      <SectionLabel>Map style</SectionLabel>
+      <Radio.Group
+        value={mapStyle}
+        onChange={(styleValue) => onMapStyleChange(styleValue as MapStyle)}
+      >
+        <SettingsRadio value="standard">Standard</SettingsRadio>
+        <SettingsRadio value="satellite">Satellite</SettingsRadio>
+      </Radio.Group>
     </Drawer>
   );
 };

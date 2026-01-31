@@ -13,6 +13,8 @@ import {
   getActiveMarkerElement,
   getWaypointMarkerElement,
 } from './utils';
+import { MAP_STYLES } from './constants';
+import { useMapState } from './useMapState';
 
 const FIT_INITIAL_BOUNDS_DURATION = 200;
 
@@ -20,6 +22,7 @@ export const RouteMap = ({
   bounds,
   coordinates,
   waypoints,
+  style,
   hideActiveMarker = false,
   setActiveIndexRef,
   fitInitialBoundsRef,
@@ -40,6 +43,7 @@ export const RouteMap = ({
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       bounds: paddedBounds,
+      style: MAP_STYLES[style],
     });
 
     mapRef.current.on('load', () => {
@@ -124,6 +128,7 @@ export const RouteMap = ({
   }, [
     coordinates,
     waypoints,
+    style,
     paddedBounds,
     setActiveIndexRef,
     fitInitialBoundsRef,
@@ -132,3 +137,5 @@ export const RouteMap = ({
 
   return <div ref={mapContainerRef} className="h-full w-full" />;
 };
+
+export { useMapState };

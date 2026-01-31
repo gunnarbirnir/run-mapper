@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
-import { RouteMap } from '~/components/RouteMap';
+import { RouteMap, useMapState } from '~/components/RouteMap';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -28,8 +28,13 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   >(null);
   const fitInitialBoundsRef = useRef<(() => void) | null>(null);
 
+  const {
+    style: mapStyle,
+    isAtInitialBounds,
+    setStyle: setMapStyle,
+    setIsAtInitialBounds,
+  } = useMapState();
   const routeOverlayState = useRouteOverlayState();
-  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
   const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
   const settingsDrawerActive = routeOverlayState.activeDrawer === 'settings';
 
@@ -45,6 +50,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
+          style={mapStyle}
           hideActiveMarker={elevationWidgetActive || settingsDrawerActive}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
@@ -62,7 +68,9 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         elevations={elevations}
         runRouteRef={runRouteRef}
         isAtInitialBounds={isAtInitialBounds}
+        mapStyle={mapStyle}
         onFitInitialBounds={handleFitInitialBounds}
+        onMapStyleChange={setMapStyle}
       />
     </div>
   );
