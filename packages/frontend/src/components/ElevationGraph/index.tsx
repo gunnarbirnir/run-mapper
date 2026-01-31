@@ -15,7 +15,7 @@ import {
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
 } from '~/constants';
-import { getCssVariableValue, spacingPx } from '~/utils';
+import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
 import type { Elevation } from '~/types';
 
 import { processElevationData, getActiveIndexValue } from './utils';
@@ -50,6 +50,13 @@ export const ElevationGraph = ({
     () => processElevationData(elevations),
     [elevations],
   );
+  const yAxisWidth = useMemo(() => {
+    const maxElevation = calculateMaxElevation(elevations);
+    console.log('maxElevation', maxElevation);
+    const spacingAmount = Math.floor(maxElevation.value).toString().length * 5;
+    console.log('spacingAmount', spacingAmount);
+    return spacingPx(spacingAmount);
+  }, [elevations]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -73,6 +80,7 @@ export const ElevationGraph = ({
         duration: WIDGET_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
       }}
+      className="bg-white pt-1 pb-1 pl-1"
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -90,8 +98,8 @@ export const ElevationGraph = ({
             responsive
             data={elevationData}
             margin={{
-              top: spacingPx(3),
-              right: 1,
+              top: spacingPx(2),
+              right: 0.5,
               bottom: 0,
               left: 0,
             }}
@@ -142,7 +150,7 @@ export const ElevationGraph = ({
             />
             <YAxis
               dataKey="value"
-              width={spacingPx(10)}
+              width={yAxisWidth}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
               tick={{ fill: textColor, fontSize: xsText }}
               tickFormatter={(value) => `${value.toFixed(0)} m`}
