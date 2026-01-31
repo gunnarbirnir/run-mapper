@@ -69,6 +69,7 @@ export const WidgetContainer = ({
 
   useEffect(() => {
     if (hasCalculatedSize && !isInitialized) {
+      // Finish animation before displaying
       const initTimeout = setTimeout(() => {
         setIsInitialized(true);
       }, WIDGET_ANIMATION_DURATION * 1000);
