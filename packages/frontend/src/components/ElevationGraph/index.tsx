@@ -1,6 +1,5 @@
 import { useMemo, type MutableRefObject, useState, useEffect } from 'react';
 import {
-  CartesianGrid,
   Line,
   LineChart,
   ReferenceLine,
@@ -20,13 +19,9 @@ import {
 import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
 import type { Elevation } from '~/types';
 
-import {
-  processElevationData,
-  getActiveIndexValue,
-  generateElevationTicks,
-} from './utils';
+import { processElevationData, getActiveIndexValue } from './utils';
 import { GraphTooltip } from './GraphTooltip';
-import { useDistanceTicks } from './useDistanceTicks';
+import { useGraphTicks } from './useGraphTicks';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
@@ -65,7 +60,10 @@ export const ElevationGraph = ({
   const yAxisWidth = spacingPx(
     Math.floor(maxElevation.value).toString().length * 5,
   );
-  const { ticks: xTicks, lastDistance } = useDistanceTicks({ elevationData });
+  const { xTicks, lastDistance, yTicks } = useGraphTicks({
+    elevationData,
+    isExpanded,
+  });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -128,15 +126,11 @@ export const ElevationGraph = ({
               }
             }}
           >
-            <CartesianGrid
-              stroke={gridColor}
-              vertical={false}
-              horizontalCoordinatesGenerator={generateElevationTicks(
-                isExpanded,
-              )}
-            />
             {[...xTicks, lastDistance].map((tick) => (
-              <ReferenceLine key={tick} x={tick} stroke={gridColor} />
+              <ReferenceLine key={`x-${tick}`} x={tick} stroke={gridColor} />
+            ))}
+            {yTicks.map((tick) => (
+              <ReferenceLine key={`y-${tick}`} y={tick} stroke={gridColor} />
             ))}
             <Tooltip
               active={isTooltipActive === false ? false : undefined}
@@ -173,12 +167,13 @@ export const ElevationGraph = ({
               type="number"
               dataKey="value"
               width={yAxisWidth}
+              domain={[yTicks[0], yTicks[yTicks.length - 1]]}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
+              ticks={yTicks}
               tick={{ fill: textColor, fontSize: xsText }}
               tickFormatter={(value) => `${value.toFixed(0)} m`}
               tickLine={false}
               tickMargin={spacingPx(1)}
-              minTickGap={spacingPx(5)}
             />
           </LineChart>
         </motion.div>
