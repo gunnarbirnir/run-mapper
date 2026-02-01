@@ -15,7 +15,7 @@ const ListItem = ({ label, value, className }: ListItemProps) => {
       className={cn('flex items-center justify-between px-4 py-2', className)}
     >
       <Text className="font-medium">{label}</Text>
-      <Text className="text-gray-700">{value}</Text>
+      <Text className="text-gray-600">{value}</Text>
     </div>
   );
 };

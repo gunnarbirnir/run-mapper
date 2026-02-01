@@ -1,4 +1,8 @@
 import { Elevation } from '~/types';
+import {
+  ELEVATION_GRAPH_HEIGHT,
+  EXPANDED_ELEVATION_GRAPH_HEIGHT,
+} from '~/constants';
 
 export const processElevationData = (elevations: Elevation[]): Elevation[] => {
   const elevationData: Elevation[] = [];
@@ -41,3 +45,35 @@ export const getActiveIndexValue = (
   }
   return typeof activeIndex === 'number' ? activeIndex : parseInt(activeIndex);
 };
+
+const MIN_ELEVATION_TICK_HEIGHT = 50;
+
+export const generateElevationTicks =
+  (isExpanded: boolean) =>
+  ({
+    yAxis,
+  }: {
+    yAxis?: {
+      niceTicks?: readonly (number | string)[];
+      scale?: (value: number | string) => number;
+    };
+  }): number[] => {
+    const { niceTicks = [], scale = () => 0 } = yAxis ?? {};
+    let ticks = niceTicks.filter(Boolean).map(scale);
+    const graphHeight = isExpanded
+      ? EXPANDED_ELEVATION_GRAPH_HEIGHT
+      : ELEVATION_GRAPH_HEIGHT;
+
+    while (
+      ticks.length > 0 &&
+      graphHeight / ticks.length < MIN_ELEVATION_TICK_HEIGHT
+    ) {
+      ticks = ticks
+        // Reverse to always keep the last tick
+        .reverse()
+        .filter((_, index) => index % 2 === 0)
+        .reverse();
+    }
+
+    return ticks;
+  };

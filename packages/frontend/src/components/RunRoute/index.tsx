@@ -36,7 +36,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   } = useMapState();
   const routeOverlayState = useRouteOverlayState();
   const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
-  const settingsDrawerActive = routeOverlayState.activeDrawer === 'settings';
+  const anyDrawerActive = Boolean(routeOverlayState.activeDrawer);
 
   const handleFitInitialBounds = useCallback(() => {
     fitInitialBoundsRef.current?.();
@@ -51,7 +51,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           coordinates={coordinates}
           waypoints={waypoints}
           style={mapStyle}
-          hideActiveMarker={elevationWidgetActive || settingsDrawerActive}
+          hideActiveMarker={elevationWidgetActive || anyDrawerActive}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
           setIsAtInitialBounds={setIsAtInitialBounds}
@@ -61,6 +61,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         elevations={elevations}
         setActiveIndexRef={setActiveIndexRef}
         isExpanded={elevationWidgetActive}
+        isTooltipActive={!anyDrawerActive}
       />
       <RouteOverlay
         {...routeOverlayState}

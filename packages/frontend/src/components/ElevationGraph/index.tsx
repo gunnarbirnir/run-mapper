@@ -3,6 +3,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -10,6 +11,7 @@ import {
 import { motion } from 'motion/react';
 
 import {
+  ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
   DEFAULT_FADE_IN_DURATION,
@@ -18,7 +20,13 @@ import {
 import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
 import type { Elevation } from '~/types';
 
-import { processElevationData, getActiveIndexValue } from './utils';
+import {
+  processElevationData,
+  getActiveIndexValue,
+  generateElevationTicks,
+} from './utils';
+import { GraphTooltip } from './GraphTooltip';
+import { useDistanceTicks } from './useDistanceTicks';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
@@ -26,9 +34,9 @@ interface ElevationGraphProps {
     ((updatedIndex: number | null) => void) | null
   >;
   isExpanded?: boolean;
+  isTooltipActive?: boolean;
 }
 
-const ELEVATION_GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
@@ -37,6 +45,7 @@ export const ElevationGraph = ({
   elevations,
   setActiveIndexRef,
   isExpanded = false,
+  isTooltipActive = true,
 }: ElevationGraphProps) => {
   const [startExpansion, setStartExpansion] = useState(false);
   const lineColor = getCssVariableValue('--color-secondary-500');
@@ -45,18 +54,18 @@ export const ElevationGraph = ({
   const activeLineColor = getCssVariableValue('--color-black');
   const xsText = getCssVariableValue('--text-xs');
 
-  const lastDistance = Math.floor(elevations[elevations.length - 1].distance);
   const elevationData = useMemo(
     () => processElevationData(elevations),
     [elevations],
   );
-  const yAxisWidth = useMemo(() => {
-    const maxElevation = calculateMaxElevation(elevations);
-    console.log('maxElevation', maxElevation);
-    const spacingAmount = Math.floor(maxElevation.value).toString().length * 5;
-    console.log('spacingAmount', spacingAmount);
-    return spacingPx(spacingAmount);
-  }, [elevations]);
+  const maxElevation = useMemo(
+    () => calculateMaxElevation(elevationData),
+    [elevationData],
+  );
+  const yAxisWidth = spacingPx(
+    Math.floor(maxElevation.value).toString().length * 5,
+  );
+  const { ticks: xTicks, lastDistance } = useDistanceTicks({ elevationData });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -94,7 +103,7 @@ export const ElevationGraph = ({
           }}
         >
           <LineChart
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
             responsive
             data={elevationData}
             margin={{
@@ -119,13 +128,25 @@ export const ElevationGraph = ({
               }
             }}
           >
-            <CartesianGrid stroke={gridColor} />
+            <CartesianGrid
+              stroke={gridColor}
+              vertical={false}
+              horizontalCoordinatesGenerator={generateElevationTicks(
+                isExpanded,
+              )}
+            />
+            {[...xTicks, lastDistance].map((tick) => (
+              <ReferenceLine key={tick} x={tick} stroke={gridColor} />
+            ))}
             <Tooltip
+              active={isTooltipActive === false ? false : undefined}
               cursor={{
                 stroke: activeLineColor,
                 strokeWidth: ACTIVE_LINE_WIDTH,
               }}
-              content={<></>}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              content={GraphTooltip as any}
+              isAnimationActive={false}
             />
             <Line
               dataKey="value"
@@ -138,17 +159,18 @@ export const ElevationGraph = ({
               isAnimationActive={false}
             />
             <XAxis
+              type="number"
               dataKey="distance"
               height={spacingPx(5)}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
-              ticks={Array.from({ length: lastDistance }, (_, i) => i + 1)}
+              ticks={xTicks}
               tick={{ fill: textColor, fontSize: xsText }}
               tickFormatter={(value) => `${value.toFixed(1)} km`}
               tickLine={false}
               tickMargin={spacingPx(1)}
-              minTickGap={spacingPx(10)}
             />
             <YAxis
+              type="number"
               dataKey="value"
               width={yAxisWidth}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
