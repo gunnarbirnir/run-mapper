@@ -21,8 +21,10 @@ type RouteOverlayProps = RouteOverlayReducerState & {
   elevations: Elevation[];
   runRouteRef: RefObject<HTMLDivElement>;
   isAtInitialBounds: boolean;
+  showWaypoints: boolean;
   mapStyle: MapStyle;
   onFitInitialBounds: () => void;
+  toggleShowWaypoints: () => void;
   onMapStyleChange: (style: MapStyle) => void;
 };
 
@@ -39,6 +41,7 @@ export const RouteOverlay = ({
   elevations,
   runRouteRef,
   isAtInitialBounds,
+  showWaypoints,
   mapStyle,
   toggleActiveWidget,
   onWidgetAnimationFinished,
@@ -46,6 +49,7 @@ export const RouteOverlay = ({
   onFitInitialBounds,
   onMapStyleChange,
   toggleVisibleWidget,
+  toggleShowWaypoints,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
   const isSettingsDrawerOpen = activeDrawer === 'settings';
@@ -105,8 +109,10 @@ export const RouteOverlay = ({
         isOpen={isSettingsDrawerOpen}
         width={SETTINGS_DRAWER_WIDTH}
         visibleWidgets={visibleWidgets}
+        showWaypoints={showWaypoints}
         mapStyle={mapStyle}
         toggleVisibleWidget={toggleVisibleWidget}
+        toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={onMapStyleChange}
       />
       <motion.div

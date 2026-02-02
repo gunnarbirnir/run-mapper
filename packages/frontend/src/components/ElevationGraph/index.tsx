@@ -141,6 +141,7 @@ export const ElevationGraph = ({
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               content={GraphTooltip as any}
               isAnimationActive={false}
+              position={{ y: spacingPx(3) }}
             />
             <Line
               dataKey="value"

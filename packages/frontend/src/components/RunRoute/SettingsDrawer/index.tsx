@@ -9,8 +9,10 @@ interface SettingsDrawerProps {
   isOpen: boolean;
   width: number;
   visibleWidgets: Record<WidgetType, boolean>;
+  showWaypoints: boolean;
   mapStyle: MapStyle;
   toggleVisibleWidget: (widget: WidgetType) => void;
+  toggleShowWaypoints: () => void;
   onMapStyleChange: (style: MapStyle) => void;
 }
 
@@ -18,8 +20,10 @@ export const SettingsDrawer = ({
   isOpen,
   width,
   visibleWidgets,
+  showWaypoints,
   mapStyle,
   toggleVisibleWidget,
+  toggleShowWaypoints,
   onMapStyleChange,
 }: SettingsDrawerProps) => {
   return (
@@ -43,6 +47,10 @@ export const SettingsDrawer = ({
         onToggle={() => toggleVisibleWidget('elevation')}
       >
         Elevation
+      </VisibleToggle>
+      <SectionLabel>Map</SectionLabel>
+      <VisibleToggle isVisible={showWaypoints} onToggle={toggleShowWaypoints}>
+        Waypoints
       </VisibleToggle>
       <SectionLabel>Map style</SectionLabel>
       <Radio.Group

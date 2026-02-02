@@ -31,8 +31,10 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const {
     style: mapStyle,
     isAtInitialBounds,
+    showWaypoints,
     setStyle: setMapStyle,
     setIsAtInitialBounds,
+    setShowWaypoints,
   } = useMapState();
   const routeOverlayState = useRouteOverlayState();
   const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
@@ -52,6 +54,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           waypoints={waypoints}
           style={mapStyle}
           hideActiveMarker={elevationWidgetActive || anyDrawerActive}
+          showWaypoints={showWaypoints}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
           setIsAtInitialBounds={setIsAtInitialBounds}
@@ -70,8 +73,12 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         runRouteRef={runRouteRef}
         isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
+        showWaypoints={showWaypoints}
         onFitInitialBounds={handleFitInitialBounds}
         onMapStyleChange={setMapStyle}
+        toggleShowWaypoints={() =>
+          setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints)
+        }
       />
     </div>
   );

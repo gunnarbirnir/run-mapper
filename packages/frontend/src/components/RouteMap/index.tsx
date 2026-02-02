@@ -24,6 +24,7 @@ export const RouteMap = ({
   waypoints,
   style,
   hideActiveMarker = false,
+  showWaypoints = true,
   setActiveIndexRef,
   fitInitialBoundsRef,
   setIsAtInitialBounds,
@@ -81,11 +82,13 @@ export const RouteMap = ({
         coordinates[coordinates.length - 1][1],
       ]);
 
-      for (const waypoint of waypoints) {
-        addMarker(getWaypointMarkerElement(waypoint.type), [
-          waypoint.coordinates.lat,
-          waypoint.coordinates.lng,
-        ]);
+      if (showWaypoints) {
+        for (const waypoint of waypoints) {
+          addMarker(getWaypointMarkerElement(waypoint.type), [
+            waypoint.coordinates.lat,
+            waypoint.coordinates.lng,
+          ]);
+        }
       }
 
       setActiveIndexRef.current = (updatedIndex: number | null) => {
@@ -130,6 +133,7 @@ export const RouteMap = ({
     waypoints,
     style,
     paddedBounds,
+    showWaypoints,
     setActiveIndexRef,
     fitInitialBoundsRef,
     setIsAtInitialBounds,

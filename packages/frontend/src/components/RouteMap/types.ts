@@ -11,6 +11,7 @@ export interface RouteMapProps {
   waypoints: Waypoint[];
   style: MapStyle;
   hideActiveMarker?: boolean;
+  showWaypoints?: boolean;
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
   >;
