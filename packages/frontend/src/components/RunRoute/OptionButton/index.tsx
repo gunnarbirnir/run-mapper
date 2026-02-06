@@ -26,6 +26,7 @@ export const OptionButton = ({
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [buttonSize, setButtonSize] = useState<number>(0);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const hasCalculatedSize = buttonSize > 0;
   const baseSpacing = spacingPx(4);
@@ -38,18 +39,28 @@ export const OptionButton = ({
     setButtonSize(buttonRef.current ? buttonRef.current.offsetWidth : 0);
   }, []);
 
+  useEffect(() => {
+    if (hasCalculatedSize && !isInitialized) {
+      // Finish animation before displaying
+      const initTimeout = setTimeout(() => {
+        setIsInitialized(true);
+      }, DRAWER_ANIMATION_DURATION * 1000);
+
+      return () => clearTimeout(initTimeout);
+    }
+  }, [hasCalculatedSize, isInitialized]);
+
   return (
     <motion.div
       ref={buttonRef}
       className="absolute"
       style={
-        hasCalculatedSize
+        isInitialized
           ? // 20 to be above widgets, -index for correct stacking
             { top: baseSpacing, zIndex: 20 - index }
           : { visibility: 'hidden' }
       }
       animate={{ right }}
-      initial={false}
       transition={{
         duration: DRAWER_ANIMATION_DURATION,
         ease: DEFAULT_EASING,

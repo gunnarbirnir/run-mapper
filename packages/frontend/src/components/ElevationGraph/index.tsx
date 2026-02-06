@@ -1,8 +1,8 @@
 import { useMemo, type MutableRefObject, useState, useEffect } from 'react';
 import {
-  CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -10,15 +10,18 @@ import {
 import { motion } from 'motion/react';
 
 import {
+  ELEVATION_GRAPH_HEIGHT,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
 } from '~/constants';
-import { getCssVariableValue, spacingPx } from '~/utils';
+import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
 import type { Elevation } from '~/types';
 
 import { processElevationData, getActiveIndexValue } from './utils';
+import { GraphTooltip } from './GraphTooltip';
+import { useGraphTicks } from './useGraphTicks';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
@@ -26,9 +29,9 @@ interface ElevationGraphProps {
     ((updatedIndex: number | null) => void) | null
   >;
   isExpanded?: boolean;
+  isTooltipActive?: boolean;
 }
 
-const ELEVATION_GRAPH_HEIGHT = 120;
 const STROKE_WIDTH = 3;
 const AXIS_LINE_WIDTH = 1;
 const ACTIVE_LINE_WIDTH = 2;
@@ -37,6 +40,7 @@ export const ElevationGraph = ({
   elevations,
   setActiveIndexRef,
   isExpanded = false,
+  isTooltipActive = true,
 }: ElevationGraphProps) => {
   const [startExpansion, setStartExpansion] = useState(false);
   const lineColor = getCssVariableValue('--color-secondary-500');
@@ -45,11 +49,21 @@ export const ElevationGraph = ({
   const activeLineColor = getCssVariableValue('--color-black');
   const xsText = getCssVariableValue('--text-xs');
 
-  const lastDistance = Math.floor(elevations[elevations.length - 1].distance);
   const elevationData = useMemo(
     () => processElevationData(elevations),
     [elevations],
   );
+  const maxElevation = useMemo(
+    () => calculateMaxElevation(elevationData),
+    [elevationData],
+  );
+  const yAxisWidth = spacingPx(
+    Math.floor(maxElevation.value).toString().length * 5,
+  );
+  const { xTicks, lastDistance, yTicks } = useGraphTicks({
+    elevationData,
+    isExpanded,
+  });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -73,6 +87,7 @@ export const ElevationGraph = ({
         duration: WIDGET_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
       }}
+      className="bg-white pt-1 pb-1 pl-1"
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -86,12 +101,12 @@ export const ElevationGraph = ({
           }}
         >
           <LineChart
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
             responsive
             data={elevationData}
             margin={{
-              top: spacingPx(3),
-              right: 1,
+              top: spacingPx(2),
+              right: 0.5,
               bottom: 0,
               left: 0,
             }}
@@ -111,13 +126,22 @@ export const ElevationGraph = ({
               }
             }}
           >
-            <CartesianGrid stroke={gridColor} />
+            {[...xTicks, lastDistance].map((tick) => (
+              <ReferenceLine key={`x-${tick}`} x={tick} stroke={gridColor} />
+            ))}
+            {yTicks.map((tick) => (
+              <ReferenceLine key={`y-${tick}`} y={tick} stroke={gridColor} />
+            ))}
             <Tooltip
+              active={isTooltipActive === false ? false : undefined}
               cursor={{
                 stroke: activeLineColor,
                 strokeWidth: ACTIVE_LINE_WIDTH,
               }}
-              content={<></>}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              content={GraphTooltip as any}
+              isAnimationActive={false}
+              position={{ y: spacingPx(3) }}
             />
             <Line
               dataKey="value"
@@ -130,25 +154,27 @@ export const ElevationGraph = ({
               isAnimationActive={false}
             />
             <XAxis
+              type="number"
               dataKey="distance"
               height={spacingPx(5)}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
-              ticks={Array.from({ length: lastDistance }, (_, i) => i + 1)}
+              ticks={xTicks}
               tick={{ fill: textColor, fontSize: xsText }}
               tickFormatter={(value) => `${value.toFixed(1)} km`}
               tickLine={false}
               tickMargin={spacingPx(1)}
-              minTickGap={spacingPx(10)}
             />
             <YAxis
+              type="number"
               dataKey="value"
-              width={spacingPx(10)}
+              width={yAxisWidth}
+              domain={[yTicks[0], yTicks[yTicks.length - 1]]}
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
+              ticks={yTicks}
               tick={{ fill: textColor, fontSize: xsText }}
               tickFormatter={(value) => `${value.toFixed(0)} m`}
               tickLine={false}
               tickMargin={spacingPx(1)}
-              minTickGap={spacingPx(5)}
             />
           </LineChart>
         </motion.div>

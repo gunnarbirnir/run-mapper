@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { RefObject } from 'react';
+import { RefObject, useMemo } from 'react';
 
 import {
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
@@ -7,25 +7,43 @@ import {
   DEFAULT_EASING,
 } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
-import type { Coordinates, Elevation, WidgetType } from '~/types';
-import { areCssVariablesLoaded } from '~/utils';
+import type {
+  Coordinates,
+  Elevation,
+  WidgetType,
+  MapStyle,
+  Waypoint,
+} from '~/types';
+import {
+  areCssVariablesLoaded,
+  getStartWaypoint,
+  getEndWaypoint,
+} from '~/utils';
 
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';
 import { SettingsDrawer } from '../SettingsDrawer';
+import { WaypointsDrawer } from '../WaypointsDrawer';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
 type RouteOverlayProps = RouteOverlayReducerState & {
   coordinates: Coordinates[];
   elevations: Elevation[];
+  waypoints: Waypoint[];
   runRouteRef: RefObject<HTMLDivElement>;
   isAtInitialBounds: boolean;
+  showWaypoints: boolean;
+  mapStyle: MapStyle;
   onFitInitialBounds: () => void;
+  toggleShowWaypoints: () => void;
+  onMapStyleChange: (style: MapStyle) => void;
+  onSetActiveWaypoint: (waypoint: Waypoint) => void;
 };
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
 const SETTINGS_DRAWER_WIDTH = 200;
+const WAYPOINTS_DRAWER_WIDTH = 250;
 
 export const RouteOverlay = ({
   activeWidget,
@@ -37,16 +55,34 @@ export const RouteOverlay = ({
   elevations,
   runRouteRef,
   isAtInitialBounds,
+  showWaypoints,
+  mapStyle,
+  waypoints,
+  activeWaypoint,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
   onFitInitialBounds,
+  onMapStyleChange,
   toggleVisibleWidget,
+  toggleShowWaypoints,
+  onSetActiveWaypoint,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
-  const isSettingsDrawerOpen = activeDrawer === 'settings';
   const openDrawerSize =
-    activeDrawer === 'settings' ? SETTINGS_DRAWER_WIDTH : null;
+    activeDrawer === 'settings'
+      ? SETTINGS_DRAWER_WIDTH
+      : activeDrawer === 'waypoints'
+        ? WAYPOINTS_DRAWER_WIDTH
+        : null;
+  const extendedWaypoints = useMemo(
+    () => [
+      getStartWaypoint(coordinates),
+      ...waypoints,
+      getEndWaypoint(coordinates),
+    ],
+    [coordinates, waypoints],
+  );
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
@@ -86,7 +122,7 @@ export const RouteOverlay = ({
         index={0}
         icon="settings"
         secondaryIcon="close"
-        secondaryIconActive={isSettingsDrawerOpen}
+        secondaryIconActive={activeDrawer !== null}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
       />
@@ -98,10 +134,21 @@ export const RouteOverlay = ({
         onClick={onFitInitialBounds}
       />
       <SettingsDrawer
-        isOpen={isSettingsDrawerOpen}
+        isOpen={activeDrawer === 'settings'}
         width={SETTINGS_DRAWER_WIDTH}
         visibleWidgets={visibleWidgets}
+        showWaypoints={showWaypoints}
+        mapStyle={mapStyle}
         toggleVisibleWidget={toggleVisibleWidget}
+        toggleShowWaypoints={toggleShowWaypoints}
+        onMapStyleChange={onMapStyleChange}
+      />
+      <WaypointsDrawer
+        isOpen={activeDrawer === 'waypoints'}
+        width={WAYPOINTS_DRAWER_WIDTH}
+        waypoints={extendedWaypoints}
+        activeWaypoint={activeWaypoint}
+        setActiveWaypoint={onSetActiveWaypoint}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}

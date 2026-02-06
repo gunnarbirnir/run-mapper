@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
-import { RouteMap } from '~/components/RouteMap';
+import { RouteMap, useMapState } from '~/components/RouteMap';
+import type { Waypoint } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -27,14 +28,28 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     ((updatedIndex: number | null) => void) | null
   >(null);
   const fitInitialBoundsRef = useRef<(() => void) | null>(null);
+  const setActiveWaypointRef = useRef<((waypoint: Waypoint) => void) | null>(
+    null,
+  );
 
+  const {
+    style: mapStyle,
+    isAtInitialBounds,
+    showWaypoints,
+    setStyle: setMapStyle,
+    setIsAtInitialBounds,
+    setShowWaypoints,
+  } = useMapState();
   const routeOverlayState = useRouteOverlayState();
-  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
-  const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
-  const settingsDrawerActive = routeOverlayState.activeDrawer === 'settings';
+  const { activeWidget, activeDrawer, setActiveWaypoint } = routeOverlayState;
+  const elevationWidgetActive = activeWidget === 'elevation';
+  const anyDrawerActive = Boolean(activeDrawer);
 
   const handleFitInitialBounds = useCallback(() => {
     fitInitialBoundsRef.current?.();
+  }, []);
+  const handleSetActiveWaypoint = useCallback((waypoint: Waypoint) => {
+    setActiveWaypointRef.current?.(waypoint);
   }, []);
 
   return (
@@ -45,24 +60,37 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
-          hideActiveMarker={elevationWidgetActive || settingsDrawerActive}
+          style={mapStyle}
+          hideActiveMarker={elevationWidgetActive || anyDrawerActive}
+          showWaypoints={showWaypoints}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
+          setActiveWaypointRef={setActiveWaypointRef}
           setIsAtInitialBounds={setIsAtInitialBounds}
+          onWaypointClick={setActiveWaypoint}
         />
       </div>
       <ElevationGraph
         elevations={elevations}
         setActiveIndexRef={setActiveIndexRef}
         isExpanded={elevationWidgetActive}
+        isTooltipActive={!anyDrawerActive}
       />
       <RouteOverlay
         {...routeOverlayState}
         coordinates={coordinates}
         elevations={elevations}
+        waypoints={waypoints}
         runRouteRef={runRouteRef}
         isAtInitialBounds={isAtInitialBounds}
+        mapStyle={mapStyle}
+        showWaypoints={showWaypoints}
         onFitInitialBounds={handleFitInitialBounds}
+        onMapStyleChange={setMapStyle}
+        onSetActiveWaypoint={handleSetActiveWaypoint}
+        toggleShowWaypoints={() =>
+          setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints)
+        }
       />
     </div>
   );
