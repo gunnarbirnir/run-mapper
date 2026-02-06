@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef } from 'react';
 
 import { ElevationGraph } from '~/components/ElevationGraph';
 import { RouteMap, useMapState } from '~/components/RouteMap';
+import type { Waypoint } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -27,6 +28,9 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     ((updatedIndex: number | null) => void) | null
   >(null);
   const fitInitialBoundsRef = useRef<(() => void) | null>(null);
+  const setActiveWaypointRef = useRef<((waypoint: Waypoint) => void) | null>(
+    null,
+  );
 
   const {
     style: mapStyle,
@@ -37,11 +41,15 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     setShowWaypoints,
   } = useMapState();
   const routeOverlayState = useRouteOverlayState();
-  const elevationWidgetActive = routeOverlayState.activeWidget === 'elevation';
-  const anyDrawerActive = Boolean(routeOverlayState.activeDrawer);
+  const { activeWidget, activeDrawer, setActiveWaypoint } = routeOverlayState;
+  const elevationWidgetActive = activeWidget === 'elevation';
+  const anyDrawerActive = Boolean(activeDrawer);
 
   const handleFitInitialBounds = useCallback(() => {
     fitInitialBoundsRef.current?.();
+  }, []);
+  const handleSetActiveWaypoint = useCallback((waypoint: Waypoint) => {
+    setActiveWaypointRef.current?.(waypoint);
   }, []);
 
   return (
@@ -57,7 +65,9 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           showWaypoints={showWaypoints}
           setActiveIndexRef={setActiveIndexRef}
           fitInitialBoundsRef={fitInitialBoundsRef}
+          setActiveWaypointRef={setActiveWaypointRef}
           setIsAtInitialBounds={setIsAtInitialBounds}
+          onWaypointClick={setActiveWaypoint}
         />
       </div>
       <ElevationGraph
@@ -70,12 +80,14 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         {...routeOverlayState}
         coordinates={coordinates}
         elevations={elevations}
+        waypoints={waypoints}
         runRouteRef={runRouteRef}
         isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
         onFitInitialBounds={handleFitInitialBounds}
         onMapStyleChange={setMapStyle}
+        onSetActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={() =>
           setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints)
         }

@@ -1,9 +1,9 @@
-import { getCssVariableValue } from '~/utils';
 import type { Bounds, Coordinates, WayPointType } from '~/types';
+import { getCssVariableValue, cn } from '~/utils';
 
-import type { LineFeature } from './types';
-import { BOUNDS_PADDING, LINE_WIDTH, LINE_OPACITY } from './constants';
+import { BOUNDS_PADDING, LINE_OPACITY, LINE_WIDTH } from './constants';
 import { ENERGY_ICON, ENTERTAINMENT_ICON } from './icons';
+import type { LineFeature } from './types';
 
 export const getPaddedBounds = (bounds: Bounds): Bounds => {
   const [minLng, minLat] = bounds[0];
@@ -47,10 +47,27 @@ export const getRouteLayer = () => {
   } as const;
 };
 
-export const getMarkerElement = (color: string): HTMLElement => {
+export const getMarkerElement = (
+  color: string,
+  hoverColor: string,
+  onClick?: () => void,
+): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6 h-6 rounded-full border-4 border-white shadow-md/30`;
+  marker.className = cn(
+    'w-6 h-6 rounded-full border-4 border-white shadow-md/30',
+    { 'cursor-pointer': onClick },
+  );
   marker.style.backgroundColor = getCssVariableValue(color);
+
+  if (onClick) {
+    marker.addEventListener('click', onClick);
+    marker.addEventListener('mouseenter', () => {
+      marker.style.backgroundColor = getCssVariableValue(hoverColor);
+    });
+    marker.addEventListener('mouseleave', () => {
+      marker.style.backgroundColor = getCssVariableValue(color);
+    });
+  }
 
   return marker;
 };
@@ -63,20 +80,33 @@ export const getActiveMarkerElement = (): HTMLElement => {
   return marker;
 };
 
-const getIcon = (type: WayPointType) => {
+const getIcon = (type: WayPointType): string => {
   switch (type) {
     case 'energy':
       return ENERGY_ICON;
     case 'entertainment':
       return ENTERTAINMENT_ICON;
+    default:
+      return '';
   }
 };
 
-export const getWaypointMarkerElement = (type: WayPointType): HTMLElement => {
+export const getWaypointMarkerElement = (
+  type: WayPointType,
+  onClick: () => void,
+): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6 h-6 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center`;
+  marker.className = `w-6 h-6 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
   marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
   marker.innerHTML = getIcon(type);
+
+  marker.addEventListener('click', onClick);
+  marker.addEventListener('mouseenter', () => {
+    marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
+  });
+  marker.addEventListener('mouseleave', () => {
+    marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
+  });
 
   return marker;
 };

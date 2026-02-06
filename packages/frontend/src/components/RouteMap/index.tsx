@@ -2,7 +2,8 @@ import { useRef, useEffect, useMemo } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import type { Coordinates } from '~/types';
+import type { Coordinates, Waypoint } from '~/types';
+import { getStartWaypoint, getEndWaypoint } from '~/utils';
 
 import type { RouteMapProps } from './types';
 import {
@@ -17,6 +18,8 @@ import { MAP_STYLES } from './constants';
 import { useMapState } from './useMapState';
 
 const FIT_INITIAL_BOUNDS_DURATION = 200;
+const WAYPOINT_ZOOM = 12;
+const FLY_TO_WAYPOINT_DURATION = 100;
 
 export const RouteMap = ({
   bounds,
@@ -27,7 +30,9 @@ export const RouteMap = ({
   showWaypoints = true,
   setActiveIndexRef,
   fitInitialBoundsRef,
+  setActiveWaypointRef,
   setIsAtInitialBounds,
+  onWaypointClick,
 }: RouteMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const hasClickedFitInitialBoundsRef = useRef(false);
@@ -73,21 +78,44 @@ export const RouteMap = ({
       ]);
       activeMarkerElement.style.display = 'none';
 
-      addMarker(getMarkerElement('--color-success-500'), [
-        coordinates[0][0],
-        coordinates[0][1],
-      ]);
-      addMarker(getMarkerElement('--color-error-500'), [
-        coordinates[coordinates.length - 1][0],
-        coordinates[coordinates.length - 1][1],
-      ]);
+      const handleWaypointClick = (waypoint: Waypoint) => {
+        onWaypointClick(waypoint.id);
+        mapRef.current?.flyTo({
+          center: [waypoint.coordinates.lat, waypoint.coordinates.lng],
+          zoom: WAYPOINT_ZOOM,
+          duration: FLY_TO_WAYPOINT_DURATION,
+        });
+      };
+      setActiveWaypointRef.current = handleWaypointClick;
+
+      const startWaypoint = getStartWaypoint(coordinates);
+      addMarker(
+        getMarkerElement(
+          '--color-success-500',
+          '--color-success-600',
+          showWaypoints ? () => handleWaypointClick(startWaypoint) : undefined,
+        ),
+        [startWaypoint.coordinates.lat, startWaypoint.coordinates.lng],
+      );
+
+      const endWaypoint = getEndWaypoint(coordinates);
+      addMarker(
+        getMarkerElement(
+          '--color-error-500',
+          '--color-error-600',
+          showWaypoints ? () => handleWaypointClick(endWaypoint) : undefined,
+        ),
+        [endWaypoint.coordinates.lat, endWaypoint.coordinates.lng],
+      );
 
       if (showWaypoints) {
         for (const waypoint of waypoints) {
-          addMarker(getWaypointMarkerElement(waypoint.type), [
-            waypoint.coordinates.lat,
-            waypoint.coordinates.lng,
-          ]);
+          addMarker(
+            getWaypointMarkerElement(waypoint.type, () =>
+              handleWaypointClick(waypoint),
+            ),
+            [waypoint.coordinates.lat, waypoint.coordinates.lng],
+          );
         }
       }
 
@@ -127,6 +155,7 @@ export const RouteMap = ({
       mapRef.current?.remove();
       setActiveIndexRef.current = null;
       fitInitialBoundsRef.current = null;
+      setActiveWaypointRef.current = null;
     };
   }, [
     coordinates,
@@ -136,7 +165,9 @@ export const RouteMap = ({
     showWaypoints,
     setActiveIndexRef,
     fitInitialBoundsRef,
+    setActiveWaypointRef,
     setIsAtInitialBounds,
+    onWaypointClick,
   ]);
 
   return <div ref={mapContainerRef} className="h-full w-full" />;

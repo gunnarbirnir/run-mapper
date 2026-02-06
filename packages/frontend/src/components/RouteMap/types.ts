@@ -16,5 +16,7 @@ export interface RouteMapProps {
     ((updatedIndex: number | null) => void) | null
   >;
   fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
+  onWaypointClick: (id: string) => void;
 }

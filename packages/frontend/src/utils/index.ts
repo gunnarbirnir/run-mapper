@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import type { Coordinates, Elevation } from '~/types';
+import type { Coordinates, Elevation, Waypoint } from '~/types';
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -134,4 +134,30 @@ export const calculateMinElevation = (
   }
 
   return { value: minValue, index: minIndex };
+};
+
+export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
+  return {
+    id: 'start',
+    name: 'Start',
+    description: 'The start of the route',
+    coordinates: {
+      lat: coordinates[0][0] as number,
+      lng: coordinates[0][1] as number,
+    },
+    type: 'start',
+  };
+};
+
+export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
+  return {
+    id: 'end',
+    name: 'End',
+    description: 'The end of the route',
+    coordinates: {
+      lat: coordinates[coordinates.length - 1][0] as number,
+      lng: coordinates[coordinates.length - 1][1] as number,
+    },
+    type: 'end',
+  };
 };

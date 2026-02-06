@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useReducer, useCallback, useMemo } from 'react';
 
 import type { WidgetType, DrawerType } from '~/types';
 
@@ -10,6 +10,7 @@ export interface RouteOverlayState {
   expandedWidget: WidgetType | null;
   activeDrawer: DrawerType | null;
   visibleWidgets: Record<WidgetType, boolean>;
+  activeWaypoint: string | null;
 }
 
 type RouteOverlayAction =
@@ -27,6 +28,10 @@ type RouteOverlayAction =
   | {
       type: 'TOGGLE_VISIBLE_WIDGET';
       payload: WidgetType;
+    }
+  | {
+      type: 'SET_ACTIVE_WAYPOINT';
+      payload: string | null;
     };
 
 const routeOverlayReducer = (
@@ -87,6 +92,15 @@ const routeOverlayReducer = (
           [action.payload]: !state.visibleWidgets[action.payload],
         },
       };
+    case 'SET_ACTIVE_WAYPOINT':
+      return {
+        ...state,
+        activeWaypoint: action.payload,
+        activeDrawer: 'waypoints' as DrawerType,
+        activeWidget: null,
+        openWidget: null,
+        expandedWidget: null,
+      };
     default:
       return state;
   }
@@ -101,22 +115,62 @@ const initialState: RouteOverlayState = {
     distance: true,
     elevation: true,
   },
+  activeWaypoint: null,
 };
 
 export const useRouteOverlayState = () => {
   const [state, dispatch] = useReducer(routeOverlayReducer, initialState);
 
-  return {
-    ...state,
-    toggleActiveWidget: (widget: WidgetType) =>
-      dispatch({ type: 'TOGGLE_ACTIVE_WIDGET', payload: widget }),
-    onWidgetAnimationFinished: () =>
-      dispatch({ type: 'WIDGET_ANIMATION_FINISHED' }),
-    toggleDrawer: (drawer: DrawerType) =>
-      dispatch({ type: 'TOGGLE_DRAWER', payload: drawer }),
-    toggleVisibleWidget: (widget: WidgetType) =>
-      dispatch({ type: 'TOGGLE_VISIBLE_WIDGET', payload: widget }),
-  };
+  const toggleActiveWidget = useCallback(
+    (widget: WidgetType) => {
+      dispatch({ type: 'TOGGLE_ACTIVE_WIDGET', payload: widget });
+    },
+    [dispatch],
+  );
+
+  const onWidgetAnimationFinished = useCallback(() => {
+    dispatch({ type: 'WIDGET_ANIMATION_FINISHED' });
+  }, [dispatch]);
+
+  const toggleDrawer = useCallback(
+    (drawer: DrawerType) => {
+      dispatch({ type: 'TOGGLE_DRAWER', payload: drawer });
+    },
+    [dispatch],
+  );
+
+  const toggleVisibleWidget = useCallback(
+    (widget: WidgetType) => {
+      dispatch({ type: 'TOGGLE_VISIBLE_WIDGET', payload: widget });
+    },
+    [dispatch],
+  );
+
+  const setActiveWaypoint = useCallback(
+    (waypoint: string | null) => {
+      dispatch({ type: 'SET_ACTIVE_WAYPOINT', payload: waypoint });
+    },
+    [dispatch],
+  );
+
+  return useMemo(
+    () => ({
+      ...state,
+      toggleActiveWidget,
+      onWidgetAnimationFinished,
+      toggleDrawer,
+      toggleVisibleWidget,
+      setActiveWaypoint,
+    }),
+    [
+      state,
+      toggleActiveWidget,
+      onWidgetAnimationFinished,
+      toggleDrawer,
+      toggleVisibleWidget,
+      setActiveWaypoint,
+    ],
+  );
 };
 
 export type RouteOverlayReducerState = ReturnType<typeof useRouteOverlayState>;
