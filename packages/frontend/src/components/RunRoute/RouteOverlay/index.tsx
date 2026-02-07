@@ -14,6 +14,7 @@ import type {
   MapStyle,
   Waypoint,
 } from '~/types';
+import { Icon } from '~/primitives';
 import {
   areCssVariablesLoaded,
   getStartWaypoint,
@@ -120,19 +121,30 @@ export const RouteOverlay = ({
       )}
       <OptionButton
         index={0}
-        icon="settings"
-        secondaryIcon="close"
-        secondaryIconActive={activeDrawer !== null}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
-      />
+      >
+        {activeDrawer === null ? (
+          <Icon name="settings" className="size-7" />
+        ) : (
+          <Icon name="close" className="size-6" />
+        )}
+      </OptionButton>
       <OptionButton
         index={1}
-        icon="location"
+        openDrawerSize={openDrawerSize}
+        onClick={() => onSetActiveWaypoint(getStartWaypoint(coordinates))}
+      >
+        <Icon name="location" className="size-7" />
+      </OptionButton>
+      <OptionButton
+        index={2}
         disabled={isAtInitialBounds}
         openDrawerSize={openDrawerSize}
         onClick={onFitInitialBounds}
-      />
+      >
+        <Icon name="reset" className="size-6" />
+      </OptionButton>
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
         width={SETTINGS_DRAWER_WIDTH}

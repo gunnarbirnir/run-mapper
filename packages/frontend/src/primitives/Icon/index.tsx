@@ -6,6 +6,7 @@ import { Hidden } from './Hidden';
 import { Lightning } from './Lightning';
 import { Star } from './Star';
 import { Arrow } from './Arrow';
+import { Reset } from './Reset';
 
 import { cn } from '~/utils';
 
@@ -17,7 +18,8 @@ export type IconName =
   | 'hidden'
   | 'lightning'
   | 'star'
-  | 'arrow';
+  | 'arrow'
+  | 'reset';
 
 interface IconProps {
   name: IconName;
@@ -42,6 +44,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Star />;
     case 'arrow':
       return <Arrow />;
+    case 'reset':
+      return <Reset />;
     default:
       return null;
   }
