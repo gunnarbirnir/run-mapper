@@ -1,44 +1,62 @@
-import { motion } from 'motion/react';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
-import { spacingPx } from '~/utils';
+import { Icon, RoundButton, Text } from '~/primitives';
+import { cn } from '~/utils';
 
 interface ModalContentProps {
   isOpen: boolean;
   children: ReactNode;
-  setHasScrolled: (hasScrolled: boolean) => void;
+  title?: string;
+  onClose?: () => void;
 }
-
-const FADE_IN_DELAY = 0.1;
 
 export const ModalContent = ({
   isOpen,
   children,
-  setHasScrolled,
+  title = '',
+  onClose,
 }: ModalContentProps) => {
+  const [hasScrolled, setHasScrolled] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasScrolled(false);
     }
-  }, [isOpen, setHasScrolled]);
+  }, [isOpen]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, translateY: spacingPx(3) }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{
-        duration: DEFAULT_FADE_IN_DURATION,
-        ease: DEFAULT_EASING,
-        delay: FADE_IN_DELAY,
-      }}
-      className="absolute inset-0 top-14 z-1 overflow-y-auto pt-2 pb-8"
-      onScroll={(e) => {
-        const target = e.target as HTMLDivElement;
-        setHasScrolled(target.scrollTop > 0);
-      }}
-    >
-      <div>{children}</div>
-    </motion.div>
+    <div className="relative flex h-full flex-col">
+      <div
+        className={cn(
+          'absolute top-0 left-0 flex w-full items-center justify-between rounded-t-lg bg-white p-4 pb-2',
+          {
+            'shadow-md': hasScrolled,
+          },
+        )}
+      >
+        {/* Dummy item for spacing */}
+        <div className="size-8" />
+        <Text element="h2" className="text-lg font-medium">
+          {title}
+        </Text>
+        <RoundButton onClick={onClose}>
+          <Icon name="close" />
+        </RoundButton>
+      </div>
+      {/* Dummy item for spacing */}
+      <div className="p-3">
+        <div className="size-8" />
+      </div>
+      <div
+        className="min-h-0 flex-1 overflow-y-auto pt-2 pb-6"
+        onScroll={(e) => {
+          const target = e.target as HTMLDivElement;
+          setHasScrolled(target.scrollTop > 0);
+        }}
+      >
+        {children}
+      </div>
+    </div>
   );
 };

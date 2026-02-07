@@ -7,6 +7,8 @@ import { Lightning } from './Lightning';
 import { Star } from './Star';
 import { Arrow } from './Arrow';
 import { Reset } from './Reset';
+import { Elevation } from './Elevation';
+import { Trophy } from './Trophy';
 
 import { cn } from '~/utils';
 
@@ -19,7 +21,9 @@ export type IconName =
   | 'lightning'
   | 'star'
   | 'arrow'
-  | 'reset';
+  | 'reset'
+  | 'elevation'
+  | 'trophy';
 
 interface IconProps {
   name: IconName;
@@ -46,6 +50,10 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Arrow />;
     case 'reset':
       return <Reset />;
+    case 'elevation':
+      return <Elevation />;
+    case 'trophy':
+      return <Trophy />;
     default:
       return null;
   }

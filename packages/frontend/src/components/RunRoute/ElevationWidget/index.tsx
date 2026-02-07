@@ -48,6 +48,7 @@ export const ElevationWidget = ({
       label="Elevation"
       text={formattedElevation}
       showGraphWhileActive
+      icon="elevation"
     >
       <div className="flex flex-col items-center">
         <ListItem.Container className="w-full max-w-lg px-4">

@@ -17,6 +17,12 @@ export const DistanceWidget = ({
   const formattedDistance = `${distance.toFixed(1)} km`;
 
   return (
-    <WidgetContainer {...props} label="Distance" text={formattedDistance} />
+    <WidgetContainer
+      {...props}
+      label="Distance"
+      text={formattedDistance}
+      icon="trophy"
+      iconClassName="size-5"
+    />
   );
 };

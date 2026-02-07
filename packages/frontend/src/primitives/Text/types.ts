@@ -1,5 +1,5 @@
 type BaseTextProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 
