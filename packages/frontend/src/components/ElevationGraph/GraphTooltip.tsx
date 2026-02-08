@@ -12,8 +12,12 @@ interface GraphTooltipProps {
 const TooltipText = ({ label, value }: { label: string; value: string }) => {
   return (
     <div className="flex items-center gap-1">
-      <Text className="text-sm font-medium">{label}:</Text>
-      <Text className="font-regular text-sm text-gray-500">{value}</Text>
+      <Text variant="medium" className="text-sm">
+        {label}:
+      </Text>
+      <Text variant="subtle" className="text-sm">
+        {value}
+      </Text>
     </div>
   );
 };

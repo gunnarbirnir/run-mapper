@@ -31,9 +31,9 @@ const ListItem = ({
             />
           </div>
         )}
-        <Text className="font-medium">{label}</Text>
+        <Text variant="medium">{label}</Text>
       </div>
-      <Text className="text-gray-600">{value}</Text>
+      <Text variant="subtle">{value}</Text>
     </div>
   );
 };

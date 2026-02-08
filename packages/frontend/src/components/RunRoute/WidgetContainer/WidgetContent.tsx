@@ -36,17 +36,16 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
           </div>
           <div className="flex h-full flex-col justify-start">
             <Text
-              className={cn(
-                'text-xs whitespace-nowrap text-gray-500 uppercase',
-                {
-                  'select-none': isClickable,
-                },
-              )}
+              variant="label"
+              className={cn('whitespace-nowrap', {
+                'select-none': isClickable,
+              })}
             >
               {label}
             </Text>
             <Text
-              className={cn('font-bold whitespace-nowrap', {
+              variant="bold"
+              className={cn('whitespace-nowrap', {
                 'select-none': isClickable,
               })}
             >

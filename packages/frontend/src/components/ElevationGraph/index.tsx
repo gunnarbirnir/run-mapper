@@ -46,7 +46,7 @@ export const ElevationGraph = ({
   const lineColor = getCssVariableValue('--color-secondary-500');
   const gridColor = getCssVariableValue('--color-gray-300');
   const textColor = getCssVariableValue('--color-gray-500');
-  const activeLineColor = getCssVariableValue('--color-black');
+  const activeLineColor = getCssVariableValue('--color-gray-900');
   const xsText = getCssVariableValue('--text-xs');
 
   const elevationData = useMemo(

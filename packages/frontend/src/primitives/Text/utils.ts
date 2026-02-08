@@ -2,9 +2,15 @@ import type { PVariant } from './types';
 
 export const pGetVariantClassName = (variant: PVariant = 'default') => {
   switch (variant) {
-    case 'subtitle':
-      return 'text-lg';
+    case 'label':
+      return 'text-xs text-gray-500 uppercase';
+    case 'bold':
+      return 'font-bold text-gray-900';
+    case 'medium':
+      return 'font-medium text-gray-900';
+    case 'subtle':
+      return 'text-gray-500';
     default:
-      return 'text-black';
+      return 'text-gray-900';
   }
 };

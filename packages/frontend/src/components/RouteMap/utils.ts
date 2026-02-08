@@ -75,7 +75,7 @@ export const getMarkerElement = (
 export const getActiveMarkerElement = (): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = `w-3 h-3 rounded-full`;
-  marker.style.backgroundColor = getCssVariableValue('--color-black');
+  marker.style.backgroundColor = getCssVariableValue('--color-gray-900');
 
   return marker;
 };
