@@ -112,7 +112,7 @@ export const WidgetContainer = ({
         duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute min-w-35 overflow-hidden rounded-lg bg-white shadow-md/20"
+      className="pointer-events-auto absolute min-w-34 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
         isInitialized
           ? {
@@ -136,7 +136,13 @@ export const WidgetContainer = ({
         />
       )}
       {isExpanded && (
-        <ModalContent isOpen={isOpen} title={label} onClose={onToggleActive}>
+        <ModalContent
+          isOpen={isOpen}
+          title={label}
+          onClose={onToggleActive}
+          icon={icon}
+          iconClassName={iconClassName}
+        >
           {children}
         </ModalContent>
       )}

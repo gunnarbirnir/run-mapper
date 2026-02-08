@@ -22,7 +22,7 @@ export const DistanceWidget = ({
       label="Distance"
       text={formattedDistance}
       icon="trophy"
-      iconClassName="size-5"
+      iconClassName="size-6"
     />
   );
 };

@@ -22,16 +22,16 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
         <div
           ref={ref}
           className={cn(
-            'absolute top-0 left-0 z-10 flex w-full items-center gap-3 overflow-hidden rounded-lg bg-white p-3 pr-4',
+            'absolute top-0 left-0 z-10 flex w-full items-center gap-2 overflow-hidden rounded-lg bg-white p-3 pr-4',
             {
               'hover:bg-gray-100': isClickable,
             },
           )}
         >
-          <div className="bg-primary-200 flex size-8 shrink-0 items-center justify-center rounded-full">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full">
             <Icon
               name={icon}
-              className={cn('size-6 text-gray-800', iconClassName)}
+              className={cn('text-primary-500 size-7', iconClassName)}
             />
           </div>
           <div className="flex h-full flex-col justify-start">
@@ -46,7 +46,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
               {label}
             </Text>
             <Text
-              className={cn('text-l font-bold whitespace-nowrap', {
+              className={cn('font-bold whitespace-nowrap', {
                 'select-none': isClickable,
               })}
             >

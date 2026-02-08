@@ -1,4 +1,4 @@
-import { Text } from '~/primitives';
+import { Text, type IconName, Icon } from '~/primitives';
 import { cn } from '~/utils';
 
 import { ListItemContainer } from './ListItemContainer';
@@ -7,14 +7,32 @@ interface ListItemProps {
   label: string;
   value: string;
   className?: string;
+  icon?: IconName;
+  iconClassName?: string;
 }
 
-const ListItem = ({ label, value, className }: ListItemProps) => {
+const ListItem = ({
+  label,
+  value,
+  className,
+  icon,
+  iconClassName,
+}: ListItemProps) => {
   return (
     <div
-      className={cn('flex items-center justify-between px-4 py-2', className)}
+      className={cn('flex items-center justify-between px-2 py-2', className)}
     >
-      <Text className="font-medium">{label}</Text>
+      <div className="flex items-center gap-2">
+        {icon && (
+          <div className="flex size-6 shrink-0 items-center justify-center">
+            <Icon
+              name={icon}
+              className={cn('size-5 text-gray-500', iconClassName)}
+            />
+          </div>
+        )}
+        <Text className="font-medium">{label}</Text>
+      </div>
       <Text className="text-gray-600">{value}</Text>
     </div>
   );
