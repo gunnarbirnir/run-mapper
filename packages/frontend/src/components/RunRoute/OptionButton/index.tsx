@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
 import { RoundButton } from '~/primitives';
-import { spacingPx } from '~/utils';
+import { spacingPx, cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 
 interface OptionButtonProps {
@@ -10,6 +10,7 @@ interface OptionButtonProps {
   disabled?: boolean;
   openDrawerSize: number | null;
   children: ReactNode;
+  buttonClassName?: string;
   onClick: () => void;
 }
 
@@ -18,6 +19,7 @@ export const OptionButton = ({
   disabled = false,
   openDrawerSize,
   children,
+  buttonClassName,
   onClick,
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -66,7 +68,10 @@ export const OptionButton = ({
         onClick={onClick}
         color="white"
         disabled={disabled}
-        className="pointer-events-auto h-10 w-10 shadow-md/20"
+        className={cn(
+          'pointer-events-auto h-10 w-10 shadow-md/20',
+          buttonClassName,
+        )}
       >
         <motion.div
           initial={{ opacity: 0 }}

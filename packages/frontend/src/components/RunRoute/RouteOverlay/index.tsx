@@ -123,6 +123,7 @@ export const RouteOverlay = ({
         index={0}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
+        buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
       >
         {activeDrawer === null ? (
           <Icon name="settings" className="size-7" />
@@ -132,13 +133,6 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={1}
-        openDrawerSize={openDrawerSize}
-        onClick={() => onSetActiveWaypoint(getStartWaypoint(coordinates))}
-      >
-        <Icon name="location" className="size-7" />
-      </OptionButton>
-      <OptionButton
-        index={2}
         disabled={isAtInitialBounds}
         openDrawerSize={openDrawerSize}
         onClick={onFitInitialBounds}
