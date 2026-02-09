@@ -87,7 +87,7 @@ export const ElevationGraph = ({
         duration: WIDGET_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
       }}
-      className="bg-white pt-1 pb-1 pl-1"
+      className="bg-gray-50 pt-1"
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -106,9 +106,9 @@ export const ElevationGraph = ({
             data={elevationData}
             margin={{
               top: spacingPx(2),
-              right: 0.5,
-              bottom: 0,
-              left: 0,
+              right: spacingPx(2),
+              bottom: spacingPx(2),
+              left: spacingPx(2),
             }}
             onMouseEnter={(event) => {
               setActiveIndexRef.current?.(
