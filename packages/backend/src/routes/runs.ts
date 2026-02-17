@@ -7,6 +7,7 @@ import {
 } from '../config/constants.js';
 import { db } from '../firebase/admin.js';
 import { authMiddleware, type AuthContext } from '../middleware/auth.js';
+import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 
 const runs = new Hono();
 
@@ -181,9 +182,11 @@ runs.post('/', async (c: AuthContext) => {
       );
     }
 
-    const { name, routeData } = body as {
+    const { name, routeData, isPublic, publicSlug } = body as {
       name?: unknown;
       routeData?: RouteDataPayload;
+      isPublic?: unknown;
+      publicSlug?: unknown;
     };
 
     if (name !== undefined && typeof name !== 'string') {
@@ -223,6 +226,84 @@ runs.post('/', async (c: AuthContext) => {
         },
         400,
       );
+    }
+
+    if (isPublic !== undefined && typeof isPublic !== 'boolean') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'isPublic must be a boolean',
+        },
+        400,
+      );
+    }
+
+    if (publicSlug !== undefined && typeof publicSlug !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug must be a string',
+        },
+        400,
+      );
+    }
+
+    const normalizedPublicSlug =
+      typeof publicSlug === 'string' ? normalizePublicSlug(publicSlug) : undefined;
+    const normalizedIsPublic = isPublic === true;
+
+    if (normalizedIsPublic && !normalizedPublicSlug) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug is required when isPublic is true',
+        },
+        400,
+      );
+    }
+
+    if (!normalizedIsPublic && normalizedPublicSlug) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug can only be provided when isPublic is true',
+        },
+        400,
+      );
+    }
+
+    if (normalizedPublicSlug && !isValidPublicSlug(normalizedPublicSlug)) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message:
+            'publicSlug must contain only lowercase letters, numbers, or hyphens and be 3-64 characters long',
+        },
+        400,
+      );
+    }
+
+    if (normalizedPublicSlug) {
+      const existingSlugSnapshot = await db
+        .collection('runs')
+        .where('publicSlug', '==', normalizedPublicSlug)
+        .limit(1)
+        .get();
+      if (!existingSlugSnapshot.empty) {
+        return c.json(
+          {
+            success: false,
+            error: 'Slug already exists',
+            message: 'publicSlug is already in use',
+          },
+          409,
+        );
+      }
     }
 
     if (routeData?.coordinates && !Array.isArray(routeData.coordinates)) {
@@ -346,6 +427,10 @@ runs.post('/', async (c: AuthContext) => {
       userId: c.user?.uid,
       name: normalizedName,
       createdAt: new Date().toISOString(),
+      isPublic: normalizedIsPublic,
+      ...(normalizedIsPublic && normalizedPublicSlug
+        ? { publicSlug: normalizedPublicSlug }
+        : {}),
       ...normalizedRouteData,
     };
 
@@ -364,6 +449,216 @@ runs.post('/', async (c: AuthContext) => {
       {
         success: false,
         error: 'Failed to create run',
+        message: 'An unexpected error occurred',
+      },
+      500,
+    );
+  }
+});
+
+runs.put('/:id', async (c: AuthContext) => {
+  try {
+    const runId = c.req.param('id');
+    const runRef = db.collection('runs').doc(runId);
+    const runDoc = await runRef.get();
+
+    if (!runDoc.exists) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    const runData = runDoc.data();
+    if (!runData || runData.userId !== c.user?.uid) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    const body = await c.req.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'Request body must be a JSON object',
+        },
+        400,
+      );
+    }
+
+    const { isPublic, publicSlug } = body as {
+      isPublic?: unknown;
+      publicSlug?: unknown;
+    };
+
+    if (isPublic !== undefined && typeof isPublic !== 'boolean') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'isPublic must be a boolean',
+        },
+        400,
+      );
+    }
+
+    if (publicSlug !== undefined && typeof publicSlug !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug must be a string',
+        },
+        400,
+      );
+    }
+
+    const normalizedIsPublic =
+      typeof isPublic === 'boolean' ? isPublic : runData.isPublic === true;
+    const normalizedPublicSlug =
+      typeof publicSlug === 'string'
+        ? normalizePublicSlug(publicSlug)
+        : typeof runData.publicSlug === 'string'
+          ? normalizePublicSlug(runData.publicSlug)
+          : undefined;
+
+    if (normalizedIsPublic && !normalizedPublicSlug) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug is required when isPublic is true',
+        },
+        400,
+      );
+    }
+
+    if (!normalizedIsPublic && typeof publicSlug === 'string') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'publicSlug can only be provided when isPublic is true',
+        },
+        400,
+      );
+    }
+
+    if (normalizedPublicSlug && !isValidPublicSlug(normalizedPublicSlug)) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message:
+            'publicSlug must contain only lowercase letters, numbers, or hyphens and be 3-64 characters long',
+        },
+        400,
+      );
+    }
+
+    if (normalizedIsPublic && normalizedPublicSlug) {
+      const existingSlugSnapshot = await db
+        .collection('runs')
+        .where('publicSlug', '==', normalizedPublicSlug)
+        .limit(1)
+        .get();
+
+      const existingDoc = existingSlugSnapshot.docs[0];
+      if (existingDoc && existingDoc.id !== runId) {
+        return c.json(
+          {
+            success: false,
+            error: 'Slug already exists',
+            message: 'publicSlug is already in use',
+          },
+          409,
+        );
+      }
+    }
+
+    const updatePayload: Record<string, unknown> = {
+      isPublic: normalizedIsPublic,
+    };
+
+    if (normalizedIsPublic && normalizedPublicSlug) {
+      updatePayload.publicSlug = normalizedPublicSlug;
+    } else {
+      updatePayload.publicSlug = null;
+    }
+
+    await runRef.update(updatePayload);
+
+    const updatedRunDoc = await runRef.get();
+    return c.json({
+      success: true,
+      data: {
+        id: updatedRunDoc.id,
+        ...updatedRunDoc.data(),
+      },
+    });
+  } catch (error) {
+    console.error('Error updating run:', error);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to update run',
+        message: 'An unexpected error occurred',
+      },
+      500,
+    );
+  }
+});
+
+runs.delete('/:id', async (c: AuthContext) => {
+  try {
+    const runId = c.req.param('id');
+    const runRef = db.collection('runs').doc(runId);
+    const runDoc = await runRef.get();
+
+    if (!runDoc.exists) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    const runData = runDoc.data();
+    if (!runData || runData.userId !== c.user?.uid) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    await runRef.delete();
+
+    return c.json({
+      success: true,
+      data: {
+        id: runId,
+      },
+    });
+  } catch (error) {
+    console.error('Error deleting run:', error);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to delete run',
         message: 'An unexpected error occurred',
       },
       500,

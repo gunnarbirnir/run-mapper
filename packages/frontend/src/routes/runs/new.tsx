@@ -6,6 +6,8 @@ import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { Text, Button, Form } from '~/primitives';
 import type { ApiResponse } from '~/types';
 
+const MAX_ROUTE_PAYLOAD_BYTES = 1024 * 1024;
+
 export const Route = createFileRoute('/runs/new')({
   component: NewRun,
 });
@@ -32,6 +34,17 @@ function NewRun() {
           setLoading(false);
           return;
         }
+
+        const payloadSize = new TextEncoder().encode(
+          JSON.stringify(parsedPathData),
+        ).length;
+        if (payloadSize > MAX_ROUTE_PAYLOAD_BYTES) {
+          setError(
+            `Route data is too large (${Math.ceil(payloadSize / 1024)} KB). Max allowed is ${Math.floor(MAX_ROUTE_PAYLOAD_BYTES / 1024)} KB.`,
+          );
+          setLoading(false);
+          return;
+        }
       }
 
       const response = await api.post<ApiResponse<{ id: string }>>('/runs', {
@@ -43,7 +56,13 @@ function NewRun() {
         navigate({ to: `/runs/${response.data.id}` });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create run');
+      if (err instanceof Error && err.message.includes('Payload exceeds')) {
+        setError(
+          `Route data is too large. Max allowed is ${Math.floor(MAX_ROUTE_PAYLOAD_BYTES / 1024)} KB.`,
+        );
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to create run');
+      }
     } finally {
       setLoading(false);
     }

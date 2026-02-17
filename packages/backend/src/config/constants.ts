@@ -17,6 +17,7 @@ export const DEFAULT_ALLOWED_ORIGINS = [
 ] as const;
 
 export const MAX_RUN_NAME_LENGTH = 120;
-export const MAX_ROUTE_DATA_BYTES = 256 * 1024;
+export const MAX_ROUTE_DATA_BYTES = 1024 * 1024;
 export const MAX_ROUTE_COORDINATES = 5000;
 export const MAX_ROUTE_WAYPOINTS = 100;
+export const PUBLIC_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
