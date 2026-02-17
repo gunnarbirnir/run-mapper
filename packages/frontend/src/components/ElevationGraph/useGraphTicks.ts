@@ -25,11 +25,17 @@ export const useGraphTicks = ({
   yTicks: number[];
 } => {
   const { width: windowWidth } = useWindowDimensions();
-  const lastDistance = elevationData[elevationData.length - 1].distance;
+  const lastDistance =
+    elevationData.length > 0
+      ? elevationData[elevationData.length - 1].distance
+      : 0;
   const lastKm = Math.floor(lastDistance);
   const maxXTicks = Math.floor(windowWidth / MIN_X_TICK_WIDTH);
   // -1 because n ticks create n-1 sections
-  const xTickStep = Math.ceil(lastKm / Math.max(maxXTicks - 1, 1));
+  const xTickStep = Math.max(
+    1,
+    Math.ceil(lastKm / Math.max(maxXTicks - 1, 1)),
+  );
 
   const xTicks: number[] = [];
   for (let tick = xTickStep; tick <= lastKm; tick += xTickStep) {
@@ -40,11 +46,11 @@ export const useGraphTicks = ({
     ? EXPANDED_ELEVATION_GRAPH_HEIGHT
     : ELEVATION_GRAPH_HEIGHT;
   const maxElevation = useMemo(
-    () => calculateMaxElevation(elevationData),
+    () => calculateMaxElevation(elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }]),
     [elevationData],
   );
   const minElevation = useMemo(
-    () => calculateMinElevation(elevationData),
+    () => calculateMinElevation(elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }]),
     [elevationData],
   );
   const yStepSize = maxElevation.value - minElevation.value > 50 ? 10 : 5;
@@ -72,5 +78,9 @@ export const useGraphTicks = ({
   }
   yTicks.push(yMax);
 
-  return { xTicks, lastDistance, yTicks };
+  return {
+    xTicks,
+    lastDistance,
+    yTicks: yTicks.length >= 2 ? yTicks : [0, 5],
+  };
 };

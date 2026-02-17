@@ -77,11 +77,10 @@ export const RouteOverlay = ({
         ? WAYPOINTS_DRAWER_WIDTH
         : null;
   const extendedWaypoints = useMemo(
-    () => [
-      getStartWaypoint(coordinates),
-      ...waypoints,
-      getEndWaypoint(coordinates),
-    ],
+    () =>
+      coordinates.length > 0
+        ? [getStartWaypoint(coordinates), ...waypoints, getEndWaypoint(coordinates)]
+        : [],
     [coordinates, waypoints],
   );
 

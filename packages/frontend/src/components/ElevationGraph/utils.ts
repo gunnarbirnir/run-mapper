@@ -1,6 +1,10 @@
 import { Elevation } from '~/types';
 
 export const processElevationData = (elevations: Elevation[]): Elevation[] => {
+  if (elevations.length === 0) {
+    return [];
+  }
+
   const elevationData: Elevation[] = [];
   let currentKm = 0;
   let closestIndex = 0;

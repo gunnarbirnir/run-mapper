@@ -59,7 +59,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const matchRoute = useMatchRoute();
   const isPlayground = Boolean(matchRoute({ to: '/playground' }));
   const runParams = matchRoute({ to: '/runs/$runId' });
+  const publicRunParams = matchRoute({ to: '/route/$slug' });
   const isRunDisplay = runParams && runParams.runId !== 'new';
+  const isPublicRunDisplay = Boolean(publicRunParams);
+  const isFullscreenDisplay = Boolean(isRunDisplay || isPublicRunDisplay);
 
   return (
     <html>
@@ -67,10 +70,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <RootBody isRunDisplay={isRunDisplay} isPlayground={isPlayground}>
+        <RootBody
+          isFullscreenDisplay={isFullscreenDisplay}
+          isPlayground={isPlayground}
+        >
           {children}
         </RootBody>
-        {!isRunDisplay && <TanStackRouterDevtools position="bottom-right" />}
+        {!isFullscreenDisplay && (
+          <TanStackRouterDevtools position="bottom-right" />
+        )}
         <Scripts />
       </body>
     </html>
@@ -79,14 +87,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function RootBody({
   children,
-  isRunDisplay,
+  isFullscreenDisplay,
   isPlayground,
 }: {
   children: React.ReactNode;
-  isRunDisplay: boolean;
+  isFullscreenDisplay: boolean;
   isPlayground: boolean;
 }) {
-  if (isRunDisplay) {
+  if (isFullscreenDisplay) {
     return <main className="h-screen w-screen">{children}</main>;
   }
 

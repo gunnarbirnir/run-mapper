@@ -57,6 +57,13 @@ export const RouteMap = ({
         return;
       }
 
+      if (coordinates.length === 0) {
+        setActiveIndexRef.current = () => {};
+        setActiveWaypointRef.current = () => {};
+        setIsAtInitialBounds(true);
+        return;
+      }
+
       mapRef.current.addSource('route-source', {
         type: 'geojson',
         data: getLineFeature(coordinates),

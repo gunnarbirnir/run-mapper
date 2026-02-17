@@ -26,6 +26,16 @@ export interface Run {
   userId: string;
   createdAt: string;
   name: string;
+  isPublic?: boolean;
+  publicSlug?: string | null;
+  boundingBox: [BaseCoordinate, BaseCoordinate];
+  coordinates: RunCoordinates[];
+  waypoints: Waypoint[];
+}
+
+export interface PublicRun {
+  id: string;
+  name: string;
   boundingBox: [BaseCoordinate, BaseCoordinate];
   coordinates: RunCoordinates[];
   waypoints: Waypoint[];
