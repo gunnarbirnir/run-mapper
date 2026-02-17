@@ -1,6 +1,12 @@
 import { Hono } from 'hono';
-import { db } from '../firebase/admin';
-import { authMiddleware, type AuthContext } from '../middleware/auth';
+import {
+  MAX_ROUTE_COORDINATES,
+  MAX_ROUTE_DATA_BYTES,
+  MAX_ROUTE_WAYPOINTS,
+  MAX_RUN_NAME_LENGTH,
+} from '../config/constants.js';
+import { db } from '../firebase/admin.js';
+import { authMiddleware, type AuthContext } from '../middleware/auth.js';
 
 const runs = new Hono();
 
@@ -42,6 +48,27 @@ const normalizeRouteData = (routeData?: RouteDataPayload) => {
   };
 };
 
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
+  if (!value || typeof value !== 'object') return false;
+  const coordinate = value as BaseCoordinate;
+  return (
+    isFiniteNumber(coordinate.lat) &&
+    isFiniteNumber(coordinate.lng) &&
+    coordinate.lat >= -90 &&
+    coordinate.lat <= 90 &&
+    coordinate.lng >= -180 &&
+    coordinate.lng <= 180
+  );
+};
+
+const isValidRunCoordinate = (value: unknown): value is RunCoordinate => {
+  if (!isValidCoordinate(value)) return false;
+  return isFiniteNumber((value as RunCoordinate).elevation);
+};
+
 runs.get('/', async (c: AuthContext) => {
   try {
     const runsSnapshot = await db
@@ -64,7 +91,7 @@ runs.get('/', async (c: AuthContext) => {
       {
         success: false,
         error: 'Failed to fetch runs',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred',
       },
       500,
     );
@@ -121,7 +148,7 @@ runs.get('/:id', async (c: AuthContext) => {
       {
         success: false,
         error: 'Failed to fetch run',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred',
       },
       500,
     );
@@ -130,6 +157,18 @@ runs.get('/:id', async (c: AuthContext) => {
 
 runs.post('/', async (c: AuthContext) => {
   try {
+    const contentLength = c.req.header('content-length');
+    if (contentLength && Number(contentLength) > MAX_ROUTE_DATA_BYTES) {
+      return c.json(
+        {
+          success: false,
+          error: 'Payload too large',
+          message: `Payload exceeds ${MAX_ROUTE_DATA_BYTES} bytes`,
+        },
+        413,
+      );
+    }
+
     const body = await c.req.json().catch(() => null);
     if (!body || typeof body !== 'object') {
       return c.json(
@@ -159,6 +198,20 @@ runs.post('/', async (c: AuthContext) => {
     }
 
     if (
+      typeof name === 'string' &&
+      name.trim().length > MAX_RUN_NAME_LENGTH
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: `name must be at most ${MAX_RUN_NAME_LENGTH} characters`,
+        },
+        400,
+      );
+    }
+
+    if (
       routeData !== undefined &&
       (typeof routeData !== 'object' || routeData === null)
     ) {
@@ -172,7 +225,121 @@ runs.post('/', async (c: AuthContext) => {
       );
     }
 
+    if (routeData?.coordinates && !Array.isArray(routeData.coordinates)) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'routeData.coordinates must be an array',
+        },
+        400,
+      );
+    }
+
+    if (routeData?.waypoints && !Array.isArray(routeData.waypoints)) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'routeData.waypoints must be an array',
+        },
+        400,
+      );
+    }
+
+    if (
+      routeData?.coordinates &&
+      routeData.coordinates.length > MAX_ROUTE_COORDINATES
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: `routeData.coordinates must contain at most ${MAX_ROUTE_COORDINATES} points`,
+        },
+        400,
+      );
+    }
+
+    if (routeData?.waypoints && routeData.waypoints.length > MAX_ROUTE_WAYPOINTS) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: `routeData.waypoints must contain at most ${MAX_ROUTE_WAYPOINTS} entries`,
+        },
+        400,
+      );
+    }
+
+    if (
+      routeData?.boundingBox &&
+      (!Array.isArray(routeData.boundingBox) ||
+        routeData.boundingBox.length !== 2 ||
+        !isValidCoordinate(routeData.boundingBox[0]) ||
+        !isValidCoordinate(routeData.boundingBox[1]))
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message:
+            'routeData.boundingBox must contain exactly two valid coordinates',
+        },
+        400,
+      );
+    }
+
+    if (
+      routeData?.coordinates &&
+      !routeData.coordinates.every((coordinate) => isValidRunCoordinate(coordinate))
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'routeData.coordinates contains invalid coordinates',
+        },
+        400,
+      );
+    }
+
+    if (
+      routeData?.waypoints &&
+      !routeData.waypoints.every(
+        (waypoint) =>
+          waypoint &&
+          typeof waypoint.id === 'string' &&
+          typeof waypoint.name === 'string' &&
+          isValidCoordinate(waypoint.coordinates),
+      )
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'routeData.waypoints contains invalid entries',
+        },
+        400,
+      );
+    }
+
     const normalizedRouteData = normalizeRouteData(routeData);
+    const payloadBytes = Buffer.byteLength(
+      JSON.stringify(normalizedRouteData),
+      'utf8',
+    );
+    if (payloadBytes > MAX_ROUTE_DATA_BYTES) {
+      return c.json(
+        {
+          success: false,
+          error: 'Payload too large',
+          message: `routeData exceeds ${MAX_ROUTE_DATA_BYTES} bytes`,
+        },
+        413,
+      );
+    }
+
     const normalizedName =
       typeof name === 'string' && name.trim() ? name.trim() : 'Untitled Run';
     const runToCreate = {
@@ -197,7 +364,7 @@ runs.post('/', async (c: AuthContext) => {
       {
         success: false,
         error: 'Failed to create run',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred',
       },
       500,
     );

@@ -55,6 +55,29 @@ yarn start
 - Exported HTTPS function: `api`
 - Set `CORS_ALLOWED_ORIGINS` to your Vercel app domains (comma-separated)
 - On Google Cloud, Firebase Admin uses default runtime credentials automatically
+- Cost-focused defaults:
+  - `maxInstances=1`
+  - `minInstances=0`
+  - `memory=128MiB`
+  - `timeoutSeconds=15`
+
+Deploy from repo root:
+
+```bash
+firebase deploy --only functions:api
+```
+
+Set runtime env vars for Functions 2nd gen in `packages/backend/.env.run-mapper-3780b`:
+
+```bash
+CORS_ALLOWED_ORIGINS=https://run-mapper-ten.vercel.app,https://runmapper.fit
+FUNCTION_MAX_INSTANCES=1
+FUNCTION_TIMEOUT_SECONDS=15
+# Optional stricter auth (adds extra Firebase auth check per request):
+# AUTH_CHECK_REVOKED=true
+```
+
+Firebase CLI will load that env file during deploy for the `run-mapper-3780b` project.
 
 ## API Endpoints
 

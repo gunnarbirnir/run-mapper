@@ -1,8 +1,10 @@
 import {
   DEFAULT_ALLOWED_ORIGINS,
   DEFAULT_FUNCTION_REGION,
+  DEFAULT_FUNCTION_MAX_INSTANCES,
+  DEFAULT_FUNCTION_TIMEOUT_SECONDS,
   DEFAULT_PORT,
-} from './constants';
+} from './constants.js';
 
 const normalizeOrigin = (origin: string) => origin.trim().replace(/\/$/, '');
 
@@ -33,7 +35,24 @@ export const getFunctionRegion = () =>
   process.env.FUNCTION_REGION || DEFAULT_FUNCTION_REGION;
 
 export const getFunctionMaxInstances = () => {
-  if (!process.env.FUNCTION_MAX_INSTANCES) return undefined;
+  if (!process.env.FUNCTION_MAX_INSTANCES) return DEFAULT_FUNCTION_MAX_INSTANCES;
   const parsedMaxInstances = Number(process.env.FUNCTION_MAX_INSTANCES);
-  return Number.isFinite(parsedMaxInstances) ? parsedMaxInstances : undefined;
+  if (!Number.isFinite(parsedMaxInstances) || parsedMaxInstances < 1) {
+    return DEFAULT_FUNCTION_MAX_INSTANCES;
+  }
+  return Math.floor(parsedMaxInstances);
 };
+
+export const getFunctionTimeoutSeconds = () => {
+  if (!process.env.FUNCTION_TIMEOUT_SECONDS) {
+    return DEFAULT_FUNCTION_TIMEOUT_SECONDS;
+  }
+  const parsedTimeout = Number(process.env.FUNCTION_TIMEOUT_SECONDS);
+  if (!Number.isFinite(parsedTimeout) || parsedTimeout < 1) {
+    return DEFAULT_FUNCTION_TIMEOUT_SECONDS;
+  }
+  return Math.floor(parsedTimeout);
+};
+
+export const shouldCheckRevokedTokens = () =>
+  process.env.AUTH_CHECK_REVOKED === 'true';
