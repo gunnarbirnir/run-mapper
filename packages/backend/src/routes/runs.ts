@@ -6,6 +6,42 @@ const runs = new Hono();
 
 runs.use('*', authMiddleware);
 
+interface BaseCoordinate {
+  lat: number;
+  lng: number;
+}
+
+interface RunCoordinate extends BaseCoordinate {
+  elevation: number;
+}
+
+interface Waypoint {
+  id: string;
+  name: string;
+  description?: string;
+  coordinates: BaseCoordinate;
+  type: 'energy' | 'entertainment' | 'start' | 'end';
+}
+
+interface RouteDataPayload {
+  boundingBox?: [BaseCoordinate, BaseCoordinate];
+  coordinates?: RunCoordinate[];
+  waypoints?: Waypoint[];
+}
+
+const defaultBoundingBox: [BaseCoordinate, BaseCoordinate] = [
+  { lat: 0, lng: 0 },
+  { lat: 0, lng: 0 },
+];
+
+const normalizeRouteData = (routeData?: RouteDataPayload) => {
+  return {
+    boundingBox: routeData?.boundingBox ?? defaultBoundingBox,
+    coordinates: routeData?.coordinates ?? [],
+    waypoints: routeData?.waypoints ?? [],
+  };
+};
+
 runs.get('/', async (c: AuthContext) => {
   try {
     const runsSnapshot = await db
@@ -51,6 +87,26 @@ runs.get('/:id', async (c: AuthContext) => {
     }
 
     const runData = runDoc.data();
+    if (!runData) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    if (runData.userId !== c.user?.uid) {
+      // Return 404 to avoid leaking whether a run exists for another user.
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
 
     return c.json({
       success: true,
@@ -65,6 +121,82 @@ runs.get('/:id', async (c: AuthContext) => {
       {
         success: false,
         error: 'Failed to fetch run',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500,
+    );
+  }
+});
+
+runs.post('/', async (c: AuthContext) => {
+  try {
+    const body = await c.req.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'Request body must be a JSON object',
+        },
+        400,
+      );
+    }
+
+    const { name, routeData } = body as {
+      name?: unknown;
+      routeData?: RouteDataPayload;
+    };
+
+    if (name !== undefined && typeof name !== 'string') {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'name must be a string',
+        },
+        400,
+      );
+    }
+
+    if (
+      routeData !== undefined &&
+      (typeof routeData !== 'object' || routeData === null)
+    ) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid payload',
+          message: 'routeData must be an object',
+        },
+        400,
+      );
+    }
+
+    const normalizedRouteData = normalizeRouteData(routeData);
+    const normalizedName =
+      typeof name === 'string' && name.trim() ? name.trim() : 'Untitled Run';
+    const runToCreate = {
+      userId: c.user?.uid,
+      name: normalizedName,
+      createdAt: new Date().toISOString(),
+      ...normalizedRouteData,
+    };
+
+    const runRef = await db.collection('runs').add(runToCreate);
+
+    return c.json(
+      {
+        success: true,
+        data: { id: runRef.id },
+      },
+      201,
+    );
+  } catch (error) {
+    console.error('Error creating run:', error);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to create run',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       500,

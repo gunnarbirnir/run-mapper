@@ -1,45 +1,9 @@
 import 'dotenv/config';
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import { db } from './firebase/admin';
-import auth from './routes/auth';
-import runs from './routes/runs';
+import { app } from './app';
+import { getServerPort } from './config/env';
 
-const app = new Hono();
-
-app.use('*', cors());
-
-app.get('/', (c) => {
-  return c.json({
-    message: 'Run Mapper Backend API',
-    version: '0.1.0',
-  });
-});
-
-app.get('/health', async (c) => {
-  try {
-    await db.collection('_health').limit(1).get();
-    return c.json({
-      status: 'ok',
-      firebase: 'connected',
-    });
-  } catch (error) {
-    return c.json(
-      {
-        status: 'ok',
-        firebase: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      },
-      503,
-    );
-  }
-});
-
-app.route('/auth', auth);
-app.route('/runs', runs);
-
-const port = 3001;
+const port = getServerPort();
 console.log(`Server is running on port ${port}`);
 
 serve({
