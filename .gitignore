@@ -8,6 +8,10 @@ dist
 .env.production
 .env.development
 .env.*.local
+packages/backend/.env*
+!packages/backend/.env.example
+packages/frontend/.env*
+!packages/frontend/.env.example
 
 # Yarn
 .yarn/cache

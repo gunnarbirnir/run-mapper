@@ -1,5 +1,6 @@
 import { Context, Next } from 'hono';
-import { auth } from '../firebase/admin';
+import { shouldCheckRevokedTokens } from '../config/env.js';
+import { auth } from '../firebase/admin.js';
 
 export interface AuthUser {
   uid: string;
@@ -29,13 +30,15 @@ export const authMiddleware = async (c: Context, next: Next) => {
 
     const token = authHeader.substring(7);
 
-    const decodedToken = await auth.verifyIdToken(token);
-    const user = await auth.getUser(decodedToken.uid);
+    const decodedToken = await auth.verifyIdToken(
+      token,
+      shouldCheckRevokedTokens(),
+    );
 
     (c as AuthContext).user = {
-      uid: user.uid,
-      email: user.email,
-      emailVerified: user.emailVerified,
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      emailVerified: decodedToken.email_verified,
     };
 
     await next();
@@ -45,10 +48,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
       {
         success: false,
         error: 'Unauthorized',
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to verify authentication token',
+        message: 'Failed to verify authentication token',
       },
       401,
     );

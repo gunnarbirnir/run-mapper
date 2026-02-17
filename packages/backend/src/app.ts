@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { API_INFO } from './config/constants';
-import { getAllowedOrigins, isOriginAllowed } from './config/env';
-import { db } from './firebase/admin';
-import auth from './routes/auth';
-import runs from './routes/runs';
+import { API_INFO } from './config/constants.js';
+import { getAllowedOrigins, isOriginAllowed } from './config/env.js';
+import { db } from './firebase/admin.js';
+import auth from './routes/auth.js';
+import runs from './routes/runs.js';
 
 const allowedOrigins = getAllowedOrigins();
 
@@ -32,11 +32,11 @@ app.get('/health', async (c) => {
       firebase: 'connected',
     });
   } catch (error) {
+    console.error('Health check failed:', error);
     return c.json(
       {
-        status: 'ok',
+        status: 'error',
         firebase: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
       },
       503,
     );

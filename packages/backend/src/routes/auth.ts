@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { auth as firebaseAuth } from '../firebase/admin';
-import { authMiddleware, type AuthContext } from '../middleware/auth';
+import { auth as firebaseAuth } from '../firebase/admin.js';
+import { authMiddleware, type AuthContext } from '../middleware/auth.js';
 
 const auth = new Hono();
 

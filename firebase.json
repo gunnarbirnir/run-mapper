@@ -1,0 +1,10 @@
+{
+  "functions": [
+    {
+      "source": "packages/backend",
+      "codebase": "api",
+      "runtime": "nodejs20",
+      "predeploy": ["yarn workspace run-mapper-backend build"]
+    }
+  ]
+}
