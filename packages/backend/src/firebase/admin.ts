@@ -2,9 +2,9 @@ import 'dotenv/config';
 import admin from 'firebase-admin';
 
 const requiredEnvVars = {
-  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
-  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  ADMIN_PROJECT_ID: process.env.ADMIN_PROJECT_ID,
+  ADMIN_CLIENT_EMAIL: process.env.ADMIN_CLIENT_EMAIL,
+  ADMIN_PRIVATE_KEY: process.env.ADMIN_PRIVATE_KEY,
 };
 
 if (!admin.apps.length) {
@@ -14,9 +14,9 @@ if (!admin.apps.length) {
     if (hasServiceAccountEnv) {
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: requiredEnvVars.FIREBASE_PROJECT_ID!,
-          clientEmail: requiredEnvVars.FIREBASE_CLIENT_EMAIL!,
-          privateKey: requiredEnvVars.FIREBASE_PRIVATE_KEY!.replace(
+          projectId: requiredEnvVars.ADMIN_PROJECT_ID!,
+          clientEmail: requiredEnvVars.ADMIN_CLIENT_EMAIL!,
+          privateKey: requiredEnvVars.ADMIN_PRIVATE_KEY!.replace(
             /\\n/g,
             '\n',
           ),

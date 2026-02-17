@@ -15,9 +15,9 @@ yarn install
 1. Create a `.env` file in the `packages/backend` directory with your Firebase credentials:
 
 ```env
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
+ADMIN_PROJECT_ID=your-project-id
+ADMIN_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
 ```
 
 2. To get your Firebase credentials:
