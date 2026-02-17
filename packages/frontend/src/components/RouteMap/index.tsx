@@ -81,7 +81,8 @@ export const RouteMap = ({
       const handleWaypointClick = (waypoint: Waypoint) => {
         onWaypointClick(waypoint.id);
         mapRef.current?.flyTo({
-          center: [waypoint.coordinates.lat, waypoint.coordinates.lng],
+          // Mapbox expects [lng, lat]
+          center: [waypoint.coordinates.lng, waypoint.coordinates.lat],
           zoom: WAYPOINT_ZOOM,
           duration: FLY_TO_WAYPOINT_DURATION,
         });
@@ -95,7 +96,8 @@ export const RouteMap = ({
           '--color-success-600',
           showWaypoints ? () => handleWaypointClick(startWaypoint) : undefined,
         ),
-        [startWaypoint.coordinates.lat, startWaypoint.coordinates.lng],
+        // Coordinates are [lng, lat]
+        [startWaypoint.coordinates.lng, startWaypoint.coordinates.lat],
       );
 
       const endWaypoint = getEndWaypoint(coordinates);
@@ -105,7 +107,8 @@ export const RouteMap = ({
           '--color-error-600',
           showWaypoints ? () => handleWaypointClick(endWaypoint) : undefined,
         ),
-        [endWaypoint.coordinates.lat, endWaypoint.coordinates.lng],
+        // Coordinates are [lng, lat]
+        [endWaypoint.coordinates.lng, endWaypoint.coordinates.lat],
       );
 
       if (showWaypoints) {
@@ -114,7 +117,8 @@ export const RouteMap = ({
             getWaypointMarkerElement(waypoint.type, () =>
               handleWaypointClick(waypoint),
             ),
-            [waypoint.coordinates.lat, waypoint.coordinates.lng],
+            // Coordinates are [lng, lat]
+            [waypoint.coordinates.lng, waypoint.coordinates.lat],
           );
         }
       }

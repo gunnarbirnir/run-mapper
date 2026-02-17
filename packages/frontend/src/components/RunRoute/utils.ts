@@ -12,7 +12,7 @@ export const getRouteBounds = (
   bbox: [BaseCoordinate, BaseCoordinate],
 ): Bounds => {
   return [
-    // TODO: Wrong order (lat first)?
+    // Coordinates are stored as [lng, lat] for Mapbox compatibility
     [bbox[0].lng, bbox[0].lat],
     [bbox[1].lng, bbox[1].lat],
   ];
@@ -27,7 +27,8 @@ export const processRunRoute = (
   let prevCoord: Coordinates | null = null;
 
   runCoordinates.forEach((runCoordinate) => {
-    const currentCoord: Coordinates = [runCoordinate.lat, runCoordinate.lng];
+    // Coordinates are [lng, lat] for Mapbox and haversineDistance
+    const currentCoord: Coordinates = [runCoordinate.lng, runCoordinate.lat];
     if (prevCoord) {
       distance += haversineDistance(prevCoord, currentCoord);
     }

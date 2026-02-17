@@ -142,8 +142,9 @@ export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
     name: 'Start',
     description: 'The start of the route',
     coordinates: {
-      lat: coordinates[0][0] as number,
-      lng: coordinates[0][1] as number,
+      // Coordinates are [lng, lat]
+      lat: coordinates[0][1] as number,
+      lng: coordinates[0][0] as number,
     },
     type: 'start',
   };
@@ -155,8 +156,9 @@ export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
     name: 'End',
     description: 'The end of the route',
     coordinates: {
-      lat: coordinates[coordinates.length - 1][0] as number,
-      lng: coordinates[coordinates.length - 1][1] as number,
+      // Coordinates are [lng, lat]
+      lat: coordinates[coordinates.length - 1][1] as number,
+      lng: coordinates[coordinates.length - 1][0] as number,
     },
     type: 'end',
   };

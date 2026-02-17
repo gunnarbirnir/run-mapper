@@ -35,6 +35,70 @@ runs.get('/', async (c: AuthContext) => {
   }
 });
 
+runs.post('/', async (c: AuthContext) => {
+  try {
+    const body = await c.req.json();
+    const { name, coordinates, boundingBox } = body;
+
+    // Validate required fields
+    if (!coordinates || !Array.isArray(coordinates) || coordinates.length === 0) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid request',
+          message: 'Coordinates are required and must be a non-empty array',
+        },
+        400,
+      );
+    }
+
+    if (!boundingBox || !Array.isArray(boundingBox) || boundingBox.length !== 2) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid request',
+          message: 'Bounding box is required and must be an array of two coordinates',
+        },
+        400,
+      );
+    }
+
+    // Create run document
+    const runData = {
+      userId: c.user.uid,
+      name: name || null,
+      coordinates,
+      boundingBox,
+      waypoints: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    const runRef = await db.collection('runs').add(runData);
+    const createdRun = {
+      id: runRef.id,
+      ...runData,
+    };
+
+    return c.json(
+      {
+        success: true,
+        data: createdRun,
+      },
+      201,
+    );
+  } catch (error) {
+    console.error('Error creating run:', error);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to create run',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500,
+    );
+  }
+});
+
 runs.get('/:id', async (c: AuthContext) => {
   try {
     const runId = c.req.param('id');
