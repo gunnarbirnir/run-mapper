@@ -49,6 +49,13 @@ yarn build
 yarn start
 ```
 
+### Cloud Functions (2nd gen)
+
+- Firebase Functions entrypoint: `src/functions.ts`
+- Exported HTTPS function: `api`
+- Set `CORS_ALLOWED_ORIGINS` to your Vercel app domains (comma-separated)
+- On Google Cloud, Firebase Admin uses default runtime credentials automatically
+
 ## API Endpoints
 
 ### Health Check
@@ -68,8 +75,6 @@ yarn start
     }
   }
   ```
-- `PUT /runs/:id` - Update a run
-- `DELETE /runs/:id` - Delete a run
 
 ## Project Structure
 
