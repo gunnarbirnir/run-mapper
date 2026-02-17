@@ -13,7 +13,7 @@ export const ListItemContainer = ({
   return (
     <div
       className={cn(
-        'flex flex-col [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-300',
+        'flex flex-col [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-200',
         className,
       )}
     >

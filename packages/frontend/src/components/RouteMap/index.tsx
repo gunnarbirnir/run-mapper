@@ -18,8 +18,8 @@ import { MAP_STYLES } from './constants';
 import { useMapState } from './useMapState';
 
 const FIT_INITIAL_BOUNDS_DURATION = 200;
-const WAYPOINT_ZOOM = 12;
-const FLY_TO_WAYPOINT_DURATION = 100;
+const WAYPOINT_ZOOM = 14;
+const FLY_TO_WAYPOINT_DURATION = 300;
 
 export const RouteMap = ({
   bounds,

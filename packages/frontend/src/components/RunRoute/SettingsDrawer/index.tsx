@@ -32,9 +32,7 @@ export const SettingsDrawer = ({
       width={width}
       className="pointer-events-auto z-20 px-4 py-6"
     >
-      <Text element="h2" className="text-lg font-medium">
-        Settings
-      </Text>
+      <Text element="h2">Settings</Text>
       <SectionLabel>Widgets</SectionLabel>
       <VisibleToggle
         isVisible={visibleWidgets.distance}

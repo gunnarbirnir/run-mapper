@@ -6,6 +6,13 @@ import { Hidden } from './Hidden';
 import { Lightning } from './Lightning';
 import { Star } from './Star';
 import { Arrow } from './Arrow';
+import { Reset } from './Reset';
+import { Trophy } from './Trophy';
+import { ArrowTrendingUp } from './ArrowTrendingUp';
+import { ArrowTrendingDown } from './ArrowTrendingDown';
+import { Mountain } from './Mountain';
+import { DoubleArrow } from './DoubleArrow';
+import { ArrowUpDown } from './ArrowUpDown';
 
 import { cn } from '~/utils';
 
@@ -17,7 +24,14 @@ export type IconName =
   | 'hidden'
   | 'lightning'
   | 'star'
-  | 'arrow';
+  | 'arrow'
+  | 'reset'
+  | 'trophy'
+  | 'arrowTrendingUp'
+  | 'arrowTrendingDown'
+  | 'mountain'
+  | 'doubleArrow'
+  | 'arrowUpDown';
 
 interface IconProps {
   name: IconName;
@@ -42,6 +56,20 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Star />;
     case 'arrow':
       return <Arrow />;
+    case 'reset':
+      return <Reset />;
+    case 'trophy':
+      return <Trophy />;
+    case 'arrowTrendingUp':
+      return <ArrowTrendingUp />;
+    case 'arrowTrendingDown':
+      return <ArrowTrendingDown />;
+    case 'mountain':
+      return <Mountain />;
+    case 'doubleArrow':
+      return <DoubleArrow />;
+    case 'arrowUpDown':
+      return <ArrowUpDown />;
     default:
       return null;
   }

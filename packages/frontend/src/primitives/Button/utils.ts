@@ -13,15 +13,15 @@ const BUTTON_COLORS: Record<
   }
 > = {
   black: {
-    bg: 'bg-black',
+    bg: 'bg-gray-800',
     text: 'text-white',
     hover: 'hover:bg-gray-700',
-    disabled: 'bg-gray-400',
+    disabled: 'bg-gray-500',
     disabledText: 'text-gray-200',
   },
   white: {
     bg: 'bg-white',
-    text: 'text-black',
+    text: 'text-gray-800',
     hover: 'hover:bg-gray-200',
     disabled: 'bg-gray-300',
     disabledText: 'text-gray-500',

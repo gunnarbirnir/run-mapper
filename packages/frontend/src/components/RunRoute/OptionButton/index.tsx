@@ -1,27 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-import { Icon, RoundButton, type IconName } from '~/primitives';
-import { spacingPx } from '~/utils';
+import { RoundButton } from '~/primitives';
+import { spacingPx, cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 
 interface OptionButtonProps {
   index: number;
-  icon: IconName;
   disabled?: boolean;
   openDrawerSize: number | null;
-  secondaryIcon?: IconName;
-  secondaryIconActive?: boolean;
+  children: ReactNode;
+  buttonClassName?: string;
   onClick: () => void;
 }
 
 export const OptionButton = ({
   index,
-  icon,
   disabled = false,
   openDrawerSize,
-  secondaryIcon,
-  secondaryIconActive,
+  children,
+  buttonClassName,
   onClick,
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -70,27 +68,19 @@ export const OptionButton = ({
         onClick={onClick}
         color="white"
         disabled={disabled}
-        className="pointer-events-auto h-10 w-10 shadow-md/20"
-      >
-        {secondaryIcon && secondaryIconActive ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: DRAWER_ANIMATION_DURATION }}
-          >
-            <Icon name={secondaryIcon} className="size-6" />
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: DRAWER_ANIMATION_DURATION }}
-          >
-            <Icon name={icon} className="size-7" />
-          </motion.div>
+        className={cn(
+          'pointer-events-auto h-10 w-10 shadow-md/20',
+          buttonClassName,
         )}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          exit={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: DRAWER_ANIMATION_DURATION }}
+        >
+          {children}
+        </motion.div>
       </RoundButton>
     </motion.div>
   );

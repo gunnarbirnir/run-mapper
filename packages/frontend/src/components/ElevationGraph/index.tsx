@@ -46,7 +46,7 @@ export const ElevationGraph = ({
   const lineColor = getCssVariableValue('--color-secondary-500');
   const gridColor = getCssVariableValue('--color-gray-300');
   const textColor = getCssVariableValue('--color-gray-500');
-  const activeLineColor = getCssVariableValue('--color-black');
+  const activeLineColor = getCssVariableValue('--color-gray-900');
   const xsText = getCssVariableValue('--text-xs');
 
   const elevationData = useMemo(
@@ -87,7 +87,7 @@ export const ElevationGraph = ({
         duration: WIDGET_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
       }}
-      className="bg-white pt-1 pb-1 pl-1"
+      className="bg-gray-50 pt-1"
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
       {!startExpansion && (
@@ -106,9 +106,9 @@ export const ElevationGraph = ({
             data={elevationData}
             margin={{
               top: spacingPx(2),
-              right: 0.5,
-              bottom: 0,
-              left: 0,
+              right: spacingPx(2),
+              bottom: spacingPx(2),
+              left: spacingPx(2),
             }}
             onMouseEnter={(event) => {
               setActiveIndexRef.current?.(

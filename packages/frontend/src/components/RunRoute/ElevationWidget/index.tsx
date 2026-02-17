@@ -48,14 +48,39 @@ export const ElevationWidget = ({
       label="Elevation"
       text={formattedElevation}
       showGraphWhileActive
+      icon="mountain"
+      iconClassName="translate-y-[-4px]"
     >
       <div className="flex flex-col items-center">
         <ListItem.Container className="w-full max-w-lg px-4">
-          <ListItem label="Elevation gain" value={formattedElevation} />
-          <ListItem label="Elevation loss" value={formattedElevationLoss} />
-          <ListItem label="Net elevation" value={formattedNetElevation} />
-          <ListItem label="Max elevation" value={formattedMaxElevation} />
-          <ListItem label="Min elevation" value={formattedMinElevation} />
+          <ListItem
+            label="Elevation gain"
+            value={formattedElevation}
+            icon="arrowTrendingUp"
+            iconClassName="size-6"
+          />
+          <ListItem
+            label="Elevation loss"
+            value={formattedElevationLoss}
+            icon="arrowTrendingDown"
+            iconClassName="size-6"
+          />
+          <ListItem
+            label="Net elevation"
+            value={formattedNetElevation}
+            icon="arrowUpDown"
+          />
+          <ListItem
+            label="Max elevation"
+            value={formattedMaxElevation}
+            icon="doubleArrow"
+          />
+          <ListItem
+            label="Min elevation"
+            value={formattedMinElevation}
+            icon="doubleArrow"
+            iconClassName="rotate-180"
+          />
         </ListItem.Container>
       </div>
     </WidgetContainer>

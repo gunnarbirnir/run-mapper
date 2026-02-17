@@ -15,7 +15,11 @@ export const Text = ({
         <h1 className={cn('text-3xl font-bold', className)}>{children}</h1>
       );
     case 'h2':
-      return <h2 className={className}>{children}</h2>;
+      return (
+        <h2 className={cn('text-lg font-medium text-gray-900', className)}>
+          {children}
+        </h2>
+      );
     case 'h3':
       return <h3 className={className}>{children}</h3>;
     case 'h4':
@@ -28,7 +32,7 @@ export const Text = ({
       return (
         <label
           htmlFor={'htmlFor' in props ? props.htmlFor : undefined}
-          className={cn('font-medium', className)}
+          className={cn('block text-xs text-gray-500 uppercase', className)}
         >
           {children}
         </label>
@@ -38,9 +42,9 @@ export const Text = ({
         <p
           className={cn(
             pGetVariantClassName(
-              'variant' in props ? props.variant : undefined
+              'variant' in props ? props.variant : undefined,
             ),
-            className
+            className,
           )}
         >
           {children}

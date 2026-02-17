@@ -1,14 +1,13 @@
 import { motion } from 'motion/react';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import {
   DEFAULT_EASING,
-  DEFAULT_FADE_IN_DURATION,
   EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
 } from '~/constants';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { Icon, RoundButton } from '~/primitives';
+import { type IconName } from '~/primitives';
 import type { WidgetBaseProps } from '~/types';
 import { spacingPx } from '~/utils';
 
@@ -19,6 +18,8 @@ interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
   label?: string;
   text?: string;
+  icon: IconName;
+  iconClassName?: string;
   customContent?: ReactNode;
 }
 
@@ -28,11 +29,15 @@ interface WidgetContainerProps extends WidgetBaseProps {
 // Create global constant for breakpoints
 // Import from Tailwind?
 const SMALL_SCREEN_BREAKPOINT = 600;
+const MODAL_MAX_HEIGHT = 300;
+const MODAL_MAX_WIDTH = 600;
 
 export const WidgetContainer = ({
   children,
   label,
   text,
+  icon,
+  iconClassName,
   customContent,
   index,
   showGraphWhileActive = false,
@@ -47,7 +52,6 @@ export const WidgetContainer = ({
   const { width: windowWidth } = useWindowDimensions();
   const [widgetWidth, setWidgetWidth] = useState(0);
   const [widgetHeight, setWidgetHeight] = useState(0);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
@@ -58,6 +62,20 @@ export const WidgetContainer = ({
   const right = runRouteSize.width - widgetWidth - baseSpacing;
   const bottom = runRouteSize.height - top - widgetHeight;
   const isClickable = Boolean(children && onToggleActive && !isAnyOpen);
+
+  const mapHeight =
+    runRouteSize.height -
+    (showGraphWhileActive ? EXPANDED_ELEVATION_GRAPH_HEIGHT : 0);
+  const modalTargetHeight = mapHeight - activeSpacing * 2;
+  const modalTargetWidth = runRouteSize.width - activeSpacing * 2;
+  const modalY =
+    modalTargetHeight > MODAL_MAX_HEIGHT
+      ? (mapHeight - MODAL_MAX_HEIGHT) / 2
+      : activeSpacing;
+  const modalX =
+    modalTargetWidth > MODAL_MAX_WIDTH
+      ? (runRouteSize.width - MODAL_MAX_WIDTH) / 2
+      : activeSpacing;
 
   useEffect(() => {
     if (!isOpen) {
@@ -81,20 +99,20 @@ export const WidgetContainer = ({
   return (
     <motion.div
       animate={{
-        top: isActive ? activeSpacing : top,
-        left: isActive ? activeSpacing : baseSpacing,
-        right: isActive ? activeSpacing : right,
+        top: isActive ? modalY : top,
+        left: isActive ? modalX : baseSpacing,
+        right: isActive ? modalX : right,
         bottom: isActive
           ? showGraphWhileActive
-            ? EXPANDED_ELEVATION_GRAPH_HEIGHT + activeSpacing
-            : activeSpacing
+            ? EXPANDED_ELEVATION_GRAPH_HEIGHT + modalY
+            : modalY
           : bottom,
       }}
       transition={{
         duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute min-w-32 overflow-hidden rounded-lg bg-white shadow-md/20"
+      className="pointer-events-auto absolute min-w-34 overflow-hidden rounded-lg bg-white shadow-md/20"
       style={
         isInitialized
           ? {
@@ -106,33 +124,25 @@ export const WidgetContainer = ({
       }
       onClick={isClickable ? onToggleActive : undefined}
     >
-      <WidgetContent
-        ref={widgetRef}
-        label={label}
-        text={text}
-        isActive={isActive}
-        isOpen={isOpen}
-        isExpanded={isExpanded}
-        isClickable={isClickable}
-        customContent={customContent}
-        hasScrolled={hasScrolled}
-      />
-      {isExpanded && (
-        <motion.div
-          className="absolute top-4 right-4 z-20"
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{
-            duration: DEFAULT_FADE_IN_DURATION,
-            ease: DEFAULT_EASING,
-          }}
-        >
-          <RoundButton onClick={onToggleActive}>
-            <Icon name="close" />
-          </RoundButton>
-        </motion.div>
+      {!isOpen && (
+        <WidgetContent
+          ref={widgetRef}
+          label={label}
+          text={text}
+          isClickable={isClickable}
+          customContent={customContent}
+          icon={icon}
+          iconClassName={iconClassName}
+        />
       )}
       {isExpanded && (
-        <ModalContent isOpen={isOpen} setHasScrolled={setHasScrolled}>
+        <ModalContent
+          isOpen={isOpen}
+          title={label}
+          onClose={onToggleActive}
+          icon={icon}
+          iconClassName={iconClassName}
+        >
           {children}
         </ModalContent>
       )}

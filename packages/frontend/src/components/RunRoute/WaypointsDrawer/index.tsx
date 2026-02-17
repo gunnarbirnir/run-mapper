@@ -37,7 +37,7 @@ export const WaypointsDrawer = ({
       width={width}
       className="pointer-events-auto z-20 flex flex-col overflow-x-hidden pt-6"
     >
-      <Text element="h2" className="mb-4 px-4 text-lg font-medium">
+      <Text element="h2" className="mb-4 px-4">
         {activeWaypointDetails.name}
       </Text>
       <div className="relative">
@@ -48,7 +48,7 @@ export const WaypointsDrawer = ({
         />
       </div>
       <div className="flex flex-1 flex-col items-center justify-between px-4 pb-6">
-        <Text className="w-full pt-8 text-sm text-gray-600">
+        <Text variant="subtle" className="w-full pt-8 text-sm">
           {activeWaypointDetails.description}
         </Text>
         <div className="flex items-center gap-4">

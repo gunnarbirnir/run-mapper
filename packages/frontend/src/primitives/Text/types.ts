@@ -1,9 +1,9 @@
 type BaseTextProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 
-export type PVariant = 'default' | 'subtitle';
+export type PVariant = 'default' | 'label' | 'bold' | 'medium' | 'subtle';
 
 export type TextProps =
   | (BaseTextProps & {
