@@ -1,5 +1,5 @@
 {
-  "name": "run-mapper",
+  "name": "spretta",
   "version": "1.0.0",
   "repository": "git@github.com:gunnarbirnir/run-mapper.git",
   "license": "MIT",
@@ -8,12 +8,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "yarn workspace run-mapper-frontend dev",
+    "dev": "yarn workspace spretta-frontend dev",
     "start": "yarn dev",
-    "backend-dev": "yarn workspace run-mapper-backend dev",
-    "lint": "yarn workspace run-mapper-frontend lint && yarn workspace run-mapper-backend lint",
-    "type-check": "yarn workspace run-mapper-frontend type-check && yarn workspace run-mapper-backend type-check",
-    "clean": "rm -rf node_modules && yarn workspace run-mapper-frontend clean && yarn workspace run-mapper-backend clean",
+    "backend-dev": "yarn workspace spretta-backend dev",
+    "lint": "yarn workspace spretta-frontend lint && yarn workspace spretta-backend lint",
+    "type-check": "yarn workspace spretta-frontend type-check && yarn workspace spretta-backend type-check",
+    "clean": "rm -rf node_modules && yarn workspace spretta-frontend clean && yarn workspace spretta-backend clean",
     "process-gpx": "node scripts/processGpx.js $INPUT_FILE"
   },
   "devDependencies": {

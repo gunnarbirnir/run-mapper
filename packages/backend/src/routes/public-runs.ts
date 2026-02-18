@@ -118,13 +118,15 @@ publicRuns.get('/:slug', async (c) => {
         runData.boundingBox.length === 2 &&
         isValidCoordinate(runData.boundingBox[0]) &&
         isValidCoordinate(runData.boundingBox[1])
-          ? ([
-              runData.boundingBox[0],
-              runData.boundingBox[1],
-            ] as [BaseCoordinate, BaseCoordinate])
+          ? ([runData.boundingBox[0], runData.boundingBox[1]] as [
+              BaseCoordinate,
+              BaseCoordinate,
+            ])
           : defaultBoundingBox,
       coordinates: Array.isArray(runData.coordinates)
-        ? runData.coordinates.filter((coordinate) => isValidRunCoordinate(coordinate))
+        ? runData.coordinates.filter((coordinate) =>
+            isValidRunCoordinate(coordinate),
+          )
         : [],
       waypoints: Array.isArray(runData.waypoints)
         ? runData.waypoints.filter((waypoint) => isValidWaypoint(waypoint))

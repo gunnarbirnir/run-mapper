@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
+
 import { app } from './app.js';
 import { getServerPort } from './config/env.js';
 

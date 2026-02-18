@@ -1,17 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { PublicRunRoute } from '~/components/PublicRunRoute';
+import { RunRoute } from '~/components/RunRoute';
 import { api } from '~/service';
-import type { ApiResponse, PublicRun } from '~/types';
+import type { ApiResponse, Run } from '~/types';
 
-export const Route = createFileRoute('/route/$slug')({
+export const Route = createFileRoute('/public-runs/$slug')({
   component: PublicRunDetail,
 });
 
 function PublicRunDetail() {
   const { slug } = Route.useParams();
-  const { data, isPending, error } = useQuery<ApiResponse<PublicRun>>({
+  const { data, isPending, error } = useQuery<ApiResponse<Run>>({
     queryKey: ['public-run', slug],
     queryFn: () => api.get(`/public-runs/${encodeURIComponent(slug)}`),
   });
@@ -24,7 +24,7 @@ function PublicRunDetail() {
     return <Fallback>Error: {error.message}</Fallback>;
   }
 
-  return <PublicRunRoute routeId={slug} run={data.data} />;
+  return <RunRoute routeId={slug} run={data.data} />;
 }
 
 const Fallback = ({ children }: { children: React.ReactNode }) => {

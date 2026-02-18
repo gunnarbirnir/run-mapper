@@ -21,21 +21,28 @@ export const isOriginAllowed = (
   allowedOrigins: readonly string[],
 ) => {
   const normalizedOrigin = normalizeOrigin(origin);
-  if (allowedOrigins.includes('*')) return true;
+  if (allowedOrigins.includes('*')) {
+    return true;
+  }
   return allowedOrigins.includes(normalizedOrigin);
 };
 
 export const getServerPort = () => {
-  if (!process.env.PORT) return DEFAULT_PORT;
+  if (!process.env.PORT) {
+    return DEFAULT_PORT;
+  }
   const parsedPort = Number(process.env.PORT);
   return Number.isFinite(parsedPort) ? parsedPort : DEFAULT_PORT;
 };
 
-export const getFunctionRegion = () =>
-  process.env.FUNCTION_REGION || DEFAULT_FUNCTION_REGION;
+export const getFunctionRegion = () => {
+  return process.env.FUNCTION_REGION || DEFAULT_FUNCTION_REGION;
+};
 
 export const getFunctionMaxInstances = () => {
-  if (!process.env.FUNCTION_MAX_INSTANCES) return DEFAULT_FUNCTION_MAX_INSTANCES;
+  if (!process.env.FUNCTION_MAX_INSTANCES) {
+    return DEFAULT_FUNCTION_MAX_INSTANCES;
+  }
   const parsedMaxInstances = Number(process.env.FUNCTION_MAX_INSTANCES);
   if (!Number.isFinite(parsedMaxInstances) || parsedMaxInstances < 1) {
     return DEFAULT_FUNCTION_MAX_INSTANCES;
@@ -54,5 +61,6 @@ export const getFunctionTimeoutSeconds = () => {
   return Math.floor(parsedTimeout);
 };
 
-export const shouldCheckRevokedTokens = () =>
-  process.env.AUTH_CHECK_REVOKED === 'true';
+export const shouldCheckRevokedTokens = () => {
+  return process.env.AUTH_CHECK_REVOKED === 'true';
+};

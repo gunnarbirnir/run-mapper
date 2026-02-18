@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+
 import { API_INFO } from './config/constants.js';
 import { getAllowedOrigins, isOriginAllowed } from './config/env.js';
 import { db } from './firebase/admin.js';
@@ -15,7 +16,9 @@ app.use(
   '*',
   cors({
     origin: (origin) => {
-      if (!origin) return '*';
+      if (!origin) {
+        return '*';
+      }
       return isOriginAllowed(origin, allowedOrigins) ? origin : null;
     },
   }),

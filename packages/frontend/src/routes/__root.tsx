@@ -58,11 +58,8 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const matchRoute = useMatchRoute();
   const isPlayground = Boolean(matchRoute({ to: '/playground' }));
-  const runParams = matchRoute({ to: '/runs/$runId' });
-  const publicRunParams = matchRoute({ to: '/route/$slug' });
-  const isRunDisplay = runParams && runParams.runId !== 'new';
-  const isPublicRunDisplay = Boolean(publicRunParams);
-  const isFullscreenDisplay = Boolean(isRunDisplay || isPublicRunDisplay);
+  const publicRunParams = matchRoute({ to: '/public-runs/$slug' });
+  const isPublicRun = Boolean(publicRunParams);
 
   return (
     <html>
@@ -70,15 +67,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <RootBody
-          isFullscreenDisplay={isFullscreenDisplay}
-          isPlayground={isPlayground}
-        >
+        <RootBody isFullscreenDisplay={isPublicRun} isPlayground={isPlayground}>
           {children}
         </RootBody>
-        {!isFullscreenDisplay && (
-          <TanStackRouterDevtools position="bottom-right" />
-        )}
+        {!isPublicRun && <TanStackRouterDevtools position="bottom-right" />}
         <Scripts />
       </body>
     </html>

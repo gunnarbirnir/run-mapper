@@ -49,11 +49,14 @@ const normalizeRouteData = (routeData?: RouteDataPayload) => {
   };
 };
 
-const isFiniteNumber = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value);
+const isFiniteNumber = (value: unknown): value is number => {
+  return typeof value === 'number' && Number.isFinite(value);
+};
 
 const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
   const coordinate = value as BaseCoordinate;
   return (
     isFiniteNumber(coordinate.lat) &&
@@ -66,7 +69,9 @@ const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
 };
 
 const isValidRunCoordinate = (value: unknown): value is RunCoordinate => {
-  if (!isValidCoordinate(value)) return false;
+  if (!isValidCoordinate(value)) {
+    return false;
+  }
   return isFiniteNumber((value as RunCoordinate).elevation);
 };
 
@@ -200,10 +205,7 @@ runs.post('/', async (c: AuthContext) => {
       );
     }
 
-    if (
-      typeof name === 'string' &&
-      name.trim().length > MAX_RUN_NAME_LENGTH
-    ) {
+    if (typeof name === 'string' && name.trim().length > MAX_RUN_NAME_LENGTH) {
       return c.json(
         {
           success: false,
@@ -251,7 +253,9 @@ runs.post('/', async (c: AuthContext) => {
     }
 
     const normalizedPublicSlug =
-      typeof publicSlug === 'string' ? normalizePublicSlug(publicSlug) : undefined;
+      typeof publicSlug === 'string'
+        ? normalizePublicSlug(publicSlug)
+        : undefined;
     const normalizedIsPublic = isPublic === true;
 
     if (normalizedIsPublic && !normalizedPublicSlug) {
@@ -342,7 +346,10 @@ runs.post('/', async (c: AuthContext) => {
       );
     }
 
-    if (routeData?.waypoints && routeData.waypoints.length > MAX_ROUTE_WAYPOINTS) {
+    if (
+      routeData?.waypoints &&
+      routeData.waypoints.length > MAX_ROUTE_WAYPOINTS
+    ) {
       return c.json(
         {
           success: false,
@@ -373,7 +380,9 @@ runs.post('/', async (c: AuthContext) => {
 
     if (
       routeData?.coordinates &&
-      !routeData.coordinates.every((coordinate) => isValidRunCoordinate(coordinate))
+      !routeData.coordinates.every((coordinate) =>
+        isValidRunCoordinate(coordinate),
+      )
     ) {
       return c.json(
         {
