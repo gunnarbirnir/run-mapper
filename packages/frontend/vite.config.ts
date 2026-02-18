@@ -15,12 +15,10 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths(),
-    tanstackStart(/* {
-      server: {
-        preset: 'vercel',
-      },
-    } */),
-    nitro(),
+    tanstackStart(),
+    nitro({
+      preset: 'vercel',
+    }),
     viteReact(),
     tailwindcss(),
   ],
