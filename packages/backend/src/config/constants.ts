@@ -1,5 +1,5 @@
 export const API_INFO = {
-  message: 'Run Mapper Backend API',
+  message: 'Spretta Backend API',
   version: '0.1.0',
 } as const;
 

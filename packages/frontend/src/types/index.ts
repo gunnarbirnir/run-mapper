@@ -33,14 +33,6 @@ export interface Run {
   waypoints: Waypoint[];
 }
 
-export interface PublicRun {
-  id: string;
-  name: string;
-  boundingBox: [BaseCoordinate, BaseCoordinate];
-  coordinates: RunCoordinates[];
-  waypoints: Waypoint[];
-}
-
 export type ApiResponse<T> = {
   data: T;
   success: boolean;

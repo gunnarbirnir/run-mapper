@@ -1,4 +1,5 @@
 import { Context, Next } from 'hono';
+
 import { shouldCheckRevokedTokens } from '../config/env.js';
 import { auth } from '../firebase/admin.js';
 

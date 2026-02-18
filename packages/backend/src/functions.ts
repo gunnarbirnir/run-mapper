@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { onRequest } from 'firebase-functions/v2/https';
 import { getRequestListener } from '@hono/node-server';
+
 import { app } from './app.js';
 import { DEFAULT_FUNCTION_MEMORY } from './config/constants.js';
 import {

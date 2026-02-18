@@ -13,8 +13,8 @@ export const Route = createFileRoute('/playground/')({
 });
 
 export function Playground() {
-  const [runId, setRunId] = useState('N4zQOJc8HpKLfxz3KgvS');
-  const [runIdInput, setRunIdInput] = useState(runId);
+  const [runSlug, setRunSlug] = useState('hauganes-marathon');
+  const [runSlugInput, setRunSlugInput] = useState(runSlug);
 
   return (
     <div>
@@ -23,31 +23,31 @@ export function Playground() {
       </Text>
       <Form className="mb-8">
         <Form.TextInput
-          id="run-id"
-          name="run-id"
-          label="Run ID"
-          placeholder="Enter a Run ID"
+          id="run-slug"
+          name="run-slug"
+          label="Run Slug"
+          placeholder="Enter a Run Slug"
           containerClassName="max-w-sm"
-          value={runIdInput}
-          onChange={setRunIdInput}
+          value={runSlugInput}
+          onChange={setRunSlugInput}
         />
 
         <div className="flex items-center gap-4">
           <Button
             type="submit"
-            onClick={() => setRunId(runIdInput)}
-            disabled={!runIdInput || runIdInput === runId}
+            onClick={() => setRunSlug(runSlugInput)}
+            disabled={!runSlugInput || runSlugInput === runSlug}
           >
             Update
           </Button>
-          <Text className="text-gray-400">Current ID: {runId}</Text>
+          <Text className="text-gray-400">Current Slug: {runSlug}</Text>
         </div>
       </Form>
-      {runId && (
+      {runSlug && (
         <iframe
           height="500"
           style={{ width: '100%', maxWidth: 800 }}
-          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/runs/${runId}`}
+          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/public-runs/${runSlug}`}
         />
       )}
     </div>
