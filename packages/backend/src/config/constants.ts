@@ -14,6 +14,7 @@ export const DEFAULT_ALLOWED_ORIGINS = [
   'https://runmapper.fit',
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://run-mapper-git-staging-gunnar-olafssons-projects.vercel.app',
 ] as const;
 
 export const MAX_RUN_NAME_LENGTH = 120;

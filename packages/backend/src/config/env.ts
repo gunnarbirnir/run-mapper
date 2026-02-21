@@ -10,7 +10,7 @@ const normalizeOrigin = (origin: string) => origin.trim().replace(/\/$/, '');
 
 export const getAllowedOrigins = () => {
   if (!process.env.CORS_ALLOWED_ORIGINS) {
-    return [...DEFAULT_ALLOWED_ORIGINS];
+    return [...DEFAULT_ALLOWED_ORIGINS].map(normalizeOrigin);
   }
 
   return process.env.CORS_ALLOWED_ORIGINS.split(',').map(normalizeOrigin);
