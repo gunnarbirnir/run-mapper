@@ -1,7 +1,7 @@
 import type { GeoJSONSource, Map } from 'mapbox-gl';
 import { RefObject, useEffect, useRef, type MutableRefObject } from 'react';
 
-import type { Coordinates } from '~/types';
+import type { Coordinates, Elevation } from '~/types';
 
 import { ROUTE_ANIMATION_DURATION } from '../constants';
 import { getLineFeature, getRouteLayer } from '../utils';
@@ -10,16 +10,64 @@ interface UseRouteProps {
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
   coordinates: Coordinates[];
+  elevations: Elevation[];
   animateRouteRef: MutableRefObject<(() => void) | null>;
+  setRouteIsAnimating: (routeIsAnimating: boolean) => void;
 }
 
-const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const ELEVATION_SPEED_FACTOR = 0.15;
+const MIN_SEGMENT_COST = 0.2;
+
+/**
+ * Builds a normalized [0,1] cumulative timeline where uphill segments
+ * occupy a larger portion of the timeline (slower animation) and
+ * downhill segments occupy a smaller portion (faster animation).
+ */
+const buildElevationTimeline = (elevations: Elevation[]): number[] => {
+  const n = elevations.length;
+  if (n < 2) return [0];
+
+  const cumulativeTime = new Array<number>(n);
+  cumulativeTime[0] = 0;
+
+  for (let i = 1; i < n; i++) {
+    const elevDiff = elevations[i].value - elevations[i - 1].value;
+    const cost = Math.max(
+      MIN_SEGMENT_COST,
+      1 + ELEVATION_SPEED_FACTOR * elevDiff,
+    );
+    cumulativeTime[i] = cumulativeTime[i - 1] + cost;
+  }
+
+  const total = cumulativeTime[n - 1];
+  for (let i = 0; i < n; i++) {
+    cumulativeTime[i] /= total;
+  }
+
+  return cumulativeTime;
+};
+
+const findTimelineIndex = (timeline: number[], target: number): number => {
+  let lo = 0;
+  let hi = timeline.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (timeline[mid] <= target) {
+      lo = mid;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  return lo;
+};
 
 export const useRoute = ({
   isMapLoaded,
   coordinates,
+  elevations,
   mapRef,
   animateRouteRef,
+  setRouteIsAnimating,
 }: UseRouteProps) => {
   const isInitialLoadRef = useRef(true);
   const isVisibleRef = useRef(document.visibilityState === 'visible');
@@ -45,6 +93,8 @@ export const useRoute = ({
     };
 
     const animateRoute = () => {
+      setRouteIsAnimating(true);
+
       if (map.getSource('route-source')) {
         map.removeLayer('route-layer');
         map.removeSource('route-source');
@@ -57,6 +107,7 @@ export const useRoute = ({
       map.addLayer(getRouteLayer());
 
       const source = map.getSource('route-source') as GeoJSONSource;
+      const timeline = buildElevationTimeline(elevations);
       let startTime: number | null = null;
 
       const step = (timestamp: number) => {
@@ -67,10 +118,7 @@ export const useRoute = ({
           (timestamp - startTime) / ROUTE_ANIMATION_DURATION,
           1,
         );
-        const index = Math.max(
-          2,
-          Math.floor(easeOutCubic(progress) * coordinates.length),
-        );
+        const index = Math.max(2, findTimelineIndex(timeline, progress));
 
         source.setData(getLineFeature(coordinates.slice(0, index)));
 
@@ -118,5 +166,12 @@ export const useRoute = ({
       map.off('style.load', onStyleLoad);
       document.removeEventListener('visibilitychange', handleMapVisibility);
     };
-  }, [isMapLoaded, coordinates, mapRef, animateRouteRef]);
+  }, [
+    isMapLoaded,
+    coordinates,
+    elevations,
+    setRouteIsAnimating,
+    mapRef,
+    animateRouteRef,
+  ]);
 };

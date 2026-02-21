@@ -27,10 +27,11 @@ export const OptionButton = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const hasCalculatedSize = buttonSize > 0;
-  const baseSpacing = spacingPx(4);
+  const outsideSpacing = spacingPx(4);
+  const betweenSpacing = spacingPx(3);
   const right = openDrawerSize
-    ? openDrawerSize + baseSpacing
-    : baseSpacing + index * (buttonSize + baseSpacing);
+    ? openDrawerSize + outsideSpacing
+    : outsideSpacing + index * (buttonSize + betweenSpacing);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -55,7 +56,7 @@ export const OptionButton = ({
       style={
         isInitialized
           ? // 20 to be above widgets, -index for correct stacking
-            { top: baseSpacing, zIndex: 20 - index }
+            { top: outsideSpacing, zIndex: 20 - index }
           : { visibility: 'hidden' }
       }
       animate={{ right }}
@@ -69,7 +70,8 @@ export const OptionButton = ({
         color="white"
         disabled={disabled}
         className={cn(
-          'pointer-events-auto h-10 w-10 shadow-md/20',
+          'pointer-events-auto h-10 w-10',
+          { 'shadow-md/20': !openDrawerSize || index === 0 },
           buttonClassName,
         )}
       >

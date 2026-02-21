@@ -36,6 +36,7 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   isAtInitialBounds: boolean;
   showWaypoints: boolean;
   mapStyle: MapStyle;
+  routeIsAnimating: boolean;
   animateRoute: () => void;
   fitInitialBounds: () => void;
   toggleShowWaypoints: () => void;
@@ -61,6 +62,7 @@ export const RouteOverlay = ({
   mapStyle,
   waypoints,
   activeWaypoint,
+  routeIsAnimating,
   animateRoute,
   toggleActiveWidget,
   onWidgetAnimationFinished,
@@ -138,6 +140,7 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={1}
+        disabled={routeIsAnimating}
         openDrawerSize={openDrawerSize}
         onClick={animateRoute}
       >
