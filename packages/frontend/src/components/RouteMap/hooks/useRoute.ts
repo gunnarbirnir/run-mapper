@@ -11,6 +11,7 @@ interface UseRouteProps {
   mapRef: RefObject<Map>;
   coordinates: Coordinates[];
   animateRouteRef: MutableRefObject<(() => void) | null>;
+  setRouteIsAnimating: (routeIsAnimating: boolean) => void;
 }
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -20,6 +21,7 @@ export const useRoute = ({
   coordinates,
   mapRef,
   animateRouteRef,
+  setRouteIsAnimating,
 }: UseRouteProps) => {
   const isInitialLoadRef = useRef(true);
   const isVisibleRef = useRef(document.visibilityState === 'visible');
@@ -45,6 +47,8 @@ export const useRoute = ({
     };
 
     const animateRoute = () => {
+      setRouteIsAnimating(true);
+
       if (map.getSource('route-source')) {
         map.removeLayer('route-layer');
         map.removeSource('route-source');
@@ -118,5 +122,5 @@ export const useRoute = ({
       map.off('style.load', onStyleLoad);
       document.removeEventListener('visibilitychange', handleMapVisibility);
     };
-  }, [isMapLoaded, coordinates, mapRef, animateRouteRef]);
+  }, [isMapLoaded, coordinates, setRouteIsAnimating, mapRef, animateRouteRef]);
 };

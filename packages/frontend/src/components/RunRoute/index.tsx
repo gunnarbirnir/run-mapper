@@ -35,6 +35,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
     mapStyle,
     showWaypoints,
     isAtInitialBounds,
+    routeIsAnimating,
     setActiveIndexRef,
     setMapStyle,
     animateRoute,
@@ -84,6 +85,7 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
+        routeIsAnimating={routeIsAnimating}
         animateRoute={animateRoute}
         fitInitialBounds={handleFitInitialBounds}
         setActiveWaypoint={handleSetActiveWaypoint}

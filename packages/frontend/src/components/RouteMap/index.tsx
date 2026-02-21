@@ -25,6 +25,7 @@ export const RouteMap = ({
   animateRouteRef,
   setIsAtInitialBounds,
   onWaypointClick,
+  setRouteIsAnimating,
 }: RouteMapProps) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
@@ -50,6 +51,7 @@ export const RouteMap = ({
     coordinates,
     mapRef,
     animateRouteRef,
+    setRouteIsAnimating,
   });
 
   useActiveMarker({

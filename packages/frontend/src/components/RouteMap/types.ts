@@ -8,9 +8,11 @@ export interface MapState {
   mapStyle: MapStyle;
   showWaypoints: boolean;
   isAtInitialBounds: boolean;
+  routeIsAnimating: boolean;
   setMapStyle: (mapStyle: MapStyle) => void;
   setShowWaypoints: (showWaypoints: boolean) => void;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
+  setRouteIsAnimating: (routeIsAnimating: boolean) => void;
   animateRouteRef: MutableRefObject<(() => void) | null>;
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
