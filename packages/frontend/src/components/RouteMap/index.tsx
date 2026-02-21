@@ -16,6 +16,7 @@ export const RouteMap = ({
   bounds,
   coordinates,
   waypoints,
+  elevations,
   mapStyle,
   hideActiveMarker = false,
   showWaypoints = true,
@@ -49,6 +50,7 @@ export const RouteMap = ({
   useRoute({
     isMapLoaded,
     coordinates,
+    elevations,
     mapRef,
     animateRouteRef,
     setRouteIsAnimating,

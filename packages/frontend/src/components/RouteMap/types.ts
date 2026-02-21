@@ -1,6 +1,12 @@
 import type { MutableRefObject } from 'react';
 
-import type { Bounds, Coordinates, Waypoint, MapStyle } from '~/types';
+import type {
+  Bounds,
+  Coordinates,
+  Waypoint,
+  MapStyle,
+  Elevation,
+} from '~/types';
 
 export type LineFeature = GeoJSON.Feature<GeoJSON.LineString>;
 
@@ -30,6 +36,7 @@ export interface RouteMapProps extends MapState {
   bounds: Bounds;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
+  elevations: Elevation[];
   hideActiveMarker?: boolean;
   onWaypointClick: (id: string) => void;
 }
