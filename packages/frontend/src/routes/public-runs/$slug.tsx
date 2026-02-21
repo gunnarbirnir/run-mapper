@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
-// import { RunRoute } from '~/components/RunRoute';
+import { RunRoute } from '~/components/RunRoute';
 import { api } from '~/service';
 import type { ApiResponse, Run } from '~/types';
 
@@ -24,9 +24,7 @@ function PublicRunDetail() {
     return <Fallback>Error: {error.message}</Fallback>;
   }
 
-  return <Fallback>Data: {data?.data.name}</Fallback>;
-
-  // return <RunRoute routeId={slug} run={data.data} />;
+  return <RunRoute routeId={slug} run={data.data} />;
 }
 
 const Fallback = ({ children }: { children: React.ReactNode }) => {

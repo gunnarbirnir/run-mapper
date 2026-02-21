@@ -1,12 +1,17 @@
-import { useCallback, useMemo, useRef } from 'react';
-
-import { ElevationGraph } from '~/components/ElevationGraph';
+import { lazy, Suspense, useCallback, useMemo, useRef } from 'react';
 import { RouteMap, useMapState } from '~/components/RouteMap';
 import type { Waypoint } from '~/types';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
 import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
+
+// Lazy load to fix SSR issue
+const ElevationGraph = lazy(() =>
+  import('~/components/ElevationGraph').then((m) => ({
+    default: m.ElevationGraph,
+  })),
+);
 
 export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   const bounds = useMemo(
@@ -70,12 +75,14 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           onWaypointClick={setActiveWaypoint}
         />
       </div>
-      <ElevationGraph
-        elevations={elevations}
-        setActiveIndexRef={setActiveIndexRef}
-        isExpanded={elevationWidgetActive}
-        isTooltipActive={!anyDrawerActive}
-      />
+      <Suspense>
+        <ElevationGraph
+          elevations={elevations}
+          setActiveIndexRef={setActiveIndexRef}
+          isExpanded={elevationWidgetActive}
+          isTooltipActive={!anyDrawerActive}
+        />
+      </Suspense>
       <RouteOverlay
         {...routeOverlayState}
         coordinates={coordinates}
