@@ -22,6 +22,7 @@ export const RouteMap = ({
   setActiveIndexRef,
   fitInitialBoundsRef,
   setActiveWaypointRef,
+  animateRouteRef,
   setIsAtInitialBounds,
   onWaypointClick,
 }: RouteMapProps) => {
@@ -48,6 +49,7 @@ export const RouteMap = ({
     isMapLoaded,
     coordinates,
     mapRef,
+    animateRouteRef,
   });
 
   useActiveMarker({

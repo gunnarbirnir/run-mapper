@@ -11,11 +11,13 @@ export interface MapState {
   setMapStyle: (mapStyle: MapStyle) => void;
   setShowWaypoints: (showWaypoints: boolean) => void;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
+  animateRouteRef: MutableRefObject<(() => void) | null>;
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
   >;
   setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
   fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  animateRoute: () => void;
   toggleShowWaypoints: () => void;
   handleSetActiveWaypoint: (waypoint: Waypoint) => void;
   handleFitInitialBounds: () => void;

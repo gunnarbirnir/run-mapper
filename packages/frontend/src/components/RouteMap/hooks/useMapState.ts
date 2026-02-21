@@ -9,6 +9,7 @@ export const useMapState = (): MapState => {
   const [showWaypoints, setShowWaypoints] = useState(true);
   const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
 
+  const animateRouteRef = useRef<(() => void) | null>(null);
   const setActiveIndexRef = useRef<
     ((updatedIndex: number | null) => void) | null
   >(null);
@@ -17,6 +18,9 @@ export const useMapState = (): MapState => {
   );
   const fitInitialBoundsRef = useRef<(() => void) | null>(null);
 
+  const animateRoute = useCallback(() => {
+    animateRouteRef.current?.();
+  }, [animateRouteRef]);
   const toggleShowWaypoints = useCallback(() => {
     setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints);
   }, [setShowWaypoints]);
@@ -37,11 +41,13 @@ export const useMapState = (): MapState => {
     setMapStyle,
     setShowWaypoints,
     setIsAtInitialBounds,
-    toggleShowWaypoints,
-    handleSetActiveWaypoint,
-    handleFitInitialBounds,
+    animateRouteRef,
     setActiveIndexRef,
     setActiveWaypointRef,
     fitInitialBoundsRef,
+    animateRoute,
+    toggleShowWaypoints,
+    handleSetActiveWaypoint,
+    handleFitInitialBounds,
   };
 };

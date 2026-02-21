@@ -36,10 +36,11 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   isAtInitialBounds: boolean;
   showWaypoints: boolean;
   mapStyle: MapStyle;
-  onMapStyleChange: (style: MapStyle) => void;
+  animateRoute: () => void;
   fitInitialBounds: () => void;
   toggleShowWaypoints: () => void;
   setActiveWaypoint: (waypoint: Waypoint) => void;
+  onMapStyleChange: (style: MapStyle) => void;
 };
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
@@ -60,6 +61,7 @@ export const RouteOverlay = ({
   mapStyle,
   waypoints,
   activeWaypoint,
+  animateRoute,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
@@ -136,6 +138,13 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={1}
+        openDrawerSize={openDrawerSize}
+        onClick={animateRoute}
+      >
+        <Icon name="play" className="size-6" />
+      </OptionButton>
+      <OptionButton
+        index={2}
         disabled={isAtInitialBounds}
         openDrawerSize={openDrawerSize}
         onClick={fitInitialBounds}
