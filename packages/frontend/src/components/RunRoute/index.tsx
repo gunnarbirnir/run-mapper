@@ -2,6 +2,8 @@ import { lazy, Suspense, useCallback, useMemo, useRef } from 'react';
 import { RouteMap, useMapState } from '~/components/RouteMap';
 import type { Waypoint } from '~/types';
 
+import { ELEVATION_GRAPH_HEIGHT } from '~/constants';
+
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
 import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
@@ -75,7 +77,14 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
           onWaypointClick={setActiveWaypoint}
         />
       </div>
-      <Suspense>
+      <Suspense
+        fallback={
+          <div
+            className="w-full bg-gray-50"
+            style={{ height: ELEVATION_GRAPH_HEIGHT }}
+          />
+        }
+      >
         <ElevationGraph
           elevations={elevations}
           setActiveIndexRef={setActiveIndexRef}
