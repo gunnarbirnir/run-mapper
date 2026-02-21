@@ -4,19 +4,28 @@ import type { Bounds, Coordinates, Waypoint, MapStyle } from '~/types';
 
 export type LineFeature = GeoJSON.Feature<GeoJSON.LineString>;
 
-export interface RouteMapProps {
+export interface MapState {
+  mapStyle: MapStyle;
+  showWaypoints: boolean;
+  isAtInitialBounds: boolean;
+  setMapStyle: (mapStyle: MapStyle) => void;
+  setShowWaypoints: (showWaypoints: boolean) => void;
+  setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
+  setActiveIndexRef: MutableRefObject<
+    ((updatedIndex: number | null) => void) | null
+  >;
+  setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
+  fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  toggleShowWaypoints: () => void;
+  handleSetActiveWaypoint: (waypoint: Waypoint) => void;
+  handleFitInitialBounds: () => void;
+}
+
+export interface RouteMapProps extends MapState {
   routeId: string;
   bounds: Bounds;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
-  style: MapStyle;
   hideActiveMarker?: boolean;
-  showWaypoints?: boolean;
-  setActiveIndexRef: MutableRefObject<
-    ((updatedIndex: number | null) => void) | null
-  >;
-  fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
-  setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
-  setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   onWaypointClick: (id: string) => void;
 }

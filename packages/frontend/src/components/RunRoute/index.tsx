@@ -1,6 +1,5 @@
-import { lazy, Suspense, useCallback, useMemo, useRef } from 'react';
+import { lazy, Suspense, useMemo, useRef } from 'react';
 import { RouteMap, useMapState } from '~/components/RouteMap';
-import type { Waypoint } from '~/types';
 
 import { ELEVATION_GRAPH_HEIGHT } from '~/constants';
 
@@ -16,6 +15,7 @@ const ElevationGraph = lazy(() =>
 );
 
 export const RunRoute = ({ routeId, run }: RunRouteProps) => {
+  const runRouteRef = useRef<HTMLDivElement>(null);
   const bounds = useMemo(
     () => getRouteBounds(run.boundingBox),
     // Only update map if routeId changes
@@ -30,50 +30,32 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const waypoints = useMemo(() => run.waypoints, [routeId]);
 
-  const runRouteRef = useRef<HTMLDivElement>(null);
-  const setActiveIndexRef = useRef<
-    ((updatedIndex: number | null) => void) | null
-  >(null);
-  const fitInitialBoundsRef = useRef<(() => void) | null>(null);
-  const setActiveWaypointRef = useRef<((waypoint: Waypoint) => void) | null>(
-    null,
-  );
-
+  const mapState = useMapState();
   const {
-    style: mapStyle,
-    isAtInitialBounds,
+    mapStyle,
     showWaypoints,
-    setStyle: setMapStyle,
-    setIsAtInitialBounds,
-    setShowWaypoints,
-  } = useMapState();
-  const routeOverlayState = useRouteOverlayState();
-  const { activeWidget, activeDrawer, setActiveWaypoint } = routeOverlayState;
+    isAtInitialBounds,
+    setActiveIndexRef,
+    setMapStyle,
+    toggleShowWaypoints,
+    handleSetActiveWaypoint,
+    handleFitInitialBounds,
+  } = mapState;
+  const { setActiveWaypoint, ...routeOverlayState } = useRouteOverlayState();
+  const { activeWidget, activeDrawer } = routeOverlayState;
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
-
-  const handleFitInitialBounds = useCallback(() => {
-    fitInitialBoundsRef.current?.();
-  }, []);
-  const handleSetActiveWaypoint = useCallback((waypoint: Waypoint) => {
-    setActiveWaypointRef.current?.(waypoint);
-  }, []);
 
   return (
     <div className="isolate flex h-full w-full flex-col" ref={runRouteRef}>
       <div className="flex-1">
         <RouteMap
+          {...mapState}
           routeId={routeId}
           bounds={bounds}
           coordinates={coordinates}
           waypoints={waypoints}
-          style={mapStyle}
           hideActiveMarker={elevationWidgetActive || anyDrawerActive}
-          showWaypoints={showWaypoints}
-          setActiveIndexRef={setActiveIndexRef}
-          fitInitialBoundsRef={fitInitialBoundsRef}
-          setActiveWaypointRef={setActiveWaypointRef}
-          setIsAtInitialBounds={setIsAtInitialBounds}
           onWaypointClick={setActiveWaypoint}
         />
       </div>
@@ -101,12 +83,10 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
         isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
-        onFitInitialBounds={handleFitInitialBounds}
         onMapStyleChange={setMapStyle}
-        onSetActiveWaypoint={handleSetActiveWaypoint}
-        toggleShowWaypoints={() =>
-          setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints)
-        }
+        fitInitialBounds={handleFitInitialBounds}
+        setActiveWaypoint={handleSetActiveWaypoint}
+        toggleShowWaypoints={toggleShowWaypoints}
       />
     </div>
   );

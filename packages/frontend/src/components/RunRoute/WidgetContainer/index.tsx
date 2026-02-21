@@ -46,7 +46,7 @@ export const WidgetContainer = ({
   isExpanded = false,
   isAnyOpen = false,
   runRouteSize,
-  onToggleActive,
+  toggleActive,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const { width: windowWidth } = useWindowDimensions();
@@ -61,7 +61,7 @@ export const WidgetContainer = ({
   const top = baseSpacing + index * (widgetHeight + baseSpacing);
   const right = runRouteSize.width - widgetWidth - baseSpacing;
   const bottom = runRouteSize.height - top - widgetHeight;
-  const isClickable = Boolean(children && onToggleActive && !isAnyOpen);
+  const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
     runRouteSize.height -
@@ -122,7 +122,7 @@ export const WidgetContainer = ({
             }
           : { visibility: 'hidden' }
       }
-      onClick={isClickable ? onToggleActive : undefined}
+      onClick={isClickable ? toggleActive : undefined}
     >
       {!isOpen && (
         <WidgetContent
@@ -139,7 +139,7 @@ export const WidgetContainer = ({
         <ModalContent
           isOpen={isOpen}
           title={label}
-          onClose={onToggleActive}
+          onClose={toggleActive}
           icon={icon}
           iconClassName={iconClassName}
         >
