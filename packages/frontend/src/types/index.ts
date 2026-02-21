@@ -51,7 +51,7 @@ export interface WidgetBaseProps {
   isAnyActive?: boolean;
   isAnyOpen?: boolean;
   isAnyExpanded?: boolean;
-  onToggleActive?: () => void;
+  toggleActive?: () => void;
 }
 
 export type WidgetType = 'distance' | 'elevation';

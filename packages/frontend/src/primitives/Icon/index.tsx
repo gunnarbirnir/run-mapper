@@ -13,6 +13,7 @@ import { ArrowTrendingDown } from './ArrowTrendingDown';
 import { Mountain } from './Mountain';
 import { DoubleArrow } from './DoubleArrow';
 import { ArrowUpDown } from './ArrowUpDown';
+import { Play } from './Play';
 
 import { cn } from '~/utils';
 
@@ -31,7 +32,8 @@ export type IconName =
   | 'arrowTrendingDown'
   | 'mountain'
   | 'doubleArrow'
-  | 'arrowUpDown';
+  | 'arrowUpDown'
+  | 'play';
 
 interface IconProps {
   name: IconName;
@@ -70,6 +72,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <DoubleArrow />;
     case 'arrowUpDown':
       return <ArrowUpDown />;
+    case 'play':
+      return <Play />;
     default:
       return null;
   }

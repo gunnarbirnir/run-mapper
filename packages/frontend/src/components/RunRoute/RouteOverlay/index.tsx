@@ -28,7 +28,7 @@ import { SettingsDrawer } from '../SettingsDrawer';
 import { WaypointsDrawer } from '../WaypointsDrawer';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
-type RouteOverlayProps = RouteOverlayReducerState & {
+type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
@@ -36,10 +36,11 @@ type RouteOverlayProps = RouteOverlayReducerState & {
   isAtInitialBounds: boolean;
   showWaypoints: boolean;
   mapStyle: MapStyle;
-  onFitInitialBounds: () => void;
+  animateRoute: () => void;
+  fitInitialBounds: () => void;
   toggleShowWaypoints: () => void;
+  setActiveWaypoint: (waypoint: Waypoint) => void;
   onMapStyleChange: (style: MapStyle) => void;
-  onSetActiveWaypoint: (waypoint: Waypoint) => void;
 };
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
@@ -60,14 +61,15 @@ export const RouteOverlay = ({
   mapStyle,
   waypoints,
   activeWaypoint,
+  animateRoute,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
-  onFitInitialBounds,
+  fitInitialBounds,
   onMapStyleChange,
   toggleVisibleWidget,
   toggleShowWaypoints,
-  onSetActiveWaypoint,
+  setActiveWaypoint,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
   const openDrawerSize =
@@ -79,7 +81,11 @@ export const RouteOverlay = ({
   const extendedWaypoints = useMemo(
     () =>
       coordinates.length > 0
-        ? [getStartWaypoint(coordinates), ...waypoints, getEndWaypoint(coordinates)]
+        ? [
+            getStartWaypoint(coordinates),
+            ...waypoints,
+            getEndWaypoint(coordinates),
+          ]
         : [],
     [coordinates, waypoints],
   );
@@ -94,7 +100,7 @@ export const RouteOverlay = ({
       isAnyActive: activeWidget !== null,
       isAnyOpen: openWidget !== null,
       isAnyExpanded: expandedWidget !== null,
-      onToggleActive: () => toggleActiveWidget(widget),
+      toggleActive: () => toggleActiveWidget(widget),
     };
   };
 
@@ -132,9 +138,16 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={1}
+        openDrawerSize={openDrawerSize}
+        onClick={animateRoute}
+      >
+        <Icon name="play" className="size-6" />
+      </OptionButton>
+      <OptionButton
+        index={2}
         disabled={isAtInitialBounds}
         openDrawerSize={openDrawerSize}
-        onClick={onFitInitialBounds}
+        onClick={fitInitialBounds}
       >
         <Icon name="reset" className="size-6" />
       </OptionButton>
@@ -153,7 +166,7 @@ export const RouteOverlay = ({
         width={WAYPOINTS_DRAWER_WIDTH}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
-        setActiveWaypoint={onSetActiveWaypoint}
+        setActiveWaypoint={setActiveWaypoint}
       />
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}
