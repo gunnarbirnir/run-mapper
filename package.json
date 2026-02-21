@@ -11,9 +11,11 @@
     "dev": "yarn workspace spretta-frontend dev",
     "start": "yarn dev",
     "backend-dev": "yarn workspace spretta-backend dev",
+    "build": "yarn workspace spretta-frontend build && yarn workspace spretta-backend build",
     "lint": "yarn workspace spretta-frontend lint && yarn workspace spretta-backend lint",
     "type-check": "yarn workspace spretta-frontend type-check && yarn workspace spretta-backend type-check",
     "clean": "rm -rf node_modules && yarn workspace spretta-frontend clean && yarn workspace spretta-backend clean",
+    "deploy-backend": "yarn workspace spretta-backend deploy",
     "process-gpx": "node scripts/processGpx.js $INPUT_FILE"
   },
   "devDependencies": {
