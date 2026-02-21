@@ -21,10 +21,24 @@ export const useRoute = ({
       return;
     }
 
-    mapRef.current.addSource('route-source', {
-      type: 'geojson',
-      data: getLineFeature(coordinates),
-    });
-    mapRef.current.addLayer(getRouteLayer());
+    const map = mapRef.current;
+
+    const addRoute = () => {
+      if (map.getSource('route-source')) {
+        return;
+      }
+      map.addSource('route-source', {
+        type: 'geojson',
+        data: getLineFeature(coordinates),
+      });
+      map.addLayer(getRouteLayer());
+    };
+
+    addRoute();
+    map.on('style.load', addRoute);
+
+    return () => {
+      map.off('style.load', addRoute);
+    };
   }, [isMapLoaded, coordinates, mapRef]);
 };
