@@ -43,6 +43,7 @@ export const ElevationGraph = ({
   isTooltipActive = true,
 }: ElevationGraphProps) => {
   const [startExpansion, setStartExpansion] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const lineColor = getCssVariableValue('--color-secondary-500');
   const gridColor = getCssVariableValue('--color-gray-300');
   const textColor = getCssVariableValue('--color-gray-500');
@@ -74,6 +75,23 @@ export const ElevationGraph = ({
     return () => clearTimeout(expandTimeout);
   }, [isExpanded]);
 
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      setIsResizing(true);
+      resizeTimeout = setTimeout(() => {
+        setIsResizing(false);
+      }, 100);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, []);
+
   return (
     <motion.div
       animate={
@@ -90,7 +108,7 @@ export const ElevationGraph = ({
       className="bg-gray-50 pt-1"
       style={{ height: ELEVATION_GRAPH_HEIGHT }}
     >
-      {!startExpansion && (
+      {!startExpansion && !isResizing && (
         <motion.div
           className="h-full w-full"
           initial={{ opacity: 0 }}
@@ -105,83 +123,83 @@ export const ElevationGraph = ({
               No elevation data yet
             </div>
           ) : (
-          <LineChart
-            style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
-            responsive
-            data={elevationData}
-            margin={{
-              top: spacingPx(2),
-              right: spacingPx(2),
-              bottom: spacingPx(2),
-              left: spacingPx(2),
-            }}
-            onMouseEnter={(event) => {
-              setActiveIndexRef.current?.(
-                getActiveIndexValue(event.activeIndex),
-              );
-            }}
-            onMouseLeave={() => {
-              setActiveIndexRef.current?.(null);
-            }}
-            onMouseMove={(event) => {
-              if (event.activeIndex) {
+            <LineChart
+              style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
+              responsive
+              data={elevationData}
+              margin={{
+                top: spacingPx(2),
+                right: spacingPx(2),
+                bottom: spacingPx(2),
+                left: spacingPx(2),
+              }}
+              onMouseEnter={(event) => {
                 setActiveIndexRef.current?.(
                   getActiveIndexValue(event.activeIndex),
                 );
-              }
-            }}
-          >
-            {[...xTicks, lastDistance].map((tick) => (
-              <ReferenceLine key={`x-${tick}`} x={tick} stroke={gridColor} />
-            ))}
-            {yTicks.map((tick) => (
-              <ReferenceLine key={`y-${tick}`} y={tick} stroke={gridColor} />
-            ))}
-            <Tooltip
-              active={isTooltipActive === false ? false : undefined}
-              cursor={{
-                stroke: activeLineColor,
-                strokeWidth: ACTIVE_LINE_WIDTH,
               }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              content={GraphTooltip as any}
-              isAnimationActive={false}
-              position={{ y: spacingPx(3) }}
-            />
-            <Line
-              dataKey="value"
-              stroke={lineColor}
-              strokeWidth={STROKE_WIDTH}
-              strokeLinecap="butt"
-              strokeLinejoin="round"
-              dot={false}
-              activeDot={false}
-              isAnimationActive={false}
-            />
-            <XAxis
-              type="number"
-              dataKey="distance"
-              height={spacingPx(5)}
-              axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
-              ticks={xTicks}
-              tick={{ fill: textColor, fontSize: xsText }}
-              tickFormatter={(value) => `${value.toFixed(1)} km`}
-              tickLine={false}
-              tickMargin={spacingPx(1)}
-            />
-            <YAxis
-              type="number"
-              dataKey="value"
-              width={yAxisWidth}
-              domain={[yTicks[0], yTicks[yTicks.length - 1]]}
-              axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
-              ticks={yTicks}
-              tick={{ fill: textColor, fontSize: xsText }}
-              tickFormatter={(value) => `${value.toFixed(0)} m`}
-              tickLine={false}
-              tickMargin={spacingPx(1)}
-            />
-          </LineChart>
+              onMouseLeave={() => {
+                setActiveIndexRef.current?.(null);
+              }}
+              onMouseMove={(event) => {
+                if (event.activeIndex) {
+                  setActiveIndexRef.current?.(
+                    getActiveIndexValue(event.activeIndex),
+                  );
+                }
+              }}
+            >
+              {[...xTicks, lastDistance].map((tick) => (
+                <ReferenceLine key={`x-${tick}`} x={tick} stroke={gridColor} />
+              ))}
+              {yTicks.map((tick) => (
+                <ReferenceLine key={`y-${tick}`} y={tick} stroke={gridColor} />
+              ))}
+              <Tooltip
+                active={isTooltipActive === false ? false : undefined}
+                cursor={{
+                  stroke: activeLineColor,
+                  strokeWidth: ACTIVE_LINE_WIDTH,
+                }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                content={GraphTooltip as any}
+                isAnimationActive={false}
+                position={{ y: spacingPx(3) }}
+              />
+              <Line
+                dataKey="value"
+                stroke={lineColor}
+                strokeWidth={STROKE_WIDTH}
+                strokeLinecap="butt"
+                strokeLinejoin="round"
+                dot={false}
+                activeDot={false}
+                isAnimationActive={false}
+              />
+              <XAxis
+                type="number"
+                dataKey="distance"
+                height={spacingPx(5)}
+                axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
+                ticks={xTicks}
+                tick={{ fill: textColor, fontSize: xsText }}
+                tickFormatter={(value) => `${value.toFixed(1)} km`}
+                tickLine={false}
+                tickMargin={spacingPx(1)}
+              />
+              <YAxis
+                type="number"
+                dataKey="value"
+                width={yAxisWidth}
+                domain={[yTicks[0], yTicks[yTicks.length - 1]]}
+                axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
+                ticks={yTicks}
+                tick={{ fill: textColor, fontSize: xsText }}
+                tickFormatter={(value) => `${value.toFixed(0)} m`}
+                tickLine={false}
+                tickMargin={spacingPx(1)}
+              />
+            </LineChart>
           )}
         </motion.div>
       )}

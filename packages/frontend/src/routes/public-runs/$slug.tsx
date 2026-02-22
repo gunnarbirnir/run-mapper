@@ -7,10 +7,14 @@ import type { ApiResponse, Run } from '~/types';
 
 export const Route = createFileRoute('/public-runs/$slug')({
   component: PublicRunDetail,
+  validateSearch: (search: Record<string, unknown>) => ({
+    isFullscreen: search.isFullscreen === true,
+  }),
 });
 
 function PublicRunDetail() {
   const { slug } = Route.useParams();
+  const { isFullscreen } = Route.useSearch();
   const { data, isPending, error } = useQuery<ApiResponse<Run>>({
     queryKey: ['public-run', slug],
     queryFn: () => api.get(`/public-runs/${encodeURIComponent(slug)}`),
@@ -24,7 +28,9 @@ function PublicRunDetail() {
     return <Fallback>Error: {error.message}</Fallback>;
   }
 
-  return <RunRoute routeId={slug} run={data.data} />;
+  return (
+    <RunRoute routeId={slug} run={data.data} isFullscreen={isFullscreen} />
+  );
 }
 
 const Fallback = ({ children }: { children: React.ReactNode }) => {

@@ -53,6 +53,7 @@ export const WidgetContainer = ({
   const [widgetWidth, setWidgetWidth] = useState(0);
   const [widgetHeight, setWidgetHeight] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
 
   const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
   const isSmallScreen = windowWidth < SMALL_SCREEN_BREAKPOINT;
@@ -96,6 +97,23 @@ export const WidgetContainer = ({
     }
   }, [hasCalculatedSize, isInitialized]);
 
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      setIsResizing(true);
+      resizeTimeout = setTimeout(() => {
+        setIsResizing(false);
+      }, 100);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, []);
+
   return (
     <motion.div
       animate={{
@@ -109,7 +127,7 @@ export const WidgetContainer = ({
           : bottom,
       }}
       transition={{
-        duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
+        duration: isInitialized && !isResizing ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
       className="pointer-events-auto absolute min-w-34 overflow-hidden rounded-lg bg-white shadow-md/20"

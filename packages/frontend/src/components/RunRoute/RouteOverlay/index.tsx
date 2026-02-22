@@ -29,6 +29,8 @@ import { WaypointsDrawer } from '../WaypointsDrawer';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
 type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
+  routeId: string;
+  isFullscreen: boolean;
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
@@ -49,6 +51,8 @@ const SETTINGS_DRAWER_WIDTH = 200;
 const WAYPOINTS_DRAWER_WIDTH = 250;
 
 export const RouteOverlay = ({
+  routeId,
+  isFullscreen,
   activeWidget,
   openWidget,
   expandedWidget,
@@ -91,6 +95,8 @@ export const RouteOverlay = ({
         : [],
     [coordinates, waypoints],
   );
+  let widgetIndex = 0;
+  let optionsButtonIndex = 0;
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
@@ -114,20 +120,20 @@ export const RouteOverlay = ({
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
       {visibleWidgets.distance && (
         <DistanceWidget
-          index={0}
+          index={widgetIndex++}
           coordinates={coordinates}
           {...getWidgetProps('distance')}
         />
       )}
       {visibleWidgets.elevation && (
         <ElevationWidget
-          index={visibleWidgets.distance ? 1 : 0}
+          index={widgetIndex++}
           elevations={elevations}
           {...getWidgetProps('elevation')}
         />
       )}
       <OptionButton
-        index={0}
+        index={optionsButtonIndex++}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
         buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
@@ -139,15 +145,26 @@ export const RouteOverlay = ({
         )}
       </OptionButton>
       <OptionButton
-        index={1}
+        index={optionsButtonIndex++}
         disabled={routeIsAnimating}
         openDrawerSize={openDrawerSize}
         onClick={animateRoute}
       >
         <Icon name="play" className="size-6" />
       </OptionButton>
+      {!isFullscreen && (
+        <OptionButton
+          index={optionsButtonIndex++}
+          openDrawerSize={openDrawerSize}
+          onClick={() =>
+            window.open(`/public-runs/${routeId}?isFullscreen=true`, '_blank')
+          }
+        >
+          <Icon name="externalLink" className="size-6" />
+        </OptionButton>
+      )}
       <OptionButton
-        index={2}
+        index={optionsButtonIndex++}
         disabled={isAtInitialBounds}
         openDrawerSize={openDrawerSize}
         onClick={fitInitialBounds}
