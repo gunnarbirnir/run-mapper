@@ -14,7 +14,11 @@ const ElevationGraph = lazy(() =>
   })),
 );
 
-export const RunRoute = ({ routeId, run }: RunRouteProps) => {
+export const RunRoute = ({
+  routeId,
+  run,
+  isFullscreen = false,
+}: RunRouteProps) => {
   const runRouteRef = useRef<HTMLDivElement>(null);
   const bounds = useMemo(
     () => getRouteBounds(run.boundingBox),
@@ -79,6 +83,8 @@ export const RunRoute = ({ routeId, run }: RunRouteProps) => {
       </Suspense>
       <RouteOverlay
         {...routeOverlayState}
+        routeId={routeId}
+        isFullscreen={isFullscreen}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}

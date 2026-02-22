@@ -14,6 +14,7 @@ import { Mountain } from './Mountain';
 import { DoubleArrow } from './DoubleArrow';
 import { ArrowUpDown } from './ArrowUpDown';
 import { Play } from './Play';
+import { ExternalLink } from './ExternalLink';
 
 import { cn } from '~/utils';
 
@@ -33,7 +34,8 @@ export type IconName =
   | 'mountain'
   | 'doubleArrow'
   | 'arrowUpDown'
-  | 'play';
+  | 'play'
+  | 'externalLink';
 
 interface IconProps {
   name: IconName;
@@ -74,6 +76,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <ArrowUpDown />;
     case 'play':
       return <Play />;
+    case 'externalLink':
+      return <ExternalLink />;
     default:
       return null;
   }
