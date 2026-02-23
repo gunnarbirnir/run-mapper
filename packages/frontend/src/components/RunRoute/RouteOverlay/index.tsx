@@ -1,12 +1,9 @@
 import { motion } from 'motion/react';
 import { RefObject, useMemo } from 'react';
 
-import {
-  EXPANDED_ELEVATION_GRAPH_HEIGHT,
-  WIDGET_ANIMATION_DURATION,
-  DEFAULT_EASING,
-} from '~/constants';
+import { WIDGET_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
+import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import type {
   Coordinates,
   Elevation,
@@ -78,6 +75,7 @@ export const RouteOverlay = ({
   setActiveWaypoint,
 }: RouteOverlayProps) => {
   const runRouteSize = useElementSize(runRouteRef);
+  const { expandedHeight: graphHeight } = useElevationGraphHeight();
   const openDrawerSize =
     activeDrawer === 'settings'
       ? SETTINGS_DRAWER_WIDTH
@@ -198,7 +196,7 @@ export const RouteOverlay = ({
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
           bottom: EXPAND_GRAPH_WIDGETS.includes(openWidget || '')
-            ? EXPANDED_ELEVATION_GRAPH_HEIGHT
+            ? graphHeight
             : 0,
         }}
         onClick={

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo, useRef } from 'react';
 import { RouteMap, useMapState } from '~/components/RouteMap';
 
-import { ELEVATION_GRAPH_HEIGHT } from '~/constants';
+import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -48,6 +48,7 @@ export const RunRoute = ({
     handleFitInitialBounds,
   } = mapState;
   const { setActiveWaypoint, ...routeOverlayState } = useRouteOverlayState();
+  const { compactHeight: graphHeight } = useElevationGraphHeight();
   const { activeWidget, activeDrawer } = routeOverlayState;
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
@@ -62,16 +63,15 @@ export const RunRoute = ({
           coordinates={coordinates}
           waypoints={waypoints}
           elevations={elevations}
-          hideActiveMarker={elevationWidgetActive || anyDrawerActive}
+          hideActiveMarker={
+            elevationWidgetActive || anyDrawerActive || routeIsAnimating
+          }
           onWaypointClick={setActiveWaypoint}
         />
       </div>
       <Suspense
         fallback={
-          <div
-            className="w-full bg-gray-50"
-            style={{ height: ELEVATION_GRAPH_HEIGHT }}
-          />
+          <div className="w-full bg-gray-50" style={{ height: graphHeight }} />
         }
       >
         <ElevationGraph

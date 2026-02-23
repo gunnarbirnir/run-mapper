@@ -2,11 +2,8 @@ import { useMemo } from 'react';
 
 import type { Elevation } from '~/types';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { calculateMaxElevation, calculateMinElevation } from '~/utils';
-import {
-  ELEVATION_GRAPH_HEIGHT,
-  EXPANDED_ELEVATION_GRAPH_HEIGHT,
-} from '~/constants';
 
 interface UseGraphTicksProps {
   elevationData: Elevation[];
@@ -25,6 +22,7 @@ export const useGraphTicks = ({
   yTicks: number[];
 } => {
   const { width: windowWidth } = useWindowDimensions();
+  const { height: graphHeight } = useElevationGraphHeight(isExpanded);
   const lastDistance =
     elevationData.length > 0
       ? elevationData[elevationData.length - 1].distance
@@ -32,25 +30,25 @@ export const useGraphTicks = ({
   const lastKm = Math.floor(lastDistance);
   const maxXTicks = Math.floor(windowWidth / MIN_X_TICK_WIDTH);
   // -1 because n ticks create n-1 sections
-  const xTickStep = Math.max(
-    1,
-    Math.ceil(lastKm / Math.max(maxXTicks - 1, 1)),
-  );
+  const xTickStep = Math.max(1, Math.ceil(lastKm / Math.max(maxXTicks - 1, 1)));
 
   const xTicks: number[] = [];
   for (let tick = xTickStep; tick <= lastKm; tick += xTickStep) {
     xTicks.push(tick);
   }
 
-  const graphHeight = isExpanded
-    ? EXPANDED_ELEVATION_GRAPH_HEIGHT
-    : ELEVATION_GRAPH_HEIGHT;
   const maxElevation = useMemo(
-    () => calculateMaxElevation(elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }]),
+    () =>
+      calculateMaxElevation(
+        elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }],
+      ),
     [elevationData],
   );
   const minElevation = useMemo(
-    () => calculateMinElevation(elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }]),
+    () =>
+      calculateMinElevation(
+        elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }],
+      ),
     [elevationData],
   );
   const yStepSize = maxElevation.value - minElevation.value > 50 ? 10 : 5;
