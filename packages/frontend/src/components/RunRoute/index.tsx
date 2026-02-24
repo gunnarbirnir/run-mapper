@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo, useRef } from 'react';
 import { RouteMap, useMapState } from '~/components/RouteMap';
 
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { RUN_ROUTE_MIN_WIDTH, RUN_ROUTE_MIN_HEIGHT } from '~/constants';
 
 import type { RunRouteProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
@@ -54,7 +55,11 @@ export const RunRoute = ({
   const anyDrawerActive = Boolean(activeDrawer);
 
   return (
-    <div className="isolate flex h-full w-full flex-col" ref={runRouteRef}>
+    <div
+      className="relative isolate flex h-full w-full flex-col"
+      style={{ minHeight: RUN_ROUTE_MIN_HEIGHT, minWidth: RUN_ROUTE_MIN_WIDTH }}
+      ref={runRouteRef}
+    >
       <div className="flex-1">
         <RouteMap
           {...mapState}

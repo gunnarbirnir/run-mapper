@@ -34,10 +34,6 @@ export const useMapState = (): MapState => {
     };
   }, [routeIsAnimating]);
 
-  const animateRoute = useCallback(() => {
-    animateRouteRef.current?.();
-  }, [animateRouteRef]);
-
   const toggleShowWaypoints = useCallback(() => {
     setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints);
   }, [setShowWaypoints]);
@@ -52,6 +48,11 @@ export const useMapState = (): MapState => {
   const handleFitInitialBounds = useCallback(() => {
     fitInitialBoundsRef.current?.();
   }, [fitInitialBoundsRef]);
+
+  const animateRoute = useCallback(() => {
+    handleFitInitialBounds();
+    animateRouteRef.current?.();
+  }, [animateRouteRef, handleFitInitialBounds]);
 
   return {
     mapStyle,

@@ -175,6 +175,7 @@ export const RouteOverlay = ({
         visibleWidgets={visibleWidgets}
         showWaypoints={showWaypoints}
         mapStyle={mapStyle}
+        toggleDrawer={() => toggleDrawer('settings')}
         toggleVisibleWidget={toggleVisibleWidget}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={onMapStyleChange}
