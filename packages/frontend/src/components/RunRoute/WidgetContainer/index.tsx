@@ -54,22 +54,22 @@ export const WidgetContainer = ({
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
   const baseSpacing = spacingPx(4);
   const top = baseSpacing + index * (widgetHeight + baseSpacing);
-  const right = runRouteSize.width - widgetWidth - baseSpacing;
-  const bottom = runRouteSize.height - top - widgetHeight;
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
     runRouteSize.height - (showGraphWhileActive ? graphHeight : 0);
   const modalTargetHeight = mapHeight - activeSpacing * 2;
   const modalTargetWidth = runRouteSize.width - activeSpacing * 2;
-  const modalY =
+  const modalTop =
     modalTargetHeight > MODAL_MAX_HEIGHT
       ? (mapHeight - MODAL_MAX_HEIGHT) / 2
       : activeSpacing;
-  const modalX =
+  const modalLeft =
     modalTargetWidth > MODAL_MAX_WIDTH
       ? (runRouteSize.width - MODAL_MAX_WIDTH) / 2
       : activeSpacing;
+  const modalWidth = Math.min(modalTargetWidth, MODAL_MAX_WIDTH);
+  const modalHeight = Math.min(modalTargetHeight, MODAL_MAX_HEIGHT);
 
   useEffect(() => {
     if (!isOpen) {
@@ -110,14 +110,10 @@ export const WidgetContainer = ({
   return (
     <motion.div
       animate={{
-        top: isActive ? modalY : top,
-        left: isActive ? modalX : baseSpacing,
-        right: isActive ? modalX : right,
-        bottom: isActive
-          ? showGraphWhileActive
-            ? graphHeight + modalY
-            : modalY
-          : bottom,
+        top: isActive ? modalTop : top,
+        left: isActive ? modalLeft : baseSpacing,
+        width: isActive ? modalWidth : widgetWidth,
+        height: isActive ? modalHeight : widgetHeight,
       }}
       transition={{
         duration: isInitialized && !isResizing ? WIDGET_ANIMATION_DURATION : 0,
