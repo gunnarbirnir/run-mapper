@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import { Close } from './Close';
 import { Location } from './Location';
 import { Settings } from './Settings';
@@ -39,6 +41,7 @@ export type IconName =
 
 interface IconProps {
   name: IconName;
+  style?: CSSProperties;
   className?: string;
 }
 
@@ -83,9 +86,9 @@ const IconContent = ({ name }: { name: IconName }) => {
   }
 };
 
-export const Icon = ({ name, className }: IconProps) => {
+export const Icon = ({ name, style, className }: IconProps) => {
   return (
-    <div className={cn('size-6', className)}>
+    <div className={cn('size-6', className)} style={style}>
       <IconContent name={name} />
     </div>
   );

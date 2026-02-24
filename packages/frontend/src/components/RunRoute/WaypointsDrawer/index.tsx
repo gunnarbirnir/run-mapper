@@ -35,9 +35,9 @@ export const WaypointsDrawer = ({
     <Drawer
       isOpen={isOpen}
       width={width}
-      className="pointer-events-auto z-20 flex flex-col"
+      className="pointer-events-auto z-20 h-full"
     >
-      <div className="overflow-x-hidden overflow-y-auto pt-6">
+      <div className="flex h-full flex-col overflow-x-hidden overflow-y-auto pt-6">
         <Text element="h2" className="mb-4 px-4">
           {activeWaypointDetails.name}
         </Text>

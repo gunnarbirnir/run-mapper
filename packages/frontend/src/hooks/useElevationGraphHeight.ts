@@ -1,17 +1,18 @@
 import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { convertRemToPixels } from '~/utils';
 
 const EXPANDED = {
-  sm: 180,
-  md: 200,
-  lg: 200,
-  xl: 250,
+  sm: '10rem',
+  md: '12rem',
+  lg: '12rem',
+  xl: '15rem',
 };
 
 const COMPACT = {
-  sm: 120,
-  md: 120,
-  lg: 120,
-  xl: 150,
+  sm: '7.5rem',
+  md: '7.5rem',
+  lg: '7.5rem',
+  xl: '10rem',
 };
 
 export const useElevationGraphHeight = (isExpanded = false) => {
@@ -25,8 +26,8 @@ export const useElevationGraphHeight = (isExpanded = false) => {
         : 'xl';
 
   return {
-    height: isExpanded ? EXPANDED[size] : COMPACT[size],
-    compactHeight: COMPACT[size],
-    expandedHeight: EXPANDED[size],
+    height: convertRemToPixels(isExpanded ? EXPANDED[size] : COMPACT[size]),
+    compactHeight: convertRemToPixels(COMPACT[size]),
+    expandedHeight: convertRemToPixels(EXPANDED[size]),
   };
 };
