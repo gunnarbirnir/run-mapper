@@ -10,14 +10,13 @@ import {
 import { motion } from 'motion/react';
 
 import {
-  ELEVATION_GRAPH_HEIGHT,
-  EXPANDED_ELEVATION_GRAPH_HEIGHT,
   WIDGET_ANIMATION_DURATION,
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
 } from '~/constants';
 import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
 import type { Elevation } from '~/types';
+import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 
 import { processElevationData, getActiveIndexValue } from './utils';
 import { GraphTooltip } from './GraphTooltip';
@@ -42,6 +41,7 @@ export const ElevationGraph = ({
   isExpanded = false,
   isTooltipActive = true,
 }: ElevationGraphProps) => {
+  const { compactHeight, expandedHeight } = useElevationGraphHeight(isExpanded);
   const [startExpansion, setStartExpansion] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const lineColor = getCssVariableValue('--color-secondary-500');
@@ -97,7 +97,7 @@ export const ElevationGraph = ({
       animate={
         isExpanded
           ? {
-              height: EXPANDED_ELEVATION_GRAPH_HEIGHT,
+              height: expandedHeight,
             }
           : undefined
       }
@@ -106,7 +106,7 @@ export const ElevationGraph = ({
         ease: DEFAULT_EASING,
       }}
       className="bg-gray-50 pt-1"
-      style={{ height: ELEVATION_GRAPH_HEIGHT }}
+      style={{ height: compactHeight }}
     >
       {!startExpansion && !isResizing && (
         <motion.div

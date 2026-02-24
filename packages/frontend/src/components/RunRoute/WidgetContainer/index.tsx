@@ -1,12 +1,9 @@
 import { motion } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import {
-  DEFAULT_EASING,
-  EXPANDED_ELEVATION_GRAPH_HEIGHT,
-  WIDGET_ANIMATION_DURATION,
-} from '~/constants';
-import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { type IconName } from '~/primitives';
 import type { WidgetBaseProps } from '~/types';
 import { spacingPx } from '~/utils';
@@ -26,9 +23,6 @@ interface WidgetContainerProps extends WidgetBaseProps {
 // TODO: trap focus while open
 // TODO: handle keyboard events, like esc
 
-// Create global constant for breakpoints
-// Import from Tailwind?
-const SMALL_SCREEN_BREAKPOINT = 600;
 const MODAL_MAX_HEIGHT = 300;
 const MODAL_MAX_WIDTH = 600;
 
@@ -49,34 +43,33 @@ export const WidgetContainer = ({
   toggleActive,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
-  const { width: windowWidth } = useWindowDimensions();
+  const { isSmallScreen } = useMediaQuery();
+  const { expandedHeight: graphHeight } = useElevationGraphHeight();
   const [widgetWidth, setWidgetWidth] = useState(0);
   const [widgetHeight, setWidgetHeight] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
 
   const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
-  const isSmallScreen = windowWidth < SMALL_SCREEN_BREAKPOINT;
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
   const baseSpacing = spacingPx(4);
   const top = baseSpacing + index * (widgetHeight + baseSpacing);
-  const right = runRouteSize.width - widgetWidth - baseSpacing;
-  const bottom = runRouteSize.height - top - widgetHeight;
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
-    runRouteSize.height -
-    (showGraphWhileActive ? EXPANDED_ELEVATION_GRAPH_HEIGHT : 0);
+    runRouteSize.height - (showGraphWhileActive ? graphHeight : 0);
   const modalTargetHeight = mapHeight - activeSpacing * 2;
   const modalTargetWidth = runRouteSize.width - activeSpacing * 2;
-  const modalY =
+  const modalTop =
     modalTargetHeight > MODAL_MAX_HEIGHT
       ? (mapHeight - MODAL_MAX_HEIGHT) / 2
       : activeSpacing;
-  const modalX =
+  const modalLeft =
     modalTargetWidth > MODAL_MAX_WIDTH
       ? (runRouteSize.width - MODAL_MAX_WIDTH) / 2
       : activeSpacing;
+  const modalWidth = Math.min(modalTargetWidth, MODAL_MAX_WIDTH);
+  const modalHeight = Math.min(modalTargetHeight, MODAL_MAX_HEIGHT);
 
   useEffect(() => {
     if (!isOpen) {
@@ -117,14 +110,10 @@ export const WidgetContainer = ({
   return (
     <motion.div
       animate={{
-        top: isActive ? modalY : top,
-        left: isActive ? modalX : baseSpacing,
-        right: isActive ? modalX : right,
-        bottom: isActive
-          ? showGraphWhileActive
-            ? EXPANDED_ELEVATION_GRAPH_HEIGHT + modalY
-            : modalY
-          : bottom,
+        top: isActive ? modalTop : top,
+        left: isActive ? modalLeft : baseSpacing,
+        width: isActive ? modalWidth : widgetWidth,
+        height: isActive ? modalHeight : widgetHeight,
       }}
       transition={{
         duration: isInitialized && !isResizing ? WIDGET_ANIMATION_DURATION : 0,
