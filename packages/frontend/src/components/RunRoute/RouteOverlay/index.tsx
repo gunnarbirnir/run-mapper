@@ -16,6 +16,7 @@ import {
   areCssVariablesLoaded,
   getStartWaypoint,
   getEndWaypoint,
+  convertRemToPixels,
 } from '~/utils';
 
 import { DistanceWidget } from '../DistanceWidget';
@@ -44,8 +45,8 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
 };
 
 const EXPAND_GRAPH_WIDGETS = ['elevation'];
-const SETTINGS_DRAWER_WIDTH = 200;
-const WAYPOINTS_DRAWER_WIDTH = 250;
+const SETTINGS_DRAWER_WIDTH = convertRemToPixels('13rem');
+const WAYPOINTS_DRAWER_WIDTH = convertRemToPixels('15rem');
 
 export const RouteOverlay = ({
   routeId,
@@ -175,6 +176,7 @@ export const RouteOverlay = ({
         visibleWidgets={visibleWidgets}
         showWaypoints={showWaypoints}
         mapStyle={mapStyle}
+        toggleDrawer={() => toggleDrawer('settings')}
         toggleVisibleWidget={toggleVisibleWidget}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={onMapStyleChange}

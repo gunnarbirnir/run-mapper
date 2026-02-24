@@ -1,5 +1,5 @@
 import type { Waypoint } from '~/types';
-import { cn } from '~/utils';
+import { cn, convertRemToPixels } from '~/utils';
 import { Icon } from '~/primitives/Icon';
 
 interface RouteLineItemProps {
@@ -9,8 +9,7 @@ interface RouteLineItemProps {
   drawerWidth: number;
 }
 
-const START_END_RADIUS = 14;
-const WAYPOINT_RADIUS = 12;
+const ITEM_RADIUS = convertRemToPixels('0.75rem');
 const START_END_BORDER_WIDTH = 4;
 const WAYPOINT_BORDER_WIDTH = 3;
 
@@ -23,7 +22,6 @@ export const RouteLineItem = ({
   const isStart = index === 0;
   const isEnd = index === waypoints.length - 1;
   const isStartOrEnd = isStart || isEnd;
-  const radius = isStartOrEnd ? START_END_RADIUS : WAYPOINT_RADIUS;
   const bgColor = isStart
     ? 'bg-success-500'
     : isEnd
@@ -38,8 +36,8 @@ export const RouteLineItem = ({
       key={currentWaypoint.id}
       className="absolute"
       style={{
-        left: index * drawerWidth - radius,
-        top: -radius + borderWidth / 2,
+        left: index * drawerWidth - ITEM_RADIUS,
+        top: -ITEM_RADIUS + borderWidth / 2,
       }}
     >
       <div
@@ -48,8 +46,8 @@ export const RouteLineItem = ({
           'flex items-center justify-center rounded-full border-white shadow-md/30',
         )}
         style={{
-          width: radius * 2,
-          height: radius * 2,
+          width: ITEM_RADIUS * 2,
+          height: ITEM_RADIUS * 2,
           borderWidth: borderWidth,
         }}
       >
