@@ -87,7 +87,11 @@ function RootBody({
   isPlayground: boolean;
 }) {
   if (isFullscreenDisplay) {
-    return <main className="h-screen w-screen">{children}</main>;
+    return (
+      <main className="h-screen w-screen" style={{ height: '100dvh' }}>
+        {children}
+      </main>
+    );
   }
 
   return (
