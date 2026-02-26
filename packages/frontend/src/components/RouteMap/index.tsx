@@ -11,6 +11,7 @@ import { useRoute } from './hooks/useRoute';
 import { useWaypoints } from './hooks/useWaypoints';
 import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
+import { PoweredByLabel } from './components/PoweredByLabel';
 
 export const RouteMap = ({
   bounds,
@@ -82,7 +83,12 @@ export const RouteMap = ({
     fitInitialBoundsRef,
   });
 
-  return <div ref={mapContainerRef} className="h-full w-full" />;
+  return (
+    <div className="relative h-full w-full">
+      <div ref={mapContainerRef} className="h-full w-full" />
+      <PoweredByLabel />
+    </div>
+  );
 };
 
 export { useMapState };
