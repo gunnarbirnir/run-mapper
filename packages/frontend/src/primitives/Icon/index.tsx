@@ -17,6 +17,7 @@ import { DoubleArrow } from './DoubleArrow';
 import { ArrowUpDown } from './ArrowUpDown';
 import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
+import { Spretta } from './Spretta';
 
 import { cn } from '~/utils';
 
@@ -37,8 +38,8 @@ export type IconName =
   | 'doubleArrow'
   | 'arrowUpDown'
   | 'play'
-  | 'externalLink';
-
+  | 'externalLink'
+  | 'spretta';
 interface IconProps {
   name: IconName;
   style?: CSSProperties;
@@ -81,6 +82,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Play />;
     case 'externalLink':
       return <ExternalLink />;
+    case 'spretta':
+      return <Spretta />;
     default:
       return null;
   }

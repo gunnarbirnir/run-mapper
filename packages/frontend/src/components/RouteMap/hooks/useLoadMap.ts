@@ -26,10 +26,14 @@ export const useLoadMap = ({
       container: mapContainerRef.current as HTMLElement,
       bounds: paddedBounds,
       style: MAP_STYLES[mapStyle],
+      attributionControl: false,
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
     });
+    mapRef.current.addControl(
+      new mapboxgl.AttributionControl({ compact: true }),
+    );
 
     return () => {
       mapRef.current?.remove();
