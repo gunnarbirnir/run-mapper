@@ -14,7 +14,7 @@ export const PoweredByLabel = () => {
         right: MAPBOX_ATTRIBUTION_WIDTH,
       }}
     >
-      <Icon name="spretta" className="size-4" />
+      <Icon name="sprettaArrow" className="size-4" />
       <Text className="text-xs">
         Powered by <strong>Spretta</strong>
       </Text>
