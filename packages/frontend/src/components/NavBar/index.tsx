@@ -1,6 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '~/contexts/AuthContext';
-import { Button, Text } from '~/primitives';
+import { Button, Text, Icon } from '~/primitives';
 
 export const NavBar = () => {
   const { user, loading, logout } = useAuth();
@@ -12,17 +12,11 @@ export const NavBar = () => {
   };
 
   return (
-    <nav className="border-b border-gray-300 p-4">
+    <nav className="sticky top-0 z-10 bg-gray-50 px-4 py-2 opacity-95 shadow-sm">
       <div className="container mx-auto flex items-center justify-between">
-        <div className="flex gap-6">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
+        <div className="flex items-center gap-6">
+          <Link to="/">
+            <Icon name="spretta" className="size-8" />
           </Link>
           {user && (
             <>
@@ -32,30 +26,34 @@ export const NavBar = () => {
                   className: 'font-bold',
                 }}
                 activeOptions={{ exact: true }}
+                className="hidden sm:block"
               >
-                Runs
+                <Text>My Runs</Text>
               </Link>
               <Link
                 to="/editor/runs/new"
                 activeProps={{
                   className: 'font-bold',
                 }}
+                className="hidden sm:block"
               >
-                New Run
+                <Text>New Run</Text>
               </Link>
             </>
           )}
         </div>
         <div className="flex items-center gap-4">
-          {loading ? (
-            <Text className="text-gray-500">Loading...</Text>
-          ) : user ? (
+          {user ? (
             <>
-              <Text className="text-sm text-gray-600">{user.email}</Text>
+              <Text className="hidden text-sm text-gray-600 sm:block">
+                {user.email}
+              </Text>
               <Button onClick={handleLogout}>Logout</Button>
             </>
           ) : (
-            <Button linkTo="/auth/login">Sign In</Button>
+            <Button linkTo="/auth/login" isLoading={loading}>
+              Sign In
+            </Button>
           )}
         </div>
       </div>

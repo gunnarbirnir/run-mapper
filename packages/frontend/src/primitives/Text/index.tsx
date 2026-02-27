@@ -13,7 +13,7 @@ export const Text = ({
   switch (element) {
     case 'h1':
       return (
-        <h1 className={cn('text-3xl font-bold', className)} style={style}>
+        <h1 className={cn('mb-6 text-3xl font-bold', className)} style={style}>
           {children}
         </h1>
       );

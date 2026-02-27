@@ -43,12 +43,9 @@ function EditorRunsList() {
   return (
     <ProtectedRoute>
       <div>
-        <Text element="h1" className="mb-4">
-          All Runs
-        </Text>
-        <Text className="mb-6">View and manage your running routes</Text>
-
-        {loading && <Text>Loading runs...</Text>}
+        <Text element="h1">My Runs</Text>
+        <Text variant="paragraph">View and manage your running routes</Text>
+        {loading && <Text variant="paragraph">Loading runs...</Text>}
         {error && (
           <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
             {error}
@@ -57,7 +54,9 @@ function EditorRunsList() {
         {!loading && !error && (
           <>
             {runs.length === 0 ? (
-              <Text className="mb-4">No runs yet. Create your first run!</Text>
+              <Text variant="paragraph">
+                No runs yet. Create your first run!
+              </Text>
             ) : (
               <div className="mb-6 space-y-2">
                 {runs.map((run) => (
@@ -81,7 +80,9 @@ function EditorRunsList() {
                 ))}
               </div>
             )}
-            <Button linkTo="/runs/new">Create New Run</Button>
+            <Button linkTo="/runs/new" className="mt-4">
+              Create New Run
+            </Button>
           </>
         )}
       </div>

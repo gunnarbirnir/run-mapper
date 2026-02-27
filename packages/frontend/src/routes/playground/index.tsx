@@ -42,7 +42,7 @@ export function Playground() {
         <iframe
           height="500"
           style={{ width: '100%', maxWidth: 800 }}
-          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/public-runs/${runSlug}`}
+          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`}
         />
       )}
     </div>

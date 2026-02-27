@@ -6,7 +6,13 @@ type BaseTextProps = {
   style?: CSSProperties;
 };
 
-export type PVariant = 'default' | 'label' | 'bold' | 'medium' | 'subtle';
+export type PVariant =
+  | 'default'
+  | 'label'
+  | 'bold'
+  | 'medium'
+  | 'subtle'
+  | 'paragraph';
 
 export type TextProps =
   | (BaseTextProps & {

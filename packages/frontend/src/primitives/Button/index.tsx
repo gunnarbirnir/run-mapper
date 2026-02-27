@@ -12,6 +12,7 @@ type ButtonProps = {
   className?: string;
   linkTo?: string;
   disabled?: boolean;
+  isLoading?: boolean;
   color?: ButtonColor;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -24,13 +25,16 @@ export const Button = ({
   className,
   linkTo,
   disabled = false,
+  isLoading = false,
   color = 'black',
   ...props
 }: ButtonProps) => {
+  const isDisabled = disabled || isLoading;
+  const buttonContent = isLoading ? 'Loading...' : children;
   const combinedClassName = cn(
     BASE_CLASS_NAME,
-    getColorClassName(color, { disabled }),
-    { [ENABLED_CLASS_NAME]: !disabled },
+    getColorClassName(color, { disabled: isDisabled }),
+    { [ENABLED_CLASS_NAME]: !isDisabled },
     className,
   );
 
@@ -39,18 +43,22 @@ export const Button = ({
       <Link to={linkTo}>
         <BaseUiButton
           {...props}
-          disabled={disabled}
+          disabled={isDisabled}
           className={combinedClassName}
         >
-          {children}
+          {buttonContent}
         </BaseUiButton>
       </Link>
     );
   }
 
   return (
-    <BaseUiButton {...props} disabled={disabled} className={combinedClassName}>
-      {children}
+    <BaseUiButton
+      {...props}
+      disabled={isDisabled}
+      className={combinedClassName}
+    >
+      {buttonContent}
     </BaseUiButton>
   );
 };

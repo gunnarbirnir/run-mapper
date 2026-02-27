@@ -74,9 +74,7 @@ function NewEditorRun() {
   return (
     <ProtectedRoute>
       <div>
-        <Text element="h1" className="mb-4">
-          Create New Run
-        </Text>
+        <Text element="h1">Create New Run</Text>
         <Form onSubmit={handleSubmit}>
           {error && (
             <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
@@ -99,7 +97,7 @@ function NewEditorRun() {
             value={pathData}
             onChange={setPathData}
           />
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="mt-2">
             {loading ? 'Creating...' : 'Create Run'}
           </Button>
         </Form>
