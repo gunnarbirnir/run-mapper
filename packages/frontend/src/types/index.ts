@@ -1,13 +1,10 @@
-export type Coordinates = [number, number];
-export type Bounds = [Coordinates, Coordinates];
+export type Coordinates = { lat: number; lng: number };
+export type BoundingBox = [Coordinates, Coordinates];
+// What Mapbox uses
+export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
 
-export type BaseCoordinate = {
-  lat: number;
-  lng: number;
-};
-
-export type RunCoordinates = BaseCoordinate & {
+export type RunCoordinates = Coordinates & {
   elevation: number;
 };
 
@@ -17,20 +14,23 @@ export type Waypoint = {
   id: string;
   name: string;
   description?: string;
-  coordinates: BaseCoordinate;
+  coordinates: Coordinates;
   type: WayPointType;
 };
 
-export interface Run {
+export interface PublicRun {
   id: string;
-  userId: string;
-  createdAt: string;
   name: string;
-  isPublic?: boolean;
-  publicSlug?: string | null;
-  boundingBox: [BaseCoordinate, BaseCoordinate];
+  slug?: string;
+  boundingBox: BoundingBox;
   coordinates: RunCoordinates[];
   waypoints: Waypoint[];
+}
+
+export interface EditorRun extends PublicRun {
+  createdAt: string;
+  updatedAt?: string;
+  isPublic?: boolean;
 }
 
 export type ApiResponse<T> = {
@@ -40,7 +40,7 @@ export type ApiResponse<T> = {
 
 export interface WidgetBaseProps {
   index: number;
-  runRouteSize: {
+  publicRunDisplaySize: {
     width: number;
     height: number;
   };
@@ -56,5 +56,4 @@ export interface WidgetBaseProps {
 
 export type WidgetType = 'distance' | 'elevation';
 export type DrawerType = 'settings' | 'waypoints';
-
 export type MapStyle = 'standard' | 'satellite';

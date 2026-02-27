@@ -1,9 +1,18 @@
+import type { CSSProperties, ReactNode } from 'react';
+
 type BaseTextProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
 };
 
-export type PVariant = 'default' | 'label' | 'bold' | 'medium' | 'subtle';
+export type PVariant =
+  | 'default'
+  | 'label'
+  | 'bold'
+  | 'medium'
+  | 'subtle'
+  | 'paragraph';
 
 export type TextProps =
   | (BaseTextProps & {

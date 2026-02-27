@@ -15,8 +15,7 @@
     "lint": "yarn workspace spretta-frontend lint && yarn workspace spretta-backend lint",
     "type-check": "yarn workspace spretta-frontend type-check && yarn workspace spretta-backend type-check",
     "clean": "rm -rf node_modules && yarn workspace spretta-frontend clean && yarn workspace spretta-backend clean",
-    "deploy-backend": "yarn workspace spretta-backend deploy",
-    "process-gpx": "node scripts/processGpx.js $INPUT_FILE"
+    "deploy-backend": "yarn workspace spretta-backend deploy"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

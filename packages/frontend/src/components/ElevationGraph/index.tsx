@@ -14,7 +14,8 @@ import {
   DEFAULT_FADE_IN_DURATION,
   DEFAULT_EASING,
 } from '~/constants';
-import { getCssVariableValue, spacingPx, calculateMaxElevation } from '~/utils';
+import { getCssVariableValue, spacingPx } from '~/utils';
+import { calculateMaxElevation } from '~/utils/route';
 import type { Elevation } from '~/types';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 

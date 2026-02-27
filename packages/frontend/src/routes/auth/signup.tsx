@@ -34,7 +34,7 @@ function SignUp() {
 
     try {
       await signUp(email, password);
-      navigate({ to: '/runs' });
+      navigate({ to: '/editor/runs' });
     } catch (err: unknown) {
       let errorMessage = 'Failed to create account. Please try again.';
 

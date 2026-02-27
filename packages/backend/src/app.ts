@@ -5,8 +5,8 @@ import { API_INFO } from './config/constants.js';
 import { getAllowedOrigins, isOriginAllowed } from './config/env.js';
 import { db } from './firebase/admin.js';
 import auth from './routes/auth.js';
-import publicRuns from './routes/public-runs.js';
-import runs from './routes/runs.js';
+import publicRun from './routes/public-run.js';
+import editorRuns from './routes/editor-runs.js';
 
 const allowedOrigins = getAllowedOrigins();
 
@@ -48,5 +48,5 @@ app.get('/health', async (c) => {
 });
 
 app.route('/auth', auth);
-app.route('/runs', runs);
-app.route('/public-runs', publicRuns);
+app.route('/editor-runs', editorRuns);
+app.route('/public-run', publicRun);

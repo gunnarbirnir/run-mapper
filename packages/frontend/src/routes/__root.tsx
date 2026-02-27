@@ -13,6 +13,7 @@ import * as React from 'react';
 import appCss from '~/styles/app.css?url';
 
 import { NavBar } from '~/components/NavBar';
+import { Footer } from '~/components/Footer';
 import { AuthProvider } from '~/contexts/AuthContext';
 
 export const Route = createRootRoute({
@@ -30,7 +31,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'Create and visualize running routes with interactive iframes',
+        content: 'Create engaging and insightful routes for your runs.',
       },
     ],
     links: [
@@ -58,8 +59,8 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const matchRoute = useMatchRoute();
   const isPlayground = Boolean(matchRoute({ to: '/playground' }));
-  const publicRunParams = matchRoute({ to: '/public-runs/$slug' });
-  const isPublicRun = Boolean(publicRunParams);
+  const isPublicRun = Boolean(matchRoute({ to: '/run/$slug' }));
+  const disableDevTools = import.meta.env.VITE_DISABLE_DEV_TOOLS === 'true';
 
   return (
     <html>
@@ -70,7 +71,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <RootBody isFullscreenDisplay={isPublicRun} isPlayground={isPlayground}>
           {children}
         </RootBody>
-        {!isPublicRun && <TanStackRouterDevtools position="bottom-right" />}
+        {!isPublicRun && !disableDevTools && (
+          <TanStackRouterDevtools position="bottom-right" />
+        )}
         <Scripts />
       </body>
     </html>
@@ -95,11 +98,12 @@ function RootBody({
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col" style={{ minHeight: '100dvh' }}>
       {!isPlayground && <NavBar />}
-      <main className="px-4 py-6">
+      <main className="flex-1 px-4 pt-6 pb-12">
         <div className="container mx-auto">{children}</div>
       </main>
-    </>
+      {!isPlayground && <Footer />}
+    </div>
   );
 }

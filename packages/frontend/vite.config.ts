@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { nitro } from 'nitro/vite';
 import * as path from 'path';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
   },
@@ -15,7 +15,12 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths(),
-    tanstackStart(),
+    tanstackStart({
+      router: {
+        routeFileIgnorePattern:
+          command === 'build' ? '.*playground.*' : undefined,
+      },
+    }),
     nitro({
       preset: 'vercel',
     }),
@@ -27,4 +32,4 @@ export default defineConfig({
       '~': path.resolve(__dirname, './src'),
     },
   },
-});
+}));
