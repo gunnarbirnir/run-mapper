@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { useAuth } from '~/contexts/AuthContext';
-import { RunRoute } from '~/components/RunRoute';
+import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import { Button, Form, Text } from '~/primitives';
 import type { ApiResponse, Run } from '~/types';
@@ -197,7 +197,7 @@ function EditorRunDetail() {
             )}
           </div>
         </div>
-        <RunRoute routeId={runId} run={run} />
+        <PublicRunDisplay routeId={runId} run={run} />
       </div>
     </ProtectedRoute>
   );

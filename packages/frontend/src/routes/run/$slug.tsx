@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { RunRoute } from '~/components/RunRoute';
+import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import type { ApiResponse, Run } from '~/types';
 
@@ -29,7 +29,11 @@ function PublicRun() {
   }
 
   return (
-    <RunRoute routeId={slug} run={data.data} isFullscreen={isFullscreen} />
+    <PublicRunDisplay
+      routeId={slug}
+      run={data.data}
+      isFullscreen={isFullscreen}
+    />
   );
 }
 

@@ -40,7 +40,7 @@ export type ApiResponse<T> = {
 
 export interface WidgetBaseProps {
   index: number;
-  runRouteSize: {
+  publicRunDisplaySize: {
     width: number;
     height: number;
   };

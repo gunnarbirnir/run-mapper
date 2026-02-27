@@ -13,7 +13,7 @@ import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
 import { PoweredByLabel } from './components/PoweredByLabel';
 
-export const RouteMap = ({
+export const RunRouteMap = ({
   bounds,
   coordinates,
   waypoints,

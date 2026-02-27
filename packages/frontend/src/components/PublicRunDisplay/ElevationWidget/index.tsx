@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import type { Elevation, WidgetBaseProps } from '~/types';
-import { ListItem } from '~/components/ListItem';
+import { ListItem } from '~/primitives';
 import {
   calculateElevationGain,
   calculateElevationLoss,

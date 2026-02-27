@@ -8,14 +8,14 @@ export const PoweredByLabel = () => {
     <a
       href="https://run-mapper-ten.vercel.app/"
       target="_blank"
-      className="absolute flex items-center gap-1 rounded-full bg-white px-2 py-1 hover:bg-gray-100"
+      className="absolute flex items-center gap-[4px] rounded-full bg-white px-[8px] py-[3px] hover:bg-gray-100"
       style={{
         bottom: MAPBOX_ATTRIBUTION_PADDING,
         right: MAPBOX_ATTRIBUTION_WIDTH,
       }}
     >
-      <Icon name="spretta" className="size-4" />
-      <Text className="text-xs">
+      <Icon name="spretta" style={{ width: 16, height: 16 }} />
+      <Text style={{ fontSize: 12 }}>
         Powered by <strong>Spretta</strong>
       </Text>
     </a>

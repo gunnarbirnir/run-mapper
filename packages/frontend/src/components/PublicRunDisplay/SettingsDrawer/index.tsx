@@ -1,6 +1,6 @@
 import { Drawer, Text, Radio } from '~/primitives';
 import type { WidgetType, MapStyle } from '~/types';
-import { RUN_ROUTE_MIN_WIDTH } from '~/constants';
+import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { RoundButton, Icon } from '~/primitives';
@@ -38,7 +38,7 @@ export const SettingsDrawer = ({
     <Drawer
       isOpen={isOpen}
       width={width}
-      minWidth={RUN_ROUTE_MIN_WIDTH}
+      minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
       className="pointer-events-auto z-20 px-4 py-6"
     >
       <div className="flex items-center justify-between">

@@ -32,7 +32,7 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
-  runRouteRef: RefObject<HTMLDivElement>;
+  publicRunDisplayRef: RefObject<HTMLDivElement>;
   isAtInitialBounds: boolean;
   showWaypoints: boolean;
   mapStyle: MapStyle;
@@ -58,7 +58,7 @@ export const RouteOverlay = ({
   visibleWidgets,
   coordinates,
   elevations,
-  runRouteRef,
+  publicRunDisplayRef,
   isAtInitialBounds,
   showWaypoints,
   mapStyle,
@@ -75,7 +75,7 @@ export const RouteOverlay = ({
   toggleShowWaypoints,
   setActiveWaypoint,
 }: RouteOverlayProps) => {
-  const runRouteSize = useElementSize(runRouteRef);
+  const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const { expandedHeight: graphHeight } = useElevationGraphHeight();
   const openDrawerSize =
     activeDrawer === 'settings'
@@ -99,7 +99,7 @@ export const RouteOverlay = ({
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
-      runRouteSize,
+      publicRunDisplaySize,
       showGraphWhileActive: EXPAND_GRAPH_WIDGETS.includes(widget),
       isActive: activeWidget === widget,
       isOpen: openWidget === widget,
@@ -155,7 +155,9 @@ export const RouteOverlay = ({
         <OptionButton
           index={optionsButtonIndex++}
           openDrawerSize={openDrawerSize}
-          onClick={() => window.open(`/run/${routeId}?isFullscreen=true`, '_blank')}
+          onClick={() =>
+            window.open(`/run/${routeId}?isFullscreen=true`, '_blank')
+          }
         >
           <Icon name="externalLink" className="size-6" />
         </OptionButton>

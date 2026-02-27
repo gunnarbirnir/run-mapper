@@ -1,10 +1,13 @@
 import { lazy, Suspense, useMemo, useRef } from 'react';
-import { RouteMap, useMapState } from '~/components/RouteMap';
+import { RunRouteMap, useMapState } from '~/components/RunRouteMap';
 
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import { RUN_ROUTE_MIN_WIDTH, RUN_ROUTE_MIN_HEIGHT } from '~/constants';
+import {
+  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+  PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
+} from '~/constants';
 
-import type { RunRouteProps } from './types';
+import type { PublicRunDisplayProps } from './types';
 import { getRouteBounds, processRunRoute } from './utils';
 import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
 
@@ -15,12 +18,12 @@ const ElevationGraph = lazy(() =>
   })),
 );
 
-export const RunRoute = ({
+export const PublicRunDisplay = ({
   routeId,
   run,
   isFullscreen = false,
-}: RunRouteProps) => {
-  const runRouteRef = useRef<HTMLDivElement>(null);
+}: PublicRunDisplayProps) => {
+  const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const bounds = useMemo(
     () => getRouteBounds(run.boundingBox),
     // Only update map if routeId changes
@@ -57,11 +60,14 @@ export const RunRoute = ({
   return (
     <div
       className="relative isolate flex h-full w-full flex-col"
-      style={{ minHeight: RUN_ROUTE_MIN_HEIGHT, minWidth: RUN_ROUTE_MIN_WIDTH }}
-      ref={runRouteRef}
+      style={{
+        minHeight: PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
+        minWidth: PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+      }}
+      ref={publicRunDisplayRef}
     >
       <div className="flex-1">
-        <RouteMap
+        <RunRouteMap
           {...mapState}
           routeId={routeId}
           bounds={bounds}
@@ -93,7 +99,7 @@ export const RunRoute = ({
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
-        runRouteRef={runRouteRef}
+        publicRunDisplayRef={publicRunDisplayRef}
         isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
@@ -108,4 +114,4 @@ export const RunRoute = ({
   );
 };
 
-export type { RunRouteProps };
+export type { PublicRunDisplayProps };

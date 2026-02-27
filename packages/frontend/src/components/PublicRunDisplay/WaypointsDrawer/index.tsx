@@ -2,7 +2,7 @@ import { Drawer, Text, RoundButton, Icon } from '~/primitives';
 import type { Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { RUN_ROUTE_MIN_WIDTH } from '~/constants';
+import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 
 import { RouteLine } from './RouteLine';
 
@@ -24,7 +24,7 @@ export const WaypointsDrawer = ({
   const { isSmallScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const activeWidth = isSmallScreen
-    ? Math.max(windowWidth, RUN_ROUTE_MIN_WIDTH)
+    ? Math.max(windowWidth, PUBLIC_RUN_DISPLAY_MIN_WIDTH)
     : width;
 
   const activeWaypointDetails = waypoints.find(
