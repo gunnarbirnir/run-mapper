@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
-import type { ApiResponse, Run } from '~/types';
+import type { ApiResponse, PublicRun } from '~/types';
 
 export const Route = createFileRoute('/run/$slug')({
   component: PublicRun,
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/run/$slug')({
 function PublicRun() {
   const { slug } = Route.useParams();
   const { isFullscreen } = Route.useSearch();
-  const { data, isPending, error } = useQuery<ApiResponse<Run>>({
+  const { data, isPending, error } = useQuery<ApiResponse<PublicRun>>({
     queryKey: ['public-run', slug],
     queryFn: () => api.get(`/public-run/${encodeURIComponent(slug)}`),
   });

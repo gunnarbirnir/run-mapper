@@ -1,5 +1,5 @@
 import type { Coordinates } from '~/types';
-import { haversineDistance } from '~/utils';
+import { haversineDistance } from '~/utils/route';
 
 export const calculateDistance = (coordinates: Coordinates[]): number => {
   if (coordinates.length < 2) {

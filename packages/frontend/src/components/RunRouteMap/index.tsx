@@ -7,14 +7,14 @@ import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { useLoadMap } from './hooks/useLoadMap';
 import { useMapState } from './hooks/useMapState';
 import { useMapStyle } from './hooks/useMapStyle';
-import { useRoute } from './hooks/useRoute';
+import { useMapRoute } from './hooks/useMapRoute';
 import { useWaypoints } from './hooks/useWaypoints';
 import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
 import { PoweredByLabel } from './components/PoweredByLabel';
 
 export const RunRouteMap = ({
-  bounds,
+  boundingBox,
   coordinates,
   waypoints,
   elevations,
@@ -30,7 +30,10 @@ export const RunRouteMap = ({
   setRouteIsAnimating,
 }: RouteMapProps) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const paddedBounds = useMemo(() => getPaddedBounds(bounds), [bounds]);
+  const paddedBounds = useMemo(
+    () => getPaddedBounds(boundingBox),
+    [boundingBox],
+  );
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +51,7 @@ export const RunRouteMap = ({
     mapStyle,
   });
 
-  useRoute({
+  useMapRoute({
     isMapLoaded,
     coordinates,
     elevations,

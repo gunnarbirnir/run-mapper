@@ -5,14 +5,14 @@ import { api } from '~/service';
 import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text } from '~/primitives';
-import type { Run, ApiResponse } from '~/types';
+import type { EditorRun, ApiResponse } from '~/types';
 
 export const Route = createFileRoute('/editor/runs/')({
   component: EditorRunsList,
 });
 
 function EditorRunsList() {
-  const [runs, setRuns] = useState<Run[]>([]);
+  const [runs, setRuns] = useState<EditorRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user, loading: authLoading } = useAuth();
@@ -25,7 +25,8 @@ function EditorRunsList() {
     const fetchRuns = async () => {
       try {
         setLoading(true);
-        const response = await api.get<ApiResponse<Run[]>>('/editor-runs');
+        const response =
+          await api.get<ApiResponse<EditorRun[]>>('/editor-runs');
         if (response.success) {
           setRuns(response.data);
         }

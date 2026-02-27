@@ -1,7 +1,7 @@
-import type { Run } from '~/types';
+import type { PublicRun } from '~/types';
 
 export interface PublicRunDisplayProps {
   routeId: string;
-  run: Run;
+  run: PublicRun;
   isFullscreen?: boolean;
 }

@@ -38,18 +38,15 @@ export const useActiveMarker = ({
     }
 
     const activeMarkerElement = getActiveMarkerElement();
-    const activeMarker = addMarker(activeMarkerElement, [
-      coordinates[0][0],
-      coordinates[0][1],
-    ]);
+    const activeMarker = addMarker(activeMarkerElement, coordinates[0]);
     activeMarkerElement.style.display = 'none';
 
     setActiveIndexRef.current = (updatedIndex: number | null) => {
       if (updatedIndex !== null && !hideActiveMarkerRef.current) {
         activeMarkerElement.style.display = 'block';
         activeMarker?.setLngLat([
-          coordinates[updatedIndex][0],
-          coordinates[updatedIndex][1],
+          coordinates[updatedIndex].lat,
+          coordinates[updatedIndex].lng,
         ]);
       } else {
         activeMarkerElement.style.display = 'none';

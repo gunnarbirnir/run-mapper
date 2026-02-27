@@ -1,7 +1,7 @@
 import type { MutableRefObject } from 'react';
 
 import type {
-  Bounds,
+  BoundingBox,
   Coordinates,
   Waypoint,
   MapStyle,
@@ -33,7 +33,7 @@ export interface MapState {
 
 export interface RouteMapProps extends MapState {
   routeId: string;
-  bounds: Bounds;
+  boundingBox: BoundingBox;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   elevations: Elevation[];

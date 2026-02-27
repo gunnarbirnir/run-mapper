@@ -8,7 +8,7 @@ export const NavBar = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate({ to: '/auth/login' });
+    navigate({ to: '/auth/login', search: { redirect: '/' } });
   };
 
   return (
@@ -27,7 +27,7 @@ export const NavBar = () => {
           {user && (
             <>
               <Link
-                to="/runs"
+                to="/editor/runs"
                 activeProps={{
                   className: 'font-bold',
                 }}
@@ -36,7 +36,7 @@ export const NavBar = () => {
                 Runs
               </Link>
               <Link
-                to="/runs/new"
+                to="/editor/runs/new"
                 activeProps={{
                   className: 'font-bold',
                 }}

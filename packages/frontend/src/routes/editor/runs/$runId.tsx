@@ -7,7 +7,7 @@ import { useAuth } from '~/contexts/AuthContext';
 import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import { Button, Form, Text } from '~/primitives';
-import type { ApiResponse, Run } from '~/types';
+import type { ApiResponse, EditorRun } from '~/types';
 
 export const Route = createFileRoute('/editor/runs/$runId')({
   component: EditorRunDetail,
@@ -21,7 +21,7 @@ function EditorRunDetail() {
   const [slugInput, setSlugInput] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const { data, isPending, error } = useQuery<ApiResponse<Run>>({
+  const { data, isPending, error } = useQuery<ApiResponse<EditorRun>>({
     queryKey: ['editor-runs', runId],
     queryFn: () => api.get(`/editor-runs/${runId}`),
     enabled: !authLoading && Boolean(user),
@@ -34,13 +34,13 @@ function EditorRunDetail() {
       isPublic: boolean;
       publicSlug?: string;
     }) =>
-      api.put<ApiResponse<Run>>(`/runs/${runId}`, {
+      api.put<ApiResponse<EditorRun>>(`/runs/${runId}`, {
         isPublic,
         ...(publicSlug ? { publicSlug } : {}),
       }),
     onSuccess: async (response) => {
       setCopied(false);
-      setSlugInput(response.data.publicSlug ?? '');
+      setSlugInput(response.data.slug ?? '');
       await queryClient.invalidateQueries({ queryKey: ['run', runId] });
     },
   });
@@ -77,7 +77,7 @@ function EditorRunDetail() {
   }
 
   const run = data.data;
-  const currentSlug = run.publicSlug ?? '';
+  const currentSlug = run.slug ?? '';
   const shareUrl =
     run.isPublic && currentSlug
       ? `${
@@ -182,7 +182,7 @@ function EditorRunDetail() {
             <Button
               type="button"
               color="white"
-              className="border border-red-300 !text-red-700 hover:!bg-red-50"
+              className="border border-red-300 text-red-700! hover:bg-red-50!"
               disabled={deleteMutation.isPending}
               onClick={handleDelete}
             >

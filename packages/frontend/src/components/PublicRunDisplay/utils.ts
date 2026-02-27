@@ -1,22 +1,5 @@
-import type {
-  BaseCoordinate,
-  Coordinates,
-  Elevation,
-  Bounds,
-  RunCoordinates,
-} from '~/types';
-import { haversineDistance } from '~/utils';
-
-// TODO: delete function and update Bounds type
-export const getRouteBounds = (
-  bbox: [BaseCoordinate, BaseCoordinate],
-): Bounds => {
-  return [
-    // TODO: Wrong order (lat first)?
-    [bbox[0].lng, bbox[0].lat],
-    [bbox[1].lng, bbox[1].lat],
-  ];
-};
+import type { Coordinates, Elevation, RunCoordinates } from '~/types';
+import { haversineDistance } from '~/utils/route';
 
 export const processRunRoute = (
   runCoordinates: RunCoordinates[],
@@ -27,7 +10,10 @@ export const processRunRoute = (
   let prevCoord: Coordinates | null = null;
 
   runCoordinates.forEach((runCoordinate) => {
-    const currentCoord: Coordinates = [runCoordinate.lat, runCoordinate.lng];
+    const currentCoord: Coordinates = {
+      lng: runCoordinate.lng,
+      lat: runCoordinate.lat,
+    };
     if (prevCoord) {
       distance += haversineDistance(prevCoord, currentCoord);
     }

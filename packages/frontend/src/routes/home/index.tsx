@@ -6,7 +6,7 @@ export function Home() {
       <Text element="h1" className="mb-4">
         Run Mapper
       </Text>
-      <Text variant="subtitle" className="mb-6">
+      <Text className="mb-6">
         Create and visualize your running routes with interactive iframes
       </Text>
       <Text>

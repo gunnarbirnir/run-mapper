@@ -61,7 +61,7 @@ const findTimelineIndex = (timeline: number[], target: number): number => {
   return lo;
 };
 
-export const useRoute = ({
+export const useMapRoute = ({
   isMapLoaded,
   coordinates,
   elevations,

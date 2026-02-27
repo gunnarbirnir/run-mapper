@@ -1,13 +1,13 @@
-import type { Bounds, Coordinates, WayPointType } from '~/types';
+import type { BoundingBox, Coordinates, WayPointType, Bounds } from '~/types';
 import { getCssVariableValue, cn } from '~/utils';
 
 import { BOUNDS_PADDING, LINE_OPACITY, LINE_WIDTH } from './constants';
 import { ENERGY_ICON, ENTERTAINMENT_ICON } from './icons';
 import type { LineFeature } from './types';
 
-export const getPaddedBounds = (bounds: Bounds): Bounds => {
-  const [minLng, minLat] = bounds[0];
-  const [maxLng, maxLat] = bounds[1];
+export const getPaddedBounds = (boundingBox: BoundingBox): Bounds => {
+  const { lng: minLng, lat: minLat } = boundingBox[0];
+  const { lng: maxLng, lat: maxLat } = boundingBox[1];
   const lngRange = maxLng - minLng;
   const latRange = maxLat - minLat;
   const lngPadding = lngRange * BOUNDS_PADDING;
@@ -24,7 +24,10 @@ export const getLineFeature = (coordinates: Coordinates[]): LineFeature => {
     type: 'Feature',
     geometry: {
       type: 'LineString',
-      coordinates,
+      coordinates: coordinates.map((coordinate) => [
+        coordinate.lat,
+        coordinate.lng,
+      ]),
     },
     properties: {},
   };

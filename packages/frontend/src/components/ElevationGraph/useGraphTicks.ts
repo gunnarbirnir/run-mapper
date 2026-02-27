@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { Elevation } from '~/types';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import { calculateMaxElevation, calculateMinElevation } from '~/utils';
+import { calculateMaxElevation, calculateMinElevation } from '~/utils/route';
 
 interface UseGraphTicksProps {
   elevationData: Elevation[];

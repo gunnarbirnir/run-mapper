@@ -7,7 +7,7 @@ import {
   calculateElevationLoss,
   calculateMaxElevation,
   calculateMinElevation,
-} from '~/utils';
+} from '~/utils/route';
 
 import { WidgetContainer } from '../WidgetContainer';
 

@@ -12,7 +12,7 @@ export const useHandlers = ({ mapRef }: UseHandlersProps) => {
     (element: HTMLElement, markerCoords: Coordinates) => {
       if (mapRef.current) {
         return new mapboxgl.Marker({ element })
-          .setLngLat([markerCoords[0], markerCoords[1]])
+          .setLngLat([markerCoords.lat, markerCoords.lng])
           .addTo(mapRef.current);
       }
     },

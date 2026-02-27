@@ -78,7 +78,7 @@ const isValidRunCoordinate = (value: unknown): value is RunCoordinate => {
 editorRuns.get('/', async (c: AuthContext) => {
   try {
     const runsSnapshot = await db
-      .collection('runs')
+      .collection('editor-runs')
       .where('userId', '==', c.user.uid)
       .get();
     const runsList = runsSnapshot.docs.map((doc) => ({
@@ -107,7 +107,7 @@ editorRuns.get('/', async (c: AuthContext) => {
 editorRuns.get('/:id', async (c: AuthContext) => {
   try {
     const runId = c.req.param('id');
-    const runDoc = await db.collection('runs').doc(runId).get();
+    const runDoc = await db.collection('editor-runs').doc(runId).get();
 
     if (!runDoc.exists) {
       return c.json(

@@ -20,9 +20,6 @@ interface WidgetContainerProps extends WidgetBaseProps {
   customContent?: ReactNode;
 }
 
-// TODO: trap focus while open
-// TODO: handle keyboard events, like esc
-
 const MODAL_MAX_HEIGHT = 300;
 const MODAL_MAX_WIDTH = 600;
 

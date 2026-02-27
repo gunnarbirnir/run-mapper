@@ -7,7 +7,7 @@ import {
 import type { Map, Marker } from 'mapbox-gl';
 
 import type { Waypoint, Coordinates } from '~/types';
-import { getStartWaypoint, getEndWaypoint } from '~/utils';
+import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
 
 import { getMarkerElement, getWaypointMarkerElement } from '../utils';
 import { WAYPOINT_ZOOM, FLY_TO_WAYPOINT_DURATION } from '../constants';
@@ -60,7 +60,7 @@ export const useWaypoints = ({
           '--color-success-600',
           showWaypoints ? () => handleWaypointClick(startWaypoint) : undefined,
         ),
-        [startWaypoint.coordinates.lat, startWaypoint.coordinates.lng],
+        startWaypoint.coordinates,
       ),
     );
 
@@ -72,7 +72,7 @@ export const useWaypoints = ({
           '--color-error-600',
           showWaypoints ? () => handleWaypointClick(endWaypoint) : undefined,
         ),
-        [endWaypoint.coordinates.lat, endWaypoint.coordinates.lng],
+        endWaypoint.coordinates,
       ),
     );
 
@@ -83,7 +83,7 @@ export const useWaypoints = ({
             getWaypointMarkerElement(waypoint.type, () =>
               handleWaypointClick(waypoint),
             ),
-            [waypoint.coordinates.lat, waypoint.coordinates.lng],
+            waypoint.coordinates,
           ),
         );
       }

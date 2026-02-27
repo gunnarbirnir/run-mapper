@@ -12,12 +12,8 @@ import type {
   Waypoint,
 } from '~/types';
 import { Icon } from '~/primitives';
-import {
-  areCssVariablesLoaded,
-  getStartWaypoint,
-  getEndWaypoint,
-  convertRemToPixels,
-} from '~/utils';
+import { areCssVariablesLoaded, convertRemToPixels } from '~/utils';
+import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
 
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';

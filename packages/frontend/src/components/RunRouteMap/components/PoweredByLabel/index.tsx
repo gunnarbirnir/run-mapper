@@ -6,7 +6,7 @@ const MAPBOX_ATTRIBUTION_PADDING = 10;
 export const PoweredByLabel = () => {
   return (
     <a
-      href="https://run-mapper-ten.vercel.app/"
+      href="/"
       target="_blank"
       className="absolute flex items-center gap-[4px] rounded-full bg-white px-[8px] py-[3px] hover:bg-gray-100"
       style={{

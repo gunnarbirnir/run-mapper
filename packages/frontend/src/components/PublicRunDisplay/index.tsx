@@ -8,7 +8,7 @@ import {
 } from '~/constants';
 
 import type { PublicRunDisplayProps } from './types';
-import { getRouteBounds, processRunRoute } from './utils';
+import { processRunRoute } from './utils';
 import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
 
 // Lazy load to fix SSR issue
@@ -24,12 +24,6 @@ export const PublicRunDisplay = ({
   isFullscreen = false,
 }: PublicRunDisplayProps) => {
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
-  const bounds = useMemo(
-    () => getRouteBounds(run.boundingBox),
-    // Only update map if routeId changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeId],
-  );
   const { coordinates, elevations } = useMemo(
     () => processRunRoute(run.coordinates),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,7 +64,7 @@ export const PublicRunDisplay = ({
         <RunRouteMap
           {...mapState}
           routeId={routeId}
-          bounds={bounds}
+          boundingBox={run.boundingBox}
           coordinates={coordinates}
           waypoints={waypoints}
           elevations={elevations}
