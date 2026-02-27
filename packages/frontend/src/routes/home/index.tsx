@@ -1,10 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
-
 import { Text } from '~/primitives';
-
-export const Route = createFileRoute('/home/')({
-  component: Home,
-});
 
 export function Home() {
   return (

@@ -1,14 +1,9 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { Text, Form, Button } from '~/primitives';
 
 export const Route = createFileRoute('/playground/')({
-  beforeLoad: () => {
-    if (import.meta.env.PROD) {
-      throw notFound();
-    }
-  },
   component: Playground,
 });
 

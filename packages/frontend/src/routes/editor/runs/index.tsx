@@ -7,11 +7,11 @@ import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text } from '~/primitives';
 import type { Run, ApiResponse } from '~/types';
 
-export const Route = createFileRoute('/runs/')({
-  component: RunsList,
+export const Route = createFileRoute('/editor/runs/')({
+  component: EditorRunsList,
 });
 
-function RunsList() {
+function EditorRunsList() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ function RunsList() {
     const fetchRuns = async () => {
       try {
         setLoading(true);
-        const response = await api.get<ApiResponse<Run[]>>('/runs');
+        const response = await api.get<ApiResponse<Run[]>>('/editor-runs');
         if (response.success) {
           setRuns(response.data);
         }

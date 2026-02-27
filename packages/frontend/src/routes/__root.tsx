@@ -30,7 +30,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'Create and visualize running routes with interactive iframes',
+        content: 'Create engaging and insightful routes for your runs.',
       },
     ],
     links: [
@@ -58,8 +58,7 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const matchRoute = useMatchRoute();
   const isPlayground = Boolean(matchRoute({ to: '/playground' }));
-  const publicRunParams = matchRoute({ to: '/public-runs/$slug' });
-  const isPublicRun = Boolean(publicRunParams);
+  const isPublicRun = Boolean(matchRoute({ to: '/run/$slug' }));
 
   return (
     <html>

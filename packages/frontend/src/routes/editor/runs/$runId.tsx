@@ -9,11 +9,11 @@ import { api } from '~/service';
 import { Button, Form, Text } from '~/primitives';
 import type { ApiResponse, Run } from '~/types';
 
-export const Route = createFileRoute('/runs/$runId')({
-  component: RunDetail,
+export const Route = createFileRoute('/editor/runs/$runId')({
+  component: EditorRunDetail,
 });
 
-function RunDetail() {
+function EditorRunDetail() {
   const { runId } = Route.useParams();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ function RunDetail() {
   const [copied, setCopied] = useState(false);
 
   const { data, isPending, error } = useQuery<ApiResponse<Run>>({
-    queryKey: ['run', runId],
-    queryFn: () => api.get(`/runs/${runId}`),
+    queryKey: ['editor-runs', runId],
+    queryFn: () => api.get(`/editor-runs/${runId}`),
     enabled: !authLoading && Boolean(user),
   });
   const publishMutation = useMutation({
@@ -48,7 +48,7 @@ function RunDetail() {
     mutationFn: () => api.delete<ApiResponse<{ id: string }>>(`/runs/${runId}`),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['runs'] });
-      navigate({ to: '/runs' });
+      navigate({ to: '/editor/runs' });
     },
   });
 
@@ -160,7 +160,7 @@ function RunDetail() {
               <Text variant="subtle" className="mb-1 text-xs">
                 Share URL
               </Text>
-              <Text className="mb-2 break-all text-sm">{shareUrl}</Text>
+              <Text className="mb-2 text-sm break-all">{shareUrl}</Text>
               <Button type="button" color="white" onClick={handleCopy}>
                 {copied ? 'Copied' : 'Copy URL'}
               </Button>

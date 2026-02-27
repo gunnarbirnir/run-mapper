@@ -155,9 +155,7 @@ export const RouteOverlay = ({
         <OptionButton
           index={optionsButtonIndex++}
           openDrawerSize={openDrawerSize}
-          onClick={() =>
-            window.open(`/public-runs/${routeId}?isFullscreen=true`, '_blank')
-          }
+          onClick={() => window.open(`/run/${routeId}?isFullscreen=true`, '_blank')}
         >
           <Icon name="externalLink" className="size-6" />
         </OptionButton>

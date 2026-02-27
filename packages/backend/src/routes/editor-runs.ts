@@ -9,9 +9,9 @@ import { db } from '../firebase/admin.js';
 import { authMiddleware, type AuthContext } from '../middleware/auth.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 
-const runs = new Hono();
+const editorRuns = new Hono();
 
-runs.use('*', authMiddleware);
+editorRuns.use('*', authMiddleware);
 
 interface BaseCoordinate {
   lat: number;
@@ -75,7 +75,7 @@ const isValidRunCoordinate = (value: unknown): value is RunCoordinate => {
   return isFiniteNumber((value as RunCoordinate).elevation);
 };
 
-runs.get('/', async (c: AuthContext) => {
+editorRuns.get('/', async (c: AuthContext) => {
   try {
     const runsSnapshot = await db
       .collection('runs')
@@ -104,7 +104,7 @@ runs.get('/', async (c: AuthContext) => {
   }
 });
 
-runs.get('/:id', async (c: AuthContext) => {
+editorRuns.get('/:id', async (c: AuthContext) => {
   try {
     const runId = c.req.param('id');
     const runDoc = await db.collection('runs').doc(runId).get();
@@ -161,7 +161,7 @@ runs.get('/:id', async (c: AuthContext) => {
   }
 });
 
-runs.post('/', async (c: AuthContext) => {
+editorRuns.post('/', async (c: AuthContext) => {
   try {
     const contentLength = c.req.header('content-length');
     if (contentLength && Number(contentLength) > MAX_ROUTE_DATA_BYTES) {
@@ -465,7 +465,7 @@ runs.post('/', async (c: AuthContext) => {
   }
 });
 
-runs.put('/:id', async (c: AuthContext) => {
+editorRuns.put('/:id', async (c: AuthContext) => {
   try {
     const runId = c.req.param('id');
     const runRef = db.collection('runs').doc(runId);
@@ -627,7 +627,7 @@ runs.put('/:id', async (c: AuthContext) => {
   }
 });
 
-runs.delete('/:id', async (c: AuthContext) => {
+editorRuns.delete('/:id', async (c: AuthContext) => {
   try {
     const runId = c.req.param('id');
     const runRef = db.collection('runs').doc(runId);
@@ -675,4 +675,4 @@ runs.delete('/:id', async (c: AuthContext) => {
   }
 });
 
-export default runs;
+export default editorRuns;

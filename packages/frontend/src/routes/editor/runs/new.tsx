@@ -8,11 +8,11 @@ import type { ApiResponse } from '~/types';
 
 const MAX_ROUTE_PAYLOAD_BYTES = 1024 * 1024;
 
-export const Route = createFileRoute('/runs/new')({
-  component: NewRun,
+export const Route = createFileRoute('/editor/runs/new')({
+  component: NewEditorRun,
 });
 
-function NewRun() {
+function NewEditorRun() {
   const [name, setName] = useState('');
   const [pathData, setPathData] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,10 +47,13 @@ function NewRun() {
         }
       }
 
-      const response = await api.post<ApiResponse<{ id: string }>>('/runs', {
-        name: name || undefined,
-        routeData: parsedPathData,
-      });
+      const response = await api.post<ApiResponse<{ id: string }>>(
+        '/editor-runs',
+        {
+          name: name || undefined,
+          routeData: parsedPathData,
+        },
+      );
 
       if (response.success) {
         navigate({ to: `/runs/${response.data.id}` });

@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db } from '../firebase/admin.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 
-const publicRuns = new Hono();
+const publicRun = new Hono();
 
 interface BaseCoordinate {
   lat: number;
@@ -68,7 +68,7 @@ const isValidWaypoint = (value: unknown): value is Waypoint => {
   );
 };
 
-publicRuns.get('/:slug', async (c) => {
+publicRun.get('/:slug', async (c) => {
   try {
     const slug = normalizePublicSlug(c.req.param('slug'));
     if (!isValidPublicSlug(slug)) {
@@ -150,4 +150,4 @@ publicRuns.get('/:slug', async (c) => {
   }
 });
 
-export default publicRuns;
+export default publicRun;

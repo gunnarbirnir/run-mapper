@@ -5,19 +5,19 @@ import { RunRoute } from '~/components/RunRoute';
 import { api } from '~/service';
 import type { ApiResponse, Run } from '~/types';
 
-export const Route = createFileRoute('/public-runs/$slug')({
-  component: PublicRunDetail,
+export const Route = createFileRoute('/run/$slug')({
+  component: PublicRun,
   validateSearch: (search: Record<string, unknown>) => ({
     isFullscreen: search.isFullscreen === true,
   }),
 });
 
-function PublicRunDetail() {
+function PublicRun() {
   const { slug } = Route.useParams();
   const { isFullscreen } = Route.useSearch();
   const { data, isPending, error } = useQuery<ApiResponse<Run>>({
     queryKey: ['public-run', slug],
-    queryFn: () => api.get(`/public-runs/${encodeURIComponent(slug)}`),
+    queryFn: () => api.get(`/public-run/${encodeURIComponent(slug)}`),
   });
 
   if (isPending) {
