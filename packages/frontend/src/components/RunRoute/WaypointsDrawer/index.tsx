@@ -1,5 +1,8 @@
 import { Drawer, Text, RoundButton, Icon } from '~/primitives';
 import type { Waypoint } from '~/types';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { RUN_ROUTE_MIN_WIDTH } from '~/constants';
 
 import { RouteLine } from './RouteLine';
 
@@ -18,6 +21,12 @@ export const WaypointsDrawer = ({
   waypoints,
   setActiveWaypoint,
 }: WaypointsDrawerProps) => {
+  const { isSmallScreen } = useMediaQuery();
+  const { width: windowWidth } = useWindowDimensions();
+  const activeWidth = isSmallScreen
+    ? Math.max(windowWidth, RUN_ROUTE_MIN_WIDTH)
+    : width;
+
   const activeWaypointDetails = waypoints.find(
     (waypoint: Waypoint) => waypoint.id === activeWaypoint,
   );
@@ -34,7 +43,7 @@ export const WaypointsDrawer = ({
   return (
     <Drawer
       isOpen={isOpen}
-      width={width}
+      width={activeWidth}
       className="pointer-events-auto z-20 h-full"
     >
       <div className="flex h-full flex-col overflow-x-hidden overflow-y-auto pt-6">
@@ -44,7 +53,7 @@ export const WaypointsDrawer = ({
         <div className="relative">
           <RouteLine
             waypoints={waypoints}
-            drawerWidth={width}
+            drawerWidth={activeWidth}
             activeWaypointIndex={activeWaypointIndex}
           />
         </div>
