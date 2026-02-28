@@ -182,6 +182,7 @@ export const RouteOverlay = ({
         width={WAYPOINTS_DRAWER_WIDTH}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
+        toggleDrawer={() => toggleDrawer('waypoints')}
         setActiveWaypoint={setActiveWaypoint}
       />
       <motion.div

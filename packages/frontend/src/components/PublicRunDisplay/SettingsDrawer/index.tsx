@@ -1,13 +1,12 @@
-import { Drawer, Text, Radio } from '~/primitives';
-import type { WidgetType, MapStyle } from '~/types';
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
+import { Drawer, Radio } from '~/primitives';
+import type { MapStyle, WidgetType } from '~/types';
 
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { RoundButton, Icon } from '~/primitives';
 
 import { SectionLabel } from './SectionLabel';
-import { VisibleToggle } from './VisibleToggle';
 import { SettingsRadio } from './SettingsRadio';
+import { VisibleToggle } from './VisibleToggle';
 
 interface SettingsDrawerProps {
   isOpen: boolean;
@@ -36,19 +35,14 @@ export const SettingsDrawer = ({
 
   return (
     <Drawer
+      title="Settings"
       isOpen={isOpen}
       width={width}
       minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
       className="pointer-events-auto z-20 px-4 py-6"
+      titleSectionClassName="mb-0"
+      onClose={isSmallScreen ? toggleDrawer : undefined}
     >
-      <div className="flex items-center justify-between">
-        <Text element="h2">Settings</Text>
-        {isSmallScreen && (
-          <RoundButton onClick={toggleDrawer}>
-            <Icon name="close" className="size-6" />
-          </RoundButton>
-        )}
-      </div>
       <SectionLabel>Widgets</SectionLabel>
       <VisibleToggle
         isVisible={visibleWidgets.distance}
