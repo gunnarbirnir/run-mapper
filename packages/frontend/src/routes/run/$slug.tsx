@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
+import { PageLayout } from '~/components/PageLayout';
 
 export const Route = createFileRoute('/run/$slug')({
   component: PublicRun,
@@ -29,18 +30,22 @@ function PublicRun() {
   }
 
   return (
-    <PublicRunDisplay
-      routeId={slug}
-      run={data.data}
-      isFullscreen={isFullscreen}
-    />
+    <PageLayout isFullscreenDisplay>
+      <PublicRunDisplay
+        routeId={slug}
+        run={data.data}
+        isFullscreen={isFullscreen}
+      />
+    </PageLayout>
   );
 }
 
 const Fallback = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gray-300">
-      {children}
-    </div>
+    <PageLayout isFullscreenDisplay>
+      <div className="flex h-full w-full flex-col items-center justify-center bg-gray-300">
+        {children}
+      </div>
+    </PageLayout>
   );
 };

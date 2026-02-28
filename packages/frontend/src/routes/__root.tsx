@@ -11,9 +11,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
 
 import appCss from '~/styles/app.css?url';
-
-import { NavBar } from '~/components/NavBar';
-import { Footer } from '~/components/Footer';
 import { AuthProvider } from '~/contexts/AuthContext';
 
 export const Route = createRootRoute({
@@ -58,7 +55,6 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const matchRoute = useMatchRoute();
-  const isPlayground = Boolean(matchRoute({ to: '/playground' }));
   const isPublicRun = Boolean(matchRoute({ to: '/run/$slug' }));
   const disableDevTools = import.meta.env.VITE_DISABLE_DEV_TOOLS === 'true';
 
@@ -68,42 +64,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <RootBody isFullscreenDisplay={isPublicRun} isPlayground={isPlayground}>
-          {children}
-        </RootBody>
+        {children}
         {!isPublicRun && !disableDevTools && (
           <TanStackRouterDevtools position="bottom-right" />
         )}
         <Scripts />
       </body>
     </html>
-  );
-}
-
-function RootBody({
-  children,
-  isFullscreenDisplay,
-  isPlayground,
-}: {
-  children: React.ReactNode;
-  isFullscreenDisplay: boolean;
-  isPlayground: boolean;
-}) {
-  if (isFullscreenDisplay) {
-    return (
-      <main className="h-screen w-screen" style={{ height: '100dvh' }}>
-        {children}
-      </main>
-    );
-  }
-
-  return (
-    <div className="flex min-h-screen flex-col" style={{ minHeight: '100dvh' }}>
-      {!isPlayground && <NavBar />}
-      <main className="flex-1 px-4 pt-6 pb-12">
-        <div className="container mx-auto">{children}</div>
-      </main>
-      {!isPlayground && <Footer />}
-    </div>
   );
 }

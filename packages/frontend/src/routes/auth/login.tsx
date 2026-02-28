@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
 import { useAuth } from '~/contexts/AuthContext';
 import { Button, Form, Text } from '~/primitives';
+import { PageLayout } from '~/components/PageLayout';
 
 export const Route = createFileRoute('/auth/login')({
   component: Login,
@@ -59,46 +61,51 @@ function Login() {
   };
 
   return (
-    <div className="mx-auto mt-12 max-w-md">
-      <Text element="h1" className="mb-6">
-        Sign In
-      </Text>
-      <Form onSubmit={handleSubmit}>
-        {error && (
-          <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
-            {error}
+    <PageLayout>
+      <div className="flex-1" />
+      <PageLayout.MainContent className="absolute top-0 left-0">
+        <div className="mx-auto mt-12 max-w-md">
+          <Text element="h1" className="mb-6">
+            Sign In
+          </Text>
+          <Form onSubmit={handleSubmit}>
+            {error && (
+              <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
+                {error}
+              </div>
+            )}
+            <Form.TextInput
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={setEmail}
+            />
+            <Form.TextInput
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={setPassword}
+            />
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </Form>
+          <div className="mt-4 text-center">
+            <Text>
+              Don't have an account?{' '}
+              <a href="/auth/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </Text>
           </div>
-        )}
-        <Form.TextInput
-          id="email"
-          name="email"
-          label="Email"
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={setEmail}
-        />
-        <Form.TextInput
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={setPassword}
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign In'}
-        </Button>
-      </Form>
-      <div className="mt-4 text-center">
-        <Text>
-          Don't have an account?{' '}
-          <a href="/auth/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </a>
-        </Text>
-      </div>
-    </div>
+        </div>
+      </PageLayout.MainContent>
+    </PageLayout>
   );
 }

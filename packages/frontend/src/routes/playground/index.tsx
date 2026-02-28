@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { Text, Form, Button } from '~/primitives';
+import { PageLayout } from '~/components/PageLayout';
 
 export const Route = createFileRoute('/playground/')({
   component: Playground,
@@ -12,39 +13,41 @@ export function Playground() {
   const [runSlugInput, setRunSlugInput] = useState(runSlug);
 
   return (
-    <div>
-      <Text element="h1" className="mb-4">
-        Playground
-      </Text>
-      <Form className="mb-8">
-        <Form.TextInput
-          id="run-slug"
-          name="run-slug"
-          label="Run Slug"
-          placeholder="Enter a Run Slug"
-          containerClassName="max-w-sm"
-          value={runSlugInput}
-          onChange={setRunSlugInput}
-        />
+    <PageLayout hideNavBar hideFooter>
+      <PageLayout.MainContent>
+        <Text element="h1" className="mb-4">
+          Playground
+        </Text>
+        <Form className="mb-8">
+          <Form.TextInput
+            id="run-slug"
+            name="run-slug"
+            label="Run Slug"
+            placeholder="Enter a Run Slug"
+            containerClassName="max-w-sm"
+            value={runSlugInput}
+            onChange={setRunSlugInput}
+          />
 
-        <div className="flex items-center gap-4">
-          <Button
-            type="submit"
-            onClick={() => setRunSlug(runSlugInput)}
-            disabled={!runSlugInput || runSlugInput === runSlug}
-          >
-            Update
-          </Button>
-          <Text className="text-gray-400">Current Slug: {runSlug}</Text>
-        </div>
-      </Form>
-      {runSlug && (
-        <iframe
-          height="500"
-          style={{ width: '100%', maxWidth: 800 }}
-          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`}
-        />
-      )}
-    </div>
+          <div className="flex items-center gap-4">
+            <Button
+              type="submit"
+              onClick={() => setRunSlug(runSlugInput)}
+              disabled={!runSlugInput || runSlugInput === runSlug}
+            >
+              Update
+            </Button>
+            <Text className="text-gray-400">Current Slug: {runSlug}</Text>
+          </div>
+        </Form>
+        {runSlug && (
+          <iframe
+            height="500"
+            style={{ width: '100%', maxWidth: 800 }}
+            src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`}
+          />
+        )}
+      </PageLayout.MainContent>
+    </PageLayout>
   );
 }
