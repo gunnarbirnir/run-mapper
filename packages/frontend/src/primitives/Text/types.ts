@@ -20,6 +20,10 @@ export type TextProps =
       variant?: PVariant;
     })
   | (BaseTextProps & {
+      element?: 'a';
+      to: string;
+    })
+  | (BaseTextProps & {
       element?: 'label';
       htmlFor?: string;
     })

@@ -62,18 +62,13 @@ function Login() {
 
   return (
     <PageLayout>
-      <div className="flex-1" />
-      <PageLayout.MainContent className="absolute top-0 left-0">
-        <div className="mx-auto mt-12 max-w-md">
-          <Text element="h1" className="mb-6">
-            Sign In
+      <div className="flex-1 bg-white" />
+      <PageLayout.MainContent className="absolute top-0 left-0 flex h-full w-full items-center justify-center">
+        <div className="mx-auto mb-12 max-w-md rounded-lg bg-gray-50 p-6 opacity-95 shadow-md">
+          <Text element="h1" className="text-center">
+            Sign in
           </Text>
           <Form onSubmit={handleSubmit}>
-            {error && (
-              <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
-                {error}
-              </div>
-            )}
             <Form.TextInput
               id="email"
               name="email"
@@ -92,18 +87,23 @@ function Login() {
               value={password}
               onChange={setPassword}
             />
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+            {error && (
+              <div className="text-error-600 mt-4 text-sm">{error}</div>
+            )}
+            <Button
+              type="submit"
+              isLoading={loading}
+              className="mx-auto mt-8 block min-w-40"
+            >
+              Sign in
             </Button>
           </Form>
-          <div className="mt-4 text-center">
-            <Text>
-              Don't have an account?{' '}
-              <a href="/auth/signup" className="text-blue-600 hover:underline">
-                Sign up
-              </a>
+          <Text variant="subtle" className="mt-4 text-center text-sm">
+            Don't have an account?{' '}
+            <Text element="a" to="/auth/signup">
+              Sign up
             </Text>
-          </div>
+          </Text>
         </div>
       </PageLayout.MainContent>
     </PageLayout>
