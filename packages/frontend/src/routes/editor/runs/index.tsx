@@ -75,12 +75,12 @@ function EditorRunsList() {
                         </Text>
                       )}
                     </div>
-                    <Button linkTo={`/runs/${run.id}`}>View</Button>
+                    <Button linkTo={`/editor/runs/${run.id}`}>View</Button>
                   </div>
                 ))}
               </div>
             )}
-            <Button linkTo="/runs/new" className="mt-4">
+            <Button linkTo="/editor/runs/new" className="mt-4">
               Create New Run
             </Button>
           </>

@@ -26,7 +26,7 @@ function Login() {
 
     try {
       await signIn(email, password);
-      navigate({ to: (redirect as string) || '/runs' });
+      navigate({ to: (redirect as string) || '/editor/runs' });
     } catch (err: unknown) {
       let errorMessage = 'Failed to sign in. Please check your credentials.';
 

@@ -56,7 +56,7 @@ function NewEditorRun() {
       );
 
       if (response.success) {
-        navigate({ to: `/runs/${response.data.id}` });
+        navigate({ to: `/editor/runs/${response.data.id}` });
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('Payload exceeds')) {

@@ -14,7 +14,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     if (!loading && !user) {
       const redirectTo =
-        location.pathname !== '/' ? location.pathname : '/runs';
+        location.pathname !== '/' ? location.pathname : '/editor/runs';
       navigate({
         to: '/auth/login',
         search: { redirect: redirectTo },
