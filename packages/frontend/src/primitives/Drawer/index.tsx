@@ -5,21 +5,28 @@ import { cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { Text, RoundButton, Icon } from '~/primitives';
 
 interface DrawerProps {
   isOpen: boolean;
   children: ReactNode;
+  title?: string;
   width?: number;
   minWidth?: number;
   className?: string;
+  titleSectionClassName?: string;
+  onClose?: () => void;
 }
 
 export const Drawer = ({
   isOpen,
   children,
+  title,
   width = 200,
   minWidth = 0,
   className,
+  titleSectionClassName,
+  onClose,
 }: DrawerProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const { isSmallScreen } = useMediaQuery();
@@ -52,6 +59,18 @@ export const Drawer = ({
         }
       }}
     >
+      {(title || onClose) && (
+        <div className="flex items-center justify-between">
+          <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
+            {title}
+          </Text>
+          {onClose && (
+            <RoundButton onClick={onClose}>
+              <Icon name="close" className="size-6" />
+            </RoundButton>
+          )}
+        </div>
+      )}
       {children}
     </motion.aside>
   );

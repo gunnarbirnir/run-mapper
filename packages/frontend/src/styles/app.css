@@ -77,3 +77,7 @@ path:focus {
   --color-error-900: #8b0836;
   --color-error-950: #4d0218;
 }
+
+* {
+  outline-color: var(--color-secondary-500);
+}

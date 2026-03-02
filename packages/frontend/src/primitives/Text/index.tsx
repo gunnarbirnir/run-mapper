@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+
 import { cn } from '~/utils';
 
 import type { TextProps } from './types';
@@ -49,6 +51,15 @@ export const Text = ({
         <h6 className={className} style={style}>
           {children}
         </h6>
+      );
+    case 'a':
+      return (
+        <Link
+          to={'to' in props ? props.to : undefined}
+          className={cn('text-secondary-600 hover:underline', className)}
+        >
+          {children}
+        </Link>
       );
     case 'label':
       return (

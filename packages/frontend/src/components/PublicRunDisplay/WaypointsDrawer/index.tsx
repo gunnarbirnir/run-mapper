@@ -11,6 +11,7 @@ interface WaypointsDrawerProps {
   width: number;
   waypoints: Waypoint[];
   activeWaypoint: string | null;
+  toggleDrawer: () => void;
   setActiveWaypoint: (waypoint: Waypoint) => void;
 }
 
@@ -19,6 +20,7 @@ export const WaypointsDrawer = ({
   width,
   activeWaypoint,
   waypoints,
+  toggleDrawer,
   setActiveWaypoint,
 }: WaypointsDrawerProps) => {
   const { isSmallScreen } = useMediaQuery();
@@ -47,9 +49,14 @@ export const WaypointsDrawer = ({
       className="pointer-events-auto z-20 h-full"
     >
       <div className="flex h-full flex-col overflow-x-hidden overflow-y-auto pt-6">
-        <Text element="h2" className="mb-4 px-4">
-          {activeWaypointDetails.name}
-        </Text>
+        <div className="mb-4 flex items-center justify-between px-4">
+          <Text element="h2">{activeWaypointDetails.name}</Text>
+          {isSmallScreen && (
+            <RoundButton onClick={toggleDrawer}>
+              <Icon name="close" className="size-6" />
+            </RoundButton>
+          )}
+        </div>
         <div className="relative">
           <RouteLine
             waypoints={waypoints}

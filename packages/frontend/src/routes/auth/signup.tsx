@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
 import { useAuth } from '~/contexts/AuthContext';
 import { Button, Form, Text } from '~/primitives';
+import { PageLayout } from '~/components/PageLayout';
 
 export const Route = createFileRoute('/auth/signup')({
   component: SignUp,
@@ -70,55 +72,60 @@ function SignUp() {
   };
 
   return (
-    <div className="mx-auto mt-12 max-w-md">
-      <Text element="h1" className="mb-6">
-        Sign Up
-      </Text>
-      <Form onSubmit={handleSubmit}>
-        {error && (
-          <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
-            {error}
-          </div>
-        )}
-        <Form.TextInput
-          id="email"
-          name="email"
-          label="Email"
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={setEmail}
-        />
-        <Form.TextInput
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={setPassword}
-        />
-        <Form.TextInput
-          id="confirmPassword"
-          name="confirmPassword"
-          label="Confirm Password"
-          type="password"
-          placeholder="Confirm your password"
-          value={confirmPassword}
-          onChange={setConfirmPassword}
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Creating account...' : 'Sign Up'}
-        </Button>
-      </Form>
-      <div className="mt-4 text-center">
-        <Text>
-          Already have an account?{' '}
-          <a href="/auth/login" className="text-blue-600 hover:underline">
-            Sign in
-          </a>
-        </Text>
-      </div>
-    </div>
+    <PageLayout>
+      <div className="flex-1 bg-white" />
+      <PageLayout.MainContent className="absolute top-0 left-0 flex h-full w-full items-center justify-center">
+        <div className="mx-auto mb-12 max-w-md rounded-lg bg-gray-50 p-6 opacity-95 shadow-md">
+          <Text element="h1" className="text-center">
+            Sign Up
+          </Text>
+          <Form onSubmit={handleSubmit}>
+            <Form.TextInput
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={setEmail}
+            />
+            <Form.TextInput
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={setPassword}
+            />
+            <Form.TextInput
+              id="confirmPassword"
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+            />
+            {error && (
+              <div className="text-error-600 mt-4 text-sm">{error}</div>
+            )}
+            <Button
+              type="submit"
+              isLoading={loading}
+              className="mx-auto mt-8 block min-w-40"
+            >
+              Sign Up
+            </Button>
+          </Form>
+          <Text variant="subtle" className="mt-4 text-center text-sm">
+            Already have an account?{' '}
+            <Text element="a" to="/auth/login">
+              Sign in
+            </Text>
+          </Text>
+        </div>
+      </PageLayout.MainContent>
+    </PageLayout>
   );
 }

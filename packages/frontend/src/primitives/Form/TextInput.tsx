@@ -39,7 +39,7 @@ export const TextInput = ({
         value={value}
         placeholder={placeholder}
         className={cn(
-          'w-full rounded border border-gray-300 px-3 py-2',
+          'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
           className,
         )}
         onChange={(e) => onChange(e.target.value)}

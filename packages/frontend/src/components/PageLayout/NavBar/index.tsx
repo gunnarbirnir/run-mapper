@@ -1,10 +1,12 @@
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text, Icon } from '~/primitives';
 
 export const NavBar = () => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isOnLoginPage = pathname === '/auth/login';
 
   const handleLogout = async () => {
     await logout();
@@ -48,11 +50,15 @@ export const NavBar = () => {
               <Text className="hidden text-sm text-gray-600 sm:block">
                 {user.email}
               </Text>
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button onClick={handleLogout}>Log out</Button>
             </>
+          ) : isOnLoginPage ? (
+            <Button linkTo="/auth/signup" isLoading={loading}>
+              Sign up
+            </Button>
           ) : (
             <Button linkTo="/auth/login" isLoading={loading}>
-              Sign In
+              Sign in
             </Button>
           )}
         </div>
