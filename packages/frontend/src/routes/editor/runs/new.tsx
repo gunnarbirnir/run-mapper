@@ -49,7 +49,7 @@ function NewEditorRun() {
       }
 
       const response = await api.post<ApiResponse<{ id: string }>>(
-        '/editor-runs',
+        '/runs/editor',
         {
           name: name || undefined,
           routeData: parsedPathData,
