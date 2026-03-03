@@ -4,7 +4,7 @@ import {
   MAX_ROUTE_WAYPOINTS,
   MAX_RUN_NAME_LENGTH,
 } from '../config/constants.js';
-import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
+import { isValidPublicSlug, normalizePublicSlug } from './publicSlug.js';
 
 export interface BaseCoordinate {
   lat: number;

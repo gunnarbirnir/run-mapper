@@ -1,7 +1,7 @@
 import { db } from '../firebase/admin.js';
 import type {
   NormalizedRouteData
-} from '../validation/runPayload.js';
+} from '../utils/runValidation.js';
 
 export interface RunRecord extends NormalizedRouteData {
   userId: string;

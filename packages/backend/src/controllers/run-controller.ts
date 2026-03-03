@@ -4,7 +4,7 @@ import { runService } from '../services/run-service.js';
 import {
   validateCreateRunBody,
   validateUpdatePublicBody
-} from '../validation/runPayload.js';
+} from '../utils/runValidation.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 import type { AuthContext } from '../middleware/auth.js';
 
@@ -282,6 +282,7 @@ export class RunController {
     try {
       const slug = normalizePublicSlug(c.req.param('slug'));
       if (!isValidPublicSlug(slug)) {
+        console.error('Invalid slug:', slug);
         return c.json(
           {
             success: false,

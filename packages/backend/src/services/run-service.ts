@@ -4,7 +4,7 @@ import {
   type BaseCoordinate,
   type RunCoordinate,
   type Waypoint,
-} from '../validation/runPayload.js';
+} from '../utils/runValidation.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 
 export interface PublicRun {
