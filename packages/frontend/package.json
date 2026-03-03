@@ -19,7 +19,7 @@
     "clsx": "^2.1.1",
     "firebase": "^12.7.0",
     "mapbox-gl": "^3.17.0",
-    "@mapbox/mapbox-gl-draw": "^1.6.2",
+    "@mapbox/mapbox-gl-draw": "^1.4.3",
     "motion": "^12.26.2",
     "nitro": "^3.0.1-alpha.1",
     "react": "^18.3.1",
