@@ -84,8 +84,8 @@ publicRun.get('/:slug', async (c) => {
     }
 
     const runsSnapshot = await db
-      .collection('public-runs')
-      .where('slug', '==', slug)
+      .collection('runs')
+      .where('publicSlug', '==', slug)
       .limit(1)
       .get();
     const runDoc = runsSnapshot.docs[0];
@@ -101,6 +101,16 @@ publicRun.get('/:slug', async (c) => {
 
     const runData = runDoc.data();
     if (!runData) {
+      return c.json(
+        {
+          success: false,
+          error: 'Run not found',
+        },
+        404,
+      );
+    }
+
+    if (runData.isPublic !== true) {
       return c.json(
         {
           success: false,

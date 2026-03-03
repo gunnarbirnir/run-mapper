@@ -12,6 +12,7 @@ packages/backend/.env*
 !packages/backend/.env.example
 packages/frontend/.env*
 !packages/frontend/.env.example
+packages/frontend/.vercel/
 
 # Yarn
 .yarn/cache
