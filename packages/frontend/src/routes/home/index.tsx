@@ -1,5 +1,11 @@
+import { createFileRoute } from '@tanstack/react-router';
+
 import { Text } from '~/primitives';
 import { PageLayout } from '~/components/PageLayout';
+
+export const Route = createFileRoute('/home/')({
+  component: Home,
+});
 
 export function Home() {
   return (

@@ -3,14 +3,14 @@ import { useAuth } from '~/contexts/AuthContext';
 import { Button, Text, Icon } from '~/primitives';
 
 export const NavBar = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isOnLoginPage = pathname === '/auth/login';
 
   const handleLogout = async () => {
-    await logout();
-    navigate({ to: '/auth/login', search: { redirect: '/' } });
+    await logOut();
+    navigate({ to: '/auth/login', search: { redirect: undefined } });
   };
 
   return (

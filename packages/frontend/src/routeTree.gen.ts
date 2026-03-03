@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
+import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
   id: '/playground/',
   path: '/playground/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RunSlugRoute = RunSlugRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home/': typeof HomeIndexRoute
   '/playground/': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home'
     | '/playground'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home'
     | '/playground'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home/'
     | '/playground/'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   RunSlugRoute: typeof RunSlugRoute
+  HomeIndexRoute: typeof HomeIndexRoute
   PlaygroundIndexRoute: typeof PlaygroundIndexRoute
   EditorRunsRunIdRoute: typeof EditorRunsRunIdRoute
   EditorRunsNewRoute: typeof EditorRunsNewRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/playground'
       fullPath: '/playground'
       preLoaderRoute: typeof PlaygroundIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home/': {
+      id: '/home/'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/run/$slug': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   RunSlugRoute: RunSlugRoute,
+  HomeIndexRoute: HomeIndexRoute,
   PlaygroundIndexRoute: PlaygroundIndexRoute,
   EditorRunsRunIdRoute: EditorRunsRunIdRoute,
   EditorRunsNewRoute: EditorRunsNewRoute,

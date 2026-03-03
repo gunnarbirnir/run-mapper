@@ -14,6 +14,7 @@ import {
   signOut,
   type UserCredential,
 } from 'firebase/auth';
+
 import { auth } from '~/firebase/config';
 
 interface AuthContextType {
@@ -21,11 +22,31 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<UserCredential>;
   signUp: (email: string, password: string) => Promise<UserCredential>;
-  logout: () => Promise<void>;
+  logOut: () => Promise<void>;
   getIdToken: (forceRefresh?: boolean) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const signIn = async (email: string, password: string) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};
+
+const signUp = async (email: string, password: string) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+const logOut = async () => {
+  await signOut(auth);
+};
+
+const getIdToken = async (forceRefresh = false) => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    return null;
+  }
+  return currentUser.getIdToken(forceRefresh);
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -40,31 +61,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return unsubscribe;
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const signUp = async (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
-
-  const logout = async () => {
-    await signOut(auth);
-  };
-
-  const getIdToken = async (forceRefresh = false) => {
-    const currentUser = auth.currentUser;
-    if (!currentUser) return null;
-    return currentUser.getIdToken(forceRefresh);
-  };
-
   const value: AuthContextType = useMemo(
     () => ({
       user,
       loading,
       signIn,
       signUp,
-      logout,
+      logOut,
       getIdToken,
     }),
     [user, loading],
