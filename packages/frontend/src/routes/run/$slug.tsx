@@ -17,8 +17,8 @@ function PublicRun() {
   const { slug } = Route.useParams();
   const { isFullscreen } = Route.useSearch();
   const { data, isPending, error } = useQuery<ApiResponse<PublicRun>>({
-    queryKey: ['public-run', slug],
-    queryFn: () => api.get(`/public-run/${encodeURIComponent(slug)}`),
+    queryKey: ['public-runs', slug],
+    queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
 
   if (isPending) {
