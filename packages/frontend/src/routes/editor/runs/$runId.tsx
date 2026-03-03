@@ -24,7 +24,7 @@ function EditorRunDetail() {
 
   const { data, isPending, error } = useQuery<ApiResponse<EditorRun>>({
     queryKey: ['editor-runs', runId],
-    queryFn: () => api.get(`/editor-runs/${runId}`),
+    queryFn: () => api.get(`/runs/editor/${runId}`),
     enabled: !authLoading && Boolean(user),
   });
   const publishMutation = useMutation({
@@ -35,7 +35,7 @@ function EditorRunDetail() {
       isPublic: boolean;
       publicSlug?: string;
     }) =>
-      api.put<ApiResponse<EditorRun>>(`/runs/${runId}`, {
+      api.put<ApiResponse<EditorRun>>(`/runs/editor/${runId}`, {
         isPublic,
         ...(publicSlug ? { publicSlug } : {}),
       }),
@@ -46,7 +46,7 @@ function EditorRunDetail() {
     },
   });
   const deleteMutation = useMutation({
-    mutationFn: () => api.delete<ApiResponse<{ id: string }>>(`/runs/${runId}`),
+    mutationFn: () => api.delete<ApiResponse<{ id: string }>>(`/runs/editor/${runId}`),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['runs'] });
       navigate({ to: '/editor/runs' });

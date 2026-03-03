@@ -27,7 +27,7 @@ function EditorRunsList() {
       try {
         setLoading(true);
         const response =
-          await api.get<ApiResponse<EditorRun[]>>('/editor-runs');
+          await api.get<ApiResponse<EditorRun[]>>('/runs/editor');
         if (response.success) {
           setRuns(response.data);
         }

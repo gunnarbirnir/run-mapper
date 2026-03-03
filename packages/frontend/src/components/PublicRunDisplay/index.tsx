@@ -26,11 +26,9 @@ export const PublicRunDisplay = ({
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
     () => processRunRoute(run.coordinates),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeId],
+    [run.coordinates],
   );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const waypoints = useMemo(() => run.waypoints, [routeId]);
+  const waypoints = useMemo(() => run.waypoints, [run.waypoints]);
 
   const mapState = useMapState();
   const {
