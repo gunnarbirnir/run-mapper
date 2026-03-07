@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
-import { useAuth } from '~/contexts/AuthContext';
+import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Form, Text } from '~/primitives';
 
 import { parseLoginError } from './utils';
 
 export const LoginCard = () => {
-  const { signIn } = useAuth();
+  const { signIn } = useAuthState();
   const navigate = useNavigate();
   const { redirect } = useSearch({ from: '/auth/login' });
 

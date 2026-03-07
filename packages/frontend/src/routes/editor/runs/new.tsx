@@ -6,7 +6,6 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { api } from '~/service';
-import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { PageLayout } from '~/components/PageLayout';
 import { Text, Button, Form } from '~/primitives';
 import type { ApiResponse } from '~/types';
@@ -42,69 +41,78 @@ function NewEditorRun() {
   const isMapLoadedRef = useRef(false);
   const shouldKeepDrawingRef = useRef(true);
 
-  const fetchElevationForPoints = useCallback(async (pointsToFetch: Point[]) => {
-    if (pointsToFetch.length === 0) return;
-    if (!mapRef.current) return;
+  const fetchElevationForPoints = useCallback(
+    async (pointsToFetch: Point[]) => {
+      if (pointsToFetch.length === 0) return;
+      if (!mapRef.current) return;
 
-    setFetchingElevation(true);
+      setFetchingElevation(true);
 
-    try {
-      // Wait a bit for terrain to be ready if needed
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      try {
+        // Wait a bit for terrain to be ready if needed
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Use Mapbox's queryTerrainElevation method
-      const updatedPoints = await Promise.all(
-        pointsToFetch.map(async (point) => {
-          try {
-            // Try querying elevation, with retries if needed
-            let elevation: number | null = null;
-            for (let attempt = 0; attempt < 3; attempt++) {
-              elevation = mapRef.current?.queryTerrainElevation([
-                point.lng,
-                point.lat,
-              ]) ?? null;
-              
+        // Use Mapbox's queryTerrainElevation method
+        const updatedPoints = await Promise.all(
+          pointsToFetch.map(async (point) => {
+            try {
+              // Try querying elevation, with retries if needed
+              let elevation: number | null = null;
+              for (let attempt = 0; attempt < 3; attempt++) {
+                elevation =
+                  mapRef.current?.queryTerrainElevation([
+                    point.lng,
+                    point.lat,
+                  ]) ?? null;
+
+                if (elevation !== null && elevation !== undefined) {
+                  break;
+                }
+
+                // Wait a bit before retrying
+                if (attempt < 2) {
+                  await new Promise((resolve) => setTimeout(resolve, 200));
+                }
+              }
+
               if (elevation !== null && elevation !== undefined) {
-                break;
+                return { ...point, elevation };
+              } else {
+                console.warn(
+                  `Elevation not available for point ${point.id} after retries`,
+                );
+                return { ...point, elevation: 0 };
               }
-              
-              // Wait a bit before retrying
-              if (attempt < 2) {
-                await new Promise((resolve) => setTimeout(resolve, 200));
-              }
-            }
-            
-            if (elevation !== null && elevation !== undefined) {
-              return { ...point, elevation };
-            } else {
-              console.warn(`Elevation not available for point ${point.id} after retries`);
+            } catch (err) {
+              console.warn(
+                `Error querying elevation for point ${point.id}:`,
+                err,
+              );
               return { ...point, elevation: 0 };
             }
-          } catch (err) {
-            console.warn(`Error querying elevation for point ${point.id}:`, err);
-            return { ...point, elevation: 0 };
-          }
-        }),
-      );
+          }),
+        );
 
-      // Update points with fetched elevations
-      const pointIds = pointsToFetch.map((p) => p.id);
-      setPoints((prev) => {
-        return prev.map((p) => {
-          if (pointIds.includes(p.id)) {
-            const updatedPoint = updatedPoints.find((up) => up.id === p.id);
-            return updatedPoint || p;
-          }
-          return p;
+        // Update points with fetched elevations
+        const pointIds = pointsToFetch.map((p) => p.id);
+        setPoints((prev) => {
+          return prev.map((p) => {
+            if (pointIds.includes(p.id)) {
+              const updatedPoint = updatedPoints.find((up) => up.id === p.id);
+              return updatedPoint || p;
+            }
+            return p;
+          });
         });
-      });
-    } catch (err) {
-      // Log error for debugging
-      console.error('Failed to fetch elevation:', err);
-    } finally {
-      setFetchingElevation(false);
-    }
-  }, []);
+      } catch (err) {
+        // Log error for debugging
+        console.error('Failed to fetch elevation:', err);
+      } finally {
+        setFetchingElevation(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -137,7 +145,7 @@ function NewEditorRun() {
 
     // Add terrain when style loads
     map.on('style.load', addTerrain);
-    
+
     // Also try to add terrain immediately if style is already loaded
     if (map.isStyleLoaded()) {
       addTerrain();
@@ -170,7 +178,7 @@ function NewEditorRun() {
     map.on('draw.create', (e: MapboxDraw.DrawCreateEvent) => {
       const features = e.features || [];
       const newPoints: Point[] = [];
-      
+
       features.forEach((feature) => {
         if (feature.geometry.type === 'Point') {
           const [lng, lat] = feature.geometry.coordinates as [number, number];
@@ -186,10 +194,10 @@ function NewEditorRun() {
 
       if (newPoints.length > 0) {
         setPoints((prev) => [...prev, ...newPoints]);
-        
+
         // Fetch elevation for new points automatically
         fetchElevationForPoints(newPoints);
-        
+
         // Keep draw mode active for continuous drawing
         // Use setTimeout to ensure this happens after Mapbox Draw's default mode change
         setTimeout(() => {
@@ -212,9 +220,7 @@ function NewEditorRun() {
         if (feature.geometry.type === 'Point') {
           const [lng, lat] = feature.geometry.coordinates as [number, number];
           setPoints((prev) =>
-            prev.map((p) =>
-              p.id === feature.id ? { ...p, lng, lat } : p,
-            ),
+            prev.map((p) => (p.id === feature.id ? { ...p, lng, lat } : p)),
           );
         }
       });
@@ -229,7 +235,11 @@ function NewEditorRun() {
       }
       // If mode changed to something other than draw_point and we want to keep drawing,
       // switch back to draw_point mode
-      else if (shouldKeepDrawingRef.current && mode !== 'draw_point' && drawRef.current) {
+      else if (
+        shouldKeepDrawingRef.current &&
+        mode !== 'draw_point' &&
+        drawRef.current
+      ) {
         setTimeout(() => {
           if (drawRef.current && shouldKeepDrawingRef.current) {
             drawRef.current.changeMode('draw_point');
@@ -278,7 +288,6 @@ function NewEditorRun() {
   const deselectAllPoints = () => {
     setSelectedPointIds(new Set());
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -348,110 +357,107 @@ function NewEditorRun() {
   };
 
   return (
-    <ProtectedRoute>
-      <PageLayout>
-        <PageLayout.MainContent>
-          <Text element="h1">Create New Run</Text>
-          <Form onSubmit={handleSubmit}>
-            {error && (
-              <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
-                {error}
-              </div>
-            )}
-            <Form.TextInput
-              id="name"
-              name="name"
-              label="Run Name"
-              placeholder="Enter run name"
-              value={name}
-              onChange={setName}
-            />
-
-            <div className="mb-4">
-              <label className="mb-2 block text-sm font-medium">
-                Map Editor
-              </label>
-              <div className="h-96 w-full rounded border border-gray-300">
-                <div ref={mapContainerRef} className="h-full w-full" />
-              </div>
-              <p className="mt-2 text-sm text-gray-600">
-                Click on the map to add points. Keep clicking to add more points.
-                Press Enter to stop adding points. Elevation is automatically fetched.
-              </p>
+    <PageLayout>
+      <PageLayout.MainContent>
+        <Text element="h1">Create New Run</Text>
+        <Form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 rounded border border-red-400 bg-red-100 p-3 text-red-700">
+              {error}
             </div>
+          )}
+          <Form.TextInput
+            id="name"
+            name="name"
+            label="Run Name"
+            placeholder="Enter run name"
+            value={name}
+            onChange={setName}
+          />
 
-            {points.length > 0 && (
-              <div className="mb-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-sm font-medium">
-                    Points ({points.length})
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={selectAllPoints}
-                      className="text-xs text-blue-600 hover:text-blue-800"
-                    >
-                      Select All
-                    </button>
-                    <button
-                      type="button"
-                      onClick={deselectAllPoints}
-                      className="text-xs text-blue-600 hover:text-blue-800"
-                    >
-                      Deselect All
-                    </button>
-                  </div>
-                </div>
+          <div className="mb-4">
+            <label className="mb-2 block text-sm font-medium">Map Editor</label>
+            <div className="h-96 w-full rounded border border-gray-300">
+              <div ref={mapContainerRef} className="h-full w-full" />
+            </div>
+            <p className="mt-2 text-sm text-gray-600">
+              Click on the map to add points. Keep clicking to add more points.
+              Press Enter to stop adding points. Elevation is automatically
+              fetched.
+            </p>
+          </div>
 
-                {fetchingElevation && (
-                  <div className="mb-3 rounded border border-gray-300 bg-gray-50 p-3">
-                    <span className="text-sm text-gray-600">
-                      Fetching elevation...
-                    </span>
-                  </div>
-                )}
-
-                <div className="max-h-64 space-y-2 overflow-y-auto rounded border border-gray-300 p-3">
-                  {points.map((point, index) => {
-                    const isSelected = selectedPointIds.has(point.id);
-                    return (
-                      <div
-                        key={point.id}
-                        className={`flex items-center gap-2 rounded p-2 ${
-                          isSelected
-                            ? 'bg-blue-100 border-2 border-blue-400'
-                            : 'bg-gray-50'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => togglePointSelection(point.id)}
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm font-medium">
-                          Point {index + 1}:
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {point.lat.toFixed(6)}, {point.lng.toFixed(6)}
-                        </span>
-                        <span className="ml-auto text-sm text-gray-600">
-                          Elevation: {point.elevation.toFixed(1)} m
-                        </span>
-                      </div>
-                    );
-                  })}
+          {points.length > 0 && (
+            <div className="mb-4">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-sm font-medium">
+                  Points ({points.length})
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={selectAllPoints}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deselectAllPoints}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Deselect All
+                  </button>
                 </div>
               </div>
-            )}
 
-            <Button type="submit" disabled={loading} className="mt-2">
-              {loading ? 'Creating...' : 'Create Run'}
-            </Button>
-          </Form>
-        </PageLayout.MainContent>
-      </PageLayout>
-    </ProtectedRoute>
+              {fetchingElevation && (
+                <div className="mb-3 rounded border border-gray-300 bg-gray-50 p-3">
+                  <span className="text-sm text-gray-600">
+                    Fetching elevation...
+                  </span>
+                </div>
+              )}
+
+              <div className="max-h-64 space-y-2 overflow-y-auto rounded border border-gray-300 p-3">
+                {points.map((point, index) => {
+                  const isSelected = selectedPointIds.has(point.id);
+                  return (
+                    <div
+                      key={point.id}
+                      className={`flex items-center gap-2 rounded p-2 ${
+                        isSelected
+                          ? 'border-2 border-blue-400 bg-blue-100'
+                          : 'bg-gray-50'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => togglePointSelection(point.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium">
+                        Point {index + 1}:
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        {point.lat.toFixed(6)}, {point.lng.toFixed(6)}
+                      </span>
+                      <span className="ml-auto text-sm text-gray-600">
+                        Elevation: {point.elevation.toFixed(1)} m
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <Button type="submit" disabled={loading} className="mt-2">
+            {loading ? 'Creating...' : 'Create Run'}
+          </Button>
+        </Form>
+      </PageLayout.MainContent>
+    </PageLayout>
   );
 }

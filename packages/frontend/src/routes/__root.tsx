@@ -3,17 +3,23 @@ import {
   HeadContent,
   Outlet,
   Scripts,
-  createRootRoute,
+  createRootRouteWithContext,
   useMatchRoute,
 } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import type { User } from 'firebase/auth';
 import * as React from 'react';
 
 import appCss from '~/styles/app.css?url';
-import { AuthProvider } from '~/contexts/AuthContext';
 
-export const Route = createRootRoute({
+import { useAuthProvider } from '~/hooks/useAuthProvider';
+
+interface RootContext {
+  auth: { user: User | null; isLoaded: boolean };
+}
+
+export const Route = createRootRouteWithContext<RootContext>()({
   head: () => ({
     meta: [
       {
@@ -42,14 +48,14 @@ export const Route = createRootRoute({
 const queryClient = new QueryClient();
 
 function RootComponent() {
+  useAuthProvider();
+
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <RootDocument>
-          <Outlet />
-        </RootDocument>
-      </QueryClientProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </QueryClientProvider>
   );
 }
 

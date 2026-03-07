@@ -1,13 +1,13 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { useAuth } from '~/contexts/AuthContext';
+import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Form, Text } from '~/primitives';
 
 import { parseSignUpError, validateSignUpForm } from './utils';
 
 export function SignUpCard() {
-  const { signUp } = useAuth();
+  const { signUp } = useAuthState();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
