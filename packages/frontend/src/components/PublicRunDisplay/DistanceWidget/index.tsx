@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
 import type { Coordinates, WidgetBaseProps } from '~/types';
+import { calculateDistance } from '~/utils/route';
 
 import { WidgetContainer } from '../WidgetContainer';
-import { calculateDistance } from './utils';
 
 interface DistanceWidgetProps extends WidgetBaseProps {
   coordinates: Coordinates[];

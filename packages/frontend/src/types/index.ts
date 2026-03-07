@@ -16,6 +16,7 @@ export type Waypoint = {
   description?: string;
   coordinates: Coordinates;
   type: WayPointType;
+  distance: number;
 };
 
 export interface PublicRun {

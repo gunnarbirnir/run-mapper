@@ -3,6 +3,7 @@ import type { Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
+import { formatNumber } from '~/utils';
 
 import { RouteLine } from './RouteLine';
 
@@ -65,9 +66,14 @@ export const WaypointsDrawer = ({
           />
         </div>
         <div className="flex flex-1 flex-col items-center justify-between px-4 pb-6">
-          <Text variant="subtle" className="w-full pt-8 text-sm">
-            {activeWaypointDetails.description}
-          </Text>
+          <div className="flex w-full flex-col gap-4 pt-8">
+            <Text variant="bold">
+              {formatNumber(activeWaypointDetails.distance)} km
+            </Text>
+            <Text variant="subtle" className="text-sm">
+              {activeWaypointDetails.description}
+            </Text>
+          </div>
           <div className="mt-4 flex items-center gap-4">
             <RoundButton
               disabled={activeWaypointIndex === 0}
