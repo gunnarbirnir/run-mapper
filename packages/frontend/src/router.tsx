@@ -5,6 +5,9 @@ export function getRouter() {
   const router = createRouter({
     routeTree,
     scrollRestoration: true,
+    context: {
+      auth: { user: null, isLoaded: false },
+    },
   });
 
   return router;

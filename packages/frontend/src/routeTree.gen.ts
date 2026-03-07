@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as EditorRouteRouteImport } from './routes/editor/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
+import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -18,6 +20,11 @@ import { Route as EditorRunsIndexRouteImport } from './routes/editor/runs/index'
 import { Route as EditorRunsNewRouteImport } from './routes/editor/runs/new'
 import { Route as EditorRunsRunIdRouteImport } from './routes/editor/runs/$runId'
 
+const EditorRouteRoute = EditorRouteRouteImport.update({
+  id: '/editor',
+  path: '/editor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -26,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
   id: '/playground/',
   path: '/playground/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RunSlugRoute = RunSlugRouteImport.update({
@@ -44,26 +56,28 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorRunsIndexRoute = EditorRunsIndexRouteImport.update({
-  id: '/editor/runs/',
-  path: '/editor/runs/',
-  getParentRoute: () => rootRouteImport,
+  id: '/runs/',
+  path: '/runs/',
+  getParentRoute: () => EditorRouteRoute,
 } as any)
 const EditorRunsNewRoute = EditorRunsNewRouteImport.update({
-  id: '/editor/runs/new',
-  path: '/editor/runs/new',
-  getParentRoute: () => rootRouteImport,
+  id: '/runs/new',
+  path: '/runs/new',
+  getParentRoute: () => EditorRouteRoute,
 } as any)
 const EditorRunsRunIdRoute = EditorRunsRunIdRouteImport.update({
-  id: '/editor/runs/$runId',
-  path: '/editor/runs/$runId',
-  getParentRoute: () => rootRouteImport,
+  id: '/runs/$runId',
+  path: '/runs/$runId',
+  getParentRoute: () => EditorRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/editor': typeof EditorRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -71,9 +85,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/editor': typeof EditorRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -82,9 +98,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/editor': typeof EditorRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/home/': typeof HomeIndexRoute
   '/playground/': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
   '/editor/runs/new': typeof EditorRunsNewRoute
@@ -94,9 +112,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/editor'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home'
     | '/playground'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -104,9 +124,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/editor'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home'
     | '/playground'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -114,9 +136,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/editor'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/home/'
     | '/playground/'
     | '/editor/runs/$runId'
     | '/editor/runs/new'
@@ -125,17 +149,23 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EditorRouteRoute: typeof EditorRouteRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   RunSlugRoute: typeof RunSlugRoute
+  HomeIndexRoute: typeof HomeIndexRoute
   PlaygroundIndexRoute: typeof PlaygroundIndexRoute
-  EditorRunsRunIdRoute: typeof EditorRunsRunIdRoute
-  EditorRunsNewRoute: typeof EditorRunsNewRoute
-  EditorRunsIndexRoute: typeof EditorRunsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/editor': {
+      id: '/editor'
+      path: '/editor'
+      fullPath: '/editor'
+      preLoaderRoute: typeof EditorRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -148,6 +178,13 @@ declare module '@tanstack/react-router' {
       path: '/playground'
       fullPath: '/playground'
       preLoaderRoute: typeof PlaygroundIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home/': {
+      id: '/home/'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/run/$slug': {
@@ -173,37 +210,52 @@ declare module '@tanstack/react-router' {
     }
     '/editor/runs/': {
       id: '/editor/runs/'
-      path: '/editor/runs'
+      path: '/runs'
       fullPath: '/editor/runs'
       preLoaderRoute: typeof EditorRunsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EditorRouteRoute
     }
     '/editor/runs/new': {
       id: '/editor/runs/new'
-      path: '/editor/runs/new'
+      path: '/runs/new'
       fullPath: '/editor/runs/new'
       preLoaderRoute: typeof EditorRunsNewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EditorRouteRoute
     }
     '/editor/runs/$runId': {
       id: '/editor/runs/$runId'
-      path: '/editor/runs/$runId'
+      path: '/runs/$runId'
       fullPath: '/editor/runs/$runId'
       preLoaderRoute: typeof EditorRunsRunIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EditorRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AuthLoginRoute: AuthLoginRoute,
-  AuthSignupRoute: AuthSignupRoute,
-  RunSlugRoute: RunSlugRoute,
-  PlaygroundIndexRoute: PlaygroundIndexRoute,
+interface EditorRouteRouteChildren {
+  EditorRunsRunIdRoute: typeof EditorRunsRunIdRoute
+  EditorRunsNewRoute: typeof EditorRunsNewRoute
+  EditorRunsIndexRoute: typeof EditorRunsIndexRoute
+}
+
+const EditorRouteRouteChildren: EditorRouteRouteChildren = {
   EditorRunsRunIdRoute: EditorRunsRunIdRoute,
   EditorRunsNewRoute: EditorRunsNewRoute,
   EditorRunsIndexRoute: EditorRunsIndexRoute,
+}
+
+const EditorRouteRouteWithChildren = EditorRouteRoute._addFileChildren(
+  EditorRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  EditorRouteRoute: EditorRouteRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
+  RunSlugRoute: RunSlugRoute,
+  HomeIndexRoute: HomeIndexRoute,
+  PlaygroundIndexRoute: PlaygroundIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

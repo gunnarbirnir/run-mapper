@@ -10,11 +10,10 @@ export const DEFAULT_FUNCTION_TIMEOUT_SECONDS = 15;
 export const DEFAULT_FUNCTION_MEMORY = '128MiB';
 
 export const DEFAULT_ALLOWED_ORIGINS = [
+  'https://www.spretta.fit',
   'https://run-mapper-ten.vercel.app',
-  'https://runmapper.fit',
-  'http://localhost:3000',
-  'http://localhost:5173',
   'https://run-mapper-git-staging-gunnar-olafssons-projects.vercel.app',
+  'http://localhost:3000',
 ] as const;
 
 export const MAX_RUN_NAME_LENGTH = 120;

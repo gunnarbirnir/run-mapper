@@ -1,16 +1,17 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
-import { useAuth } from '~/contexts/AuthContext';
+
+import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text, Icon } from '~/primitives';
 
 export const NavBar = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, isLoaded, logOut } = useAuthState();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isOnLoginPage = pathname === '/auth/login';
 
   const handleLogout = async () => {
-    await logout();
-    navigate({ to: '/auth/login', search: { redirect: '/' } });
+    await logOut();
+    navigate({ to: '/auth/login', search: { redirect: undefined } });
   };
 
   return (
@@ -53,11 +54,11 @@ export const NavBar = () => {
               <Button onClick={handleLogout}>Log out</Button>
             </>
           ) : isOnLoginPage ? (
-            <Button linkTo="/auth/signup" isLoading={loading}>
+            <Button linkTo="/auth/signup" isLoading={!isLoaded}>
               Sign up
             </Button>
           ) : (
-            <Button linkTo="/auth/login" isLoading={loading}>
+            <Button linkTo="/auth/login" isLoading={!isLoaded}>
               Sign in
             </Button>
           )}

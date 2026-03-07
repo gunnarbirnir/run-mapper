@@ -13,9 +13,7 @@ const getAuthToken = async (forceRefresh = false): Promise<string | null> => {
   }
 };
 
-export const getAuthHeaders = async (
-  forceRefresh = false,
-): Promise<HeadersInit> => {
+const getAuthHeaders = async (forceRefresh = false): Promise<HeadersInit> => {
   const token = await getAuthToken(forceRefresh);
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -28,7 +26,7 @@ export const getAuthHeaders = async (
   return headers;
 };
 
-export const apiRequest = async <T>(
+const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {},
   retryOn401 = true,
