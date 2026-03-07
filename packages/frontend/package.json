@@ -5,10 +5,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "node .output/server/index.mjs",
     "lint": "eslint --config eslint.config.js",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf node_modules .output .tanstack"
+    "clean": "rm -rf node_modules .vercel .tanstack"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

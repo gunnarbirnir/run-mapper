@@ -1,4 +1,6 @@
-import { Text, type IconName, Icon } from '~/primitives';
+import { Text } from '../Text';
+import { Icon, type IconName } from '../Icon';
+
 import { cn } from '~/utils';
 
 import { ListItemContainer } from './ListItemContainer';

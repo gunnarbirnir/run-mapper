@@ -13,9 +13,9 @@ import { WidgetContent } from './WidgetContent';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
-  label?: string;
+  title?: string;
   text?: string;
-  icon: IconName;
+  icon?: IconName;
   iconClassName?: string;
   customContent?: ReactNode;
 }
@@ -25,9 +25,10 @@ const MODAL_MAX_WIDTH = 600;
 
 export const WidgetContainer = ({
   children,
-  label,
+  title,
   text,
   icon,
+  widgetSizes,
   iconClassName,
   customContent,
   index,
@@ -38,19 +39,28 @@ export const WidgetContainer = ({
   isAnyOpen = false,
   publicRunDisplaySize,
   toggleActive,
+  setWidgetSizes,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen } = useMediaQuery();
   const { expandedHeight: graphHeight } = useElevationGraphHeight();
-  const [widgetWidth, setWidgetWidth] = useState(0);
-  const [widgetHeight, setWidgetHeight] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
 
-  const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
+  const widgetHeight = spacingPx(10);
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
-  const baseSpacing = spacingPx(4);
-  const top = baseSpacing + index * (widgetHeight + baseSpacing);
+  const baseSpacing = spacingPx(3);
+  const top = isSmallScreen
+    ? baseSpacing +
+      widgetSizes
+        .slice(0, index)
+        .reduce((acc) => acc + widgetHeight + baseSpacing, 0)
+    : baseSpacing;
+  const left = isSmallScreen
+    ? baseSpacing
+    : baseSpacing +
+      widgetSizes
+        .slice(0, index)
+        .reduce((acc, size) => acc + size + baseSpacing, 0);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
@@ -69,70 +79,53 @@ export const WidgetContainer = ({
   const modalHeight = Math.min(modalTargetHeight, MODAL_MAX_HEIGHT);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isInitialized && widgetSizes.length > index) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWidgetWidth(widgetRef.current ? widgetRef.current.offsetWidth : 0);
-      setWidgetHeight(widgetRef.current ? widgetRef.current.offsetHeight : 0);
+      setIsInitialized(true);
     }
-  }, [isOpen]);
+  }, [isInitialized, widgetSizes, index]);
 
   useEffect(() => {
-    if (hasCalculatedSize && !isInitialized) {
-      // Finish animation before displaying
-      const initTimeout = setTimeout(() => {
-        setIsInitialized(true);
-      }, WIDGET_ANIMATION_DURATION * 1000);
+    if (!isOpen) {
+      const newSize = widgetRef.current ? widgetRef.current.offsetWidth : 0;
 
-      return () => clearTimeout(initTimeout);
+      setWidgetSizes((prev) => {
+        const newSizes = [...prev];
+        if (newSizes.length <= index) {
+          newSizes.push(newSize);
+        } else {
+          newSizes[index] = newSize;
+        }
+        return newSizes;
+      });
     }
-  }, [hasCalculatedSize, isInitialized]);
-
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      setIsResizing(true);
-      resizeTimeout = setTimeout(() => {
-        setIsResizing(false);
-      }, 100);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
+  }, [isOpen, setWidgetSizes, index]);
 
   return (
     <motion.div
       animate={{
         top: isActive ? modalTop : top,
-        left: isActive ? modalLeft : baseSpacing,
-        width: isActive ? modalWidth : widgetWidth,
+        left: isActive ? modalLeft : left,
+        width: isActive ? modalWidth : widgetSizes[index],
         height: isActive ? modalHeight : widgetHeight,
       }}
       transition={{
-        duration: isInitialized && !isResizing ? WIDGET_ANIMATION_DURATION : 0,
+        duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute min-w-34 overflow-hidden rounded-lg bg-white shadow-md/20"
-      style={
-        isInitialized
-          ? {
-              // 1000 to be above overlay, which is 100
-              zIndex: isOpen ? 1000 : index,
-              cursor: isClickable ? 'pointer' : undefined,
-            }
-          : { visibility: 'hidden' }
-      }
+      className="pointer-events-auto absolute overflow-hidden rounded-xl bg-white shadow-md/20"
+      style={{
+        // 1000 to be above overlay, which is 100
+        zIndex: isOpen ? 1000 : index,
+        cursor: isClickable ? 'pointer' : undefined,
+      }}
       onClick={isClickable ? toggleActive : undefined}
     >
       {!isOpen && (
         <WidgetContent
           ref={widgetRef}
-          label={label}
           text={text}
+          height={widgetHeight}
           isClickable={isClickable}
           customContent={customContent}
           icon={icon}
@@ -142,7 +135,7 @@ export const WidgetContainer = ({
       {isExpanded && (
         <ModalContent
           isOpen={isOpen}
-          title={label}
+          title={title}
           onClose={toggleActive}
           icon={icon}
           iconClassName={iconClassName}

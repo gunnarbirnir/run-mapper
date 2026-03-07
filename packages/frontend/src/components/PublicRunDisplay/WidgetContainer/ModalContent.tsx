@@ -7,7 +7,7 @@ interface ModalContentProps {
   isOpen: boolean;
   children: ReactNode;
   title?: string;
-  icon: IconName;
+  icon?: IconName;
   iconClassName?: string;
   onClose?: () => void;
 }
@@ -42,10 +42,12 @@ export const ModalContent = ({
         {/* Dummy item for spacing */}
         <div className="size-8" />
         <div className="flex items-center gap-2">
-          <Icon
-            name={icon}
-            className={cn('text-primary-500 size-7', iconClassName)}
-          />
+          {icon && (
+            <Icon
+              name={icon}
+              className={cn('text-primary-500 size-7', iconClassName)}
+            />
+          )}
           <Text element="h2" className="text-lg font-medium">
             {title}
           </Text>

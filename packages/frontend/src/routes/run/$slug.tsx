@@ -5,6 +5,7 @@ import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
+import { areCssVariablesLoaded } from '~/utils';
 
 export const Route = createFileRoute('/run/$slug')({
   component: PublicRun,
@@ -21,7 +22,8 @@ function PublicRun() {
     queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
 
-  if (isPending) {
+  // Public run relies on window object and css variables
+  if (isPending || !areCssVariablesLoaded() || typeof window === 'undefined') {
     return <Fallback>Loading...</Fallback>;
   }
 

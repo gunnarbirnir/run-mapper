@@ -18,6 +18,7 @@ import { ArrowUpDown } from './ArrowUpDown';
 import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
+import { Ruler } from './Ruler';
 
 import { cn } from '~/utils';
 
@@ -40,7 +41,7 @@ export type IconName =
   | 'play'
   | 'externalLink'
   | 'spretta'
-  | 'sprettaArrow';
+  | 'ruler';
 interface IconProps {
   name: IconName;
   style?: CSSProperties;
@@ -85,6 +86,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <ExternalLink />;
     case 'spretta':
       return <Spretta />;
+    case 'ruler':
+      return <Ruler />;
     default:
       return null;
   }

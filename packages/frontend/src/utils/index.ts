@@ -47,3 +47,7 @@ export const spacingPx = (factor: number) => {
     return 0;
   }
 };
+
+export const formatNumber = (number: number, maxDecimals: number = 1) => {
+  return parseFloat(number.toFixed(maxDecimals));
+};

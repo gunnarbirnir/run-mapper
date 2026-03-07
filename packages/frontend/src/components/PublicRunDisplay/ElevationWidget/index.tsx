@@ -45,7 +45,7 @@ export const ElevationWidget = ({
   return (
     <WidgetContainer
       {...props}
-      label="Elevation"
+      title="Elevation"
       text={formattedElevation}
       showGraphWhileActive
       icon="mountain"

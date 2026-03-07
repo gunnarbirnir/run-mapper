@@ -45,7 +45,7 @@ export const useWaypoints = ({
     const handleWaypointClick = (waypoint: Waypoint) => {
       onWaypointClick(waypoint.id);
       mapRef.current?.flyTo({
-        center: [waypoint.coordinates.lat, waypoint.coordinates.lng],
+        center: [waypoint.coordinates.lng, waypoint.coordinates.lat],
         zoom: WAYPOINT_ZOOM,
         duration: FLY_TO_WAYPOINT_DURATION,
       });

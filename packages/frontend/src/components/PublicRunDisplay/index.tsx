@@ -6,6 +6,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_WIDTH,
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
+import { cn } from '~/utils';
 
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
@@ -34,14 +35,11 @@ export const PublicRunDisplay = ({
   const {
     mapStyle,
     showWaypoints,
-    isAtInitialBounds,
     routeIsAnimating,
     setActiveIndexRef,
     setMapStyle,
-    animateRoute,
     toggleShowWaypoints,
     handleSetActiveWaypoint,
-    handleFitInitialBounds,
   } = mapState;
   const { setActiveWaypoint, ...routeOverlayState } = useRouteOverlayState();
   const { compactHeight: graphHeight } = useElevationGraphHeight();
@@ -51,7 +49,9 @@ export const PublicRunDisplay = ({
 
   return (
     <div
-      className="relative isolate flex h-full w-full flex-col"
+      className={cn('relative isolate flex h-full w-full flex-col', {
+        fixed: isFullscreen,
+      })}
       style={{
         minHeight: PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
         minWidth: PUBLIC_RUN_DISPLAY_MIN_WIDTH,
@@ -62,6 +62,7 @@ export const PublicRunDisplay = ({
         <RunRouteMap
           {...mapState}
           routeId={routeId}
+          isFullscreen={isFullscreen}
           boundingBox={run.boundingBox}
           coordinates={coordinates}
           waypoints={waypoints}
@@ -86,18 +87,12 @@ export const PublicRunDisplay = ({
       </Suspense>
       <RouteOverlay
         {...routeOverlayState}
-        routeId={routeId}
-        isFullscreen={isFullscreen}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
         publicRunDisplayRef={publicRunDisplayRef}
-        isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
-        routeIsAnimating={routeIsAnimating}
-        animateRoute={animateRoute}
-        fitInitialBounds={handleFitInitialBounds}
         setActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={setMapStyle}

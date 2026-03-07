@@ -16,6 +16,7 @@ export type Waypoint = {
   description?: string;
   coordinates: Coordinates;
   type: WayPointType;
+  distance: number;
 };
 
 export interface PublicRun {
@@ -44,6 +45,7 @@ export interface WidgetBaseProps {
     width: number;
     height: number;
   };
+  widgetSizes: number[];
   showGraphWhileActive?: boolean;
   isActive?: boolean;
   isOpen?: boolean;
@@ -52,6 +54,7 @@ export interface WidgetBaseProps {
   isAnyOpen?: boolean;
   isAnyExpanded?: boolean;
   toggleActive?: () => void;
+  setWidgetSizes: (sizes: (prev: number[]) => number[]) => void;
 }
 
 export type WidgetType = 'distance' | 'elevation';

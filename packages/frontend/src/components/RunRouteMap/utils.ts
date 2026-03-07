@@ -25,8 +25,8 @@ export const getLineFeature = (coordinates: Coordinates[]): LineFeature => {
     geometry: {
       type: 'LineString',
       coordinates: coordinates.map((coordinate) => [
-        coordinate.lat,
         coordinate.lng,
+        coordinate.lat,
       ]),
     },
     properties: {},

@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => ({
     port: 3000,
   },
   build: {
-    outDir: '.output',
+    outDir: '.vercel',
   },
   plugins: [
     tsConfigPaths(),

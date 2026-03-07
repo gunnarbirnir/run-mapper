@@ -5,7 +5,9 @@ import { cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { Text, RoundButton, Icon } from '~/primitives';
+import { Text } from '../Text';
+import { RoundButton } from '../Button';
+import { Icon } from '../Icon';
 
 interface DrawerProps {
   isOpen: boolean;
