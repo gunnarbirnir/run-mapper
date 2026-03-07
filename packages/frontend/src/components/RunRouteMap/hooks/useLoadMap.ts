@@ -2,6 +2,7 @@ import { RefObject, useEffect, MutableRefObject } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 
 import type { Bounds, MapStyle } from '~/types';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 import { MAP_STYLES } from '../constants';
 
@@ -20,6 +21,8 @@ export const useLoadMap = ({
   mapRef,
   mapContainerRef,
 }: UseLoadMapProps) => {
+  const { isSmallScreen } = useMediaQuery();
+
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
     mapRef.current = new mapboxgl.Map({
@@ -27,7 +30,7 @@ export const useLoadMap = ({
       bounds: paddedBounds,
       style: MAP_STYLES[mapStyle],
       attributionControl: false,
-      logoPosition: 'bottom',
+      logoPosition: isSmallScreen ? 'left' : 'bottom',
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);

@@ -6,6 +6,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_WIDTH,
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
+import { cn } from '~/utils';
 
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
@@ -48,7 +49,9 @@ export const PublicRunDisplay = ({
 
   return (
     <div
-      className="relative isolate flex h-full w-full flex-col"
+      className={cn('relative isolate flex h-full w-full flex-col', {
+        fixed: isFullscreen,
+      })}
       style={{
         minHeight: PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
         minWidth: PUBLIC_RUN_DISPLAY_MIN_WIDTH,

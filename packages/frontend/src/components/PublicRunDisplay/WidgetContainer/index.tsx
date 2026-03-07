@@ -49,11 +49,18 @@ export const WidgetContainer = ({
   const widgetHeight = spacingPx(10);
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
   const baseSpacing = spacingPx(3);
-  const left =
-    baseSpacing +
-    widgetSizes
-      .slice(0, index)
-      .reduce((acc, size) => acc + size + baseSpacing, 0);
+  const top = isSmallScreen
+    ? baseSpacing +
+      widgetSizes
+        .slice(0, index)
+        .reduce((acc) => acc + widgetHeight + baseSpacing, 0)
+    : baseSpacing;
+  const left = isSmallScreen
+    ? baseSpacing
+    : baseSpacing +
+      widgetSizes
+        .slice(0, index)
+        .reduce((acc, size) => acc + size + baseSpacing, 0);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
@@ -97,7 +104,7 @@ export const WidgetContainer = ({
   return (
     <motion.div
       animate={{
-        top: isActive ? modalTop : baseSpacing,
+        top: isActive ? modalTop : top,
         left: isActive ? modalLeft : left,
         width: isActive ? modalWidth : widgetSizes[index],
         height: isActive ? modalHeight : widgetHeight,

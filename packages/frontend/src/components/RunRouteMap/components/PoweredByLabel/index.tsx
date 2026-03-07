@@ -1,9 +1,12 @@
 import { Text, Icon } from '~/primitives';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 const MAPBOX_ATTRIBUTION_WIDTH = 44;
 const MAPBOX_ATTRIBUTION_PADDING = 10;
 
 export const PoweredByLabel = () => {
+  const { isSmallScreen } = useMediaQuery();
+
   return (
     <a
       href="/"
@@ -16,7 +19,8 @@ export const PoweredByLabel = () => {
     >
       <Icon name="spretta" style={{ width: 16, height: 16 }} />
       <Text style={{ fontSize: 12 }}>
-        Powered by <strong>Spretta</strong>
+        {isSmallScreen ? '' : 'Powered by '}
+        <strong>Spretta</strong>
       </Text>
     </a>
   );
