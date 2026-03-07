@@ -12,7 +12,7 @@ import type {
   Waypoint,
 } from '~/types';
 import { Icon } from '~/primitives';
-import { areCssVariablesLoaded, convertRemToPixels } from '~/utils';
+import { convertRemToPixels } from '~/utils';
 import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
 
 import { DistanceWidget } from '../DistanceWidget';
@@ -100,10 +100,6 @@ export const RouteOverlay = ({
       setWidgetSizes,
     };
   };
-
-  if (!areCssVariablesLoaded()) {
-    return null;
-  }
 
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
