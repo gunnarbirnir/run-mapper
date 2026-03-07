@@ -1,26 +1,33 @@
+export const validateLoginForm = ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  if (!email) {
+    return 'Email is required.';
+  }
+  if (!password) {
+    return 'Password is required.';
+  }
+  return null;
+};
+
 export const parseLoginError = (error: unknown) => {
   let errorMessage = 'Failed to sign in. Please check your credentials.';
 
   if (error && typeof error === 'object' && 'code' in error) {
     const firebaseError = error as { code: string; message?: string };
     switch (firebaseError.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'No account found with this email.';
-        break;
-      case 'auth/wrong-password':
-        errorMessage = 'Incorrect password.';
-        break;
       case 'auth/invalid-email':
         errorMessage = 'Invalid email address.';
         break;
-      case 'auth/user-disabled':
-        errorMessage = 'This account has been disabled.';
+      case 'auth/invalid-credential':
+        errorMessage = 'Invalid credentials.';
         break;
-      default:
-        errorMessage = firebaseError.message || errorMessage;
+      // Log error here and handle more of them
     }
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
   }
 
   return errorMessage;

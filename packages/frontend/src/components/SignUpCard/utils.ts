@@ -27,19 +27,8 @@ export const parseSignUpError = (error: unknown) => {
       case 'auth/invalid-email':
         errorMessage = 'Invalid email address.';
         break;
-      case 'auth/operation-not-allowed':
-        errorMessage =
-          'Email/Password authentication is not enabled. Please contact support.';
-        break;
-      case 'auth/weak-password':
-        errorMessage =
-          'Password is too weak. Please choose a stronger password.';
-        break;
-      default:
-        errorMessage = firebaseError.message || errorMessage;
+      // Log error here and handle more of them
     }
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
   }
 
   return errorMessage;

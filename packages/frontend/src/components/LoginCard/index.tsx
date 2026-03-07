@@ -4,7 +4,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Form, Text } from '~/primitives';
 
-import { parseLoginError } from './utils';
+import { parseLoginError, validateLoginForm } from './utils';
 
 export const LoginCard = () => {
   const { signIn } = useAuthState();
@@ -19,6 +19,13 @@ export const LoginCard = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const validationError = validateLoginForm({ email, password });
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
 
     try {
