@@ -6,16 +6,16 @@ import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { type IconName } from '~/primitives';
 import type { WidgetBaseProps } from '~/types';
-import { spacingPx } from '~/utils';
+import { spacingPx, cn } from '~/utils';
 
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
-  label?: string;
+  title?: string;
   text?: string;
-  icon: IconName;
+  icon?: IconName;
   iconClassName?: string;
   customContent?: ReactNode;
 }
@@ -25,7 +25,7 @@ const MODAL_MAX_WIDTH = 600;
 
 export const WidgetContainer = ({
   children,
-  label,
+  title,
   text,
   icon,
   iconClassName,
@@ -42,15 +42,14 @@ export const WidgetContainer = ({
   const widgetRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen } = useMediaQuery();
   const { expandedHeight: graphHeight } = useElevationGraphHeight();
-  const [widgetWidth, setWidgetWidth] = useState(0);
-  const [widgetHeight, setWidgetHeight] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
 
-  const hasCalculatedSize = widgetWidth > 0 && widgetHeight > 0;
+  const widgetHeight = spacingPx(10);
+  const widgetWidth = spacingPx(30);
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
-  const baseSpacing = spacingPx(4);
-  const top = baseSpacing + index * (widgetHeight + baseSpacing);
+  const outsideSpacing = spacingPx(4);
+  const betweenSpacing = spacingPx(3);
+  const top = outsideSpacing + index * (widgetHeight + betweenSpacing);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
@@ -69,70 +68,44 @@ export const WidgetContainer = ({
   const modalHeight = Math.min(modalTargetHeight, MODAL_MAX_HEIGHT);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isInitialized) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWidgetWidth(widgetRef.current ? widgetRef.current.offsetWidth : 0);
-      setWidgetHeight(widgetRef.current ? widgetRef.current.offsetHeight : 0);
+      setIsInitialized(true);
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (hasCalculatedSize && !isInitialized) {
-      // Finish animation before displaying
-      const initTimeout = setTimeout(() => {
-        setIsInitialized(true);
-      }, WIDGET_ANIMATION_DURATION * 1000);
-
-      return () => clearTimeout(initTimeout);
-    }
-  }, [hasCalculatedSize, isInitialized]);
-
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      setIsResizing(true);
-      resizeTimeout = setTimeout(() => {
-        setIsResizing(false);
-      }, 100);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
+  }, [isInitialized]);
 
   return (
     <motion.div
       animate={{
         top: isActive ? modalTop : top,
-        left: isActive ? modalLeft : baseSpacing,
+        left: isActive ? modalLeft : outsideSpacing,
         width: isActive ? modalWidth : widgetWidth,
         height: isActive ? modalHeight : widgetHeight,
       }}
       transition={{
-        duration: isInitialized && !isResizing ? WIDGET_ANIMATION_DURATION : 0,
+        duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute min-w-34 overflow-hidden rounded-lg bg-white shadow-md/20"
-      style={
-        isInitialized
-          ? {
-              // 1000 to be above overlay, which is 100
-              zIndex: isOpen ? 1000 : index,
-              cursor: isClickable ? 'pointer' : undefined,
-            }
-          : { visibility: 'hidden' }
-      }
+      className={cn(
+        'pointer-events-auto absolute overflow-hidden bg-white shadow-md/20',
+        {
+          'rounded-full': !isActive,
+          'rounded-xl': isActive,
+        },
+      )}
+      style={{
+        // 1000 to be above overlay, which is 100
+        zIndex: isOpen ? 1000 : index,
+        cursor: isClickable ? 'pointer' : undefined,
+      }}
       onClick={isClickable ? toggleActive : undefined}
     >
       {!isOpen && (
         <WidgetContent
           ref={widgetRef}
-          label={label}
           text={text}
+          height={widgetHeight}
+          width={widgetWidth}
           isClickable={isClickable}
           customContent={customContent}
           icon={icon}
@@ -142,7 +115,7 @@ export const WidgetContainer = ({
       {isExpanded && (
         <ModalContent
           isOpen={isOpen}
-          title={label}
+          title={title}
           onClose={toggleActive}
           icon={icon}
           iconClassName={iconClassName}

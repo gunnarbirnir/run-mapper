@@ -24,11 +24,10 @@ export const OptionButton = ({
   onClick,
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
-  const [buttonSize, setButtonSize] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const { isSmallScreen } = useMediaQuery();
 
-  const hasCalculatedSize = buttonSize > 0;
+  const buttonSize = spacingPx(10);
   const outsideSpacing = spacingPx(4);
   const betweenSpacing = spacingPx(3);
   const mainAxisInset = outsideSpacing + index * (buttonSize + betweenSpacing);
@@ -44,34 +43,23 @@ export const OptionButton = ({
       : mainAxisInset;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setButtonSize(buttonRef.current ? buttonRef.current.offsetWidth : 0);
-  }, []);
-
-  useEffect(() => {
-    if (hasCalculatedSize && !isInitialized) {
-      // Finish animation before displaying
-      const initTimeout = setTimeout(() => {
-        setIsInitialized(true);
-      }, DRAWER_ANIMATION_DURATION * 1000);
-
-      return () => clearTimeout(initTimeout);
+    if (!isInitialized) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsInitialized(true);
     }
-  }, [hasCalculatedSize, isInitialized]);
+  }, [isInitialized]);
 
   return (
     <motion.div
       ref={buttonRef}
       className="absolute"
       style={
-        isInitialized
-          ? // 20 to be above widgets, -index for correct stacking
-            { zIndex: 20 - index }
-          : { visibility: 'hidden' }
+        // 20 to be above widgets, -index for correct stacking
+        { zIndex: 20 - index }
       }
       animate={{ right, top }}
       transition={{
-        duration: DRAWER_ANIMATION_DURATION,
+        duration: isInitialized ? DRAWER_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
     >
@@ -80,19 +68,13 @@ export const OptionButton = ({
         color="white"
         disabled={disabled}
         className={cn(
-          'pointer-events-auto h-10 w-10',
+          'pointer-events-auto',
           { 'shadow-md/20': !openDrawerSize || index === 0 },
           buttonClassName,
         )}
+        style={{ width: buttonSize, height: buttonSize }}
       >
-        <motion.div
-          initial={{ opacity: 0 }}
-          exit={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: DRAWER_ANIMATION_DURATION }}
-        >
-          {children}
-        </motion.div>
+        <>{children}</>
       </RoundButton>
     </motion.div>
   );
