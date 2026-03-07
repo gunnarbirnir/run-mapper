@@ -23,30 +23,21 @@ import { WaypointsDrawer } from '../WaypointsDrawer';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
 type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
-  routeId: string;
-  isFullscreen: boolean;
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
   publicRunDisplayRef: RefObject<HTMLDivElement>;
-  isAtInitialBounds: boolean;
   showWaypoints: boolean;
   mapStyle: MapStyle;
-  routeIsAnimating: boolean;
-  animateRoute: () => void;
-  fitInitialBounds: () => void;
   toggleShowWaypoints: () => void;
   setActiveWaypoint: (waypoint: Waypoint) => void;
   onMapStyleChange: (style: MapStyle) => void;
 };
 
-const EXPAND_GRAPH_WIDGETS = ['elevation'];
 const SETTINGS_DRAWER_WIDTH = convertRemToPixels('13rem');
 const WAYPOINTS_DRAWER_WIDTH = convertRemToPixels('15rem');
 
 export const RouteOverlay = ({
-  routeId,
-  isFullscreen,
   activeWidget,
   openWidget,
   expandedWidget,
@@ -55,24 +46,23 @@ export const RouteOverlay = ({
   coordinates,
   elevations,
   publicRunDisplayRef,
-  isAtInitialBounds,
   showWaypoints,
   mapStyle,
   waypoints,
   activeWaypoint,
-  routeIsAnimating,
-  animateRoute,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
-  fitInitialBounds,
   onMapStyleChange,
   toggleVisibleWidget,
   toggleShowWaypoints,
   setActiveWaypoint,
 }: RouteOverlayProps) => {
   const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
-  const { expandedHeight: graphHeight } = useElevationGraphHeight();
+  const elevationWidgetActive = activeWidget === 'elevation';
+  const { expandedHeight: graphHeight } = useElevationGraphHeight(
+    elevationWidgetActive,
+  );
   const openDrawerSize =
     activeDrawer === 'settings'
       ? SETTINGS_DRAWER_WIDTH
@@ -96,7 +86,7 @@ export const RouteOverlay = ({
   const getWidgetProps = (widget: WidgetType) => {
     return {
       publicRunDisplaySize,
-      showGraphWhileActive: EXPAND_GRAPH_WIDGETS.includes(widget),
+      showGraphWhileActive: widget === 'elevation',
       isActive: activeWidget === widget,
       isOpen: openWidget === widget,
       isExpanded: expandedWidget === widget,
@@ -127,6 +117,7 @@ export const RouteOverlay = ({
           {...getWidgetProps('elevation')}
         />
       )}
+
       <OptionButton
         index={optionsButtonIndex++}
         openDrawerSize={openDrawerSize}
@@ -141,31 +132,12 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={optionsButtonIndex++}
-        disabled={routeIsAnimating}
         openDrawerSize={openDrawerSize}
-        onClick={animateRoute}
+        onClick={() => setActiveWaypoint(getStartWaypoint(coordinates))}
       >
-        <Icon name="play" className="size-6" />
+        <Icon name="location" className="size-7" />
       </OptionButton>
-      {!isFullscreen && (
-        <OptionButton
-          index={optionsButtonIndex++}
-          openDrawerSize={openDrawerSize}
-          onClick={() =>
-            window.open(`/run/${routeId}?isFullscreen=true`, '_blank')
-          }
-        >
-          <Icon name="externalLink" className="size-6" />
-        </OptionButton>
-      )}
-      <OptionButton
-        index={optionsButtonIndex++}
-        disabled={isAtInitialBounds}
-        openDrawerSize={openDrawerSize}
-        onClick={fitInitialBounds}
-      >
-        <Icon name="reset" className="size-6" />
-      </OptionButton>
+
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
         width={SETTINGS_DRAWER_WIDTH}
@@ -185,6 +157,7 @@ export const RouteOverlay = ({
         toggleDrawer={() => toggleDrawer('waypoints')}
         setActiveWaypoint={setActiveWaypoint}
       />
+
       <motion.div
         animate={{ opacity: activeWidget ? 1 : 0 }}
         transition={{
@@ -194,9 +167,7 @@ export const RouteOverlay = ({
         className="absolute top-0 right-0 left-0 z-100 bg-black/50"
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
-          bottom: EXPAND_GRAPH_WIDGETS.includes(openWidget || '')
-            ? graphHeight
-            : 0,
+          bottom: elevationWidgetActive ? graphHeight : 0,
         }}
         onClick={
           activeWidget ? () => toggleActiveWidget(activeWidget) : undefined

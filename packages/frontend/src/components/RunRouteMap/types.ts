@@ -37,6 +37,7 @@ export interface RouteMapProps extends MapState {
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   elevations: Elevation[];
+  isFullscreen: boolean;
   hideActiveMarker?: boolean;
   onWaypointClick: (id: string) => void;
 }

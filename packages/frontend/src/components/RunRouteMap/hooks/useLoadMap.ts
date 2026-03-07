@@ -27,6 +27,7 @@ export const useLoadMap = ({
       bounds: paddedBounds,
       style: MAP_STYLES[mapStyle],
       attributionControl: false,
+      logoPosition: 'bottom',
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);

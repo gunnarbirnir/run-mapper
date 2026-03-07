@@ -34,14 +34,11 @@ export const PublicRunDisplay = ({
   const {
     mapStyle,
     showWaypoints,
-    isAtInitialBounds,
     routeIsAnimating,
     setActiveIndexRef,
     setMapStyle,
-    animateRoute,
     toggleShowWaypoints,
     handleSetActiveWaypoint,
-    handleFitInitialBounds,
   } = mapState;
   const { setActiveWaypoint, ...routeOverlayState } = useRouteOverlayState();
   const { compactHeight: graphHeight } = useElevationGraphHeight();
@@ -62,6 +59,7 @@ export const PublicRunDisplay = ({
         <RunRouteMap
           {...mapState}
           routeId={routeId}
+          isFullscreen={isFullscreen}
           boundingBox={run.boundingBox}
           coordinates={coordinates}
           waypoints={waypoints}
@@ -86,18 +84,12 @@ export const PublicRunDisplay = ({
       </Suspense>
       <RouteOverlay
         {...routeOverlayState}
-        routeId={routeId}
-        isFullscreen={isFullscreen}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
         publicRunDisplayRef={publicRunDisplayRef}
-        isAtInitialBounds={isAtInitialBounds}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
-        routeIsAnimating={routeIsAnimating}
-        animateRoute={animateRoute}
-        fitInitialBounds={handleFitInitialBounds}
         setActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={setMapStyle}
