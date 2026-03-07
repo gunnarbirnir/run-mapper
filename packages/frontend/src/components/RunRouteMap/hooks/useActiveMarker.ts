@@ -45,8 +45,8 @@ export const useActiveMarker = ({
       if (updatedIndex !== null && !hideActiveMarkerRef.current) {
         activeMarkerElement.style.display = 'block';
         activeMarker?.setLngLat([
-          coordinates[updatedIndex].lat,
           coordinates[updatedIndex].lng,
+          coordinates[updatedIndex].lat,
         ]);
       } else {
         activeMarkerElement.style.display = 'none';
