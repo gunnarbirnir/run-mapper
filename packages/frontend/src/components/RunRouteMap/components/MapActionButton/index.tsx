@@ -22,9 +22,8 @@ export const MapActionButton = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const buttonSize = spacingPx(8);
-  const betweenSpacing = spacingPx(3);
-  const outsideSpacing = spacingPx(4);
-  const left = outsideSpacing + index * (buttonSize + betweenSpacing);
+  const baseSpacing = spacingPx(3);
+  const left = baseSpacing + index * (buttonSize + baseSpacing);
 
   useEffect(() => {
     if (!isInitialized) {
@@ -37,7 +36,7 @@ export const MapActionButton = ({
     <div
       ref={buttonRef}
       className="absolute"
-      style={{ zIndex: 10 + index, left, bottom: outsideSpacing }}
+      style={{ zIndex: 10 + index, left, bottom: baseSpacing }}
     >
       <RoundButton
         onClick={onClick}

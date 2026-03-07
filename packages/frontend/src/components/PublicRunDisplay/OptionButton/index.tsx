@@ -28,18 +28,17 @@ export const OptionButton = ({
   const { isSmallScreen } = useMediaQuery();
 
   const buttonSize = spacingPx(10);
-  const outsideSpacing = spacingPx(4);
-  const betweenSpacing = spacingPx(3);
-  const mainAxisInset = outsideSpacing + index * (buttonSize + betweenSpacing);
+  const baseSpacing = spacingPx(3);
+  const mainAxisInset = baseSpacing + index * (buttonSize + baseSpacing);
   const top = openDrawerSize
-    ? outsideSpacing
+    ? baseSpacing
     : isSmallScreen
       ? mainAxisInset
-      : outsideSpacing;
+      : baseSpacing;
   const right = openDrawerSize
-    ? openDrawerSize + outsideSpacing
+    ? openDrawerSize + baseSpacing
     : isSmallScreen
-      ? outsideSpacing
+      ? baseSpacing
       : mainAxisInset;
 
   useEffect(() => {

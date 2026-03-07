@@ -6,7 +6,7 @@ import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { type IconName } from '~/primitives';
 import type { WidgetBaseProps } from '~/types';
-import { spacingPx, cn } from '~/utils';
+import { spacingPx } from '~/utils';
 
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
@@ -28,6 +28,7 @@ export const WidgetContainer = ({
   title,
   text,
   icon,
+  widgetSizes,
   iconClassName,
   customContent,
   index,
@@ -38,6 +39,7 @@ export const WidgetContainer = ({
   isAnyOpen = false,
   publicRunDisplaySize,
   toggleActive,
+  setWidgetSizes,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen } = useMediaQuery();
@@ -45,11 +47,13 @@ export const WidgetContainer = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const widgetHeight = spacingPx(10);
-  const widgetWidth = spacingPx(30);
   const activeSpacing = isSmallScreen ? spacingPx(4) : spacingPx(8);
-  const outsideSpacing = spacingPx(4);
-  const betweenSpacing = spacingPx(3);
-  const top = outsideSpacing + index * (widgetHeight + betweenSpacing);
+  const baseSpacing = spacingPx(3);
+  const left =
+    baseSpacing +
+    widgetSizes
+      .slice(0, index)
+      .reduce((acc, size) => acc + size + baseSpacing, 0);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
 
   const mapHeight =
@@ -68,31 +72,41 @@ export const WidgetContainer = ({
   const modalHeight = Math.min(modalTargetHeight, MODAL_MAX_HEIGHT);
 
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && widgetSizes.length > index) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsInitialized(true);
     }
-  }, [isInitialized]);
+  }, [isInitialized, widgetSizes, index]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      const newSize = widgetRef.current ? widgetRef.current.offsetWidth : 0;
+
+      setWidgetSizes((prev) => {
+        const newSizes = [...prev];
+        if (newSizes.length <= index) {
+          newSizes.push(newSize);
+        } else {
+          newSizes[index] = newSize;
+        }
+        return newSizes;
+      });
+    }
+  }, [isOpen, setWidgetSizes, index]);
 
   return (
     <motion.div
       animate={{
-        top: isActive ? modalTop : top,
-        left: isActive ? modalLeft : outsideSpacing,
-        width: isActive ? modalWidth : widgetWidth,
+        top: isActive ? modalTop : baseSpacing,
+        left: isActive ? modalLeft : left,
+        width: isActive ? modalWidth : widgetSizes[index],
         height: isActive ? modalHeight : widgetHeight,
       }}
       transition={{
         duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className={cn(
-        'pointer-events-auto absolute overflow-hidden bg-white shadow-md/20',
-        {
-          'rounded-full': !isActive,
-          'rounded-xl': isActive,
-        },
-      )}
+      className="pointer-events-auto absolute overflow-hidden rounded-xl bg-white shadow-md/20"
       style={{
         // 1000 to be above overlay, which is 100
         zIndex: isOpen ? 1000 : index,
@@ -105,7 +119,6 @@ export const WidgetContainer = ({
           ref={widgetRef}
           text={text}
           height={widgetHeight}
-          width={widgetWidth}
           isClickable={isClickable}
           customContent={customContent}
           icon={icon}

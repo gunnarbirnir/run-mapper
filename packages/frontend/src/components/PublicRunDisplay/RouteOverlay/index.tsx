@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { RefObject, useMemo } from 'react';
+import { RefObject, useMemo, useState } from 'react';
 
 import { WIDGET_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
@@ -60,9 +60,11 @@ export const RouteOverlay = ({
 }: RouteOverlayProps) => {
   const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const elevationWidgetActive = activeWidget === 'elevation';
-  const { expandedHeight: graphHeight } = useElevationGraphHeight(
+  const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
+  const [widgetSizes, setWidgetSizes] = useState<number[]>([]);
+
   const openDrawerSize =
     activeDrawer === 'settings'
       ? SETTINGS_DRAWER_WIDTH
@@ -85,6 +87,7 @@ export const RouteOverlay = ({
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
+      widgetSizes,
       publicRunDisplaySize,
       showGraphWhileActive: widget === 'elevation',
       isActive: activeWidget === widget,
@@ -94,6 +97,7 @@ export const RouteOverlay = ({
       isAnyOpen: openWidget !== null,
       isAnyExpanded: expandedWidget !== null,
       toggleActive: () => toggleActiveWidget(widget),
+      setWidgetSizes,
     };
   };
 
@@ -167,7 +171,7 @@ export const RouteOverlay = ({
         className="absolute top-0 right-0 left-0 z-100 bg-black/50"
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
-          bottom: elevationWidgetActive ? graphHeight : 0,
+          bottom: openWidget === 'elevation' ? graphHeight : 0,
         }}
         onClick={
           activeWidget ? () => toggleActiveWidget(activeWidget) : undefined
