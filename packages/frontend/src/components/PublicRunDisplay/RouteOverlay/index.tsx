@@ -1,10 +1,16 @@
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { RefObject, useMemo, useState } from 'react';
 
 import { WIDGET_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import type { Coordinates, Elevation, MapStyle, Waypoint } from '~/types';
+import type {
+  Coordinates,
+  Elevation,
+  MapStyle,
+  PublicRoute,
+  Waypoint,
+} from '~/types';
 import { Icon } from '~/primitives';
 import { convertRemToPixels } from '~/utils';
 import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
@@ -14,10 +20,13 @@ import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';
 import { SettingsDrawer } from '../SettingsDrawer';
+import { RouteDropdown } from '../RouteDropdown';
 import { WaypointsDrawer } from '../WaypointsDrawer';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
 type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
+  routes: PublicRoute[];
+  routeId: string;
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
@@ -27,6 +36,7 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   toggleShowWaypoints: () => void;
   setActiveWaypoint: (waypoint: Waypoint) => void;
   onMapStyleChange: (style: MapStyle) => void;
+  setActiveRoute: (routeId: string) => void;
 };
 
 const SETTINGS_DRAWER_WIDTH = convertRemToPixels('13rem');
@@ -38,6 +48,8 @@ export const RouteOverlay = ({
   expandedWidget,
   activeDrawer,
   visibleWidgets,
+  routes,
+  routeId,
   coordinates,
   elevations,
   publicRunDisplayRef,
@@ -52,6 +64,7 @@ export const RouteOverlay = ({
   toggleVisibleWidget,
   toggleShowWaypoints,
   setActiveWaypoint,
+  setActiveRoute,
 }: RouteOverlayProps) => {
   const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const elevationWidgetActive = activeWidget === 'elevation';
@@ -112,6 +125,16 @@ export const RouteOverlay = ({
           {...getWidgetProps('elevation')}
         />
       )}
+
+      <AnimatePresence>
+        {activeDrawer === null && (
+          <RouteDropdown
+            routes={routes}
+            activeRouteId={routeId}
+            setActiveRoute={setActiveRoute}
+          />
+        )}
+      </AnimatePresence>
 
       <OptionButton
         index={optionsButtonIndex++}

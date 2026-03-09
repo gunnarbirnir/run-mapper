@@ -7,7 +7,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
-import type { PublicRoute } from '~/types';
+import { useRoute } from '~/hooks/useRoute';
 
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
@@ -21,11 +21,11 @@ const ElevationGraph = lazy(() =>
 );
 
 export const PublicRunDisplay = ({
-  routeId,
   run,
+  routeId,
   isFullscreen = false,
 }: PublicRunDisplayProps) => {
-  const route = run.routes.find((route) => route.id === routeId) as PublicRoute;
+  const { route, setRoute: setActiveRoute } = useRoute({ run, routeId });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
     () => processRunRoute(route.coordinates),
@@ -63,7 +63,7 @@ export const PublicRunDisplay = ({
       <div className="flex-1">
         <RunRouteMap
           {...mapState}
-          routeId={routeId}
+          routeId={route.id}
           isFullscreen={isFullscreen}
           boundingBox={route.boundingBox}
           coordinates={coordinates}
@@ -89,6 +89,8 @@ export const PublicRunDisplay = ({
       </Suspense>
       <RouteOverlay
         {...routeOverlayState}
+        routes={run.routes}
+        routeId={route.id}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
@@ -98,6 +100,7 @@ export const PublicRunDisplay = ({
         setActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={setMapStyle}
+        setActiveRoute={setActiveRoute}
       />
     </div>
   );
