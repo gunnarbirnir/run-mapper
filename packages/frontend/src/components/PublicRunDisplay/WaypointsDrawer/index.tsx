@@ -47,9 +47,10 @@ export const WaypointsDrawer = ({
     <Drawer
       isOpen={isOpen}
       width={activeWidth}
+      disablePadding
       className="pointer-events-auto z-20 h-full"
     >
-      <div className="flex h-full flex-col overflow-x-hidden overflow-y-auto pt-6">
+      <div className="flex h-full flex-col overflow-x-hidden overflow-y-auto pt-5">
         <div className="mb-4 flex items-center justify-between px-4">
           <Text element="h2">{activeWaypointDetails.name}</Text>
           {isSmallScreen && (
@@ -67,9 +68,12 @@ export const WaypointsDrawer = ({
         </div>
         <div className="flex flex-1 flex-col items-center justify-between px-4 pb-6">
           <div className="flex w-full flex-col gap-4 pt-8">
-            <Text variant="bold">
-              {formatNumber(activeWaypointDetails.distance)} km
-            </Text>
+            <div className="flex items-center gap-1">
+              <Icon name="location" className="size-4 text-gray-500" />
+              <Text variant="bold">
+                {formatNumber(activeWaypointDetails.distance)} km
+              </Text>
+            </div>
             <Text variant="subtle" className="text-sm">
               {activeWaypointDetails.description}
             </Text>

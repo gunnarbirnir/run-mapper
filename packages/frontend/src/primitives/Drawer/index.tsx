@@ -15,6 +15,7 @@ interface DrawerProps {
   title?: string;
   width?: number;
   minWidth?: number;
+  disablePadding?: boolean;
   className?: string;
   titleSectionClassName?: string;
   onClose?: () => void;
@@ -26,6 +27,7 @@ export const Drawer = ({
   title,
   width = 200,
   minWidth = 0,
+  disablePadding = false,
   className,
   titleSectionClassName,
   onClose,
@@ -47,6 +49,7 @@ export const Drawer = ({
       className={cn(
         'absolute top-0 bottom-0 bg-gray-50',
         { 'drop-shadow-md/20': isOpen },
+        { 'px-4 pt-5 pb-6': !disablePadding },
         className,
       )}
       style={{ width: activeWidth, right: -activeWidth }}

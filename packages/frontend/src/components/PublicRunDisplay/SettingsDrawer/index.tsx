@@ -39,7 +39,7 @@ export const SettingsDrawer = ({
       isOpen={isOpen}
       width={width}
       minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
-      className="pointer-events-auto z-20 px-4 py-6"
+      className="pointer-events-auto z-20"
       titleSectionClassName="mb-0"
       onClose={isSmallScreen ? toggleDrawer : undefined}
     >
