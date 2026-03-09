@@ -1,7 +1,6 @@
 import { db } from '../firebase/admin.js';
-import type {
-  NormalizedRouteData
-} from '../utils/runValidation.js';
+import type { NormalizedRouteData } from '../utils/runValidation.js';
+import type { EditorRun, EditorRunRecord } from '../types';
 
 export interface RunRecord extends NormalizedRouteData {
   userId: string;
@@ -140,7 +139,7 @@ export class RunRepository {
   /**
    * Find a public run by slug
    */
-  async findPublicBySlug(slug: string): Promise<RunWithId | null> {
+  async findRunBySlug(slug: string): Promise<EditorRun | null> {
     const runsSnapshot = await db
       .collection('runs')
       .where('publicSlug', '==', slug)
@@ -152,7 +151,7 @@ export class RunRepository {
       return null;
     }
 
-    const runData = runDoc.data() as RunRecord | undefined;
+    const runData = runDoc.data() as EditorRunRecord | undefined;
     if (!runData || runData.isPublic !== true) {
       return null;
     }

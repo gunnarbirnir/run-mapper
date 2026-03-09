@@ -1,7 +1,5 @@
 export type Coordinates = { lat: number; lng: number };
 export type BoundingBox = [Coordinates, Coordinates];
-// What Mapbox uses
-export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
 
 export type RouteCoordinates = Coordinates & {
@@ -34,6 +32,8 @@ export interface PublicRun {
   routes: PublicRoute[];
 }
 
+export type PublicRunRecord = Omit<PublicRun, 'id'>;
+
 export interface EditorRun extends PublicRun {
   createdAt: string;
   updatedAt?: string;
@@ -41,9 +41,4 @@ export interface EditorRun extends PublicRun {
   publicSlug?: string;
 }
 
-export type ApiResponse<T> = {
-  data: T;
-  success: boolean;
-};
-
-export type MapStyle = 'standard' | 'satellite';
+export type EditorRunRecord = Omit<EditorRun, 'id'>;

@@ -5,9 +5,9 @@ import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { type IconName } from '~/primitives';
-import type { WidgetBaseProps } from '~/types';
 import { spacingPx } from '~/utils';
 
+import type { WidgetBaseProps } from '../types';
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
 

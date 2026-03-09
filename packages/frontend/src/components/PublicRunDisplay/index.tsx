@@ -7,6 +7,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
+import type { PublicRoute } from '~/types';
 
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
@@ -24,12 +25,13 @@ export const PublicRunDisplay = ({
   run,
   isFullscreen = false,
 }: PublicRunDisplayProps) => {
+  const route = run.routes.find((route) => route.id === routeId) as PublicRoute;
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
-    () => processRunRoute(run.coordinates),
-    [run.coordinates],
+    () => processRunRoute(route.coordinates),
+    [route.coordinates],
   );
-  const waypoints = useMemo(() => run.waypoints, [run.waypoints]);
+  const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
   const mapState = useMapState();
   const {
@@ -63,7 +65,7 @@ export const PublicRunDisplay = ({
           {...mapState}
           routeId={routeId}
           isFullscreen={isFullscreen}
-          boundingBox={run.boundingBox}
+          boundingBox={route.boundingBox}
           coordinates={coordinates}
           waypoints={waypoints}
           elevations={elevations}

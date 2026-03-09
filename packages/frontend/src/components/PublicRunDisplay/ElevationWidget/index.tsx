@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { Elevation, WidgetBaseProps } from '~/types';
+import type { Elevation } from '~/types';
 import { ListItem } from '~/primitives';
 import {
   calculateElevationGain,
@@ -9,6 +9,7 @@ import {
   calculateMinElevation,
 } from '~/utils/route';
 
+import type { WidgetBaseProps } from '../types';
 import { WidgetContainer } from '../WidgetContainer';
 
 export interface ElevationWidgetProps extends WidgetBaseProps {

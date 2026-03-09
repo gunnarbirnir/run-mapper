@@ -11,20 +11,28 @@ export const Route = createFileRoute('/run/$slug')({
   component: PublicRun,
   validateSearch: (search: Record<string, unknown>) => ({
     isFullscreen: search.isFullscreen === true,
+    routeId: search.routeId as string | undefined,
   }),
 });
 
 function PublicRun() {
   const { slug } = Route.useParams();
-  const { isFullscreen } = Route.useSearch();
+  const { isFullscreen, routeId } = Route.useSearch();
   const { data, isPending, error } = useQuery<ApiResponse<PublicRun>>({
     queryKey: ['public-runs', slug],
     queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
+  const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
 
   // Public run relies on window object and css variables
   if (isPending || !areCssVariablesLoaded() || typeof window === 'undefined') {
     return <Fallback>Loading...</Fallback>;
+  }
+
+  if (
+    data?.data.routes.find((route) => route.id === activeRouteId) === undefined
+  ) {
+    return <Fallback>Route not found</Fallback>;
   }
 
   if (error) {
@@ -34,7 +42,7 @@ function PublicRun() {
   return (
     <PageLayout isFullscreenDisplay>
       <PublicRunDisplay
-        routeId={slug}
+        routeId={activeRouteId}
         run={data.data}
         isFullscreen={isFullscreen}
       />

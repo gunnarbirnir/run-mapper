@@ -4,17 +4,12 @@ import { RefObject, useMemo, useState } from 'react';
 import { WIDGET_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import { useElementSize } from '~/hooks/useElementSize';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import type {
-  Coordinates,
-  Elevation,
-  WidgetType,
-  MapStyle,
-  Waypoint,
-} from '~/types';
+import type { Coordinates, Elevation, MapStyle, Waypoint } from '~/types';
 import { Icon } from '~/primitives';
 import { convertRemToPixels } from '~/utils';
 import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
 
+import type { WidgetType } from '../types';
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';

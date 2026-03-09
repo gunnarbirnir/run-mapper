@@ -1,6 +1,6 @@
 import { useReducer, useCallback, useMemo } from 'react';
 
-import type { WidgetType, DrawerType } from '~/types';
+import type { WidgetType, DrawerType } from '../types';
 
 export interface RouteOverlayState {
   activeWidget: WidgetType | null;

@@ -1,9 +1,10 @@
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer, Radio } from '~/primitives';
-import type { MapStyle, WidgetType } from '~/types';
+import type { MapStyle } from '~/types';
 
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
+import type { WidgetType } from '../types';
 import { SectionLabel } from './SectionLabel';
 import { SettingsRadio } from './SettingsRadio';
 import { VisibleToggle } from './VisibleToggle';
