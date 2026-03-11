@@ -48,7 +48,7 @@ export const Drawer = ({
     <motion.aside
       className={cn(
         'absolute top-0 bottom-0 bg-gray-50',
-        { 'drop-shadow-md/20': isOpen },
+        { 'shadow-md/20': isOpen },
         { 'px-4 pt-5 pb-6': !disablePadding },
         className,
       )}

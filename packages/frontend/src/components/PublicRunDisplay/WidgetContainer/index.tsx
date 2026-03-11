@@ -113,7 +113,7 @@ export const WidgetContainer = ({
         duration: isInitialized ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute overflow-hidden rounded-xl bg-white shadow-md/20"
+      className="pointer-events-auto absolute overflow-hidden rounded-xl bg-white shadow-md"
       style={{
         // 1000 to be above overlay, which is 100
         zIndex: isOpen ? 1000 : index,

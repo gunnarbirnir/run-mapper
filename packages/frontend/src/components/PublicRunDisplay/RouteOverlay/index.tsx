@@ -12,7 +12,7 @@ import type {
   Waypoint,
 } from '~/types';
 import { Icon } from '~/primitives';
-import { convertRemToPixels } from '~/utils';
+import { convertRemToPixels, spacingPx } from '~/utils';
 import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
 
 import type { WidgetType } from '../types';
@@ -38,9 +38,6 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   onMapStyleChange: (style: MapStyle) => void;
   setActiveRoute: (routeId: string) => void;
 };
-
-const SETTINGS_DRAWER_WIDTH = convertRemToPixels('13rem');
-const WAYPOINTS_DRAWER_WIDTH = convertRemToPixels('15rem');
 
 export const RouteOverlay = ({
   activeWidget,
@@ -73,11 +70,15 @@ export const RouteOverlay = ({
   );
   const [widgetSizes, setWidgetSizes] = useState<number[]>([]);
 
+  const optionItemSize = spacingPx(10);
+  const settingsDrawerWidth = convertRemToPixels('13rem');
+  const waypointsDrawerWidth = convertRemToPixels('15rem');
+
   const openDrawerSize =
     activeDrawer === 'settings'
-      ? SETTINGS_DRAWER_WIDTH
+      ? settingsDrawerWidth
       : activeDrawer === 'waypoints'
-        ? WAYPOINTS_DRAWER_WIDTH
+        ? waypointsDrawerWidth
         : null;
   const extendedWaypoints = useMemo(
     () =>
@@ -131,6 +132,7 @@ export const RouteOverlay = ({
           <RouteDropdown
             routes={routes}
             activeRouteId={routeId}
+            size={optionItemSize}
             setActiveRoute={setActiveRoute}
           />
         )}
@@ -138,6 +140,7 @@ export const RouteOverlay = ({
 
       <OptionButton
         index={optionsButtonIndex++}
+        buttonSize={optionItemSize}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
         buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
@@ -150,6 +153,7 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={optionsButtonIndex++}
+        buttonSize={optionItemSize}
         openDrawerSize={openDrawerSize}
         onClick={() => setActiveWaypoint(getStartWaypoint(coordinates))}
       >
@@ -158,7 +162,7 @@ export const RouteOverlay = ({
 
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
-        width={SETTINGS_DRAWER_WIDTH}
+        width={settingsDrawerWidth}
         visibleWidgets={visibleWidgets}
         showWaypoints={showWaypoints}
         mapStyle={mapStyle}
@@ -169,7 +173,7 @@ export const RouteOverlay = ({
       />
       <WaypointsDrawer
         isOpen={activeDrawer === 'waypoints'}
-        width={WAYPOINTS_DRAWER_WIDTH}
+        width={waypointsDrawerWidth}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
         toggleDrawer={() => toggleDrawer('waypoints')}
