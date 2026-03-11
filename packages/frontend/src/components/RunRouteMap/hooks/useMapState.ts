@@ -1,11 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import type { MapStyle, Waypoint } from '~/types';
+import type { Coordinates, MapStyle, Waypoint } from '~/types';
 
 import type { MapState } from '../types';
-import { ROUTE_ANIMATION_DURATION } from '../constants';
+import { getRouteAnimationDuration } from '../utils';
 
-export const useMapState = (): MapState => {
+export const useMapState = (coordinates: Coordinates[]): MapState => {
   const [mapStyle, setMapStyle] = useState<MapStyle>('standard');
   const [routeIsAnimating, setRouteIsAnimating] = useState(false);
   const [showWaypoints, setShowWaypoints] = useState(true);
@@ -27,12 +27,12 @@ export const useMapState = (): MapState => {
 
     const animationTimeout = setTimeout(() => {
       setRouteIsAnimating(false);
-    }, ROUTE_ANIMATION_DURATION);
+    }, getRouteAnimationDuration(coordinates));
 
     return () => {
       clearTimeout(animationTimeout);
     };
-  }, [routeIsAnimating]);
+  }, [routeIsAnimating, coordinates]);
 
   const toggleShowWaypoints = useCallback(() => {
     setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints);

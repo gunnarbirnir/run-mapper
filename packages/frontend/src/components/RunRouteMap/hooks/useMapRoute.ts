@@ -3,8 +3,11 @@ import { RefObject, useEffect, useRef, type MutableRefObject } from 'react';
 
 import type { Coordinates, Elevation } from '~/types';
 
-import { ROUTE_ANIMATION_DURATION } from '../constants';
-import { getLineFeature, getRouteLayer } from '../utils';
+import {
+  getLineFeature,
+  getRouteLayer,
+  getRouteAnimationDuration,
+} from '../utils';
 
 interface UseRouteProps {
   isMapLoaded: boolean;
@@ -80,6 +83,7 @@ export const useMapRoute = ({
     const map = mapRef.current;
     let animationFrame: number | null = null;
     let onStyleLoad: () => void = () => {};
+    isInitialLoadRef.current = true;
 
     const addRoute = () => {
       if (map.getSource('route-source')) {
@@ -109,13 +113,14 @@ export const useMapRoute = ({
       const source = map.getSource('route-source') as GeoJSONSource;
       const timeline = buildElevationTimeline(elevations);
       let startTime: number | null = null;
+      const animationDuration = getRouteAnimationDuration(coordinates);
 
       const step = (timestamp: number) => {
         if (!startTime) {
           startTime = timestamp;
         }
         const progress = Math.min(
-          (timestamp - startTime) / ROUTE_ANIMATION_DURATION,
+          (timestamp - startTime) / animationDuration,
           1,
         );
         const index = Math.max(2, findTimelineIndex(timeline, progress));

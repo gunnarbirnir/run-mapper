@@ -33,7 +33,7 @@ export const PublicRunDisplay = ({
   );
   const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
-  const mapState = useMapState();
+  const mapState = useMapState(coordinates);
   const {
     mapStyle,
     showWaypoints,

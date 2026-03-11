@@ -22,7 +22,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
         <div
           ref={ref}
           className={cn(
-            'absolute top-0 left-0 z-10 flex items-center gap-2 overflow-hidden rounded-xl px-3',
+            'absolute top-0 right-0 left-0 z-10 flex items-center gap-2 overflow-hidden rounded-xl px-3',
             {
               'hover:bg-gray-100': isClickable,
             },
