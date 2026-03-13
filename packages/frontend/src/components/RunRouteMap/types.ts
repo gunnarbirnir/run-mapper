@@ -33,6 +33,7 @@ export interface MapState {
 
 export interface RouteMapProps extends MapState {
   routeId: string;
+  runSlug: string;
   boundingBox: BoundingBox;
   coordinates: Coordinates[];
   waypoints: Waypoint[];

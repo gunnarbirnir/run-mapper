@@ -40,7 +40,7 @@ function EditorRunDetail() {
       }),
     onSuccess: async (response) => {
       setCopied(false);
-      setSlugInput(response.data.slug ?? '');
+      setSlugInput(response.data.publicSlug ?? '');
       await queryClient.invalidateQueries({ queryKey: ['run', runId] });
     },
   });
@@ -66,7 +66,7 @@ function EditorRunDetail() {
   }
 
   const run = data.data;
-  const currentSlug = run.slug ?? '';
+  const currentSlug = run.publicSlug ?? '';
   const shareUrl =
     run.isPublic && currentSlug
       ? `${
@@ -187,7 +187,10 @@ function EditorRunDetail() {
               )}
             </div>
           </div>
-          <PublicRunDisplay routeId={runId} run={run} />
+          <PublicRunDisplay
+            routeId={runId}
+            run={{ ...run, publicSlug: run.publicSlug ?? '' }}
+          />
         </div>
       </PageLayout.MainContent>
     </PageLayout>

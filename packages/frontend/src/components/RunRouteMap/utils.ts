@@ -113,3 +113,21 @@ export const getWaypointMarkerElement = (
 
   return marker;
 };
+
+const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;
+const MIN_ROUTE_ANIMATION_DURATION = 1000;
+const MAX_ROUTE_ANIMATION_DURATION = 3000;
+
+export const getRouteAnimationDuration = (
+  coordinates: Coordinates[],
+): number => {
+  return Math.round(
+    Math.max(
+      Math.min(
+        coordinates.length * ROUTE_ANIMATION_DURATION_FACTOR,
+        MAX_ROUTE_ANIMATION_DURATION,
+      ),
+      MIN_ROUTE_ANIMATION_DURATION,
+    ),
+  );
+};

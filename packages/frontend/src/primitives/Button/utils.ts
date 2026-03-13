@@ -22,7 +22,7 @@ const BUTTON_COLORS: Record<
   white: {
     bg: 'bg-white',
     text: 'text-gray-800',
-    hover: 'hover:bg-gray-200',
+    hover: 'hover:bg-gray-100',
     disabled: 'bg-gray-300',
     disabledText: 'text-gray-500',
   },

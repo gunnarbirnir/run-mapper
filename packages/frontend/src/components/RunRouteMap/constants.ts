@@ -6,7 +6,6 @@ export const LINE_OPACITY = 1;
 export const FIT_INITIAL_BOUNDS_DURATION = 200;
 export const WAYPOINT_ZOOM = 14;
 export const FLY_TO_WAYPOINT_DURATION = 300;
-export const ROUTE_ANIMATION_DURATION = 2000;
 
 export const MAP_STYLES: Record<MapStyle, string> = {
   standard: 'mapbox://styles/mapbox/standard',

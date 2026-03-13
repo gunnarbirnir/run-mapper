@@ -5,3 +5,4 @@ export { Icon, type IconName } from './Icon';
 export { Drawer } from './Drawer';
 export { Radio } from './Radio';
 export { ListItem } from './ListItem';
+export { Dropdown } from './Dropdown';

@@ -9,6 +9,7 @@ import { useMediaQuery } from '~/hooks/useMediaQuery';
 interface OptionButtonProps {
   index: number;
   disabled?: boolean;
+  buttonSize: number;
   openDrawerSize: number | null;
   children: ReactNode;
   buttonClassName?: string;
@@ -18,6 +19,7 @@ interface OptionButtonProps {
 export const OptionButton = ({
   index,
   disabled = false,
+  buttonSize,
   openDrawerSize,
   children,
   buttonClassName,
@@ -27,13 +29,12 @@ export const OptionButton = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const { isSmallScreen } = useMediaQuery();
 
-  const buttonSize = spacingPx(10);
   const baseSpacing = spacingPx(3);
   const mainAxisInset = baseSpacing + index * (buttonSize + baseSpacing);
   const top = openDrawerSize
     ? baseSpacing
     : isSmallScreen
-      ? mainAxisInset
+      ? mainAxisInset + buttonSize + baseSpacing
       : baseSpacing;
   const right = openDrawerSize
     ? openDrawerSize + baseSpacing
@@ -68,7 +69,9 @@ export const OptionButton = ({
         disabled={disabled}
         className={cn(
           'pointer-events-auto',
-          { 'shadow-md/20': !openDrawerSize || index === 0 },
+          {
+            'shadow-md/20': !openDrawerSize || index === 0,
+          },
           buttonClassName,
         )}
         style={{ width: buttonSize, height: buttonSize }}

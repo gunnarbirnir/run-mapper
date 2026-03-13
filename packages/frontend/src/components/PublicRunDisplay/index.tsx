@@ -7,6 +7,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
+import { useRoute } from '~/hooks/useRoute';
 
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
@@ -20,18 +21,23 @@ const ElevationGraph = lazy(() =>
 );
 
 export const PublicRunDisplay = ({
-  routeId,
   run,
+  routeId,
   isFullscreen = false,
 }: PublicRunDisplayProps) => {
+  const { route, setRoute: setActiveRoute } = useRoute({
+    run,
+    routeId,
+    isFullscreen,
+  });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
-    () => processRunRoute(run.coordinates),
-    [run.coordinates],
+    () => processRunRoute(route.coordinates),
+    [route.coordinates],
   );
-  const waypoints = useMemo(() => run.waypoints, [run.waypoints]);
+  const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
-  const mapState = useMapState();
+  const mapState = useMapState(coordinates);
   const {
     mapStyle,
     showWaypoints,
@@ -61,9 +67,10 @@ export const PublicRunDisplay = ({
       <div className="flex-1">
         <RunRouteMap
           {...mapState}
-          routeId={routeId}
+          routeId={route.id}
+          runSlug={run.publicSlug}
           isFullscreen={isFullscreen}
-          boundingBox={run.boundingBox}
+          boundingBox={route.boundingBox}
           coordinates={coordinates}
           waypoints={waypoints}
           elevations={elevations}
@@ -87,6 +94,8 @@ export const PublicRunDisplay = ({
       </Suspense>
       <RouteOverlay
         {...routeOverlayState}
+        routes={run.routes}
+        routeId={route.id}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
@@ -96,6 +105,7 @@ export const PublicRunDisplay = ({
         setActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={setMapStyle}
+        setActiveRoute={setActiveRoute}
       />
     </div>
   );

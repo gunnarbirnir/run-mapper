@@ -6,7 +6,7 @@ import { PageLayout } from '~/components/PageLayout';
 export const Route = createFileRoute('/auth/login')({
   component: Login,
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || undefined,
+    redirect: search.redirect as string | undefined,
   }),
 });
 

@@ -1,28 +1,29 @@
-import { motion } from 'motion/react';
-import { RefObject, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { RefObject, useMemo } from 'react';
 
-import { WIDGET_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
-import { useElementSize } from '~/hooks/useElementSize';
+import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { Icon } from '~/primitives';
 import type {
   Coordinates,
   Elevation,
-  WidgetType,
   MapStyle,
+  PublicRoute,
   Waypoint,
 } from '~/types';
-import { Icon } from '~/primitives';
-import { convertRemToPixels } from '~/utils';
-import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
+import { convertRemToPixels, spacingPx } from '~/utils';
+import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 
-import { DistanceWidget } from '../DistanceWidget';
-import { ElevationWidget } from '../ElevationWidget';
 import { OptionButton } from '../OptionButton';
+import { RouteDropdown } from '../RouteDropdown';
 import { SettingsDrawer } from '../SettingsDrawer';
 import { WaypointsDrawer } from '../WaypointsDrawer';
+import { OverlayWidgets } from './OverlayWidgets';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
 type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
+  routes: PublicRoute[];
+  routeId: string;
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
@@ -32,10 +33,8 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   toggleShowWaypoints: () => void;
   setActiveWaypoint: (waypoint: Waypoint) => void;
   onMapStyleChange: (style: MapStyle) => void;
+  setActiveRoute: (routeId: string) => void;
 };
-
-const SETTINGS_DRAWER_WIDTH = convertRemToPixels('13rem');
-const WAYPOINTS_DRAWER_WIDTH = convertRemToPixels('15rem');
 
 export const RouteOverlay = ({
   activeWidget,
@@ -43,6 +42,8 @@ export const RouteOverlay = ({
   expandedWidget,
   activeDrawer,
   visibleWidgets,
+  routes,
+  routeId,
   coordinates,
   elevations,
   publicRunDisplayRef,
@@ -57,19 +58,22 @@ export const RouteOverlay = ({
   toggleVisibleWidget,
   toggleShowWaypoints,
   setActiveWaypoint,
+  setActiveRoute,
 }: RouteOverlayProps) => {
-  const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const elevationWidgetActive = activeWidget === 'elevation';
   const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
-  const [widgetSizes, setWidgetSizes] = useState<number[]>([]);
+
+  const optionItemSize = spacingPx(10);
+  const settingsDrawerWidth = convertRemToPixels('13rem');
+  const waypointsDrawerWidth = convertRemToPixels('15rem');
 
   const openDrawerSize =
     activeDrawer === 'settings'
-      ? SETTINGS_DRAWER_WIDTH
+      ? settingsDrawerWidth
       : activeDrawer === 'waypoints'
-        ? WAYPOINTS_DRAWER_WIDTH
+        ? waypointsDrawerWidth
         : null;
   const extendedWaypoints = useMemo(
     () =>
@@ -82,44 +86,35 @@ export const RouteOverlay = ({
         : [],
     [coordinates, waypoints],
   );
-  let widgetIndex = 0;
   let optionsButtonIndex = 0;
-
-  const getWidgetProps = (widget: WidgetType) => {
-    return {
-      widgetSizes,
-      publicRunDisplaySize,
-      showGraphWhileActive: widget === 'elevation',
-      isActive: activeWidget === widget,
-      isOpen: openWidget === widget,
-      isExpanded: expandedWidget === widget,
-      isAnyActive: activeWidget !== null,
-      isAnyOpen: openWidget !== null,
-      isAnyExpanded: expandedWidget !== null,
-      toggleActive: () => toggleActiveWidget(widget),
-      setWidgetSizes,
-    };
-  };
 
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
-      {visibleWidgets.distance && (
-        <DistanceWidget
-          index={widgetIndex++}
-          coordinates={coordinates}
-          {...getWidgetProps('distance')}
-        />
-      )}
-      {visibleWidgets.elevation && (
-        <ElevationWidget
-          index={widgetIndex++}
-          elevations={elevations}
-          {...getWidgetProps('elevation')}
-        />
-      )}
+      <OverlayWidgets
+        publicRunDisplayRef={publicRunDisplayRef}
+        activeWidget={activeWidget}
+        openWidget={openWidget}
+        expandedWidget={expandedWidget}
+        visibleWidgets={visibleWidgets}
+        coordinates={coordinates}
+        elevations={elevations}
+        toggleActiveWidget={toggleActiveWidget}
+      />
+
+      <AnimatePresence>
+        {activeDrawer === null && (
+          <RouteDropdown
+            routes={routes}
+            activeRouteId={routeId}
+            size={optionItemSize}
+            setActiveRoute={setActiveRoute}
+          />
+        )}
+      </AnimatePresence>
 
       <OptionButton
         index={optionsButtonIndex++}
+        buttonSize={optionItemSize}
         openDrawerSize={openDrawerSize}
         onClick={() => toggleDrawer('settings')}
         buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
@@ -132,6 +127,7 @@ export const RouteOverlay = ({
       </OptionButton>
       <OptionButton
         index={optionsButtonIndex++}
+        buttonSize={optionItemSize}
         openDrawerSize={openDrawerSize}
         onClick={() => setActiveWaypoint(getStartWaypoint(coordinates))}
       >
@@ -140,7 +136,7 @@ export const RouteOverlay = ({
 
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
-        width={SETTINGS_DRAWER_WIDTH}
+        width={settingsDrawerWidth}
         visibleWidgets={visibleWidgets}
         showWaypoints={showWaypoints}
         mapStyle={mapStyle}
@@ -151,7 +147,7 @@ export const RouteOverlay = ({
       />
       <WaypointsDrawer
         isOpen={activeDrawer === 'waypoints'}
-        width={WAYPOINTS_DRAWER_WIDTH}
+        width={waypointsDrawerWidth}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
         toggleDrawer={() => toggleDrawer('waypoints')}
@@ -159,6 +155,7 @@ export const RouteOverlay = ({
       />
 
       <motion.div
+        initial={{ opacity: 0 }}
         animate={{ opacity: activeWidget ? 1 : 0 }}
         transition={{
           duration: WIDGET_ANIMATION_DURATION,

@@ -1,19 +1,12 @@
-import { runRepository, type RunRecord, type RunWithId } from '../repositories/run-repository.js';
 import {
-  type NormalizedRouteData,
-  type BaseCoordinate,
-  type RunCoordinate,
-  type Waypoint,
-} from '../utils/runValidation.js';
+  runRepository,
+  type RunRecord,
+  type RunWithId,
+} from '../repositories/run-repository.js';
+import type { NormalizedRouteData } from '../utils/runValidation.js';
+import type { PublicRun } from '../types';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
-
-export interface PublicRun {
-  id: string;
-  name: string;
-  boundingBox: [BaseCoordinate, BaseCoordinate];
-  coordinates: RunCoordinate[];
-  waypoints: Waypoint[];
-}
+import { sanitizePublicRun } from '../utils/publicRun.js';
 
 /**
  * Service layer - handles business logic
@@ -30,7 +23,10 @@ export class RunService {
   /**
    * Get a run for a user (with ownership check)
    */
-  async getRunForUser(runId: string, userId: string): Promise<RunWithId | null> {
+  async getRunForUser(
+    runId: string,
+    userId: string,
+  ): Promise<RunWithId | null> {
     return runRepository.findByIdAndUserId(runId, userId);
   }
 
@@ -119,79 +115,12 @@ export class RunService {
       return null;
     }
 
-    const runData = await runRepository.findPublicBySlug(normalizedSlug);
+    const runData = await runRepository.findRunBySlug(normalizedSlug);
     if (!runData) {
       return null;
     }
 
-    return this.sanitizePublicRun(runData);
-  }
-
-  /**
-   * Sanitize run data for public consumption
-   */
-  private sanitizePublicRun(runData: RunWithId): PublicRun {
-    const defaultBoundingBox: [BaseCoordinate, BaseCoordinate] = [
-      { lat: 0, lng: 0 },
-      { lat: 0, lng: 0 },
-    ];
-
-    const isFiniteNumber = (value: unknown): value is number =>
-      typeof value === 'number' && Number.isFinite(value);
-
-    const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
-      if (!value || typeof value !== 'object') return false;
-      const coordinate = value as BaseCoordinate;
-      return (
-        isFiniteNumber(coordinate.lat) &&
-        isFiniteNumber(coordinate.lng) &&
-        coordinate.lat >= -90 &&
-        coordinate.lat <= 90 &&
-        coordinate.lng >= -180 &&
-        coordinate.lng <= 180
-      );
-    };
-
-    const isValidRunCoordinate = (value: unknown): value is RunCoordinate => {
-      if (!isValidCoordinate(value)) return false;
-      return isFiniteNumber((value as RunCoordinate).elevation);
-    };
-
-    const isValidWaypoint = (value: unknown): value is Waypoint => {
-      if (!value || typeof value !== 'object') return false;
-      const waypoint = value as Waypoint;
-      return (
-        typeof waypoint.id === 'string' &&
-        typeof waypoint.name === 'string' &&
-        isValidCoordinate(waypoint.coordinates) &&
-        ['energy', 'entertainment', 'start', 'end'].includes(
-          waypoint.type as string,
-        )
-      );
-    };
-
-    return {
-      id: runData.id,
-      name: typeof runData.name === 'string' ? runData.name : 'Untitled Run',
-      boundingBox:
-        Array.isArray(runData.boundingBox) &&
-        runData.boundingBox.length === 2 &&
-        isValidCoordinate(runData.boundingBox[0]) &&
-        isValidCoordinate(runData.boundingBox[1])
-          ? ([
-              runData.boundingBox[0],
-              runData.boundingBox[1],
-            ] as [BaseCoordinate, BaseCoordinate])
-          : defaultBoundingBox,
-      coordinates: Array.isArray(runData.coordinates)
-        ? runData.coordinates.filter((coordinate) =>
-            isValidRunCoordinate(coordinate),
-          )
-        : [],
-      waypoints: Array.isArray(runData.waypoints)
-        ? runData.waypoints.filter((waypoint) => isValidWaypoint(waypoint))
-        : [],
-    };
+    return sanitizePublicRun(runData);
   }
 }
 

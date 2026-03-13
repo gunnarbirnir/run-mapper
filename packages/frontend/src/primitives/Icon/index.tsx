@@ -42,6 +42,7 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler';
+
 interface IconProps {
   name: IconName;
   style?: CSSProperties;

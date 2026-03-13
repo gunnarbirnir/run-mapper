@@ -1,25 +1,25 @@
-import type { Coordinates, Elevation, RunCoordinates } from '~/types';
+import type { Coordinates, Elevation, RouteCoordinates } from '~/types';
 import { haversineDistance } from '~/utils/route';
 
 export const processRunRoute = (
-  runCoordinates: RunCoordinates[],
+  routeCoordinates: RouteCoordinates[] = [],
 ): { coordinates: Coordinates[]; elevations: Elevation[] } => {
   const coordinates: Coordinates[] = [];
   const elevations: Elevation[] = [];
   let distance = 0;
   let prevCoord: Coordinates | null = null;
 
-  runCoordinates.forEach((runCoordinate) => {
+  routeCoordinates.forEach((routeCoordinate) => {
     const currentCoord: Coordinates = {
-      lng: runCoordinate.lng,
-      lat: runCoordinate.lat,
+      lng: routeCoordinate.lng,
+      lat: routeCoordinate.lat,
     };
     if (prevCoord) {
       distance += haversineDistance(prevCoord, currentCoord);
     }
     coordinates.push(currentCoord);
     prevCoord = currentCoord;
-    elevations.push({ value: runCoordinate.elevation, distance });
+    elevations.push({ value: routeCoordinate.elevation, distance });
   });
 
   return { coordinates, elevations };

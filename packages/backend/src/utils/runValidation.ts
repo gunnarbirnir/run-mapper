@@ -1,3 +1,9 @@
+import type {
+  BoundingBox,
+  Waypoint,
+  RouteCoordinates,
+  Coordinates,
+} from '../types';
 import {
   MAX_ROUTE_COORDINATES,
   MAX_ROUTE_DATA_BYTES,
@@ -6,36 +12,19 @@ import {
 } from '../config/constants.js';
 import { isValidPublicSlug, normalizePublicSlug } from './publicSlug.js';
 
-export interface BaseCoordinate {
-  lat: number;
-  lng: number;
-}
-
-export interface RunCoordinate extends BaseCoordinate {
-  elevation: number;
-}
-
-export interface Waypoint {
-  id: string;
-  name: string;
-  description?: string;
-  coordinates: BaseCoordinate;
-  type: 'energy' | 'entertainment' | 'start' | 'end';
-}
-
 export interface RouteDataPayload {
-  boundingBox?: [BaseCoordinate, BaseCoordinate];
-  coordinates?: RunCoordinate[];
+  boundingBox?: BoundingBox;
+  coordinates?: RouteCoordinates[];
   waypoints?: Waypoint[];
 }
 
 export interface NormalizedRouteData {
-  boundingBox: [BaseCoordinate, BaseCoordinate];
-  coordinates: RunCoordinate[];
+  boundingBox: BoundingBox;
+  coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
 }
 
-const defaultBoundingBox: [BaseCoordinate, BaseCoordinate] = [
+export const defaultBoundingBox: BoundingBox = [
   { lat: 0, lng: 0 },
   { lat: 0, lng: 0 },
 ];
@@ -44,11 +33,11 @@ export const isFiniteNumber = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isFinite(value);
 };
 
-export const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
+export const isValidCoordinates = (value: unknown): value is Coordinates => {
   if (!value || typeof value !== 'object') {
     return false;
   }
-  const coordinate = value as BaseCoordinate;
+  const coordinate = value as Coordinates;
   return (
     isFiniteNumber(coordinate.lat) &&
     isFiniteNumber(coordinate.lng) &&
@@ -61,11 +50,26 @@ export const isValidCoordinate = (value: unknown): value is BaseCoordinate => {
 
 export const isValidRunCoordinate = (
   value: unknown,
-): value is RunCoordinate => {
-  if (!isValidCoordinate(value)) {
+): value is RouteCoordinates => {
+  if (!isValidCoordinates(value)) {
     return false;
   }
-  return isFiniteNumber((value as RunCoordinate).elevation);
+  return isFiniteNumber((value as RouteCoordinates).elevation);
+};
+
+export const isValidWaypoint = (value: unknown): value is Waypoint => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  const waypoint = value as Waypoint;
+  return (
+    typeof waypoint.id === 'string' &&
+    typeof waypoint.name === 'string' &&
+    isValidCoordinates(waypoint.coordinates) &&
+    ['energy', 'entertainment', 'start', 'end'].includes(
+      waypoint.type as string,
+    )
+  );
 };
 
 export const normalizeRouteData = (
@@ -262,7 +266,10 @@ export const validateCreateRunBody = (
     };
   }
 
-  if (routeData?.waypoints && routeData.waypoints.length > MAX_ROUTE_WAYPOINTS) {
+  if (
+    routeData?.waypoints &&
+    routeData.waypoints.length > MAX_ROUTE_WAYPOINTS
+  ) {
     return {
       ok: false,
       error: {
@@ -277,15 +284,16 @@ export const validateCreateRunBody = (
     routeData?.boundingBox &&
     (!Array.isArray(routeData.boundingBox) ||
       routeData.boundingBox.length !== 2 ||
-      !isValidCoordinate(routeData.boundingBox[0]) ||
-      !isValidCoordinate(routeData.boundingBox[1]))
+      !isValidCoordinates(routeData.boundingBox[0]) ||
+      !isValidCoordinates(routeData.boundingBox[1]))
   ) {
     return {
       ok: false,
       error: {
         status: 400,
         error: 'Invalid payload',
-        message: 'routeData.boundingBox must contain exactly two valid coordinates',
+        message:
+          'routeData.boundingBox must contain exactly two valid coordinates',
       },
     };
   }
@@ -313,7 +321,7 @@ export const validateCreateRunBody = (
         waypoint &&
         typeof waypoint.id === 'string' &&
         typeof waypoint.name === 'string' &&
-        isValidCoordinate(waypoint.coordinates),
+        isValidCoordinates(waypoint.coordinates),
     )
   ) {
     return {
@@ -457,4 +465,3 @@ export const validateUpdatePublicBody = (
     },
   };
 };
-
