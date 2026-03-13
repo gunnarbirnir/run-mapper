@@ -50,7 +50,7 @@ export const Dropdown = ({
         >
           <Select.Popup
             className={cn(
-              'max-w-200 min-w-40 origin-top rounded-md bg-gray-100 bg-clip-padding text-gray-900',
+              'max-w-200 min-w-40 origin-top rounded-md bg-white bg-clip-padding text-gray-900',
               ANIMATION_CLASSES,
               DATA_SIDE_NONE_CLASSES,
               popupClassName,

@@ -9,9 +9,11 @@ const findRoute = (run: PublicRun, routeId: string) => {
 export const useRoute = ({
   run,
   routeId,
+  isFullscreen,
 }: {
   run: PublicRun;
   routeId: string;
+  isFullscreen: boolean;
 }) => {
   const [currentRoute, setCurrentRoute] = useState<PublicRoute>(
     findRoute(run, routeId),
@@ -21,8 +23,13 @@ export const useRoute = ({
     (updatedRouteId: string) => {
       const route = findRoute(run, updatedRouteId);
       setCurrentRoute(route);
+      history.replaceState(
+        null,
+        '',
+        `/run/${run.publicSlug}?${isFullscreen ? 'isFullscreen=true&' : ''}routeId=${updatedRouteId}`,
+      );
     },
-    [run],
+    [run, isFullscreen],
   );
 
   return {

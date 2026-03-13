@@ -25,7 +25,11 @@ export const PublicRunDisplay = ({
   routeId,
   isFullscreen = false,
 }: PublicRunDisplayProps) => {
-  const { route, setRoute: setActiveRoute } = useRoute({ run, routeId });
+  const { route, setRoute: setActiveRoute } = useRoute({
+    run,
+    routeId,
+    isFullscreen,
+  });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
     () => processRunRoute(route.coordinates),
