@@ -4,7 +4,7 @@ import {
   type RunWithId,
 } from '../repositories/run-repository.js';
 import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { PublicRun } from '../types';
+import type { PublicRun } from '../types/index.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
 import { sanitizePublicRun } from '../utils/publicRun.js';
 
