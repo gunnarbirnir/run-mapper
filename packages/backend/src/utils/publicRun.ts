@@ -13,6 +13,7 @@ export const sanitizePublicRun = (runData: EditorRun): PublicRun => {
     defaultRouteId:
       runData.defaultRouteId ??
       (runData.routes.length > 0 ? runData.routes[0].id : undefined),
+    publicSlug: runData.publicSlug ?? '',
     routes: runData.routes.map((route) => ({
       id: route.id,
       name: route.name,

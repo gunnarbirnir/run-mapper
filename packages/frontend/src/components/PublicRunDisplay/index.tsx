@@ -64,6 +64,7 @@ export const PublicRunDisplay = ({
         <RunRouteMap
           {...mapState}
           routeId={route.id}
+          runSlug={run.publicSlug}
           isFullscreen={isFullscreen}
           boundingBox={route.boundingBox}
           coordinates={coordinates}

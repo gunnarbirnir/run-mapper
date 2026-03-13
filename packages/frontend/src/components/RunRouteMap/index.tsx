@@ -18,6 +18,7 @@ import { MapActionButton } from './components/MapActionButton';
 
 export const RunRouteMap = ({
   routeId,
+  runSlug,
   boundingBox,
   coordinates,
   waypoints,
@@ -117,7 +118,10 @@ export const RunRouteMap = ({
         <MapActionButton
           index={mapActionButtonIndex++}
           onClick={() =>
-            window.open(`/run/${routeId}?isFullscreen=true`, '_blank')
+            window.open(
+              `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
+              '_blank',
+            )
           }
         >
           <Icon name="externalLink" className="size-5" />

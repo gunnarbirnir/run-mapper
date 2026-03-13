@@ -29,12 +29,13 @@ export interface PublicRun {
   id: string;
   name: string;
   defaultRouteId?: string;
+  publicSlug: string;
   routes: PublicRoute[];
 }
 
 export type PublicRunRecord = Omit<PublicRun, 'id'>;
 
-export interface EditorRun extends PublicRun {
+export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
   createdAt: string;
   updatedAt?: string;
   isPublic?: boolean;
