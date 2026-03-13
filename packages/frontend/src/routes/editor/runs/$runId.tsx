@@ -187,7 +187,10 @@ function EditorRunDetail() {
               )}
             </div>
           </div>
-          <PublicRunDisplay routeId={runId} run={run} />
+          <PublicRunDisplay
+            routeId={runId}
+            run={{ ...run, publicSlug: run.publicSlug ?? '' }}
+          />
         </div>
       </PageLayout.MainContent>
     </PageLayout>

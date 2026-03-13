@@ -1,3 +1,5 @@
+import type { SetStateAction } from 'react';
+
 import type { PublicRun } from '~/types';
 
 export interface PublicRunDisplayProps {
@@ -8,6 +10,7 @@ export interface PublicRunDisplayProps {
 
 export interface WidgetBaseProps {
   index: number;
+  widgetType: WidgetType;
   publicRunDisplaySize: {
     width: number;
     height: number;
@@ -21,7 +24,7 @@ export interface WidgetBaseProps {
   isAnyOpen?: boolean;
   isAnyExpanded?: boolean;
   toggleActive?: () => void;
-  setWidgetSizes: (sizes: (prev: number[]) => number[]) => void;
+  setWidgetSizes: (sizes: SetStateAction<number[]>) => void;
 }
 
 export type WidgetType = 'distance' | 'elevation';
