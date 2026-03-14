@@ -151,10 +151,20 @@ export const ElevationGraph = ({
               }}
             >
               {[...xTicks, lastDistance].map((tick) => (
-                <ReferenceLine key={`x-${tick}`} x={tick} stroke={gridColor} />
+                <ReferenceLine
+                  key={`x-${tick}`}
+                  x={tick}
+                  stroke={gridColor}
+                  zIndex={0}
+                />
               ))}
               {yTicks.map((tick) => (
-                <ReferenceLine key={`y-${tick}`} y={tick} stroke={gridColor} />
+                <ReferenceLine
+                  key={`y-${tick}`}
+                  y={tick}
+                  stroke={gridColor}
+                  zIndex={0}
+                />
               ))}
               <Tooltip
                 active={isTooltipActive === false ? false : undefined}
