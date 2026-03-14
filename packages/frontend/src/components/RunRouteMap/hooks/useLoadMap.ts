@@ -24,6 +24,7 @@ export const useLoadMap = ({
   const { isSmallScreen } = useMediaQuery();
 
   useEffect(() => {
+    setIsMapLoaded(false);
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,

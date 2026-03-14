@@ -31,6 +31,7 @@ export const useMapState = (coordinates: Coordinates[]): MapState => {
 
     return () => {
       clearTimeout(animationTimeout);
+      setRouteIsAnimating(false);
     };
   }, [routeIsAnimating, coordinates]);
 
