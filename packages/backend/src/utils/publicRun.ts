@@ -1,10 +1,10 @@
-import type { EditorRun, BoundingBox, PublicRun } from '../types';
+import type { EditorRun, BoundingBox, PublicRun } from '../types/index.js';
 import {
   isValidCoordinates,
   isValidRunCoordinate,
   isValidWaypoint,
   defaultBoundingBox,
-} from './runValidation';
+} from './runValidation.js';
 
 export const sanitizePublicRun = (runData: EditorRun): PublicRun => {
   return {

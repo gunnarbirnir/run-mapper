@@ -3,7 +3,7 @@ import type {
   Waypoint,
   RouteCoordinates,
   Coordinates,
-} from '../types';
+} from '../types/index.js';
 import {
   MAX_ROUTE_COORDINATES,
   MAX_ROUTE_DATA_BYTES,

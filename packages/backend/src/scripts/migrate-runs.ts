@@ -5,7 +5,7 @@ import type {
   RouteCoordinates,
   Waypoint,
   PublicRoute,
-} from '../types';
+} from '../types/index.js';
 import { randomBytes } from 'crypto';
 
 const RUN_ID = 'N4zQOJc8HpKLfxz3KgvS';

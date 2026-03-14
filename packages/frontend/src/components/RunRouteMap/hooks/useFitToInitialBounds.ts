@@ -28,30 +28,34 @@ export const useFitToInitialBounds = ({
   const hasClickedFitInitialBoundsRef = useRef(false);
 
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current) {
+    const map = mapRef.current;
+    if (!isMapLoaded || !map) {
       return;
     }
 
     // Initially at initial bounds
     setIsAtInitialBounds(true);
 
-    mapRef.current.on('moveend', () => {
+    const handleMoveEnd = () => {
       if (hasClickedFitInitialBoundsRef.current) {
         hasClickedFitInitialBoundsRef.current = false;
         setIsAtInitialBounds(true);
       } else {
         setIsAtInitialBounds(false);
       }
-    });
+    };
+
+    map.on('moveend', handleMoveEnd);
 
     fitInitialBoundsRef.current = () => {
-      mapRef.current?.fitBounds(paddedBounds, {
+      map.fitBounds(paddedBounds, {
         duration: FIT_INITIAL_BOUNDS_DURATION,
       });
       hasClickedFitInitialBoundsRef.current = true;
     };
 
     return () => {
+      map.off('moveend', handleMoveEnd);
       fitInitialBoundsRef.current = null;
       hasClickedFitInitialBoundsRef.current = false;
     };
