@@ -132,8 +132,9 @@ export const getMarkerTooltip = (waypoint: Waypoint): Popup => {
   return new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
-    offset: [0, -12],
-  }).setHTML(`<h3>${waypoint.name}</h3>`);
+    offset: [0, -16],
+    className: 'waypoint-popup',
+  }).setHTML(`<h4>${waypoint.name}</h4>`);
 };
 
 const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;

@@ -54,6 +54,7 @@ export const useActiveMarker = ({
     };
 
     return () => {
+      activeMarker?.remove();
       setActiveIndexRef.current = null;
     };
   }, [
