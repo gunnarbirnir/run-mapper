@@ -109,6 +109,7 @@ export const RunRouteMap = ({
           disabled={routeIsAnimating}
           onClick={() => {
             fitToInitialBounds();
+            resetOverlayState();
             animateRoute();
           }}
         >
