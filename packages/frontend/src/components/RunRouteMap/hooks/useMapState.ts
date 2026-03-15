@@ -1,11 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-import type { Coordinates, MapStyle, Waypoint } from '~/types';
+import type { MapStyle } from '~/types';
 
 import type { MapState } from '../types';
-import { getRouteAnimationDuration } from '../utils';
 
-export const useMapState = (coordinates: Coordinates[]): MapState => {
+export const useMapState = (): MapState => {
   const [mapStyle, setMapStyle] = useState<MapStyle>('standard');
   const [routeIsAnimating, setRouteIsAnimating] = useState(false);
   const [showWaypoints, setShowWaypoints] = useState(true);
@@ -15,45 +14,26 @@ export const useMapState = (coordinates: Coordinates[]): MapState => {
   const setActiveIndexRef = useRef<
     ((updatedIndex: number | null) => void) | null
   >(null);
-  const setActiveWaypointRef = useRef<((waypoint: Waypoint) => void) | null>(
-    null,
-  );
-  const fitInitialBoundsRef = useRef<(() => void) | null>(null);
-
-  useEffect(() => {
-    if (!routeIsAnimating) {
-      return;
-    }
-
-    const animationTimeout = setTimeout(() => {
-      setRouteIsAnimating(false);
-    }, getRouteAnimationDuration(coordinates));
-
-    return () => {
-      clearTimeout(animationTimeout);
-      setRouteIsAnimating(false);
-    };
-  }, [routeIsAnimating, coordinates]);
+  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
 
   const toggleShowWaypoints = useCallback(() => {
     setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints);
   }, [setShowWaypoints]);
 
-  const handleSetActiveWaypoint = useCallback(
-    (waypoint: Waypoint) => {
-      setActiveWaypointRef.current?.(waypoint);
+  const animateRoute = useCallback(() => {
+    animateRouteRef.current?.();
+  }, [animateRouteRef]);
+
+  const setActiveMarkerIndex = useCallback(
+    (updatedIndex: number | null) => {
+      setActiveIndexRef.current?.(updatedIndex);
     },
-    [setActiveWaypointRef],
+    [setActiveIndexRef],
   );
 
-  const handleFitInitialBounds = useCallback(() => {
-    fitInitialBoundsRef.current?.();
-  }, [fitInitialBoundsRef]);
-
-  const animateRoute = useCallback(() => {
-    handleFitInitialBounds();
-    animateRouteRef.current?.();
-  }, [animateRouteRef, handleFitInitialBounds]);
+  const fitToInitialBounds = useCallback(() => {
+    fitToInitialBoundsRef.current?.();
+  }, [fitToInitialBoundsRef]);
 
   return {
     mapStyle,
@@ -66,11 +46,10 @@ export const useMapState = (coordinates: Coordinates[]): MapState => {
     setRouteIsAnimating,
     animateRouteRef,
     setActiveIndexRef,
-    setActiveWaypointRef,
-    fitInitialBoundsRef,
+    fitToInitialBoundsRef,
     animateRoute,
     toggleShowWaypoints,
-    handleSetActiveWaypoint,
-    handleFitInitialBounds,
+    setActiveMarkerIndex,
+    fitToInitialBounds,
   };
 };

@@ -1,8 +1,9 @@
 import { RefObject, useState } from 'react';
 
 import { useElementSize } from '~/hooks/useElementSize';
+import type { Coordinates, Elevation } from '~/types';
+import { Tooltip } from '~/primitives';
 
-import { Coordinates, Elevation } from '~/types';
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
 import { WidgetType } from '../types';
@@ -49,7 +50,7 @@ export const OverlayWidgets = ({
   };
 
   return (
-    <>
+    <Tooltip.Provider>
       {visibleWidgets.distance && (
         <DistanceWidget
           index={0}
@@ -64,6 +65,6 @@ export const OverlayWidgets = ({
           {...getWidgetProps('elevation')}
         />
       )}
-    </>
+    </Tooltip.Provider>
   );
 };

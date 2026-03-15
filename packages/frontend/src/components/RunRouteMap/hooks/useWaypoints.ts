@@ -1,76 +1,83 @@
+import type { Map, Marker, Popup } from 'mapbox-gl';
+import { useEffect, useRef, type RefObject, useMemo } from 'react';
+
+import type { Coordinates, Waypoint } from '~/types';
+import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
+
+import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '../constants';
 import {
-  useEffect,
-  useRef,
-  type MutableRefObject,
-  type RefObject,
-} from 'react';
-import type { Map, Marker } from 'mapbox-gl';
-
-import type { Waypoint, Coordinates } from '~/types';
-import { getStartWaypoint, getEndWaypoint } from '~/utils/route';
-
-import { getMarkerElement, getWaypointMarkerElement } from '../utils';
-import { WAYPOINT_ZOOM, FLY_TO_WAYPOINT_DURATION } from '../constants';
+  getMarkerElement,
+  getMarkerTooltip,
+  getWaypointMarkerElement,
+} from '../utils';
 import { useHandlers } from './useHandlers';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;
+  activeWaypoint: string | null;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   showWaypoints: boolean;
   onWaypointClick: (waypoint: string) => void;
   mapRef: RefObject<Map>;
-  setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
 }
 
 export const useWaypoints = ({
   isMapLoaded,
+  activeWaypoint,
   coordinates,
   waypoints,
   showWaypoints,
   onWaypointClick,
   mapRef,
-  setActiveWaypointRef,
 }: UseWaypointsProps) => {
+  const activeWaypointRef = useRef<string | null>(null);
   const waypointMarkersRef = useRef<Marker[]>([]);
+  const popupsRef = useRef<Record<string, Popup>>({});
   const { addMarker } = useHandlers({ mapRef });
 
+  const extendedWaypoints = useMemo(
+    () =>
+      coordinates.length > 0
+        ? [
+            getStartWaypoint(coordinates),
+            ...waypoints,
+            getEndWaypoint(coordinates),
+          ]
+        : [],
+    [coordinates, waypoints],
+  );
+
+  // Draw waypoints
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
       return;
     }
 
     const waypointMarkers = [];
-
-    const handleWaypointClick = (waypoint: Waypoint) => {
-      onWaypointClick(waypoint.id);
-      mapRef.current?.flyTo({
-        center: [waypoint.coordinates.lng, waypoint.coordinates.lat],
-        zoom: WAYPOINT_ZOOM,
-        duration: FLY_TO_WAYPOINT_DURATION,
-      });
-    };
-    setActiveWaypointRef.current = handleWaypointClick;
+    const popups: Record<string, Popup> = {};
 
     const startWaypoint = getStartWaypoint(coordinates);
+    popups[startWaypoint.id] = getMarkerTooltip(startWaypoint);
     waypointMarkers.push(
       addMarker(
         getMarkerElement(
           '--color-success-500',
           '--color-success-600',
-          showWaypoints ? () => handleWaypointClick(startWaypoint) : undefined,
+          showWaypoints ? () => onWaypointClick(startWaypoint.id) : undefined,
         ),
         startWaypoint.coordinates,
       ),
     );
 
     const endWaypoint = getEndWaypoint(coordinates);
+    popups[endWaypoint.id] = getMarkerTooltip(endWaypoint);
     waypointMarkers.push(
       addMarker(
         getMarkerElement(
           '--color-error-500',
           '--color-error-600',
-          showWaypoints ? () => handleWaypointClick(endWaypoint) : undefined,
+          showWaypoints ? () => onWaypointClick(endWaypoint.id) : undefined,
         ),
         endWaypoint.coordinates,
       ),
@@ -78,10 +85,11 @@ export const useWaypoints = ({
 
     if (showWaypoints) {
       for (const waypoint of waypoints) {
+        popups[waypoint.id] = getMarkerTooltip(waypoint);
         waypointMarkers.push(
           addMarker(
             getWaypointMarkerElement(waypoint.type, () =>
-              handleWaypointClick(waypoint),
+              onWaypointClick(waypoint.id),
             ),
             waypoint.coordinates,
           ),
@@ -89,11 +97,15 @@ export const useWaypoints = ({
       }
     }
 
+    popupsRef.current = popups;
     waypointMarkersRef.current = waypointMarkers.filter(Boolean) as Marker[];
 
     return () => {
-      setActiveWaypointRef.current = null;
       waypointMarkersRef.current.forEach((marker) => marker.remove());
+      Object.values(popupsRef.current).forEach((popup) => popup.remove());
+      activeWaypointRef.current = null;
+      waypointMarkersRef.current = [];
+      popupsRef.current = {};
     };
   }, [
     isMapLoaded,
@@ -103,6 +115,41 @@ export const useWaypoints = ({
     addMarker,
     onWaypointClick,
     mapRef,
-    setActiveWaypointRef,
   ]);
+
+  // React to active waypoint change
+  useEffect(() => {
+    if (activeWaypointRef.current) {
+      popupsRef.current[activeWaypointRef.current]?.remove();
+    }
+
+    activeWaypointRef.current = activeWaypoint;
+
+    const activeWaypointDetails = extendedWaypoints.find(
+      (waypoint: Waypoint) => waypoint.id === activeWaypoint,
+    );
+
+    if (!activeWaypoint || !activeWaypointDetails) {
+      return;
+    }
+
+    const popup = popupsRef.current[activeWaypoint];
+    if (popup && mapRef.current) {
+      popup
+        .setLngLat([
+          activeWaypointDetails.coordinates.lng,
+          activeWaypointDetails.coordinates.lat,
+        ])
+        .addTo(mapRef.current);
+    }
+
+    mapRef.current?.flyTo({
+      center: [
+        activeWaypointDetails.coordinates.lng,
+        activeWaypointDetails.coordinates.lat,
+      ],
+      zoom: WAYPOINT_ZOOM,
+      duration: FLY_TO_WAYPOINT_DURATION,
+    });
+  }, [activeWaypoint, mapRef, extendedWaypoints]);
 };

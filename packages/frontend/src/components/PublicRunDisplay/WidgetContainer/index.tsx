@@ -11,7 +11,7 @@ import { useWidgetSize } from './useWidgetSize';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
-  title?: string;
+  title: string;
   text?: string;
   icon?: IconName;
   iconClassName?: string;
@@ -93,7 +93,9 @@ export const WidgetContainer = ({
           <WidgetContent
             ref={widgetRef}
             text={text}
+            tooltipLabel={title}
             height={widgetHeight}
+            width={widgetWidth}
             isClickable={isClickable}
             customContent={customContent}
             icon={icon}

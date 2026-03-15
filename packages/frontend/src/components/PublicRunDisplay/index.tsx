@@ -37,17 +37,17 @@ export const PublicRunDisplay = ({
   );
   const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
-  const mapState = useMapState(coordinates);
+  const mapState = useMapState();
   const {
     mapStyle,
     showWaypoints,
     routeIsAnimating,
-    setActiveIndexRef,
     setMapStyle,
     toggleShowWaypoints,
-    handleSetActiveWaypoint,
+    setActiveMarkerIndex,
   } = mapState;
-  const { setActiveWaypoint, ...routeOverlayState } = useRouteOverlayState();
+  const routeOverlayState = useRouteOverlayState();
+  const { activeWaypoint, setActiveWaypoint, resetState } = routeOverlayState;
   const { compactHeight: graphHeight } = useElevationGraphHeight();
   const { activeWidget, activeDrawer } = routeOverlayState;
   const elevationWidgetActive = activeWidget === 'elevation';
@@ -74,10 +74,12 @@ export const PublicRunDisplay = ({
           coordinates={coordinates}
           waypoints={waypoints}
           elevations={elevations}
+          activeWaypoint={activeWaypoint}
           hideActiveMarker={
             elevationWidgetActive || anyDrawerActive || routeIsAnimating
           }
           onWaypointClick={setActiveWaypoint}
+          resetOverlayState={resetState}
         />
       </div>
       <Suspense
@@ -87,9 +89,9 @@ export const PublicRunDisplay = ({
       >
         <ElevationGraph
           elevations={elevations}
-          setActiveIndexRef={setActiveIndexRef}
           isExpanded={elevationWidgetActive}
           isTooltipActive={!anyDrawerActive}
+          setActiveMarkerIndex={setActiveMarkerIndex}
         />
       </Suspense>
       <RouteOverlay
@@ -102,7 +104,6 @@ export const PublicRunDisplay = ({
         publicRunDisplayRef={publicRunDisplayRef}
         mapStyle={mapStyle}
         showWaypoints={showWaypoints}
-        setActiveWaypoint={handleSetActiveWaypoint}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={setMapStyle}
         setActiveRoute={setActiveRoute}

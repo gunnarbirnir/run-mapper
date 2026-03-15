@@ -1,4 +1,4 @@
-import { useMemo, type MutableRefObject, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   Line,
   LineChart,
@@ -25,11 +25,9 @@ import { useGraphTicks } from './useGraphTicks';
 
 interface ElevationGraphProps {
   elevations: Elevation[];
-  setActiveIndexRef: MutableRefObject<
-    ((updatedIndex: number | null) => void) | null
-  >;
   isExpanded?: boolean;
   isTooltipActive?: boolean;
+  setActiveMarkerIndex: (updatedIndex: number | null) => void;
 }
 
 const STROKE_WIDTH = 3;
@@ -38,9 +36,9 @@ const ACTIVE_LINE_WIDTH = 2;
 
 export const ElevationGraph = ({
   elevations,
-  setActiveIndexRef,
   isExpanded = false,
   isTooltipActive = true,
+  setActiveMarkerIndex,
 }: ElevationGraphProps) => {
   const { compactHeight, expandedHeight } = useElevationGraphHeight(isExpanded);
   const [startExpansion, setStartExpansion] = useState(false);
@@ -135,18 +133,14 @@ export const ElevationGraph = ({
                 left: spacingPx(2),
               }}
               onMouseEnter={(event) => {
-                setActiveIndexRef.current?.(
-                  getActiveIndexValue(event.activeIndex),
-                );
+                setActiveMarkerIndex(getActiveIndexValue(event.activeIndex));
               }}
               onMouseLeave={() => {
-                setActiveIndexRef.current?.(null);
+                setActiveMarkerIndex(null);
               }}
               onMouseMove={(event) => {
                 if (event.activeIndex) {
-                  setActiveIndexRef.current?.(
-                    getActiveIndexValue(event.activeIndex),
-                  );
+                  setActiveMarkerIndex(getActiveIndexValue(event.activeIndex));
                 }
               }}
             >

@@ -13,7 +13,7 @@ interface WaypointsDrawerProps {
   waypoints: Waypoint[];
   activeWaypoint: string | null;
   toggleDrawer: () => void;
-  setActiveWaypoint: (waypoint: Waypoint) => void;
+  setActiveWaypoint: (waypoint: string) => void;
 }
 
 export const WaypointsDrawer = ({
@@ -81,13 +81,13 @@ export const WaypointsDrawer = ({
           <div className="mt-4 flex items-center gap-4">
             <RoundButton
               disabled={activeWaypointIndex === 0}
-              onClick={() => setActiveWaypoint(previousWaypoint)}
+              onClick={() => setActiveWaypoint(previousWaypoint.id)}
             >
               <Icon name="arrow" className="size-5 rotate-270" />
             </RoundButton>
             <RoundButton
               disabled={activeWaypointIndex === waypoints.length - 1}
-              onClick={() => setActiveWaypoint(nextWaypoint)}
+              onClick={() => setActiveWaypoint(nextWaypoint.id)}
             >
               <Icon name="arrow" className="size-5 rotate-90" />
             </RoundButton>

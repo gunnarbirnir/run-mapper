@@ -2,7 +2,7 @@ import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef, useState } from 'react';
 
-import { Icon } from '~/primitives';
+import { Icon, Tooltip } from '~/primitives';
 
 import { useActiveMarker } from './hooks/useActiveMarker';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
@@ -24,20 +24,21 @@ export const RunRouteMap = ({
   waypoints,
   elevations,
   mapStyle,
+  activeWaypoint,
   hideActiveMarker = false,
   showWaypoints = true,
   routeIsAnimating,
   isAtInitialBounds,
   isFullscreen,
   setActiveIndexRef,
-  fitInitialBoundsRef,
-  setActiveWaypointRef,
   animateRouteRef,
+  fitToInitialBoundsRef,
   animateRoute,
   setIsAtInitialBounds,
   onWaypointClick,
   setRouteIsAnimating,
-  handleFitInitialBounds,
+  resetOverlayState,
+  fitToInitialBounds,
 }: RouteMapProps) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const paddedBounds = useMemo(
@@ -66,6 +67,7 @@ export const RunRouteMap = ({
     isMapLoaded,
     coordinates,
     elevations,
+    routeIsAnimating,
     mapRef,
     animateRouteRef,
     setRouteIsAnimating,
@@ -81,12 +83,12 @@ export const RunRouteMap = ({
 
   useWaypoints({
     isMapLoaded,
+    activeWaypoint,
     coordinates,
     waypoints,
     showWaypoints,
     onWaypointClick,
     mapRef,
-    setActiveWaypointRef,
   });
 
   useFitToInitialBounds({
@@ -94,39 +96,50 @@ export const RunRouteMap = ({
     paddedBounds,
     setIsAtInitialBounds,
     mapRef,
-    fitInitialBoundsRef,
+    fitToInitialBoundsRef,
   });
 
   return (
     <div className="relative h-full w-full">
       <div ref={mapContainerRef} className="h-full w-full" />
-      <MapActionButton
-        index={mapActionButtonIndex++}
-        disabled={routeIsAnimating}
-        onClick={animateRoute}
-      >
-        <Icon name="play" className="size-5" />
-      </MapActionButton>
-      <MapActionButton
-        index={mapActionButtonIndex++}
-        disabled={isAtInitialBounds}
-        onClick={handleFitInitialBounds}
-      >
-        <Icon name="reset" className="size-5" />
-      </MapActionButton>
-      {!isFullscreen && (
+      <Tooltip.Provider>
         <MapActionButton
           index={mapActionButtonIndex++}
-          onClick={() =>
-            window.open(
-              `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
-              '_blank',
-            )
-          }
+          tooltipLabel="Play"
+          disabled={routeIsAnimating}
+          onClick={() => {
+            fitToInitialBounds();
+            animateRoute();
+          }}
         >
-          <Icon name="externalLink" className="size-5" />
+          <Icon name="play" className="size-5" />
         </MapActionButton>
-      )}
+        <MapActionButton
+          index={mapActionButtonIndex++}
+          tooltipLabel="Reset"
+          disabled={isAtInitialBounds}
+          onClick={() => {
+            fitToInitialBounds();
+            resetOverlayState();
+          }}
+        >
+          <Icon name="reset" className="size-5" />
+        </MapActionButton>
+        {!isFullscreen && (
+          <MapActionButton
+            index={mapActionButtonIndex++}
+            tooltipLabel="Fullscreen"
+            onClick={() =>
+              window.open(
+                `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
+                '_blank',
+              )
+            }
+          >
+            <Icon name="externalLink" className="size-5" />
+          </MapActionButton>
+        )}
+      </Tooltip.Provider>
       <PoweredByLabel />
     </div>
   );

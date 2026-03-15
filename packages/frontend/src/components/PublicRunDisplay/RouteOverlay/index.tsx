@@ -3,7 +3,7 @@ import { RefObject, useMemo } from 'react';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import { Icon } from '~/primitives';
+import { Icon, Tooltip } from '~/primitives';
 import type {
   Coordinates,
   Elevation,
@@ -31,7 +31,7 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   showWaypoints: boolean;
   mapStyle: MapStyle;
   toggleShowWaypoints: () => void;
-  setActiveWaypoint: (waypoint: Waypoint) => void;
+  setActiveWaypoint: (waypoint: string) => void;
   onMapStyleChange: (style: MapStyle) => void;
   setActiveRoute: (routeId: string) => void;
 };
@@ -112,27 +112,31 @@ export const RouteOverlay = ({
         )}
       </AnimatePresence>
 
-      <OptionButton
-        index={optionsButtonIndex++}
-        buttonSize={optionItemSize}
-        openDrawerSize={openDrawerSize}
-        onClick={() => toggleDrawer('settings')}
-        buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
-      >
-        {activeDrawer === null ? (
-          <Icon name="settings" className="size-7" />
-        ) : (
-          <Icon name="close" className="size-6" />
-        )}
-      </OptionButton>
-      <OptionButton
-        index={optionsButtonIndex++}
-        buttonSize={optionItemSize}
-        openDrawerSize={openDrawerSize}
-        onClick={() => setActiveWaypoint(getStartWaypoint(coordinates))}
-      >
-        <Icon name="location" className="size-7" />
-      </OptionButton>
+      <Tooltip.Provider>
+        <OptionButton
+          index={optionsButtonIndex++}
+          tooltipLabel={activeDrawer === null ? 'Settings' : undefined}
+          buttonSize={optionItemSize}
+          openDrawerSize={openDrawerSize}
+          onClick={() => toggleDrawer('settings')}
+          buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
+        >
+          {activeDrawer === null ? (
+            <Icon name="settings" className="size-7" />
+          ) : (
+            <Icon name="close" className="size-6" />
+          )}
+        </OptionButton>
+        <OptionButton
+          index={optionsButtonIndex++}
+          tooltipLabel="Points of interest"
+          buttonSize={optionItemSize}
+          openDrawerSize={openDrawerSize}
+          onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
+        >
+          <Icon name="location" className="size-7" />
+        </OptionButton>
+      </Tooltip.Provider>
 
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
