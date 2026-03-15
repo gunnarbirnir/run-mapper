@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { RoundButton } from '~/primitives';
+import { RoundButton, Tooltip } from '~/primitives';
 import { cn, spacingPx } from '~/utils';
 
 interface MapActionButtonProps {
   index: number;
+  tooltipLabel: string;
   disabled?: boolean;
   children: ReactNode;
   buttonClassName?: string;
@@ -13,6 +14,7 @@ interface MapActionButtonProps {
 
 export const MapActionButton = ({
   index,
+  tooltipLabel,
   disabled = false,
   children,
   buttonClassName,
@@ -38,18 +40,20 @@ export const MapActionButton = ({
       className="absolute"
       style={{ zIndex: 10 + index, left, bottom: baseSpacing }}
     >
-      <RoundButton
-        onClick={onClick}
-        color="white"
-        disabled={disabled}
-        className={cn(
-          'pointer-events-auto rounded-md shadow-sm',
-          buttonClassName,
-        )}
-        style={{ width: buttonSize, height: buttonSize }}
-      >
-        <>{children}</>
-      </RoundButton>
+      <Tooltip label={tooltipLabel}>
+        <RoundButton
+          onClick={onClick}
+          color="white"
+          disabled={disabled}
+          className={cn(
+            'pointer-events-auto rounded-md shadow-sm',
+            buttonClassName,
+          )}
+          style={{ width: buttonSize, height: buttonSize }}
+        >
+          <>{children}</>
+        </RoundButton>
+      </Tooltip>
     </div>
   );
 };

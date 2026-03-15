@@ -17,5 +17,12 @@ export const DistanceWidget = ({
   const distance = useMemo(() => calculateDistance(coordinates), [coordinates]);
   const formattedDistance = `${distance.toFixed(1)} km`;
 
-  return <WidgetContainer {...props} text={formattedDistance} icon="ruler" />;
+  return (
+    <WidgetContainer
+      {...props}
+      title="Distance"
+      text={formattedDistance}
+      icon="ruler"
+    />
+  );
 };

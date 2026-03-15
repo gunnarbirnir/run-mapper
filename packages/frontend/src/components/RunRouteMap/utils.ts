@@ -1,7 +1,12 @@
 import type { BoundingBox, Coordinates, WayPointType, Bounds } from '~/types';
 import { getCssVariableValue, cn } from '~/utils';
 
-import { BOUNDS_PADDING, LINE_OPACITY, LINE_WIDTH } from './constants';
+import {
+  BOUNDS_PADDING,
+  BOUNDS_PADDING_TOP,
+  LINE_OPACITY,
+  LINE_WIDTH,
+} from './constants';
 import { ENERGY_ICON, ENTERTAINMENT_ICON } from './icons';
 import type { LineFeature } from './types';
 
@@ -12,10 +17,11 @@ export const getPaddedBounds = (boundingBox: BoundingBox): Bounds => {
   const latRange = maxLat - minLat;
   const lngPadding = lngRange * BOUNDS_PADDING;
   const latPadding = latRange * BOUNDS_PADDING;
+  const latPaddingTop = latRange * BOUNDS_PADDING_TOP;
 
   return [
     [minLng - lngPadding, minLat - latPadding],
-    [maxLng + lngPadding, maxLat + latPadding],
+    [maxLng + lngPadding, maxLat + latPaddingTop],
   ];
 };
 

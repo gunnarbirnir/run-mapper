@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-import { RoundButton } from '~/primitives';
+import { RoundButton, Tooltip } from '~/primitives';
 import { spacingPx, cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
@@ -9,6 +9,7 @@ import { useMediaQuery } from '~/hooks/useMediaQuery';
 interface OptionButtonProps {
   index: number;
   disabled?: boolean;
+  tooltipLabel?: string;
   buttonSize: number;
   openDrawerSize: number | null;
   children: ReactNode;
@@ -19,6 +20,7 @@ interface OptionButtonProps {
 export const OptionButton = ({
   index,
   disabled = false,
+  tooltipLabel,
   buttonSize,
   openDrawerSize,
   children,
@@ -63,21 +65,23 @@ export const OptionButton = ({
         ease: DEFAULT_EASING,
       }}
     >
-      <RoundButton
-        onClick={onClick}
-        color="white"
-        disabled={disabled}
-        className={cn(
-          'pointer-events-auto',
-          {
-            'shadow-md/20': !openDrawerSize || index === 0,
-          },
-          buttonClassName,
-        )}
-        style={{ width: buttonSize, height: buttonSize }}
-      >
-        <>{children}</>
-      </RoundButton>
+      <Tooltip label={tooltipLabel ?? ''} disabled={tooltipLabel === undefined}>
+        <RoundButton
+          onClick={onClick}
+          color="white"
+          disabled={disabled}
+          className={cn(
+            'pointer-events-auto',
+            {
+              'shadow-md/20': !openDrawerSize || index === 0,
+            },
+            buttonClassName,
+          )}
+          style={{ width: buttonSize, height: buttonSize }}
+        >
+          <>{children}</>
+        </RoundButton>
+      </Tooltip>
     </motion.div>
   );
 };

@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 
-import { Dropdown } from '~/primitives';
+import { Dropdown, Tooltip } from '~/primitives';
 import { spacingPx, cn } from '~/utils';
 import { DRAWER_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import type { PublicRoute } from '~/types';
@@ -41,19 +41,21 @@ export const RouteDropdown = ({
       className="pointer-events-auto absolute"
       style={{ top, right }}
     >
-      <Dropdown
-        value={activeRouteId}
-        onChange={(value) => (value ? setActiveRoute(value) : null)}
-        items={routes.map((route) => ({ label: route.name, value: route.id }))}
-        className={cn(
-          'w-40 rounded-xl bg-gray-100 shadow-md hover:bg-white data-popup-open:bg-white',
-          {
+      <Tooltip label="Routes">
+        <Dropdown
+          value={activeRouteId}
+          onChange={(value) => (value ? setActiveRoute(value) : null)}
+          items={routes.map((route) => ({
+            label: route.name,
+            value: route.id,
+          }))}
+          className={cn('w-40 rounded-xl shadow-md', {
             'w-32 min-w-32': isMediumScreen,
-          },
-        )}
-        popupClassName="shadow-md"
-        style={{ height: size }}
-      />
+          })}
+          popupClassName="shadow-md"
+          style={{ height: size }}
+        />
+      </Tooltip>
     </motion.div>
   );
 };
