@@ -1,5 +1,11 @@
 import type { GeoJSONSource, Map } from 'mapbox-gl';
-import { RefObject, useEffect, useRef, type MutableRefObject } from 'react';
+import {
+  RefObject,
+  useEffect,
+  useRef,
+  type MutableRefObject,
+  useMemo,
+} from 'react';
 
 import type { Coordinates, Elevation } from '~/types';
 
@@ -14,6 +20,7 @@ interface UseRouteProps {
   mapRef: RefObject<Map>;
   coordinates: Coordinates[];
   elevations: Elevation[];
+  routeIsAnimating: boolean;
   animateRouteRef: MutableRefObject<(() => void) | null>;
   setRouteIsAnimating: (routeIsAnimating: boolean) => void;
 }
@@ -68,13 +75,19 @@ export const useMapRoute = ({
   isMapLoaded,
   coordinates,
   elevations,
+  routeIsAnimating,
   mapRef,
   animateRouteRef,
   setRouteIsAnimating,
 }: UseRouteProps) => {
   const isInitialLoadRef = useRef(true);
   const isVisibleRef = useRef(document.visibilityState === 'visible');
+  const animationDuration = useMemo(
+    () => getRouteAnimationDuration(coordinates),
+    [coordinates],
+  );
 
+  // Draw route
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
       return;
@@ -113,7 +126,6 @@ export const useMapRoute = ({
       const source = map.getSource('route-source') as GeoJSONSource;
       const timeline = buildElevationTimeline(elevations);
       let startTime: number | null = null;
-      const animationDuration = getRouteAnimationDuration(coordinates);
 
       const step = (timestamp: number) => {
         if (!startTime) {
@@ -175,8 +187,25 @@ export const useMapRoute = ({
     isMapLoaded,
     coordinates,
     elevations,
+    animationDuration,
     setRouteIsAnimating,
     mapRef,
     animateRouteRef,
   ]);
+
+  // Reset animating state
+  useEffect(() => {
+    if (!routeIsAnimating) {
+      return;
+    }
+
+    const animationTimeout = setTimeout(() => {
+      setRouteIsAnimating(false);
+    }, animationDuration);
+
+    return () => {
+      clearTimeout(animationTimeout);
+      setRouteIsAnimating(false);
+    };
+  }, [routeIsAnimating, animationDuration, setRouteIsAnimating]);
 };

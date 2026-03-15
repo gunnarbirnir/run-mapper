@@ -31,7 +31,7 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   showWaypoints: boolean;
   mapStyle: MapStyle;
   toggleShowWaypoints: () => void;
-  setActiveWaypoint: (waypoint: Waypoint) => void;
+  setActiveWaypoint: (waypoint: string) => void;
   onMapStyleChange: (style: MapStyle) => void;
   setActiveRoute: (routeId: string) => void;
 };
@@ -132,7 +132,7 @@ export const RouteOverlay = ({
           tooltipLabel="Points of interest"
           buttonSize={optionItemSize}
           openDrawerSize={openDrawerSize}
-          onClick={() => setActiveWaypoint(getStartWaypoint(coordinates))}
+          onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
         >
           <Icon name="location" className="size-7" />
         </OptionButton>

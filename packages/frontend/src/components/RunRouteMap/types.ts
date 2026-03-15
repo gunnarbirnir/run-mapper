@@ -23,12 +23,11 @@ export interface MapState {
   setActiveIndexRef: MutableRefObject<
     ((updatedIndex: number | null) => void) | null
   >;
-  setActiveWaypointRef: MutableRefObject<((waypoint: Waypoint) => void) | null>;
-  fitInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
   animateRoute: () => void;
   toggleShowWaypoints: () => void;
-  handleSetActiveWaypoint: (waypoint: Waypoint) => void;
-  handleFitInitialBounds: () => void;
+  setActiveMarkerIndex: (updatedIndex: number | null) => void;
+  fitToInitialBounds: () => void;
 }
 
 export interface RouteMapProps extends MapState {
@@ -40,5 +39,7 @@ export interface RouteMapProps extends MapState {
   elevations: Elevation[];
   isFullscreen: boolean;
   hideActiveMarker?: boolean;
+  activeWaypoint: string | null;
   onWaypointClick: (id: string) => void;
+  resetOverlayState: () => void;
 }

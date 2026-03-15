@@ -13,6 +13,18 @@ export interface RouteOverlayState {
   activeWaypoint: string | null;
 }
 
+const initialState: RouteOverlayState = {
+  activeWidget: null,
+  openWidget: null,
+  expandedWidget: null,
+  activeDrawer: null,
+  visibleWidgets: {
+    distance: true,
+    elevation: true,
+  },
+  activeWaypoint: null,
+};
+
 type RouteOverlayAction =
   | {
       type: 'TOGGLE_ACTIVE_WIDGET';
@@ -32,6 +44,9 @@ type RouteOverlayAction =
   | {
       type: 'SET_ACTIVE_WAYPOINT';
       payload: string | null;
+    }
+  | {
+      type: 'RESET_STATE';
     };
 
 const routeOverlayReducer = (
@@ -53,6 +68,7 @@ const routeOverlayReducer = (
               activeWidget: action.payload,
               openWidget: action.payload,
               activeDrawer: null,
+              activeWaypoint: null,
             }),
       };
     case 'WIDGET_ANIMATION_FINISHED':
@@ -75,6 +91,7 @@ const routeOverlayReducer = (
           ? {
               // Close drawer
               activeDrawer: null,
+              activeWaypoint: null,
             }
           : {
               // Open drawer
@@ -101,21 +118,15 @@ const routeOverlayReducer = (
         openWidget: null,
         expandedWidget: null,
       };
+    case 'RESET_STATE':
+      return {
+        ...initialState,
+        // Maintain visible widgets
+        visibleWidgets: state.visibleWidgets,
+      };
     default:
       return state;
   }
-};
-
-const initialState: RouteOverlayState = {
-  activeWidget: null,
-  openWidget: null,
-  expandedWidget: null,
-  activeDrawer: null,
-  visibleWidgets: {
-    distance: true,
-    elevation: true,
-  },
-  activeWaypoint: null,
 };
 
 export const useRouteOverlayState = () => {
@@ -153,6 +164,10 @@ export const useRouteOverlayState = () => {
     [dispatch],
   );
 
+  const resetState = useCallback(() => {
+    dispatch({ type: 'RESET_STATE' });
+  }, [dispatch]);
+
   return useMemo(
     () => ({
       ...state,
@@ -161,6 +176,7 @@ export const useRouteOverlayState = () => {
       toggleDrawer,
       toggleVisibleWidget,
       setActiveWaypoint,
+      resetState,
     }),
     [
       state,
@@ -169,6 +185,7 @@ export const useRouteOverlayState = () => {
       toggleDrawer,
       toggleVisibleWidget,
       setActiveWaypoint,
+      resetState,
     ],
   );
 };

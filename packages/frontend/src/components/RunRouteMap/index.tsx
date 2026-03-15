@@ -24,20 +24,21 @@ export const RunRouteMap = ({
   waypoints,
   elevations,
   mapStyle,
+  activeWaypoint,
   hideActiveMarker = false,
   showWaypoints = true,
   routeIsAnimating,
   isAtInitialBounds,
   isFullscreen,
   setActiveIndexRef,
-  fitInitialBoundsRef,
-  setActiveWaypointRef,
   animateRouteRef,
+  fitToInitialBoundsRef,
   animateRoute,
   setIsAtInitialBounds,
   onWaypointClick,
   setRouteIsAnimating,
-  handleFitInitialBounds,
+  resetOverlayState,
+  fitToInitialBounds,
 }: RouteMapProps) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const paddedBounds = useMemo(
@@ -66,6 +67,7 @@ export const RunRouteMap = ({
     isMapLoaded,
     coordinates,
     elevations,
+    routeIsAnimating,
     mapRef,
     animateRouteRef,
     setRouteIsAnimating,
@@ -81,12 +83,12 @@ export const RunRouteMap = ({
 
   useWaypoints({
     isMapLoaded,
+    activeWaypoint,
     coordinates,
     waypoints,
     showWaypoints,
     onWaypointClick,
     mapRef,
-    setActiveWaypointRef,
   });
 
   useFitToInitialBounds({
@@ -94,7 +96,7 @@ export const RunRouteMap = ({
     paddedBounds,
     setIsAtInitialBounds,
     mapRef,
-    fitInitialBoundsRef,
+    fitToInitialBoundsRef,
   });
 
   return (
@@ -105,7 +107,10 @@ export const RunRouteMap = ({
           index={mapActionButtonIndex++}
           tooltipLabel="Play"
           disabled={routeIsAnimating}
-          onClick={animateRoute}
+          onClick={() => {
+            fitToInitialBounds();
+            animateRoute();
+          }}
         >
           <Icon name="play" className="size-5" />
         </MapActionButton>
@@ -113,7 +118,10 @@ export const RunRouteMap = ({
           index={mapActionButtonIndex++}
           tooltipLabel="Reset"
           disabled={isAtInitialBounds}
-          onClick={handleFitInitialBounds}
+          onClick={() => {
+            fitToInitialBounds();
+            resetOverlayState();
+          }}
         >
           <Icon name="reset" className="size-5" />
         </MapActionButton>

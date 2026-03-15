@@ -1,4 +1,12 @@
-import type { BoundingBox, Coordinates, WayPointType, Bounds } from '~/types';
+import mapboxgl, { type Popup } from 'mapbox-gl';
+
+import type {
+  BoundingBox,
+  Coordinates,
+  WayPointType,
+  Bounds,
+  Waypoint,
+} from '~/types';
 import { getCssVariableValue, cn } from '~/utils';
 
 import {
@@ -118,6 +126,14 @@ export const getWaypointMarkerElement = (
   });
 
   return marker;
+};
+
+export const getMarkerTooltip = (waypoint: Waypoint): Popup => {
+  return new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    offset: [0, -12],
+  }).setHTML(`<h3>${waypoint.name}</h3>`);
 };
 
 const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;
