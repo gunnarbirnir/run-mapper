@@ -43,7 +43,7 @@ type RouteOverlayAction =
     }
   | {
       type: 'SET_ACTIVE_WAYPOINT';
-      payload: string | null;
+      payload: { waypoint: string | null; openDrawer?: boolean };
     }
   | {
       type: 'RESET_STATE';
@@ -112,8 +112,10 @@ const routeOverlayReducer = (
     case 'SET_ACTIVE_WAYPOINT':
       return {
         ...state,
-        activeWaypoint: action.payload,
-        activeDrawer: 'waypoints' as DrawerType,
+        activeWaypoint: action.payload.waypoint,
+        activeDrawer: action.payload.openDrawer
+          ? ('waypoints' as DrawerType)
+          : null,
         activeWidget: null,
         openWidget: null,
         expandedWidget: null,
@@ -158,8 +160,11 @@ export const useRouteOverlayState = () => {
   );
 
   const setActiveWaypoint = useCallback(
-    (waypoint: string | null) => {
-      dispatch({ type: 'SET_ACTIVE_WAYPOINT', payload: waypoint });
+    (waypoint: string | null, openDrawer: boolean = true) => {
+      dispatch({
+        type: 'SET_ACTIVE_WAYPOINT',
+        payload: { waypoint, openDrawer },
+      });
     },
     [dispatch],
   );

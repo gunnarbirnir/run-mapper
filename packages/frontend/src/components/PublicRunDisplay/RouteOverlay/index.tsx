@@ -3,6 +3,7 @@ import { RefObject, useMemo } from 'react';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { Icon, Tooltip } from '~/primitives';
 import type {
   Coordinates,
@@ -19,9 +20,10 @@ import { RouteDropdown } from '../RouteDropdown';
 import { SettingsDrawer } from '../SettingsDrawer';
 import { WaypointsDrawer } from '../WaypointsDrawer';
 import { OverlayWidgets } from './OverlayWidgets';
+import { WaypointsButtons } from '../WaypointsButtons';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
 
-type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
+type RouteOverlayProps = RouteOverlayReducerState & {
   routes: PublicRoute[];
   routeId: string;
   coordinates: Coordinates[];
@@ -31,7 +33,6 @@ type RouteOverlayProps = Omit<RouteOverlayReducerState, 'setActiveWaypoint'> & {
   showWaypoints: boolean;
   mapStyle: MapStyle;
   toggleShowWaypoints: () => void;
-  setActiveWaypoint: (waypoint: string) => void;
   onMapStyleChange: (style: MapStyle) => void;
   setActiveRoute: (routeId: string) => void;
 };
@@ -59,11 +60,13 @@ export const RouteOverlay = ({
   toggleShowWaypoints,
   setActiveWaypoint,
   setActiveRoute,
+  resetState,
 }: RouteOverlayProps) => {
   const elevationWidgetActive = activeWidget === 'elevation';
   const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
+  const { isSmallScreen } = useMediaQuery();
 
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
@@ -139,6 +142,16 @@ export const RouteOverlay = ({
           </OptionButton>
         )}
       </Tooltip.Provider>
+
+      {activeWaypoint !== null && activeDrawer === null && isSmallScreen && (
+        <WaypointsButtons
+          waypoints={extendedWaypoints}
+          activeWaypoint={activeWaypoint}
+          setActiveWaypoint={(waypoint) => setActiveWaypoint(waypoint, false)}
+          toggleDrawer={() => toggleDrawer('waypoints')}
+          resetState={resetState}
+        />
+      )}
 
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
