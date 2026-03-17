@@ -127,15 +127,17 @@ export const RouteOverlay = ({
             <Icon name="close" className="size-6" />
           )}
         </OptionButton>
-        <OptionButton
-          index={optionsButtonIndex++}
-          tooltipLabel="Points of interest"
-          buttonSize={optionItemSize}
-          openDrawerSize={openDrawerSize}
-          onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
-        >
-          <Icon name="location" className="size-7" />
-        </OptionButton>
+        {showWaypoints && (
+          <OptionButton
+            index={optionsButtonIndex++}
+            tooltipLabel="Points of interest"
+            buttonSize={optionItemSize}
+            openDrawerSize={openDrawerSize}
+            onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
+          >
+            <Icon name="location" className="size-7" />
+          </OptionButton>
+        )}
       </Tooltip.Provider>
 
       <SettingsDrawer

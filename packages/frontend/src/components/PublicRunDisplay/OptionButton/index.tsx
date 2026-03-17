@@ -33,15 +33,14 @@ export const OptionButton = ({
 
   const baseSpacing = spacingPx(3);
   const mainAxisInset = baseSpacing + index * (buttonSize + baseSpacing);
-  const top = openDrawerSize
+  const top = isSmallScreen
+    ? // To be below the route dropdown
+      mainAxisInset + buttonSize + baseSpacing
+    : baseSpacing;
+  const right = isSmallScreen
     ? baseSpacing
-    : isSmallScreen
-      ? mainAxisInset + buttonSize + baseSpacing
-      : baseSpacing;
-  const right = openDrawerSize
-    ? openDrawerSize + baseSpacing
-    : isSmallScreen
-      ? baseSpacing
+    : openDrawerSize
+      ? openDrawerSize + baseSpacing
       : mainAxisInset;
 
   useEffect(() => {

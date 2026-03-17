@@ -47,6 +47,7 @@ export const Dropdown = ({
         <Select.Positioner
           className="z-10 outline-none select-none"
           sideOffset={spacingPx(2)}
+          collisionPadding={spacingPx(3)}
         >
           <Select.Popup
             className={cn(
