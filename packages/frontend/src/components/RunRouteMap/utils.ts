@@ -7,7 +7,7 @@ import type {
   Bounds,
   Waypoint,
 } from '~/types';
-import { getCssVariableValue, cn } from '~/utils';
+import { getCssVariableValue, cn, formatNumber } from '~/utils';
 
 import {
   BOUNDS_PADDING,
@@ -128,13 +128,20 @@ export const getWaypointMarkerElement = (
   return marker;
 };
 
-export const getMarkerTooltip = (waypoint: Waypoint): Popup => {
+export const getMarkerTooltip = (
+  waypoint: Waypoint,
+  isSmallScreen: boolean,
+): Popup => {
   return new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
     offset: [0, -16],
     className: 'waypoint-popup',
-  }).setHTML(`<h4>${waypoint.name}</h4>`);
+  }).setHTML(
+    isSmallScreen
+      ? `<div class="flex flex-col gap-1 max-w-60"><h4 class="font-medium text-gray-900"><span class="bg-secondary-500 text-white px-1 inline-block rounded-sm mr-1">${formatNumber(waypoint.distance)} km</span>${waypoint.name}</h4><p class="text-sm text-gray-500">${waypoint.description}</p></div>`
+      : `<h4 class="font-medium text-gray-900 max-w-40">${waypoint.name}</h4>`,
+  );
 };
 
 const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;

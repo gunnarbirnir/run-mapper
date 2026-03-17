@@ -89,6 +89,7 @@ export const RunRouteMap = ({
     showWaypoints,
     onWaypointClick,
     mapRef,
+    fitToInitialBounds,
   });
 
   useFitToInitialBounds({
