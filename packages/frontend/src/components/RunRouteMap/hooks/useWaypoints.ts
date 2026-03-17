@@ -19,8 +19,11 @@ interface UseWaypointsProps {
   waypoints: Waypoint[];
   showWaypoints: boolean;
   onWaypointClick: (waypoint: string) => void;
+  fitToInitialBounds: () => void;
   mapRef: RefObject<Map>;
 }
+
+const WAYPOINT_LAT_OFFSET = 0.003;
 
 export const useWaypoints = ({
   isMapLoaded,
@@ -29,6 +32,7 @@ export const useWaypoints = ({
   waypoints,
   showWaypoints,
   onWaypointClick,
+  fitToInitialBounds,
   mapRef,
 }: UseWaypointsProps) => {
   const activeWaypointRef = useRef<string | null>(null);
@@ -114,6 +118,7 @@ export const useWaypoints = ({
     showWaypoints,
     addMarker,
     onWaypointClick,
+    fitToInitialBounds,
     mapRef,
   ]);
 
@@ -121,6 +126,10 @@ export const useWaypoints = ({
   useEffect(() => {
     if (activeWaypointRef.current) {
       popupsRef.current[activeWaypointRef.current]?.remove();
+    }
+
+    if (!activeWaypoint) {
+      fitToInitialBounds();
     }
 
     activeWaypointRef.current = activeWaypoint;
@@ -145,11 +154,11 @@ export const useWaypoints = ({
 
     mapRef.current?.flyTo({
       center: [
-        activeWaypointDetails.coordinates.lng,
+        activeWaypointDetails.coordinates.lng + WAYPOINT_LAT_OFFSET,
         activeWaypointDetails.coordinates.lat,
       ],
       zoom: WAYPOINT_ZOOM,
       duration: FLY_TO_WAYPOINT_DURATION,
     });
-  }, [activeWaypoint, mapRef, extendedWaypoints]);
+  }, [activeWaypoint, mapRef, extendedWaypoints, fitToInitialBounds]);
 };

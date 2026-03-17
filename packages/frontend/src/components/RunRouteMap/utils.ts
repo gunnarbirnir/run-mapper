@@ -134,7 +134,7 @@ export const getMarkerTooltip = (waypoint: Waypoint): Popup => {
     closeOnClick: false,
     offset: [0, -16],
     className: 'waypoint-popup',
-  }).setHTML(`<h4>${waypoint.name}</h4>`);
+  }).setHTML(`<h4 class="font-medium text-gray-900">${waypoint.name}</h4>`);
 };
 
 const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;
