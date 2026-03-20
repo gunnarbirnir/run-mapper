@@ -104,17 +104,6 @@ export const RouteOverlay = ({
         toggleActiveWidget={toggleActiveWidget}
       />
 
-      <AnimatePresence>
-        {activeDrawer === null && (
-          <RouteDropdown
-            routes={routes}
-            activeRouteId={routeId}
-            size={optionItemSize}
-            setActiveRoute={setActiveRoute}
-          />
-        )}
-      </AnimatePresence>
-
       <Tooltip.Provider>
         <OptionButton
           index={optionsButtonIndex++}
@@ -142,6 +131,18 @@ export const RouteOverlay = ({
           </OptionButton>
         )}
       </Tooltip.Provider>
+
+      <AnimatePresence>
+        {activeDrawer === null && (
+          <RouteDropdown
+            routes={routes}
+            activeRouteId={routeId}
+            size={optionItemSize}
+            buttonCount={optionsButtonIndex}
+            setActiveRoute={setActiveRoute}
+          />
+        )}
+      </AnimatePresence>
 
       {activeWaypoint !== null && activeDrawer === null && isSmallScreen && (
         <WaypointsButtons
