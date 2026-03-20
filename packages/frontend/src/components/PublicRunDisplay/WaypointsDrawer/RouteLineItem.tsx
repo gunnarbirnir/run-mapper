@@ -1,7 +1,9 @@
 import type { Waypoint, InnerWayPointType } from '~/types';
 import { cn, convertRemToPixels } from '~/utils';
 import { getWaypointIconSize } from '~/utils/route';
-import { Icon, type IconName } from '~/primitives/Icon';
+import { Icon } from '~/primitives/Icon';
+
+import { ICONS } from './constants';
 
 interface RouteLineItemProps {
   index: number;
@@ -16,14 +18,6 @@ const START_END_ITEM_RADIUS = convertRemToPixels('0.75rem');
 const WAYPOINT_ITEM_RADIUS = convertRemToPixels('0.8125rem');
 const START_END_BORDER_WIDTH = 4;
 const WAYPOINT_BORDER_WIDTH = 3;
-
-const ICONS: Record<InnerWayPointType, IconName> = {
-  energy: 'lightning',
-  entertainment: 'star',
-  hydration: 'drop',
-  timing: 'clock',
-  restrooms: 'toilet',
-};
 
 export const RouteLineItem = ({
   index,

@@ -61,7 +61,7 @@ export interface PublicRun {
   defaultRouteId?: string;
   publicSlug: string;
   routes: PublicRoute[];
-  pointOfInterests: PointOfInterest[];
+  pointsOfInterest: PointOfInterest[];
 }
 
 export type PublicRunRecord = Omit<PublicRun, 'id'>;

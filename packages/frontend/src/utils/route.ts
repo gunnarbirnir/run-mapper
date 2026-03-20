@@ -140,3 +140,24 @@ export const getWaypointIconSize = (
       return { height: 'h-3.5', width: 'w-3.5', size: 'size-3.5' };
   }
 };
+
+export const getWaypointLabel = (type: WayPointType): string => {
+  switch (type) {
+    case 'energy':
+      return 'Energy';
+    case 'hydration':
+      return 'Hydration';
+    case 'entertainment':
+      return 'Entertainment';
+    case 'timing':
+      return 'Timing';
+    case 'restrooms':
+      return 'Restrooms';
+    case 'start':
+      return 'Start';
+    case 'end':
+      return 'End';
+    default:
+      return ' ';
+  }
+};

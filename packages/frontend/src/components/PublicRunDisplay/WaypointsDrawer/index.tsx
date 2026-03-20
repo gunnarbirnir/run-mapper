@@ -1,10 +1,11 @@
-import { Drawer, Text, RoundButton, Icon } from '~/primitives';
-import type { Waypoint } from '~/types';
+import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
+import { Drawer, Icon, RoundButton, Text } from '~/primitives';
+import type { Amenity, Waypoint } from '~/types';
 import { formatNumber } from '~/utils';
 
+import { Amenities } from './Amenities';
 import { RouteLine } from './RouteLine';
 
 interface WaypointsDrawerProps {
@@ -38,6 +39,17 @@ export const WaypointsDrawer = ({
   );
   const previousWaypoint = waypoints[activeWaypointIndex - 1];
   const nextWaypoint = waypoints[activeWaypointIndex + 1];
+
+  const waypointAmenities: Amenity[] =
+    activeWaypointDetails?.amenities &&
+    activeWaypointDetails.amenities.length > 0
+      ? [
+          { type: activeWaypointDetails.type } as Amenity,
+          ...activeWaypointDetails.amenities,
+        ].filter((amenity, index, self) => {
+          return self.findIndex((a) => a.type === amenity.type) === index;
+        })
+      : [];
 
   if (!activeWaypointDetails) {
     return null;
@@ -77,6 +89,9 @@ export const WaypointsDrawer = ({
             <Text variant="subtle" className="text-sm">
               {activeWaypointDetails.description}
             </Text>
+            {waypointAmenities.length > 0 && (
+              <Amenities waypointAmenities={waypointAmenities} />
+            )}
           </div>
           <div className="mt-4 flex items-center gap-4">
             <RoundButton

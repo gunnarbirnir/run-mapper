@@ -19,6 +19,21 @@ export type WayPointType =
 
 export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
 
+export type Amenity = {
+  type: InnerWayPointType;
+  label?: string;
+};
+
+export type Waypoint = {
+  id: string;
+  name: string;
+  description?: string;
+  coordinates: Coordinates;
+  type: WayPointType;
+  distance: number;
+  amenities?: Amenity[];
+};
+
 export type PointOfInterestType =
   | 'expo'
   | 'food-and-drink'
@@ -32,16 +47,6 @@ export type PointOfInterestType =
   | 'award-ceremony'
   | 'warm-up-area'
   | 'spectator-area';
-
-export type Waypoint = {
-  id: string;
-  name: string;
-  description?: string;
-  coordinates: Coordinates;
-  type: WayPointType;
-  distance: number;
-  amenities?: WayPointType[];
-};
 
 export type PointOfInterest = {
   id: string;
@@ -65,7 +70,7 @@ export interface PublicRun {
   defaultRouteId?: string;
   publicSlug: string;
   routes: PublicRoute[];
-  pointOfInterests: PointOfInterest[];
+  pointsOfInterest: PointOfInterest[];
 }
 
 export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
