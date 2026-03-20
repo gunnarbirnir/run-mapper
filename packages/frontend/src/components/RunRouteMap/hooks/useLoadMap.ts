@@ -4,7 +4,7 @@ import mapboxgl, { Map } from 'mapbox-gl';
 import type { Bounds, MapStyle } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
-import { MAP_STYLES } from '../constants';
+import { MAP_STYLES, FIT_INITIAL_BOUNDS_DURATION } from '../constants';
 
 interface UseLoadMapProps {
   paddedBounds: Bounds;
@@ -12,6 +12,7 @@ interface UseLoadMapProps {
   setIsMapLoaded: (isMapLoaded: boolean) => void;
   mapRef: MutableRefObject<Map | null>;
   mapContainerRef: RefObject<HTMLDivElement>;
+  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useLoadMap = ({
@@ -20,6 +21,7 @@ export const useLoadMap = ({
   setIsMapLoaded,
   mapRef,
   mapContainerRef,
+  isResettingBoundsRef,
 }: UseLoadMapProps) => {
   const { isSmallScreen } = useMediaQuery();
 
@@ -35,6 +37,10 @@ export const useLoadMap = ({
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
+      mapRef.current?.fitBounds(paddedBounds, {
+        duration: FIT_INITIAL_BOUNDS_DURATION,
+      });
+      isResettingBoundsRef.current = true;
     });
     mapRef.current.addControl(
       new mapboxgl.AttributionControl({ compact: true }),

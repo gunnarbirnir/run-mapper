@@ -1,9 +1,4 @@
-import {
-  type RefObject,
-  useEffect,
-  useRef,
-  type MutableRefObject,
-} from 'react';
+import { type RefObject, useEffect, type MutableRefObject } from 'react';
 import type { Map } from 'mapbox-gl';
 
 import type { Bounds } from '~/types';
@@ -16,6 +11,7 @@ interface UseFitToInitialBoundsProps {
   mapRef: RefObject<Map>;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useFitToInitialBounds = ({
@@ -24,21 +20,17 @@ export const useFitToInitialBounds = ({
   mapRef,
   setIsAtInitialBounds,
   fitToInitialBoundsRef,
+  isResettingBoundsRef,
 }: UseFitToInitialBoundsProps) => {
-  const hasClickedFitInitialBoundsRef = useRef(false);
-
   useEffect(() => {
     const map = mapRef.current;
     if (!isMapLoaded || !map) {
       return;
     }
 
-    // Initially at initial bounds
-    setIsAtInitialBounds(true);
-
     const handleMoveEnd = () => {
-      if (hasClickedFitInitialBoundsRef.current) {
-        hasClickedFitInitialBoundsRef.current = false;
+      if (isResettingBoundsRef.current) {
+        isResettingBoundsRef.current = false;
         setIsAtInitialBounds(true);
       } else {
         setIsAtInitialBounds(false);
@@ -51,12 +43,12 @@ export const useFitToInitialBounds = ({
       mapRef.current?.fitBounds(paddedBounds, {
         duration: FIT_INITIAL_BOUNDS_DURATION,
       });
-      hasClickedFitInitialBoundsRef.current = true;
+      isResettingBoundsRef.current = true;
     };
 
     return () => {
       map.off('moveend', handleMoveEnd);
-      hasClickedFitInitialBoundsRef.current = false;
+      isResettingBoundsRef.current = false;
     };
   }, [
     isMapLoaded,
@@ -64,5 +56,6 @@ export const useFitToInitialBounds = ({
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,
+    isResettingBoundsRef,
   ]);
 };
