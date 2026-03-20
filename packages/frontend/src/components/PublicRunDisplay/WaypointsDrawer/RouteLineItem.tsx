@@ -1,6 +1,7 @@
-import type { Waypoint } from '~/types';
+import type { Waypoint, InnerWayPointType } from '~/types';
 import { cn, convertRemToPixels } from '~/utils';
-import { Icon } from '~/primitives/Icon';
+import { getWaypointIconSize } from '~/utils/route';
+import { Icon, type IconName } from '~/primitives/Icon';
 
 interface RouteLineItemProps {
   index: number;
@@ -9,9 +10,20 @@ interface RouteLineItemProps {
   drawerWidth: number;
 }
 
-const ITEM_RADIUS = convertRemToPixels('0.75rem');
+// size 6
+const START_END_ITEM_RADIUS = convertRemToPixels('0.75rem');
+// size 6.5
+const WAYPOINT_ITEM_RADIUS = convertRemToPixels('0.8125rem');
 const START_END_BORDER_WIDTH = 4;
 const WAYPOINT_BORDER_WIDTH = 3;
+
+const ICONS: Record<InnerWayPointType, IconName> = {
+  energy: 'lightning',
+  entertainment: 'star',
+  hydration: 'drop',
+  timing: 'clock',
+  restrooms: 'toilet',
+};
 
 export const RouteLineItem = ({
   index,
@@ -27,6 +39,9 @@ export const RouteLineItem = ({
     : isEnd
       ? 'bg-error-500'
       : 'bg-secondary-500';
+  const itemRadius = isStartOrEnd
+    ? START_END_ITEM_RADIUS
+    : WAYPOINT_ITEM_RADIUS;
   const borderWidth = isStartOrEnd
     ? START_END_BORDER_WIDTH
     : WAYPOINT_BORDER_WIDTH;
@@ -36,8 +51,8 @@ export const RouteLineItem = ({
       key={currentWaypoint.id}
       className="absolute"
       style={{
-        left: index * drawerWidth - ITEM_RADIUS,
-        top: -ITEM_RADIUS + borderWidth / 2,
+        left: index * drawerWidth - itemRadius,
+        top: -itemRadius + borderWidth / 2,
       }}
     >
       <div
@@ -46,15 +61,18 @@ export const RouteLineItem = ({
           'flex items-center justify-center rounded-full border-white shadow-md/30',
         )}
         style={{
-          width: ITEM_RADIUS * 2,
-          height: ITEM_RADIUS * 2,
-          borderWidth: borderWidth,
+          width: itemRadius * 2,
+          height: itemRadius * 2,
+          borderWidth,
         }}
       >
         {!isStartOrEnd && (
           <Icon
-            className="size-4 text-white"
-            name={currentWaypoint.type === 'energy' ? 'lightning' : 'star'}
+            className={cn(
+              'text-white',
+              getWaypointIconSize(currentWaypoint.type).size,
+            )}
+            name={ICONS[currentWaypoint.type as InnerWayPointType]}
           />
         )}
       </div>

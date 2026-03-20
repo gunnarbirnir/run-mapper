@@ -1,4 +1,4 @@
-import type { Coordinates, Elevation, Waypoint } from '~/types';
+import type { Coordinates, Elevation, Waypoint, WayPointType } from '~/types';
 
 export const haversineDistance = (
   coord1: Coordinates,
@@ -127,4 +127,16 @@ export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
     type: 'end',
     distance: calculateDistance(coordinates),
   };
+};
+
+export const getWaypointIconSize = (
+  type: WayPointType,
+): { height: string; width: string; size: string } => {
+  switch (type) {
+    case 'energy':
+    case 'entertainment':
+      return { height: 'h-4', width: 'w-4', size: 'size-4' };
+    default:
+      return { height: 'h-3.5', width: 'w-3.5', size: 'size-3.5' };
+  }
 };

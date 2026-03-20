@@ -19,6 +19,9 @@ import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
 import { Magnifier } from './Magnifier';
+import { Drop } from './Drop';
+import { Clock } from './Clock';
+import { Toilet } from './Toilet';
 
 import { cn } from '~/utils';
 
@@ -41,7 +44,10 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler'
-  | 'magnifier';
+  | 'magnifier'
+  | 'drop'
+  | 'clock'
+  | 'toilet';
 
 interface IconProps {
   name: IconName;
@@ -89,6 +95,12 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Ruler />;
     case 'magnifier':
       return <Magnifier />;
+    case 'drop':
+      return <Drop />;
+    case 'clock':
+      return <Clock />;
+    case 'toilet':
+      return <Toilet />;
     default:
       return null;
   }

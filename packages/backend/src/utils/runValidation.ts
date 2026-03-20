@@ -66,9 +66,15 @@ export const isValidWaypoint = (value: unknown): value is Waypoint => {
     typeof waypoint.id === 'string' &&
     typeof waypoint.name === 'string' &&
     isValidCoordinates(waypoint.coordinates) &&
-    ['energy', 'entertainment', 'start', 'end'].includes(
-      waypoint.type as string,
-    )
+    [
+      'energy',
+      'entertainment',
+      'hydration',
+      'timing',
+      'restrooms',
+      'start',
+      'end',
+    ].includes(waypoint.type as string)
   );
 };
 

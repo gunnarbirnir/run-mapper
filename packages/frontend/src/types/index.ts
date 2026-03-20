@@ -17,6 +17,8 @@ export type WayPointType =
   | 'start'
   | 'end';
 
+export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
+
 export type PointOfInterestType =
   | 'expo'
   | 'food-and-drink'
