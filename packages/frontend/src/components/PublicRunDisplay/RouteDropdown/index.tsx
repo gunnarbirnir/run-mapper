@@ -6,12 +6,11 @@ import { DRAWER_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
 import type { PublicRoute } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
-const NUMBER_OF_OPTIONS = 2;
-
 interface RouteDropdownProps {
   routes: PublicRoute[];
   activeRouteId: string;
   size: number;
+  buttonCount: number;
   setActiveRoute: (routeId: string) => void;
 }
 
@@ -19,6 +18,7 @@ export const RouteDropdown = ({
   routes,
   activeRouteId,
   size,
+  buttonCount,
   setActiveRoute,
 }: RouteDropdownProps) => {
   const { isSmallScreen, isMediumScreen } = useMediaQuery();
@@ -27,7 +27,7 @@ export const RouteDropdown = ({
   const top = baseSpacing;
   const right = isSmallScreen
     ? baseSpacing
-    : betweenSpacing + NUMBER_OF_OPTIONS * (size + baseSpacing);
+    : betweenSpacing + buttonCount * (size + baseSpacing);
 
   return (
     <motion.div
@@ -38,7 +38,8 @@ export const RouteDropdown = ({
         duration: DRAWER_ANIMATION_DURATION,
         ease: DEFAULT_EASING,
       }}
-      className="pointer-events-auto absolute"
+      // z-16 to be below option buttons
+      className="pointer-events-auto absolute z-16"
       style={{ top, right }}
     >
       <Tooltip label="Routes">

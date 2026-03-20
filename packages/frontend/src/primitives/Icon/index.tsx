@@ -22,6 +22,7 @@ import { Magnifier } from './Magnifier';
 import { Drop } from './Drop';
 import { Clock } from './Clock';
 import { Toilet } from './Toilet';
+import { Error } from './Error';
 
 import { cn } from '~/utils';
 
@@ -47,7 +48,8 @@ export type IconName =
   | 'magnifier'
   | 'drop'
   | 'clock'
-  | 'toilet';
+  | 'toilet'
+  | 'error';
 
 interface IconProps {
   name: IconName;
@@ -101,6 +103,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Clock />;
     case 'toilet':
       return <Toilet />;
+    case 'error':
+      return <Error />;
     default:
       return null;
   }

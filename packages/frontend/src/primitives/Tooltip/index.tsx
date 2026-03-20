@@ -31,6 +31,7 @@ const Tooltip = ({
   return (
     <BaseUiTooltip.Root>
       <BaseUiTooltip.Trigger
+        render={<div />}
         disabled={disabled}
         className={triggerClassName}
         style={triggerStyle}

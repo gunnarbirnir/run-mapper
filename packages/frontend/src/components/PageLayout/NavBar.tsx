@@ -54,11 +54,19 @@ export const NavBar = () => {
               <Button onClick={handleLogout}>Log out</Button>
             </>
           ) : isOnLoginPage ? (
-            <Button linkTo="/auth/signup" isLoading={!isLoaded}>
+            <Button
+              linkTo="/auth/signup"
+              isLoading={!isLoaded}
+              className="min-w-24"
+            >
               Sign up
             </Button>
           ) : (
-            <Button linkTo="/auth/login" isLoading={!isLoaded}>
+            <Button
+              linkTo="/auth/login"
+              isLoading={!isLoaded}
+              className="min-w-24"
+            >
               Sign in
             </Button>
           )}

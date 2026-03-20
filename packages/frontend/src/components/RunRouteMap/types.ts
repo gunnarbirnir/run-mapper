@@ -24,6 +24,7 @@ export interface MapState {
     ((updatedIndex: number | null) => void) | null
   >;
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
+  isResettingBoundsRef: MutableRefObject<boolean>;
   animateRoute: () => void;
   toggleShowWaypoints: () => void;
   setActiveMarkerIndex: (updatedIndex: number | null) => void;

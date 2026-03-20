@@ -75,7 +75,7 @@ export function SignUpCard() {
         <Button
           type="submit"
           isLoading={loading}
-          className="mx-auto mt-8 block min-w-40"
+          className="mx-auto mt-8 min-w-40"
         >
           Sign Up
         </Button>

@@ -33,6 +33,7 @@ export const RunRouteMap = ({
   setActiveIndexRef,
   animateRouteRef,
   fitToInitialBoundsRef,
+  isResettingBoundsRef,
   animateRoute,
   setIsAtInitialBounds,
   onWaypointClick,
@@ -55,6 +56,7 @@ export const RunRouteMap = ({
     setIsMapLoaded,
     mapRef,
     mapContainerRef,
+    isResettingBoundsRef,
   });
 
   useMapStyle({
@@ -98,6 +100,7 @@ export const RunRouteMap = ({
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,
+    isResettingBoundsRef,
   });
 
   return (

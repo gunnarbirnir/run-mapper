@@ -15,6 +15,7 @@ export const useMapState = (): MapState => {
     ((updatedIndex: number | null) => void) | null
   >(null);
   const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
+  const isResettingBoundsRef = useRef(false);
 
   const toggleShowWaypoints = useCallback(() => {
     setShowWaypoints((currentShowWaypoints) => !currentShowWaypoints);
@@ -47,6 +48,7 @@ export const useMapState = (): MapState => {
     animateRouteRef,
     setActiveIndexRef,
     fitToInitialBoundsRef,
+    isResettingBoundsRef,
     animateRoute,
     toggleShowWaypoints,
     setActiveMarkerIndex,
