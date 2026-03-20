@@ -14,6 +14,7 @@ export const sanitizePublicRun = (runData: EditorRun): PublicRun => {
       runData.defaultRouteId ??
       (runData.routes.length > 0 ? runData.routes[0].id : undefined),
     publicSlug: runData.publicSlug ?? '',
+    pointOfInterests: runData.pointOfInterests ?? [],
     routes: runData.routes.map((route) => ({
       id: route.id,
       name: route.name,
