@@ -20,7 +20,7 @@ export const VisibleToggle = ({
     >
       <Icon
         name={isVisible ? 'visible' : 'hidden'}
-        className="size-5 text-gray-800"
+        className="size-5 text-gray-700"
       />
       <Text className="select-none">{children}</Text>
     </div>

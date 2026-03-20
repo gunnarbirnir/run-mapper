@@ -29,7 +29,7 @@ const ListItem = ({
           <div className="flex size-6 shrink-0 items-center justify-center">
             <Icon
               name={icon}
-              className={cn('size-5 text-gray-500', iconClassName)}
+              className={cn('size-5 text-gray-400', iconClassName)}
             />
           </div>
         )}

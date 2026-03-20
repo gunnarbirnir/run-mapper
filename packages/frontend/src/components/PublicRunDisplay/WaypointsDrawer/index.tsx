@@ -55,7 +55,7 @@ export const WaypointsDrawer = ({
           <Text element="h2">{activeWaypointDetails.name}</Text>
           {isSmallScreen && (
             <RoundButton onClick={toggleDrawer}>
-              <Icon name="close" className="size-6" />
+              <Icon name="close" className="size-5.5" />
             </RoundButton>
           )}
         </div>

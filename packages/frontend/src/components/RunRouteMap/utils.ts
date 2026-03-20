@@ -115,7 +115,9 @@ export const getWaypointMarkerElement = (
   const marker = document.createElement('div');
   marker.className = `w-6 h-6 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
   marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
+  marker.style.color = 'white';
   marker.innerHTML = getIcon(type);
+  marker.querySelector('svg')?.classList.add('w-4', 'h-4');
 
   marker.addEventListener('click', onClick);
   marker.addEventListener('mouseenter', () => {
@@ -139,7 +141,7 @@ export const getMarkerTooltip = (
     className: 'waypoint-popup',
   }).setHTML(
     isSmallScreen
-      ? `<div class="flex flex-col gap-1 max-w-60"><h4 class="font-medium text-gray-900"><span class="bg-secondary-500 text-white px-1 inline-block rounded-sm mr-1">${formatNumber(waypoint.distance)} km</span>${waypoint.name}</h4><p class="text-sm text-gray-500">${waypoint.description}</p></div>`
+      ? `<div class="flex flex-col gap-1 max-w-60"><h4 class="font-medium text-gray-900"><span class="bg-secondary-200 text-gray-700 px-1 inline-block rounded-sm mr-1">${formatNumber(waypoint.distance)} km</span>${waypoint.name}</h4><p class="text-sm text-gray-500">${waypoint.description}</p></div>`
       : `<h4 class="font-medium text-gray-900 max-w-40">${waypoint.name}</h4>`,
   );
 };

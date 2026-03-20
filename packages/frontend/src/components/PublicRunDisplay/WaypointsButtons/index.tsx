@@ -59,7 +59,7 @@ export const WaypointsButtons = ({
           <Icon name="magnifier" className="size-5" />
         </RoundButton>
         <RoundButton color="gray" onClick={resetState}>
-          <Icon name="close" className="size-6" />
+          <Icon name="close" className="size-5" />
         </RoundButton>
       </div>
     </div>
