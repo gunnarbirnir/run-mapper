@@ -19,7 +19,7 @@ import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
-import { LocationOutline } from './LocationOutline';
+import { Magnifier } from './Magnifier';
 
 import { cn } from '~/utils';
 
@@ -43,7 +43,7 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler'
-  | 'locationOutline';
+  | 'magnifier';
 
 interface IconProps {
   name: IconName;
@@ -91,8 +91,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Spretta />;
     case 'ruler':
       return <Ruler />;
-    case 'locationOutline':
-      return <LocationOutline />;
+    case 'magnifier':
+      return <Magnifier />;
     default:
       return null;
   }
