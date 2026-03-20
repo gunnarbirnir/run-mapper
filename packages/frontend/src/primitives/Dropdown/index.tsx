@@ -106,9 +106,9 @@ function ChevronUpDownIcon() {
     >
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M17.884 16.116a1.25 1.25 0 0 1 0 1.768l-3.94 3.939a2.75 2.75 0 0 1-3.889 0l-3.939-3.94a1.25 1.25 0 0 1 1.768-1.767l3.94 3.94a.25.25 0 0 0 .353 0l3.94-3.94a1.25 1.25 0 0 1 1.767 0ZM6.116 7.884a1.25 1.25 0 0 1 0-1.768l3.94-3.94a2.75 2.75 0 0 1 3.889 0l3.939 3.94a1.25 1.25 0 0 1-1.768 1.768l-3.94-3.94a.25.25 0 0 0-.353 0l-3.94 3.94a1.25 1.25 0 0 1-1.767 0Z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       />
     </svg>
   );
@@ -124,9 +124,9 @@ function CheckIcon() {
     >
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M21.428 5.322a1.313 1.313 0 0 1 0 1.856l-10.44 10.44a2.812 2.812 0 0 1-3.977 0l-4.44-4.44a1.313 1.313 0 0 1 1.857-1.856l4.44 4.44a.188.188 0 0 0 .265 0l10.439-10.44a1.313 1.313 0 0 1 1.856 0Z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       />
     </svg>
   );

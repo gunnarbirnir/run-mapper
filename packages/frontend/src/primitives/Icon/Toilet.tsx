@@ -3,9 +3,9 @@ export const Toilet = () => {
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <path
         fill="currentColor"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M7.75.75A2.75 2.75 0 0 0 5 3.5v4.25h14V3.5A2.75 2.75 0 0 0 16.25.75h-8.5Zm1.5 2.375a1.125 1.125 0 0 0 0 2.25H11a1.125 1.125 0 0 0 0-2.25H9.25Z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       />
       <path
         fill="currentColor"
