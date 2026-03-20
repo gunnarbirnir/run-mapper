@@ -125,9 +125,9 @@ export const RouteOverlay = ({
           buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
         >
           {activeDrawer === null ? (
-            <Icon name="settings" className="size-7" />
+            <Icon name="settings" className="size-7.5" />
           ) : (
-            <Icon name="close" className="size-6" />
+            <Icon name="close" className="size-5.5" />
           )}
         </OptionButton>
         {showWaypoints && (
@@ -138,7 +138,7 @@ export const RouteOverlay = ({
             openDrawerSize={openDrawerSize}
             onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
           >
-            <Icon name="location" className="size-7" />
+            <Icon name="location" className="size-6.5" />
           </OptionButton>
         )}
       </Tooltip.Provider>
@@ -169,7 +169,7 @@ export const RouteOverlay = ({
         width={waypointsDrawerWidth}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
-        toggleDrawer={() => toggleDrawer('waypoints')}
+        toggleDrawer={() => toggleDrawer('waypoints', !isSmallScreen)}
         setActiveWaypoint={setActiveWaypoint}
       />
 

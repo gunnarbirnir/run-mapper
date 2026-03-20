@@ -8,7 +8,21 @@ export type RouteCoordinates = Coordinates & {
   elevation: number;
 };
 
-export type WayPointType = 'energy' | 'entertainment' | 'start' | 'end';
+export type WayPointType =
+  | 'energy'
+  | 'hydration'
+  | 'entertainment'
+  | 'timing'
+  | 'restrooms'
+  | 'start'
+  | 'end';
+
+export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
+
+export type Amenity = {
+  type: InnerWayPointType;
+  label?: string;
+};
 
 export type Waypoint = {
   id: string;
@@ -17,6 +31,29 @@ export type Waypoint = {
   coordinates: Coordinates;
   type: WayPointType;
   distance: number;
+  amenities?: Amenity[];
+};
+
+export type PointOfInterestType =
+  | 'expo'
+  | 'food-and-drink'
+  | 'entertainment'
+  | 'aid-station'
+  | 'parking'
+  | 'restrooms'
+  | 'information'
+  | 'bag-drop-off'
+  | 'shower-and-changing-rooms'
+  | 'award-ceremony'
+  | 'warm-up-area'
+  | 'spectator-area';
+
+export type PointOfInterest = {
+  id: string;
+  name: string;
+  description?: string;
+  coordinates: Coordinates;
+  type: PointOfInterestType;
 };
 
 export interface PublicRoute {
@@ -33,6 +70,7 @@ export interface PublicRun {
   defaultRouteId?: string;
   publicSlug: string;
   routes: PublicRoute[];
+  pointsOfInterest: PointOfInterest[];
 }
 
 export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {

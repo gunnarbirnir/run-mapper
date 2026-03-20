@@ -4,10 +4,12 @@ import type {
   BoundingBox,
   Coordinates,
   WayPointType,
+  InnerWayPointType,
   Bounds,
   Waypoint,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
+import { getWaypointIconSize } from '~/utils/route';
 
 import {
   BOUNDS_PADDING,
@@ -15,7 +17,7 @@ import {
   LINE_OPACITY,
   LINE_WIDTH,
 } from './constants';
-import { ENERGY_ICON, ENTERTAINMENT_ICON } from './icons';
+import { ICONS } from './icons';
 import type { LineFeature } from './types';
 
 export const getPaddedBounds = (boundingBox: BoundingBox): Bounds => {
@@ -97,25 +99,17 @@ export const getActiveMarkerElement = (): HTMLElement => {
   return marker;
 };
 
-const getIcon = (type: WayPointType): string => {
-  switch (type) {
-    case 'energy':
-      return ENERGY_ICON;
-    case 'entertainment':
-      return ENTERTAINMENT_ICON;
-    default:
-      return '';
-  }
-};
-
 export const getWaypointMarkerElement = (
   type: WayPointType,
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6 h-6 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
   marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
-  marker.innerHTML = getIcon(type);
+  marker.style.color = 'white';
+  marker.innerHTML = ICONS[type as InnerWayPointType];
+  const iconSize = getWaypointIconSize(type);
+  marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
 
   marker.addEventListener('click', onClick);
   marker.addEventListener('mouseenter', () => {
@@ -139,7 +133,7 @@ export const getMarkerTooltip = (
     className: 'waypoint-popup',
   }).setHTML(
     isSmallScreen
-      ? `<div class="flex flex-col gap-1 max-w-60"><h4 class="font-medium text-gray-900"><span class="bg-secondary-500 text-white px-1 inline-block rounded-sm mr-1">${formatNumber(waypoint.distance)} km</span>${waypoint.name}</h4><p class="text-sm text-gray-500">${waypoint.description}</p></div>`
+      ? `<div class="flex flex-col gap-1 max-w-60"><h4 class="font-medium text-gray-900"><span class="bg-secondary-200 text-gray-700 px-1 inline-block rounded-sm mr-1">${formatNumber(waypoint.distance)} km</span>${waypoint.name}</h4><p class="text-sm text-gray-500">${waypoint.description}</p></div>`
       : `<h4 class="font-medium text-gray-900 max-w-40">${waypoint.name}</h4>`,
   );
 };

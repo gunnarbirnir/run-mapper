@@ -99,22 +99,35 @@ export const Dropdown = ({
 function ChevronUpDownIcon() {
   return (
     <svg
-      className="size-3.5"
-      viewBox="0 0 8 12"
+      xmlns="http://www.w3.org/2000/svg"
       fill="none"
-      stroke="currentcolor"
-      strokeWidth="1.5"
+      viewBox="0 0 24 24"
+      className="size-4"
     >
-      <path d="M0.5 4.5L4 1.5L7.5 4.5" />
-      <path d="M0.5 7.5L4 10.5L7.5 7.5" />
+      <path
+        fill="currentColor"
+        fill-rule="evenodd"
+        d="M17.884 16.116a1.25 1.25 0 0 1 0 1.768l-3.94 3.939a2.75 2.75 0 0 1-3.889 0l-3.939-3.94a1.25 1.25 0 0 1 1.768-1.767l3.94 3.94a.25.25 0 0 0 .353 0l3.94-3.94a1.25 1.25 0 0 1 1.767 0ZM6.116 7.884a1.25 1.25 0 0 1 0-1.768l3.94-3.94a2.75 2.75 0 0 1 3.889 0l3.939 3.94a1.25 1.25 0 0 1-1.768 1.768l-3.94-3.94a.25.25 0 0 0-.353 0l-3.94 3.94a1.25 1.25 0 0 1-1.767 0Z"
+        clip-rule="evenodd"
+      />
     </svg>
   );
 }
 
 function CheckIcon() {
   return (
-    <svg className="size-3" fill="currentcolor" viewBox="0 0 10 10">
-      <path d="M9.1603 1.12218C9.50684 1.34873 9.60427 1.81354 9.37792 2.16038L5.13603 8.66012C5.01614 8.8438 4.82192 8.96576 4.60451 8.99384C4.3871 9.02194 4.1683 8.95335 4.00574 8.80615L1.24664 6.30769C0.939709 6.02975 0.916013 5.55541 1.19372 5.24822C1.47142 4.94102 1.94536 4.91731 2.2523 5.19524L4.36085 7.10461L8.12299 1.33999C8.34934 0.993152 8.81376 0.895638 9.1603 1.12218Z" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      className="size-3.5"
+    >
+      <path
+        fill="currentColor"
+        fill-rule="evenodd"
+        d="M21.428 5.322a1.313 1.313 0 0 1 0 1.856l-10.44 10.44a2.812 2.812 0 0 1-3.977 0l-4.44-4.44a1.313 1.313 0 0 1 1.857-1.856l4.44 4.44a.188.188 0 0 0 .265 0l10.439-10.44a1.313 1.313 0 0 1 1.856 0Z"
+        clip-rule="evenodd"
+      />
     </svg>
   );
 }

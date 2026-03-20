@@ -23,6 +23,7 @@ export const DistanceWidget = ({
       title="Distance"
       text={formattedDistance}
       icon="ruler"
+      iconClassName="size-6.5"
     />
   );
 };

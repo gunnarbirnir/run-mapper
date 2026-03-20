@@ -1,19 +1,19 @@
 export const DoubleArrow = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <path
-        fillRule="evenodd"
-        d="M11.47 10.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 12.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z"
-        clipRule="evenodd"
+        fill="currentColor"
+        fill-rule="evenodd"
+        d="M21.207 16.207a1 1 0 0 0 0-1.414l-7.44-7.44a2.5 2.5 0 0 0-3.535 0l-7.44 7.44a1 1 0 1 0 1.415 1.414l7.44-7.44a.5.5 0 0 1 .707 0l7.439 7.44a1 1 0 0 0 1.414 0Z"
+        clip-rule="evenodd"
+        transform="translate(0, -3.5)"
       />
       <path
-        fillRule="evenodd"
-        d="M11.47 4.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 6.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z"
-        clipRule="evenodd"
+        fill="currentColor"
+        fill-rule="evenodd"
+        d="M21.207 16.207a1 1 0 0 0 0-1.414l-7.44-7.44a2.5 2.5 0 0 0-3.535 0l-7.44 7.44a1 1 0 1 0 1.415 1.414l7.44-7.44a.5.5 0 0 1 .707 0l7.439 7.44a1 1 0 0 0 1.414 0Z"
+        clip-rule="evenodd"
+        transform="translate(0, 3.5)"
       />
     </svg>
   );

@@ -1,14 +1,13 @@
 export const ExternalLink = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <path
-        fillRule="evenodd"
-        d="M15.75 2.25H21a.75.75 0 0 1 .75.75v5.25a.75.75 0 0 1-1.5 0V4.81L8.03 17.03a.75.75 0 0 1-1.06-1.06L19.19 3.75h-3.44a.75.75 0 0 1 0-1.5Zm-10.5 4.5a1.5 1.5 0 0 0-1.5 1.5v10.5a1.5 1.5 0 0 0 1.5 1.5h10.5a1.5 1.5 0 0 0 1.5-1.5V10.5a.75.75 0 0 1 1.5 0v8.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V8.25a3 3 0 0 1 3-3h8.25a.75.75 0 0 1 0 1.5H5.25Z"
-        clipRule="evenodd"
+        fill="currentColor"
+        d="M14.75 2.5a1 1 0 1 0 0 2h3.336l-9.043 9.043a1 1 0 1 0 1.414 1.414L19.5 5.914V9.25a1 1 0 1 0 2 0V5A2.5 2.5 0 0 0 19 2.5h-4.25Z"
+      />
+      <path
+        fill="currentColor"
+        d="M5 6.5a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5v-4a1 1 0 1 1 2 0v4a2.5 2.5 0 0 1-2.5 2.5H5A2.5 2.5 0 0 1 2.5 19V7A2.5 2.5 0 0 1 5 4.5h4a1 1 0 0 1 0 2H5Z"
       />
     </svg>
   );

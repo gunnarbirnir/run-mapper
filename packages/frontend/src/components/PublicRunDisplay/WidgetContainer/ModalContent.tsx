@@ -53,7 +53,7 @@ export const ModalContent = ({
           </Text>
         </div>
         <RoundButton onClick={onClose}>
-          <Icon name="close" />
+          <Icon name="close" className="size-5.5" />
         </RoundButton>
       </div>
       {/* Dummy item for spacing */}

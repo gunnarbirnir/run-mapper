@@ -58,13 +58,13 @@ export const ElevationWidget = ({
             label="Elevation gain"
             value={formattedElevation}
             icon="arrowTrendingUp"
-            iconClassName="size-6"
+            iconClassName="size-5.5"
           />
           <ListItem
             label="Elevation loss"
             value={formattedElevationLoss}
             icon="arrowTrendingDown"
-            iconClassName="size-6"
+            iconClassName="size-5.5"
           />
           <ListItem
             label="Net elevation"

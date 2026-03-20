@@ -71,7 +71,7 @@ export const Drawer = ({
           </Text>
           {onClose && (
             <RoundButton onClick={onClose}>
-              <Icon name="close" className="size-6" />
+              <Icon name="close" className="size-5.5" />
             </RoundButton>
           )}
         </div>

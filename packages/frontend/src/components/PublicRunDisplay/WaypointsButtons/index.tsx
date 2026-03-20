@@ -56,10 +56,10 @@ export const WaypointsButtons = ({
       </div>
       <div className="flex items-center gap-2">
         <RoundButton color="gray" onClick={toggleDrawer}>
-          <Icon name="locationOutline" className="size-6" />
+          <Icon name="magnifier" className="size-5" />
         </RoundButton>
         <RoundButton color="gray" onClick={resetState}>
-          <Icon name="close" className="size-6" />
+          <Icon name="close" className="size-5" />
         </RoundButton>
       </div>
     </div>

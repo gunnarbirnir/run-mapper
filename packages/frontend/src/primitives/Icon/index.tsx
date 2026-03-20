@@ -9,7 +9,6 @@ import { Lightning } from './Lightning';
 import { Star } from './Star';
 import { Arrow } from './Arrow';
 import { Reset } from './Reset';
-import { Trophy } from './Trophy';
 import { ArrowTrendingUp } from './ArrowTrendingUp';
 import { ArrowTrendingDown } from './ArrowTrendingDown';
 import { Mountain } from './Mountain';
@@ -19,7 +18,10 @@ import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
-import { LocationOutline } from './LocationOutline';
+import { Magnifier } from './Magnifier';
+import { Drop } from './Drop';
+import { Clock } from './Clock';
+import { Toilet } from './Toilet';
 
 import { cn } from '~/utils';
 
@@ -33,7 +35,6 @@ export type IconName =
   | 'star'
   | 'arrow'
   | 'reset'
-  | 'trophy'
   | 'arrowTrendingUp'
   | 'arrowTrendingDown'
   | 'mountain'
@@ -43,7 +44,10 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler'
-  | 'locationOutline';
+  | 'magnifier'
+  | 'drop'
+  | 'clock'
+  | 'toilet';
 
 interface IconProps {
   name: IconName;
@@ -71,8 +75,6 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Arrow />;
     case 'reset':
       return <Reset />;
-    case 'trophy':
-      return <Trophy />;
     case 'arrowTrendingUp':
       return <ArrowTrendingUp />;
     case 'arrowTrendingDown':
@@ -91,8 +93,14 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Spretta />;
     case 'ruler':
       return <Ruler />;
-    case 'locationOutline':
-      return <LocationOutline />;
+    case 'magnifier':
+      return <Magnifier />;
+    case 'drop':
+      return <Drop />;
+    case 'clock':
+      return <Clock />;
+    case 'toilet':
+      return <Toilet />;
     default:
       return null;
   }

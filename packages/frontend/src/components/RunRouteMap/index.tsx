@@ -125,7 +125,7 @@ export const RunRouteMap = ({
             resetOverlayState();
           }}
         >
-          <Icon name="reset" className="size-5" />
+          <Icon name="reset" className="size-4.5" />
         </MapActionButton>
         {!isFullscreen && (
           <MapActionButton
