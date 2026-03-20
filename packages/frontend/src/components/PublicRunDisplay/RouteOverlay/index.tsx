@@ -169,7 +169,7 @@ export const RouteOverlay = ({
         width={waypointsDrawerWidth}
         waypoints={extendedWaypoints}
         activeWaypoint={activeWaypoint}
-        toggleDrawer={() => toggleDrawer('waypoints')}
+        toggleDrawer={() => toggleDrawer('waypoints', !isSmallScreen)}
         setActiveWaypoint={setActiveWaypoint}
       />
 

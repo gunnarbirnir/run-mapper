@@ -35,7 +35,7 @@ type RouteOverlayAction =
     }
   | {
       type: 'TOGGLE_DRAWER';
-      payload: DrawerType;
+      payload: { drawer: DrawerType; resetWaypoint: boolean };
     }
   | {
       type: 'TOGGLE_VISIBLE_WIDGET';
@@ -91,11 +91,13 @@ const routeOverlayReducer = (
           ? {
               // Close drawer
               activeDrawer: null,
-              activeWaypoint: null,
+              activeWaypoint: action.payload.resetWaypoint
+                ? null
+                : state.activeWaypoint,
             }
           : {
               // Open drawer
-              activeDrawer: action.payload,
+              activeDrawer: action.payload.drawer,
               activeWidget: null,
               openWidget: null,
               expandedWidget: null,
@@ -146,8 +148,8 @@ export const useRouteOverlayState = () => {
   }, [dispatch]);
 
   const toggleDrawer = useCallback(
-    (drawer: DrawerType) => {
-      dispatch({ type: 'TOGGLE_DRAWER', payload: drawer });
+    (drawer: DrawerType, resetWaypoint = true) => {
+      dispatch({ type: 'TOGGLE_DRAWER', payload: { drawer, resetWaypoint } });
     },
     [dispatch],
   );
