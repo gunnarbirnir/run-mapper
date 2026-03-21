@@ -12,8 +12,8 @@ import type { User } from 'firebase/auth';
 import * as React from 'react';
 
 import appCss from '~/styles/app.css?url';
-
 import { useAuthProvider } from '~/hooks/useAuthProvider';
+import { NotFound } from './404';
 
 interface RootContext {
   auth: { user: User | null; isLoaded: boolean };
@@ -43,6 +43,7 @@ export const Route = createRootRouteWithContext<RootContext>()({
     ],
   }),
   component: RootComponent,
+  notFoundComponent: NotFound,
 });
 
 const queryClient = new QueryClient();

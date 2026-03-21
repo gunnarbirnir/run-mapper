@@ -72,14 +72,19 @@ const Fallback = ({ children }: { children: React.ReactNode }) => {
 const ErrorMessage = ({ message }: { message: string }) => {
   return (
     <Fallback>
-      <div className="pb-4">
-        <div className="mb-3 flex items-center gap-2">
-          <Icon name="error" className="text-error-500 size-5" />
-          <Text variant="label" className="text-error-500 text-sm">
+      <div className="flex max-w-md flex-col items-center text-center">
+        <div className="flex items-center gap-3">
+          <Icon name="error" className="text-primary-500 size-8" />
+          <Text
+            element="h1"
+            className="text-primary-500 mb-0 text-4xl font-extrabold"
+          >
             Error
           </Text>
         </div>
-        <Text variant="medium">{message}</Text>
+        <Text element="h2" className="my-4">
+          {message}
+        </Text>
       </div>
     </Fallback>
   );
