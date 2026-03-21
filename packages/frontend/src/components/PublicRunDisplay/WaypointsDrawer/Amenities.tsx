@@ -16,7 +16,10 @@ export const Amenities = ({ waypointAmenities }: AmenitiesProps) => {
       <Tooltip.Provider>
         <div className="flex flex-wrap gap-2">
           {waypointAmenities.map((amenity) => (
-            <Tooltip label={amenity.label ?? getWaypointLabel(amenity.type)}>
+            <Tooltip
+              key={amenity.type}
+              label={amenity.label ?? getWaypointLabel(amenity.type)}
+            >
               <div
                 key={amenity.type}
                 className="bg-secondary-500 flex h-6 w-6 items-center justify-center rounded-md shadow-sm"
