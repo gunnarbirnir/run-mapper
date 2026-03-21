@@ -39,7 +39,7 @@ export const LoginCard = () => {
   };
 
   return (
-    <div className="mx-auto mb-12 max-w-md rounded-lg bg-gray-50 p-6 opacity-95 shadow-md">
+    <div className="mx-auto mb-12 max-w-md rounded-lg bg-gray-50/95 p-6 shadow-md">
       <Text element="h1" className="text-center">
         Sign in
       </Text>

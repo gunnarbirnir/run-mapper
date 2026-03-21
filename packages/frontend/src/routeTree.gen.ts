@@ -13,6 +13,7 @@ import { Route as EditorRouteRouteImport } from './routes/editor/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as R404IndexRouteImport } from './routes/404/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -38,6 +39,11 @@ const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404IndexRoute = R404IndexRouteImport.update({
+  id: '/404/',
+  path: '/404/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RunSlugRoute = RunSlugRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/404': typeof R404IndexRoute
   '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/404': typeof R404IndexRoute
   '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
+  '/404/': typeof R404IndexRoute
   '/home/': typeof HomeIndexRoute
   '/playground/': typeof PlaygroundIndexRoute
   '/editor/runs/$runId': typeof EditorRunsRunIdRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/404'
     | '/home'
     | '/playground'
     | '/editor/runs/$runId'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/404'
     | '/home'
     | '/playground'
     | '/editor/runs/$runId'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
+    | '/404/'
     | '/home/'
     | '/playground/'
     | '/editor/runs/$runId'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   RunSlugRoute: typeof RunSlugRoute
+  R404IndexRoute: typeof R404IndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
   PlaygroundIndexRoute: typeof PlaygroundIndexRoute
 }
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404/': {
+      id: '/404/'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/run/$slug': {
@@ -254,6 +274,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   RunSlugRoute: RunSlugRoute,
+  R404IndexRoute: R404IndexRoute,
   HomeIndexRoute: HomeIndexRoute,
   PlaygroundIndexRoute: PlaygroundIndexRoute,
 }
