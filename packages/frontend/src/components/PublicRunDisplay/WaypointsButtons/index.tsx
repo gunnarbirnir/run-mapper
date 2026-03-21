@@ -1,10 +1,13 @@
 import { motion } from 'motion/react';
+import { useCallback } from 'react';
 
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { spacingPx } from '~/utils';
 import { RoundButton, Icon } from '~/primitives';
 import type { Waypoint } from '~/types';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+
+import { useWaypointsHotkeys } from './useWaypointsHotkeys';
 
 interface WaypointsButtonsProps {
   waypoints: Waypoint[];
@@ -14,6 +17,8 @@ interface WaypointsButtonsProps {
 }
 
 const FADE_IN_DISTANCE = 20;
+// Between map action buttons and powered by label
+const TAB_INDEX = 35;
 
 export const WaypointsButtons = ({
   waypoints,
@@ -31,6 +36,24 @@ export const WaypointsButtons = ({
   );
   const previousWaypoint = waypoints[activeWaypointIndex - 1];
   const nextWaypoint = waypoints[activeWaypointIndex + 1];
+  const previousDisabled = activeWaypointIndex === 0;
+  const nextDisabled = activeWaypointIndex === waypoints.length - 1;
+
+  const goToPreviousWaypoint = useCallback(() => {
+    setActiveWaypoint(previousWaypoint.id);
+  }, [previousWaypoint, setActiveWaypoint]);
+
+  const goToNextWaypoint = useCallback(() => {
+    setActiveWaypoint(nextWaypoint.id);
+  }, [nextWaypoint, setActiveWaypoint]);
+
+  useWaypointsHotkeys({
+    nextDisabled,
+    previousDisabled,
+    goToPreviousWaypoint,
+    goToNextWaypoint,
+    resetState,
+  });
 
   if (!activeWaypointDetails) {
     return null;
@@ -52,19 +75,21 @@ export const WaypointsButtons = ({
     >
       <div className="flex items-center gap-2">
         <RoundButton
-          disabled={activeWaypointIndex === 0}
-          onClick={() => setActiveWaypoint(previousWaypoint.id)}
+          disabled={previousDisabled}
+          onClick={goToPreviousWaypoint}
+          tabIndex={TAB_INDEX}
         >
           <Icon name="arrow" className="size-5 rotate-270" />
         </RoundButton>
         <RoundButton
-          disabled={activeWaypointIndex === waypoints.length - 1}
-          onClick={() => setActiveWaypoint(nextWaypoint.id)}
+          disabled={nextDisabled}
+          onClick={goToNextWaypoint}
+          tabIndex={TAB_INDEX}
         >
           <Icon name="arrow" className="size-5 rotate-90" />
         </RoundButton>
       </div>
-      <RoundButton color="gray" onClick={resetState}>
+      <RoundButton color="gray" onClick={resetState} tabIndex={TAB_INDEX}>
         <Icon name="close" className="size-5" />
       </RoundButton>
     </motion.div>

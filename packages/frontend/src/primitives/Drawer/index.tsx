@@ -1,5 +1,6 @@
-import { type ReactNode, useState, useEffect } from 'react';
+import { type ReactNode, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
@@ -16,6 +17,7 @@ interface DrawerProps {
   width?: number;
   minWidth?: number;
   disablePadding?: boolean;
+  hideCloseButton?: boolean;
   className?: string;
   titleSectionClassName?: string;
   onClose?: () => void;
@@ -30,12 +32,15 @@ export const Drawer = ({
   disablePadding = false,
   className,
   titleSectionClassName,
+  hideCloseButton = false,
   onClose,
 }: DrawerProps) => {
+  const ref = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const { isSmallScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const activeWidth = isSmallScreen ? Math.max(windowWidth, minWidth) : width;
+  const hasCloseButton = !hideCloseButton && Boolean(onClose);
 
   useEffect(() => {
     if (isOpen) {
@@ -43,6 +48,21 @@ export const Drawer = ({
       setIsAnimating(true);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (ref.current) {
+      if (isOpen) {
+        ref.current.removeAttribute('inert');
+      } else {
+        ref.current.setAttribute('inert', '');
+      }
+    }
+  }, [isOpen]);
+
+  useHotkey('Escape', () => onClose?.(), {
+    enabled: isOpen,
+    conflictBehavior: 'allow',
+  });
 
   return (
     <motion.aside
@@ -52,6 +72,7 @@ export const Drawer = ({
         { 'px-4 pt-5 pb-6': !disablePadding },
         className,
       )}
+      ref={ref}
       style={{ width: activeWidth, right: -activeWidth }}
       animate={{ right: isOpen ? 0 : -activeWidth }}
       transition={{
@@ -64,12 +85,12 @@ export const Drawer = ({
         }
       }}
     >
-      {(title || onClose) && (
+      {(title || hasCloseButton) && (
         <div className="flex items-center justify-between">
           <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
             {title}
           </Text>
-          {onClose && (
+          {hasCloseButton && (
             <RoundButton onClick={onClose}>
               <Icon name="close" className="size-5.5" />
             </RoundButton>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { Elevation } from '~/types';
 import { ListItem } from '~/primitives';
@@ -20,6 +21,10 @@ export const ElevationWidget = ({
   elevations,
   ...props
 }: ElevationWidgetProps) => {
+  useHotkey('E', () => {
+    props.toggleActive?.();
+  });
+
   const elevationGain = useMemo(
     () => calculateElevationGain(elevations),
     [elevations],

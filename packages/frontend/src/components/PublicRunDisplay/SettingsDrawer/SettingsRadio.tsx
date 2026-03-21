@@ -3,6 +3,7 @@ import { Radio } from '~/primitives';
 interface SettingsRadioProps {
   value: string;
   children: string;
+  tabIndex?: number;
 }
 
 export const SettingsRadio = (props: SettingsRadioProps) => {

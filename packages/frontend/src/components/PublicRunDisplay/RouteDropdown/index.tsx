@@ -44,6 +44,8 @@ export const RouteDropdown = ({
     >
       <Tooltip label="Routes">
         <Dropdown
+          // Should come after widgets
+          tabIndex={10}
           value={activeRouteId}
           onChange={(value) => (value ? setActiveRoute(value) : null)}
           items={routes.map((route) => ({

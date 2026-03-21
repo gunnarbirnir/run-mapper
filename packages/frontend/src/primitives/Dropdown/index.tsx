@@ -9,6 +9,7 @@ interface DropdownProps {
   className?: string;
   popupClassName?: string;
   style?: CSSProperties;
+  tabIndex?: number;
   onChange?: (value: string | null) => void;
 }
 
@@ -29,6 +30,7 @@ export const Dropdown = ({
   className,
   popupClassName,
   style,
+  tabIndex,
   onChange,
 }: DropdownProps) => {
   return (
@@ -39,6 +41,7 @@ export const Dropdown = ({
           className,
         )}
         style={style}
+        tabIndex={tabIndex}
       >
         <Select.Value className="truncate data-placeholder:opacity-60" />
         <ChevronUpDownIcon />

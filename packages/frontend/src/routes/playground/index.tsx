@@ -15,9 +15,6 @@ export function Playground() {
   return (
     <PageLayout hideNavBar hideFooter>
       <PageLayout.MainContent>
-        <Text element="h1" className="mb-4">
-          Playground
-        </Text>
         <Form className="mb-8">
           <Form.TextInput
             id="run-slug"
@@ -42,8 +39,8 @@ export function Playground() {
         </Form>
         {runSlug && (
           <iframe
-            height="500"
-            style={{ width: '100%', maxWidth: 800 }}
+            height="600"
+            style={{ width: '100%', maxWidth: 900 }}
             src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`}
           />
         )}

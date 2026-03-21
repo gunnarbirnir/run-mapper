@@ -14,6 +14,7 @@ interface OptionButtonProps {
   openDrawerSize: number | null;
   children: ReactNode;
   buttonClassName?: string;
+  isInBackground?: boolean;
   onClick: () => void;
 }
 
@@ -25,6 +26,7 @@ export const OptionButton = ({
   openDrawerSize,
   children,
   buttonClassName,
+  isInBackground = false,
   onClick,
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -77,6 +79,8 @@ export const OptionButton = ({
             buttonClassName,
           )}
           style={{ width: buttonSize, height: buttonSize }}
+          // Should come after route dropdown
+          tabIndex={isInBackground ? -1 : 20 - index}
         >
           <>{children}</>
         </RoundButton>

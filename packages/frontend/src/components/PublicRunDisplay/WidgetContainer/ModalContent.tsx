@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 
 import { Icon, RoundButton, Text, type IconName } from '~/primitives';
 import { cn } from '~/utils';
+import { useFocusTrap } from '~/hooks/useFocusTrap';
 
 interface ModalContentProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const ModalContent = ({
   iconClassName,
   onClose,
 }: ModalContentProps) => {
+  const containerRef = useFocusTrap(isOpen);
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export const ModalContent = ({
   }, [isOpen]);
 
   return (
-    <div className="relative flex h-full flex-col">
+    <div className="relative flex h-full flex-col" ref={containerRef}>
       <div
         className={cn(
           'absolute top-0 left-0 flex w-full items-center justify-between rounded-t-lg bg-white p-4 pb-2',

@@ -16,6 +16,8 @@ export const PoweredByLabel = () => {
         bottom: MAPBOX_ATTRIBUTION_PADDING,
         right: MAPBOX_ATTRIBUTION_WIDTH,
       }}
+      // Should come after map action buttons
+      tabIndex={40}
     >
       <Icon name="spretta" style={{ width: 16, height: 16 }} />
       <Text style={{ fontSize: 12 }}>
