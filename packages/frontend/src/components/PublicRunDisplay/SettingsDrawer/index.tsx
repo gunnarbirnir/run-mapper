@@ -1,3 +1,5 @@
+import { useHotkey } from '@tanstack/react-hotkeys';
+
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer, Radio } from '~/primitives';
 import type { MapStyle } from '~/types';
@@ -36,6 +38,10 @@ export const SettingsDrawer = ({
 }: SettingsDrawerProps) => {
   const { isSmallScreen } = useMediaQuery();
 
+  useHotkey('S', () => {
+    toggleDrawer();
+  });
+
   return (
     <Drawer
       title="Settings"
@@ -44,7 +50,8 @@ export const SettingsDrawer = ({
       minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
       className="pointer-events-auto z-20"
       titleSectionClassName="mb-0"
-      onClose={isSmallScreen ? toggleDrawer : undefined}
+      hideCloseButton={!isSmallScreen}
+      onClose={toggleDrawer}
     >
       <SectionLabel>Widgets</SectionLabel>
       <VisibleToggle

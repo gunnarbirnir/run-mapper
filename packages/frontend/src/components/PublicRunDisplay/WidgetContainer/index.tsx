@@ -8,6 +8,7 @@ import type { WidgetBaseProps } from '../types';
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
 import { useWidgetSize } from './useWidgetSize';
+import { useWidgetHotkeys } from './useWidgetHotkeys';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
@@ -37,7 +38,10 @@ export const WidgetContainer = ({
   setWidgetSizes,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
+  useWidgetHotkeys({ isOpen, isClickable, containerRef, toggleActive });
+
   const {
     top,
     left,
@@ -71,6 +75,7 @@ export const WidgetContainer = ({
       }}
     >
       <motion.div
+        ref={containerRef}
         tabIndex={index + 1}
         animate={{
           top: isActive ? modalTop : top,

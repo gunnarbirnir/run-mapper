@@ -1,6 +1,6 @@
 import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useCallback } from 'react';
 
 import { Icon, Tooltip } from '~/primitives';
 
@@ -11,6 +11,7 @@ import { useMapState } from './hooks/useMapState';
 import { useMapStyle } from './hooks/useMapStyle';
 import { useMapRoute } from './hooks/useMapRoute';
 import { useWaypoints } from './hooks/useWaypoints';
+import { useMapHotKeys } from './hooks/useMapHotKeys';
 import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
 import { PoweredByLabel } from './components/PoweredByLabel';
@@ -103,6 +104,33 @@ export const RunRouteMap = ({
     isResettingBoundsRef,
   });
 
+  const playRoute = useCallback(() => {
+    fitToInitialBounds();
+    resetOverlayState();
+    animateRoute();
+  }, [fitToInitialBounds, resetOverlayState, animateRoute]);
+
+  const resetRoute = useCallback(() => {
+    fitToInitialBounds();
+    resetOverlayState();
+  }, [fitToInitialBounds, resetOverlayState]);
+
+  const openFullscreen = useCallback(() => {
+    window.open(
+      `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
+      '_blank',
+    );
+  }, [runSlug, routeId]);
+
+  useMapHotKeys({
+    routeIsAnimating,
+    isAtInitialBounds,
+    isFullscreen,
+    playRoute,
+    resetRoute,
+    openFullscreen,
+  });
+
   return (
     <div className="relative h-full w-full">
       <div ref={mapContainerRef} className="h-full w-full" />
@@ -111,11 +139,7 @@ export const RunRouteMap = ({
           index={mapActionButtonIndex++}
           tooltipLabel="Play"
           disabled={routeIsAnimating}
-          onClick={() => {
-            fitToInitialBounds();
-            resetOverlayState();
-            animateRoute();
-          }}
+          onClick={playRoute}
         >
           <Icon name="play" className="size-5" />
         </MapActionButton>
@@ -123,10 +147,7 @@ export const RunRouteMap = ({
           index={mapActionButtonIndex++}
           tooltipLabel="Reset"
           disabled={isAtInitialBounds}
-          onClick={() => {
-            fitToInitialBounds();
-            resetOverlayState();
-          }}
+          onClick={resetRoute}
         >
           <Icon name="reset" className="size-4.5" />
         </MapActionButton>
@@ -134,12 +155,7 @@ export const RunRouteMap = ({
           <MapActionButton
             index={mapActionButtonIndex++}
             tooltipLabel="Fullscreen"
-            onClick={() =>
-              window.open(
-                `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
-                '_blank',
-              )
-            }
+            onClick={openFullscreen}
           >
             <Icon name="externalLink" className="size-5" />
           </MapActionButton>

@@ -1,5 +1,6 @@
 import { type ReactNode, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
@@ -16,6 +17,7 @@ interface DrawerProps {
   width?: number;
   minWidth?: number;
   disablePadding?: boolean;
+  hideCloseButton?: boolean;
   className?: string;
   titleSectionClassName?: string;
   onClose?: () => void;
@@ -30,6 +32,7 @@ export const Drawer = ({
   disablePadding = false,
   className,
   titleSectionClassName,
+  hideCloseButton = false,
   onClose,
 }: DrawerProps) => {
   const ref = useRef<HTMLElement>(null);
@@ -37,6 +40,7 @@ export const Drawer = ({
   const { isSmallScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const activeWidth = isSmallScreen ? Math.max(windowWidth, minWidth) : width;
+  const hasCloseButton = !hideCloseButton && Boolean(onClose);
 
   useEffect(() => {
     if (isOpen) {
@@ -54,6 +58,11 @@ export const Drawer = ({
       }
     }
   }, [isOpen]);
+
+  useHotkey('Escape', () => onClose?.(), {
+    enabled: isOpen,
+    conflictBehavior: 'allow',
+  });
 
   return (
     <motion.aside
@@ -76,12 +85,12 @@ export const Drawer = ({
         }
       }}
     >
-      {(title || onClose) && (
+      {(title || hasCloseButton) && (
         <div className="flex items-center justify-between">
           <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
             {title}
           </Text>
-          {onClose && (
+          {hasCloseButton && (
             <RoundButton onClick={onClose}>
               <Icon name="close" className="size-5.5" />
             </RoundButton>

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { RefObject, useMemo, useEffect } from 'react';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
@@ -81,11 +82,16 @@ export const RouteOverlay = ({
     [coordinates, waypoints],
   );
   let optionsButtonIndex = 0;
+  const startWaypointId = getStartWaypoint(coordinates).id;
 
   // Reset state when route changes
   useEffect(() => {
     resetState();
   }, [routeId, resetState]);
+
+  useHotkey('W', () =>
+    setActiveWaypoint(activeWaypoint ? null : startWaypointId),
+  );
 
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
@@ -122,7 +128,7 @@ export const RouteOverlay = ({
             buttonSize={optionItemSize}
             openDrawerSize={openDrawerSize}
             isInBackground={activeDrawer !== null}
-            onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
+            onClick={() => setActiveWaypoint(startWaypointId)}
           >
             <Icon name="location" className="size-6.5" />
           </OptionButton>
