@@ -1,21 +1,24 @@
+import { motion } from 'motion/react';
+
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { spacingPx } from '~/utils';
 import { RoundButton, Icon } from '~/primitives';
 import type { Waypoint } from '~/types';
+import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 
 interface WaypointsButtonsProps {
   waypoints: Waypoint[];
   activeWaypoint: string;
   setActiveWaypoint: (waypoint: string) => void;
-  toggleDrawer: () => void;
   resetState: () => void;
 }
+
+const FADE_IN_DISTANCE = 20;
 
 export const WaypointsButtons = ({
   waypoints,
   activeWaypoint,
   setActiveWaypoint,
-  toggleDrawer,
   resetState,
 }: WaypointsButtonsProps) => {
   const { height: graphHeight } = useElevationGraphHeight();
@@ -34,7 +37,14 @@ export const WaypointsButtons = ({
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, translateY: FADE_IN_DISTANCE }}
+      exit={{ opacity: 0, translateY: FADE_IN_DISTANCE }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{
+        duration: DEFAULT_FADE_IN_DURATION,
+        ease: DEFAULT_EASING,
+      }}
       // Z-index 19 to be below drawer
       className="height-20 width-50 pointer-events-auto absolute left-[50%] z-19 flex translate-x-[-50%] items-center justify-center gap-4 rounded-full bg-white p-2 shadow-md"
       // 8 (height of map action buttons) + 3 (spacing above elevation graph) + 2 (spacing from buttons)
@@ -54,14 +64,9 @@ export const WaypointsButtons = ({
           <Icon name="arrow" className="size-5 rotate-90" />
         </RoundButton>
       </div>
-      <div className="flex items-center gap-2">
-        <RoundButton color="gray" onClick={toggleDrawer}>
-          <Icon name="magnifier" className="size-5" />
-        </RoundButton>
-        <RoundButton color="gray" onClick={resetState}>
-          <Icon name="close" className="size-5" />
-        </RoundButton>
-      </div>
-    </div>
+      <RoundButton color="gray" onClick={resetState}>
+        <Icon name="close" className="size-5" />
+      </RoundButton>
+    </motion.div>
   );
 };

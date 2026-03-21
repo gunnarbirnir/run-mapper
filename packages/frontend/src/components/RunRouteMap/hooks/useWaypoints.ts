@@ -3,13 +3,13 @@ import { useEffect, useRef, type RefObject, useMemo } from 'react';
 
 import type { Coordinates, Waypoint } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
-import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '../constants';
 import {
   getMarkerElement,
-  getMarkerTooltip,
+  getWaypointTooltip,
   getWaypointMarkerElement,
+  getWaypointLatOffset,
 } from '../utils';
 import { useHandlers } from './useHandlers';
 
@@ -19,12 +19,10 @@ interface UseWaypointsProps {
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   showWaypoints: boolean;
-  onWaypointClick: (waypoint: string, openDrawer: boolean) => void;
+  onWaypointClick: (waypoint: string) => void;
   fitToInitialBounds: () => void;
   mapRef: RefObject<Map>;
 }
-
-const WAYPOINT_LAT_OFFSET = 0.003;
 
 export const useWaypoints = ({
   isMapLoaded,
@@ -39,9 +37,7 @@ export const useWaypoints = ({
   const activeWaypointRef = useRef<string | null>(null);
   const waypointMarkersRef = useRef<Marker[]>([]);
   const popupsRef = useRef<Record<string, Popup>>({});
-  const isSmallScreenRef = useRef(false);
   const { addMarker } = useHandlers({ mapRef });
-  const { isSmallScreen } = useMediaQuery();
 
   const extendedWaypoints = useMemo(
     () =>
@@ -55,11 +51,6 @@ export const useWaypoints = ({
     [coordinates, waypoints],
   );
 
-  // Sync ref to state
-  useEffect(() => {
-    isSmallScreenRef.current = isSmallScreen;
-  }, [isSmallScreen]);
-
   // Draw waypoints
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
@@ -70,36 +61,26 @@ export const useWaypoints = ({
     const popups: Record<string, Popup> = {};
 
     const startWaypoint = getStartWaypoint(coordinates);
-    popups[startWaypoint.id] = getMarkerTooltip(
-      startWaypoint,
-      isSmallScreenRef.current,
-    );
+    popups[startWaypoint.id] = getWaypointTooltip(startWaypoint);
     waypointMarkers.push(
       addMarker(
         getMarkerElement(
           '--color-success-500',
           '--color-success-600',
-          showWaypoints
-            ? () => onWaypointClick(startWaypoint.id, !isSmallScreenRef.current)
-            : undefined,
+          showWaypoints ? () => onWaypointClick(startWaypoint.id) : undefined,
         ),
         startWaypoint.coordinates,
       ),
     );
 
     const endWaypoint = getEndWaypoint(coordinates);
-    popups[endWaypoint.id] = getMarkerTooltip(
-      endWaypoint,
-      isSmallScreenRef.current,
-    );
+    popups[endWaypoint.id] = getWaypointTooltip(endWaypoint);
     waypointMarkers.push(
       addMarker(
         getMarkerElement(
           '--color-error-500',
           '--color-error-600',
-          showWaypoints
-            ? () => onWaypointClick(endWaypoint.id, !isSmallScreenRef.current)
-            : undefined,
+          showWaypoints ? () => onWaypointClick(endWaypoint.id) : undefined,
         ),
         endWaypoint.coordinates,
       ),
@@ -107,14 +88,11 @@ export const useWaypoints = ({
 
     if (showWaypoints) {
       for (const waypoint of waypoints) {
-        popups[waypoint.id] = getMarkerTooltip(
-          waypoint,
-          isSmallScreenRef.current,
-        );
+        popups[waypoint.id] = getWaypointTooltip(waypoint);
         waypointMarkers.push(
           addMarker(
             getWaypointMarkerElement(waypoint.type, () =>
-              onWaypointClick(waypoint.id, !isSmallScreenRef.current),
+              onWaypointClick(waypoint.id),
             ),
             waypoint.coordinates,
           ),
@@ -141,7 +119,6 @@ export const useWaypoints = ({
     onWaypointClick,
     fitToInitialBounds,
     mapRef,
-    isSmallScreenRef,
   ]);
 
   // React to active waypoint change
@@ -176,18 +153,12 @@ export const useWaypoints = ({
 
     mapRef.current?.flyTo({
       center: [
-        activeWaypointDetails.coordinates.lng +
-          (isSmallScreenRef.current ? 0 : WAYPOINT_LAT_OFFSET),
-        activeWaypointDetails.coordinates.lat,
+        activeWaypointDetails.coordinates.lng,
+        activeWaypointDetails.coordinates.lat +
+          getWaypointLatOffset(activeWaypointDetails),
       ],
       zoom: WAYPOINT_ZOOM,
       duration: FLY_TO_WAYPOINT_DURATION,
     });
-  }, [
-    activeWaypoint,
-    mapRef,
-    extendedWaypoints,
-    fitToInitialBounds,
-    isSmallScreenRef,
-  ]);
+  }, [activeWaypoint, mapRef, extendedWaypoints, fitToInitialBounds]);
 };

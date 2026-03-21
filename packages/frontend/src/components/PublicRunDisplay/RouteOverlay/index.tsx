@@ -1,9 +1,8 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { RefObject, useMemo } from 'react';
+import { RefObject, useMemo, useEffect } from 'react';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { Icon, Tooltip } from '~/primitives';
 import type {
   Coordinates,
@@ -18,7 +17,6 @@ import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 import { OptionButton } from '../OptionButton';
 import { RouteDropdown } from '../RouteDropdown';
 import { SettingsDrawer } from '../SettingsDrawer';
-import { WaypointsDrawer } from '../WaypointsDrawer';
 import { OverlayWidgets } from './OverlayWidgets';
 import { WaypointsButtons } from '../WaypointsButtons';
 import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
@@ -66,18 +64,11 @@ export const RouteOverlay = ({
   const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
-  const { isSmallScreen } = useMediaQuery();
 
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
-  const waypointsDrawerWidth = convertRemToPixels('15rem');
-
   const openDrawerSize =
-    activeDrawer === 'settings'
-      ? settingsDrawerWidth
-      : activeDrawer === 'waypoints'
-        ? waypointsDrawerWidth
-        : null;
+    activeDrawer === 'settings' ? settingsDrawerWidth : null;
   const extendedWaypoints = useMemo(
     () =>
       coordinates.length > 0
@@ -90,6 +81,11 @@ export const RouteOverlay = ({
     [coordinates, waypoints],
   );
   let optionsButtonIndex = 0;
+
+  // Reset state when route changes
+  useEffect(() => {
+    resetState();
+  }, [routeId, resetState]);
 
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
@@ -144,15 +140,16 @@ export const RouteOverlay = ({
         )}
       </AnimatePresence>
 
-      {activeWaypoint !== null && activeDrawer === null && isSmallScreen && (
-        <WaypointsButtons
-          waypoints={extendedWaypoints}
-          activeWaypoint={activeWaypoint}
-          setActiveWaypoint={(waypoint) => setActiveWaypoint(waypoint, false)}
-          toggleDrawer={() => toggleDrawer('waypoints')}
-          resetState={resetState}
-        />
-      )}
+      <AnimatePresence>
+        {activeWaypoint !== null && (
+          <WaypointsButtons
+            waypoints={extendedWaypoints}
+            activeWaypoint={activeWaypoint}
+            setActiveWaypoint={setActiveWaypoint}
+            resetState={resetState}
+          />
+        )}
+      </AnimatePresence>
 
       <SettingsDrawer
         isOpen={activeDrawer === 'settings'}
@@ -164,14 +161,6 @@ export const RouteOverlay = ({
         toggleVisibleWidget={toggleVisibleWidget}
         toggleShowWaypoints={toggleShowWaypoints}
         onMapStyleChange={onMapStyleChange}
-      />
-      <WaypointsDrawer
-        isOpen={activeDrawer === 'waypoints'}
-        width={waypointsDrawerWidth}
-        waypoints={extendedWaypoints}
-        activeWaypoint={activeWaypoint}
-        toggleDrawer={() => toggleDrawer('waypoints', !isSmallScreen)}
-        setActiveWaypoint={setActiveWaypoint}
       />
 
       <motion.div

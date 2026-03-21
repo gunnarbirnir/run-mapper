@@ -19,9 +19,8 @@ export type WayPointType =
 
 export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
 
-export type Amenity = {
+export type WaypointAmenity = {
   type: InnerWayPointType;
-  label?: string;
 };
 
 export type Waypoint = {
@@ -31,7 +30,7 @@ export type Waypoint = {
   coordinates: Coordinates;
   type: WayPointType;
   distance: number;
-  amenities?: Amenity[];
+  amenities?: WaypointAmenity[];
 };
 
 export type PointOfInterestType =

@@ -35,7 +35,7 @@ type RouteOverlayAction =
     }
   | {
       type: 'TOGGLE_DRAWER';
-      payload: { drawer: DrawerType; resetWaypoint: boolean };
+      payload: DrawerType;
     }
   | {
       type: 'TOGGLE_VISIBLE_WIDGET';
@@ -43,7 +43,7 @@ type RouteOverlayAction =
     }
   | {
       type: 'SET_ACTIVE_WAYPOINT';
-      payload: { waypoint: string | null; openDrawer?: boolean };
+      payload: string | null;
     }
   | {
       type: 'RESET_STATE';
@@ -91,14 +91,12 @@ const routeOverlayReducer = (
           ? {
               // Close drawer
               activeDrawer: null,
-              activeWaypoint: action.payload.resetWaypoint
-                ? null
-                : state.activeWaypoint,
             }
           : {
               // Open drawer
-              activeDrawer: action.payload.drawer,
+              activeDrawer: action.payload,
               activeWidget: null,
+              activeWaypoint: null,
               openWidget: null,
               expandedWidget: null,
             }),
@@ -114,10 +112,8 @@ const routeOverlayReducer = (
     case 'SET_ACTIVE_WAYPOINT':
       return {
         ...state,
-        activeWaypoint: action.payload.waypoint,
-        activeDrawer: action.payload.openDrawer
-          ? ('waypoints' as DrawerType)
-          : null,
+        activeWaypoint: action.payload,
+        activeDrawer: null,
         activeWidget: null,
         openWidget: null,
         expandedWidget: null,
@@ -148,8 +144,8 @@ export const useRouteOverlayState = () => {
   }, [dispatch]);
 
   const toggleDrawer = useCallback(
-    (drawer: DrawerType, resetWaypoint = true) => {
-      dispatch({ type: 'TOGGLE_DRAWER', payload: { drawer, resetWaypoint } });
+    (drawer: DrawerType) => {
+      dispatch({ type: 'TOGGLE_DRAWER', payload: drawer });
     },
     [dispatch],
   );
@@ -162,10 +158,10 @@ export const useRouteOverlayState = () => {
   );
 
   const setActiveWaypoint = useCallback(
-    (waypoint: string | null, openDrawer: boolean = true) => {
+    (waypoint: string | null) => {
       dispatch({
         type: 'SET_ACTIVE_WAYPOINT',
-        payload: { waypoint, openDrawer },
+        payload: waypoint,
       });
     },
     [dispatch],
