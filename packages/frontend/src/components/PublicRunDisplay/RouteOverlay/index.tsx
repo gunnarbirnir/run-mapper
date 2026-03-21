@@ -121,6 +121,7 @@ export const RouteOverlay = ({
             tooltipLabel="Points of interest"
             buttonSize={optionItemSize}
             openDrawerSize={openDrawerSize}
+            isInBackground={activeDrawer !== null}
             onClick={() => setActiveWaypoint(getStartWaypoint(coordinates).id)}
           >
             <Icon name="location" className="size-6.5" />

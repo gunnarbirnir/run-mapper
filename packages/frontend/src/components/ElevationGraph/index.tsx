@@ -112,6 +112,8 @@ export const ElevationGraph = ({
       }}
       className="bg-gray-50 pt-1"
       style={{ height: compactHeight }}
+      // Should come after powered by label
+      tabIndex={45}
     >
       {!startExpansion && !isResizing && (
         <motion.div

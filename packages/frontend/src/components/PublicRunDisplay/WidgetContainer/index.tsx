@@ -71,6 +71,7 @@ export const WidgetContainer = ({
       }}
     >
       <motion.div
+        tabIndex={index + 1}
         animate={{
           top: isActive ? modalTop : top,
           left: isActive ? modalLeft : left,

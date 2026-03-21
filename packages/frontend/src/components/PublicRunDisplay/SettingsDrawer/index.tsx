@@ -21,6 +21,8 @@ interface SettingsDrawerProps {
   onMapStyleChange: (style: MapStyle) => void;
 }
 
+const TAB_INDEX = 25;
+
 export const SettingsDrawer = ({
   isOpen,
   width,
@@ -48,17 +50,23 @@ export const SettingsDrawer = ({
       <VisibleToggle
         isVisible={visibleWidgets.distance}
         onToggle={() => toggleVisibleWidget('distance')}
+        tabIndex={TAB_INDEX}
       >
         Distance
       </VisibleToggle>
       <VisibleToggle
         isVisible={visibleWidgets.elevation}
         onToggle={() => toggleVisibleWidget('elevation')}
+        tabIndex={TAB_INDEX}
       >
         Elevation
       </VisibleToggle>
       <SectionLabel>Map</SectionLabel>
-      <VisibleToggle isVisible={showWaypoints} onToggle={toggleShowWaypoints}>
+      <VisibleToggle
+        isVisible={showWaypoints}
+        onToggle={toggleShowWaypoints}
+        tabIndex={TAB_INDEX}
+      >
         Waypoints
       </VisibleToggle>
       <SectionLabel>Map style</SectionLabel>
@@ -66,8 +74,12 @@ export const SettingsDrawer = ({
         value={mapStyle}
         onChange={(styleValue) => onMapStyleChange(styleValue as MapStyle)}
       >
-        <SettingsRadio value="standard">Standard</SettingsRadio>
-        <SettingsRadio value="satellite">Satellite</SettingsRadio>
+        <SettingsRadio value="standard" tabIndex={TAB_INDEX}>
+          Standard
+        </SettingsRadio>
+        <SettingsRadio value="satellite" tabIndex={TAB_INDEX}>
+          Satellite
+        </SettingsRadio>
       </Radio.Group>
     </Drawer>
   );

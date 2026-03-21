@@ -50,6 +50,8 @@ export const MapActionButton = ({
             buttonClassName,
           )}
           style={{ width: buttonSize, height: buttonSize }}
+          // Should come after drawers
+          tabIndex={30 + index}
         >
           <>{children}</>
         </RoundButton>

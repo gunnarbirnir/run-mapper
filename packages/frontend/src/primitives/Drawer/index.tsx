@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useEffect } from 'react';
+import { type ReactNode, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 import { cn } from '~/utils';
@@ -32,6 +32,7 @@ export const Drawer = ({
   titleSectionClassName,
   onClose,
 }: DrawerProps) => {
+  const ref = useRef<HTMLElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const { isSmallScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
@@ -44,6 +45,16 @@ export const Drawer = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (ref.current) {
+      if (isOpen) {
+        ref.current.removeAttribute('inert');
+      } else {
+        ref.current.setAttribute('inert', '');
+      }
+    }
+  }, [isOpen]);
+
   return (
     <motion.aside
       className={cn(
@@ -52,6 +63,7 @@ export const Drawer = ({
         { 'px-4 pt-5 pb-6': !disablePadding },
         className,
       )}
+      ref={ref}
       style={{ width: activeWidth, right: -activeWidth }}
       animate={{ right: isOpen ? 0 : -activeWidth }}
       transition={{
