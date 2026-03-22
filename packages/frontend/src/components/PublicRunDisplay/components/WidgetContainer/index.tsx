@@ -4,7 +4,7 @@ import { useRef, type ReactNode } from 'react';
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { type IconName } from '~/primitives';
 
-import type { WidgetBaseProps } from '../types';
+import type { WidgetBaseProps } from '../../types';
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
 import { useWidgetSize } from './useWidgetSize';

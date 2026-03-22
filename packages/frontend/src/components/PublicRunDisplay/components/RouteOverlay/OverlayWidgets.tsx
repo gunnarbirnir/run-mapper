@@ -6,7 +6,7 @@ import { Tooltip } from '~/primitives';
 
 import { DistanceWidget } from '../DistanceWidget';
 import { ElevationWidget } from '../ElevationWidget';
-import { WidgetType } from '../types';
+import { WidgetType } from '../../types';
 
 interface OverlayWidgetsProps {
   publicRunDisplayRef: RefObject<HTMLDivElement>;

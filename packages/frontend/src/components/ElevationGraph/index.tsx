@@ -27,7 +27,7 @@ interface ElevationGraphProps {
   elevations: Elevation[];
   isExpanded?: boolean;
   isTooltipActive?: boolean;
-  setActiveMarkerIndex: (updatedIndex: number | null) => void;
+  onActiveIndexChange?: (activeIndex: number | null) => void;
 }
 
 const STROKE_WIDTH = 3;
@@ -38,7 +38,7 @@ export const ElevationGraph = ({
   elevations,
   isExpanded = false,
   isTooltipActive = true,
-  setActiveMarkerIndex,
+  onActiveIndexChange = () => {},
 }: ElevationGraphProps) => {
   const { compactHeight, expandedHeight } = useElevationGraphHeight(isExpanded);
   const [startExpansion, setStartExpansion] = useState(false);
@@ -141,14 +141,14 @@ export const ElevationGraph = ({
                 left: spacingPx(2),
               }}
               onMouseEnter={(event) => {
-                setActiveMarkerIndex(getActiveIndexValue(event.activeIndex));
+                onActiveIndexChange(getActiveIndexValue(event.activeIndex));
               }}
               onMouseLeave={() => {
-                setActiveMarkerIndex(null);
+                onActiveIndexChange(null);
               }}
               onMouseMove={(event) => {
                 if (event.activeIndex) {
-                  setActiveMarkerIndex(getActiveIndexValue(event.activeIndex));
+                  onActiveIndexChange(getActiveIndexValue(event.activeIndex));
                 }
               }}
             >

@@ -2,30 +2,25 @@ import { useReducer, useCallback, useMemo } from 'react';
 
 import type { WidgetType, DrawerType } from '../types';
 
-export interface RouteOverlayState {
+export interface RunDisplayState {
   activeWidget: WidgetType | null;
   // From start of open animation to end of close animation
   openWidget: WidgetType | null;
   // When the widget is fully expanded, so does not include animations
   expandedWidget: WidgetType | null;
   activeDrawer: DrawerType | null;
-  visibleWidgets: Record<WidgetType, boolean>;
   activeWaypoint: string | null;
 }
 
-const initialState: RouteOverlayState = {
+const initialState: RunDisplayState = {
   activeWidget: null,
   openWidget: null,
   expandedWidget: null,
   activeDrawer: null,
-  visibleWidgets: {
-    distance: true,
-    elevation: true,
-  },
   activeWaypoint: null,
 };
 
-type RouteOverlayAction =
+type RunDisplayAction =
   | {
       type: 'TOGGLE_ACTIVE_WIDGET';
       payload: WidgetType;
@@ -38,10 +33,6 @@ type RouteOverlayAction =
       payload: DrawerType;
     }
   | {
-      type: 'TOGGLE_VISIBLE_WIDGET';
-      payload: WidgetType;
-    }
-  | {
       type: 'SET_ACTIVE_WAYPOINT';
       payload: string | null;
     }
@@ -49,9 +40,9 @@ type RouteOverlayAction =
       type: 'RESET_STATE';
     };
 
-const routeOverlayReducer = (
-  state: RouteOverlayState,
-  action: RouteOverlayAction,
+const runDisplayReducer = (
+  state: RunDisplayState,
+  action: RunDisplayAction,
 ) => {
   switch (action.type) {
     case 'TOGGLE_ACTIVE_WIDGET':
@@ -101,14 +92,6 @@ const routeOverlayReducer = (
               expandedWidget: null,
             }),
       };
-    case 'TOGGLE_VISIBLE_WIDGET':
-      return {
-        ...state,
-        visibleWidgets: {
-          ...state.visibleWidgets,
-          [action.payload]: !state.visibleWidgets[action.payload],
-        },
-      };
     case 'SET_ACTIVE_WAYPOINT':
       return {
         ...state,
@@ -121,16 +104,14 @@ const routeOverlayReducer = (
     case 'RESET_STATE':
       return {
         ...initialState,
-        // Maintain visible widgets
-        visibleWidgets: state.visibleWidgets,
       };
     default:
       return state;
   }
 };
 
-export const useRouteOverlayState = () => {
-  const [state, dispatch] = useReducer(routeOverlayReducer, initialState);
+export const useRunDisplayState = () => {
+  const [state, dispatch] = useReducer(runDisplayReducer, initialState);
 
   const toggleActiveWidget = useCallback(
     (widget: WidgetType) => {
@@ -146,13 +127,6 @@ export const useRouteOverlayState = () => {
   const toggleDrawer = useCallback(
     (drawer: DrawerType) => {
       dispatch({ type: 'TOGGLE_DRAWER', payload: drawer });
-    },
-    [dispatch],
-  );
-
-  const toggleVisibleWidget = useCallback(
-    (widget: WidgetType) => {
-      dispatch({ type: 'TOGGLE_VISIBLE_WIDGET', payload: widget });
     },
     [dispatch],
   );
@@ -177,7 +151,6 @@ export const useRouteOverlayState = () => {
       toggleActiveWidget,
       onWidgetAnimationFinished,
       toggleDrawer,
-      toggleVisibleWidget,
       setActiveWaypoint,
       resetState,
     }),
@@ -186,11 +159,10 @@ export const useRouteOverlayState = () => {
       toggleActiveWidget,
       onWidgetAnimationFinished,
       toggleDrawer,
-      toggleVisibleWidget,
       setActiveWaypoint,
       resetState,
     ],
   );
 };
 
-export type RouteOverlayReducerState = ReturnType<typeof useRouteOverlayState>;
+export type RunDisplayReducerState = ReturnType<typeof useRunDisplayState>;

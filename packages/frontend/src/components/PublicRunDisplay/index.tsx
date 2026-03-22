@@ -7,11 +7,13 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
-import { useRoute } from '~/hooks/useRoute';
 
+import { useRoute } from './hooks/useRoute';
+import { useRunDisplayState } from './hooks/useRunDisplayState';
+import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
-import { RouteOverlay, useRouteOverlayState } from './RouteOverlay';
+import { RouteOverlay } from './components/RouteOverlay';
 
 // Lazy load to fix SSR issue
 const ElevationGraph = lazy(() =>
@@ -37,19 +39,18 @@ export const PublicRunDisplay = ({
   );
   const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
-  const mapState = useMapState();
+  const runDisplayState = useRunDisplayState();
   const {
-    mapStyle,
-    showWaypoints,
-    routeIsAnimating,
-    setMapStyle,
-    toggleShowWaypoints,
-    setActiveMarkerIndex,
-  } = mapState;
-  const routeOverlayState = useRouteOverlayState();
-  const { activeWaypoint, setActiveWaypoint, resetState } = routeOverlayState;
+    activeWaypoint,
+    activeWidget,
+    activeDrawer,
+    setActiveWaypoint,
+    resetState,
+  } = runDisplayState;
+  const settings = useSettings();
+  const mapState = useMapState();
+  const { routeIsAnimating, setActiveMarkerIndex } = mapState;
   const { compactHeight: graphHeight } = useElevationGraphHeight();
-  const { activeWidget, activeDrawer } = routeOverlayState;
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
 
@@ -78,8 +79,9 @@ export const PublicRunDisplay = ({
           hideActiveMarker={
             elevationWidgetActive || anyDrawerActive || routeIsAnimating
           }
+          settings={settings}
           onWaypointClick={setActiveWaypoint}
-          resetOverlayState={resetState}
+          onReset={resetState}
         />
       </div>
       <Suspense
@@ -91,21 +93,18 @@ export const PublicRunDisplay = ({
           elevations={elevations}
           isExpanded={elevationWidgetActive}
           isTooltipActive={!anyDrawerActive}
-          setActiveMarkerIndex={setActiveMarkerIndex}
+          onActiveIndexChange={setActiveMarkerIndex}
         />
       </Suspense>
       <RouteOverlay
-        {...routeOverlayState}
+        {...runDisplayState}
         routes={run.routes}
         routeId={route.id}
         coordinates={coordinates}
         elevations={elevations}
         waypoints={waypoints}
         publicRunDisplayRef={publicRunDisplayRef}
-        mapStyle={mapStyle}
-        showWaypoints={showWaypoints}
-        toggleShowWaypoints={toggleShowWaypoints}
-        onMapStyleChange={setMapStyle}
+        settings={settings}
         setActiveRoute={setActiveRoute}
       />
     </div>

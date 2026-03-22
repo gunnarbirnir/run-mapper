@@ -1,21 +1,21 @@
 import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useMemo, useRef, useState, useCallback } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { Icon, Tooltip } from '~/primitives';
 
+import { MapActionButton } from './components/MapActionButton';
+import { PoweredByLabel } from './components/PoweredByLabel';
 import { useActiveMarker } from './hooks/useActiveMarker';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { useLoadMap } from './hooks/useLoadMap';
+import { useMapHotKeys } from './hooks/useMapHotKeys';
+import { useMapRoute } from './hooks/useMapRoute';
 import { useMapState } from './hooks/useMapState';
 import { useMapStyle } from './hooks/useMapStyle';
-import { useMapRoute } from './hooks/useMapRoute';
 import { useWaypoints } from './hooks/useWaypoints';
-import { useMapHotKeys } from './hooks/useMapHotKeys';
 import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
-import { PoweredByLabel } from './components/PoweredByLabel';
-import { MapActionButton } from './components/MapActionButton';
 
 export const RunRouteMap = ({
   routeId,
@@ -24,25 +24,25 @@ export const RunRouteMap = ({
   coordinates,
   waypoints,
   elevations,
-  mapStyle,
   activeWaypoint,
   hideActiveMarker = false,
-  showWaypoints = true,
   routeIsAnimating,
+  isMapLoaded,
   isAtInitialBounds,
   isFullscreen,
   setActiveIndexRef,
   animateRouteRef,
   fitToInitialBoundsRef,
   isResettingBoundsRef,
-  animateRoute,
+  settings: { mapStyle, showWaypoints },
+  setIsMapLoaded,
   setIsAtInitialBounds,
-  onWaypointClick,
   setRouteIsAnimating,
-  resetOverlayState,
+  onWaypointClick,
+  onReset,
+  animateRoute,
   fitToInitialBounds,
 }: RouteMapProps) => {
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
   const paddedBounds = useMemo(
     () => getPaddedBounds(boundingBox),
     [boundingBox],
@@ -106,14 +106,14 @@ export const RunRouteMap = ({
 
   const playRoute = useCallback(() => {
     fitToInitialBounds();
-    resetOverlayState();
+    onReset();
     animateRoute();
-  }, [fitToInitialBounds, resetOverlayState, animateRoute]);
+  }, [fitToInitialBounds, onReset, animateRoute]);
 
   const resetRoute = useCallback(() => {
     fitToInitialBounds();
-    resetOverlayState();
-  }, [fitToInitialBounds, resetOverlayState]);
+    onReset();
+  }, [fitToInitialBounds, onReset]);
 
   const openFullscreen = useCallback(() => {
     window.open(

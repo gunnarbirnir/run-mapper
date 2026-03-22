@@ -3,38 +3,34 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer, Radio } from '~/primitives';
 import type { MapStyle } from '~/types';
-
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
-import type { WidgetType } from '../types';
 import { SectionLabel } from './SectionLabel';
 import { SettingsRadio } from './SettingsRadio';
 import { VisibleToggle } from './VisibleToggle';
+import type { RunDisplaySettings } from '../../hooks/useSettings';
 
 interface SettingsDrawerProps {
+  settings: RunDisplaySettings;
   isOpen: boolean;
   width: number;
-  visibleWidgets: Record<WidgetType, boolean>;
-  showWaypoints: boolean;
-  mapStyle: MapStyle;
   toggleDrawer: () => void;
-  toggleVisibleWidget: (widget: WidgetType) => void;
-  toggleShowWaypoints: () => void;
-  onMapStyleChange: (style: MapStyle) => void;
 }
 
 const TAB_INDEX = 25;
 
 export const SettingsDrawer = ({
+  settings: {
+    visibleWidgets,
+    showWaypoints,
+    mapStyle,
+    toggleVisibleWidget,
+    toggleShowWaypoints,
+    setMapStyle,
+  },
   isOpen,
   width,
-  visibleWidgets,
-  showWaypoints,
-  mapStyle,
   toggleDrawer,
-  toggleVisibleWidget,
-  toggleShowWaypoints,
-  onMapStyleChange,
 }: SettingsDrawerProps) => {
   const { isSmallScreen } = useMediaQuery();
 
@@ -79,7 +75,7 @@ export const SettingsDrawer = ({
       <SectionLabel>Map style</SectionLabel>
       <Radio.Group
         value={mapStyle}
-        onChange={(styleValue) => onMapStyleChange(styleValue as MapStyle)}
+        onChange={(styleValue) => setMapStyle(styleValue as MapStyle)}
       >
         <SettingsRadio value="standard" tabIndex={TAB_INDEX}>
           Standard

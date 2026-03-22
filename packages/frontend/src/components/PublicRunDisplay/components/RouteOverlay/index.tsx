@@ -5,13 +5,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { Icon, Tooltip } from '~/primitives';
-import type {
-  Coordinates,
-  Elevation,
-  MapStyle,
-  PublicRoute,
-  Waypoint,
-} from '~/types';
+import type { Coordinates, Elevation, PublicRoute, Waypoint } from '~/types';
 import { convertRemToPixels, spacingPx } from '~/utils';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 
@@ -20,19 +14,17 @@ import { RouteDropdown } from '../RouteDropdown';
 import { SettingsDrawer } from '../SettingsDrawer';
 import { OverlayWidgets } from './OverlayWidgets';
 import { WaypointsButtons } from '../WaypointsButtons';
-import { useRouteOverlayState, type RouteOverlayReducerState } from './reducer';
+import type { RunDisplayReducerState } from '../../hooks/useRunDisplayState';
+import type { RunDisplaySettings } from '../../hooks/useSettings';
 
-type RouteOverlayProps = RouteOverlayReducerState & {
+type RouteOverlayProps = RunDisplayReducerState & {
   routes: PublicRoute[];
   routeId: string;
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
   publicRunDisplayRef: RefObject<HTMLDivElement>;
-  showWaypoints: boolean;
-  mapStyle: MapStyle;
-  toggleShowWaypoints: () => void;
-  onMapStyleChange: (style: MapStyle) => void;
+  settings: RunDisplaySettings;
   setActiveRoute: (routeId: string) => void;
 };
 
@@ -41,22 +33,17 @@ export const RouteOverlay = ({
   openWidget,
   expandedWidget,
   activeDrawer,
-  visibleWidgets,
   routes,
   routeId,
   coordinates,
   elevations,
   publicRunDisplayRef,
-  showWaypoints,
-  mapStyle,
   waypoints,
   activeWaypoint,
+  settings,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
-  onMapStyleChange,
-  toggleVisibleWidget,
-  toggleShowWaypoints,
   setActiveWaypoint,
   setActiveRoute,
   resetState,
@@ -66,6 +53,7 @@ export const RouteOverlay = ({
     elevationWidgetActive,
   );
 
+  const { visibleWidgets, showWaypoints } = settings;
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
   const openDrawerSize =
@@ -159,15 +147,10 @@ export const RouteOverlay = ({
       </AnimatePresence>
 
       <SettingsDrawer
-        isOpen={activeDrawer === 'settings'}
+        settings={settings}
         width={settingsDrawerWidth}
-        visibleWidgets={visibleWidgets}
-        showWaypoints={showWaypoints}
-        mapStyle={mapStyle}
+        isOpen={activeDrawer === 'settings'}
         toggleDrawer={() => toggleDrawer('settings')}
-        toggleVisibleWidget={toggleVisibleWidget}
-        toggleShowWaypoints={toggleShowWaypoints}
-        onMapStyleChange={onMapStyleChange}
       />
 
       <motion.div
@@ -190,5 +173,3 @@ export const RouteOverlay = ({
     </div>
   );
 };
-
-export { useRouteOverlayState };

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { Coordinates } from '~/types';
 import { calculateDistance } from '~/utils/route';
 
-import type { WidgetBaseProps } from '../types';
+import type { WidgetBaseProps } from '../../types';
 import { WidgetContainer } from '../WidgetContainer';
 
 interface DistanceWidgetProps extends WidgetBaseProps {
