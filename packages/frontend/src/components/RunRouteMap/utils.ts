@@ -7,7 +7,6 @@ import type {
   InnerWayPointType,
   Bounds,
   Waypoint,
-  WaypointAmenity,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
 import { getWaypointIconSize } from '~/utils/route';
@@ -124,14 +123,13 @@ export const getWaypointMarkerElement = (
 };
 
 export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
-  const waypointAmenities: WaypointAmenity[] =
+  const waypointAmenities: InnerWayPointType[] =
     waypoint.amenities && waypoint.amenities.length > 0
-      ? [
-          { type: waypoint.type } as WaypointAmenity,
-          ...waypoint.amenities,
-        ].filter((amenity, index, self) => {
-          return self.findIndex((a) => a.type === amenity.type) === index;
-        })
+      ? [waypoint.type as InnerWayPointType, ...waypoint.amenities].filter(
+          (amenity, index, self) => {
+            return self.findIndex((a) => a === amenity) === index;
+          },
+        )
       : [];
 
   return new mapboxgl.Popup({
@@ -163,9 +161,9 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
                 (amenity) =>
                   `<div class="bg-secondary-500 flex h-6 w-6 items-center justify-center rounded-md shadow-sm">
                   <div
-                    class="scale-[1.1] text-white ${getWaypointIconSize(amenity.type).size}"
+                    class="scale-[1.1] text-white ${getWaypointIconSize(amenity).size}"
                   >
-                    ${ICONS[amenity.type]}
+                    ${ICONS[amenity]}
                   </div>
                 </div>`,
               )
