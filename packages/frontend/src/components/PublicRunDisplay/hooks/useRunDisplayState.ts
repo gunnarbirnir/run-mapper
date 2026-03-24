@@ -11,6 +11,7 @@ export interface RunDisplayState {
   activeDrawer: DrawerType | null;
   activeWaypoint: string | null;
   activePointOfInterest: string | null;
+  activePoiFromDrawer: boolean;
 }
 
 const initialState: RunDisplayState = {
@@ -20,6 +21,7 @@ const initialState: RunDisplayState = {
   activeDrawer: null,
   activeWaypoint: null,
   activePointOfInterest: null,
+  activePoiFromDrawer: false,
 };
 
 type RunDisplayAction =
@@ -40,7 +42,7 @@ type RunDisplayAction =
     }
   | {
       type: 'SET_ACTIVE_POINT_OF_INTEREST';
-      payload: string | null;
+      payload: { id: string | null; fromDrawer: boolean };
     }
   | {
       type: 'RESET_STATE';
@@ -62,11 +64,9 @@ const runDisplayReducer = (
             }
           : {
               // Open widget
+              ...initialState,
               activeWidget: action.payload,
               openWidget: action.payload,
-              activeDrawer: null,
-              activeWaypoint: null,
-              activePointOfInterest: null,
             }),
       };
     case 'WIDGET_ANIMATION_FINISHED':
@@ -92,33 +92,24 @@ const runDisplayReducer = (
             }
           : {
               // Open drawer
+              ...initialState,
               activeDrawer: action.payload,
-              activeWidget: null,
-              activeWaypoint: null,
-              activePointOfInterest: null,
-              openWidget: null,
-              expandedWidget: null,
             }),
       };
     case 'SET_ACTIVE_WAYPOINT':
       return {
-        ...state,
+        ...initialState,
         activeWaypoint: action.payload,
-        activePointOfInterest: null,
-        activeDrawer: null,
-        activeWidget: null,
-        openWidget: null,
-        expandedWidget: null,
       };
     case 'SET_ACTIVE_POINT_OF_INTEREST':
       return {
-        ...state,
-        activePointOfInterest: action.payload,
-        activeWaypoint: null,
-        activeDrawer: null,
-        activeWidget: null,
-        openWidget: null,
-        expandedWidget: null,
+        ...initialState,
+        activePointOfInterest: action.payload.id,
+        activePoiFromDrawer: action.payload.fromDrawer,
+        activeDrawer:
+          action.payload.id === null && state.activePoiFromDrawer
+            ? ('points-of-interest' as DrawerType)
+            : null,
       };
     case 'RESET_STATE':
       return {
@@ -161,10 +152,10 @@ export const useRunDisplayState = () => {
   );
 
   const setActivePointOfInterest = useCallback(
-    (pointOfInterest: string | null) => {
+    (pointOfInterest: string | null, fromDrawer: boolean = false) => {
       dispatch({
         type: 'SET_ACTIVE_POINT_OF_INTEREST',
-        payload: pointOfInterest,
+        payload: { id: pointOfInterest, fromDrawer },
       });
     },
     [dispatch],

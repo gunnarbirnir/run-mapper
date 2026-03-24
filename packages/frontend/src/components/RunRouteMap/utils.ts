@@ -11,7 +11,7 @@ import type {
   PointOfInterestType,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
-import { getWaypointPoiIconSize } from '~/utils/route';
+import { getWaypointPoiIconSize, getWaypointPoiIcon } from '~/utils/route';
 
 import {
   BOUNDS_PADDING,
@@ -19,7 +19,6 @@ import {
   LINE_OPACITY,
   LINE_WIDTH,
 } from './constants';
-import { ICONS } from './icons';
 import type { LineFeature } from './types';
 
 export const getPaddedBounds = (boundingBox: BoundingBox): Bounds => {
@@ -68,10 +67,6 @@ export const getRouteLayer = () => {
   } as const;
 };
 
-export const getIcon = (icon: string): string => {
-  return ICONS[icon as InnerWayPointType | PointOfInterestType] ?? '';
-};
-
 export const getMarkerElement = (
   color: string,
   hoverColor: string,
@@ -99,8 +94,7 @@ export const getMarkerElement = (
 
 export const getActiveMarkerElement = (): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-3 h-3 rounded-full`;
-  marker.style.backgroundColor = getCssVariableValue('--color-gray-900');
+  marker.className = `w-3 h-3 rounded-full bg-gray-900`;
 
   return marker;
 };
@@ -110,20 +104,11 @@ export const getWaypointMarkerElement = (
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
-  marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
-  marker.style.color = 'white';
-  marker.innerHTML = getIcon(type);
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-500 text-white hover:bg-secondary-600`;
+  marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
-
   marker.addEventListener('click', onClick);
-  marker.addEventListener('mouseenter', () => {
-    marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
-  });
-  marker.addEventListener('mouseleave', () => {
-    marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
-  });
 
   return marker;
 };
@@ -133,20 +118,11 @@ export const getPointOfInterestMarkerElement = (
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
-  marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
-  marker.style.color = 'white';
-  marker.innerHTML = getIcon(type);
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-600 text-white hover:bg-secondary-500`;
+  marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
-
   marker.addEventListener('click', onClick);
-  marker.addEventListener('mouseenter', () => {
-    marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
-  });
-  marker.addEventListener('mouseleave', () => {
-    marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
-  });
 
   return marker;
 };
@@ -192,7 +168,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
                   <div
                     class="scale-[1.1] text-white ${getWaypointPoiIconSize(amenity).size}"
                   >
-                    ${getIcon(amenity)}
+                    ${getWaypointPoiIcon(amenity)}
                   </div>
                 </div>`,
               )

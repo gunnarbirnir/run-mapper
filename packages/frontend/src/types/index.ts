@@ -31,14 +31,14 @@ export type Waypoint = {
 
 export type PointOfInterestType =
   | 'expo'
-  | 'food-and-drink'
+  | 'food-and-drinks'
   | 'entertainment'
   | 'aid-station'
   | 'parking'
   | 'restrooms'
   | 'information'
   | 'bag-drop-off'
-  | 'shower-and-changing-rooms'
+  | 'showers-and-changing-rooms'
   | 'award-ceremony'
   | 'warm-up-area'
   | 'spectator-area';

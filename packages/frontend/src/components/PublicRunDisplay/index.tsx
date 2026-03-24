@@ -107,6 +107,7 @@ export const PublicRunDisplay = ({
         coordinates={coordinates}
         elevations={elevations}
         waypoints={route.waypoints}
+        pointsOfInterest={run.pointsOfInterest}
         publicRunDisplayRef={publicRunDisplayRef}
         settings={settings}
         setActiveRoute={setActiveRoute}

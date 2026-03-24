@@ -5,7 +5,13 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { Icon, Tooltip } from '~/primitives';
-import type { Coordinates, Elevation, PublicRoute, Waypoint } from '~/types';
+import type {
+  Coordinates,
+  Elevation,
+  PointOfInterest,
+  PublicRoute,
+  Waypoint,
+} from '~/types';
 import { convertRemToPixels, spacingPx } from '~/utils';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 
@@ -16,6 +22,7 @@ import { OverlayWidgets } from './OverlayWidgets';
 import { WaypointsButtons } from '../WaypointsButtons';
 import type { RunDisplayReducerState } from '../../hooks/useRunDisplayState';
 import type { RunDisplaySettings } from '../../hooks/useSettings';
+import { PointsOfInterestDrawer } from '../PointsOfInterestDrawer';
 
 type RouteOverlayProps = RunDisplayReducerState & {
   routes: PublicRoute[];
@@ -23,6 +30,7 @@ type RouteOverlayProps = RunDisplayReducerState & {
   coordinates: Coordinates[];
   elevations: Elevation[];
   waypoints: Waypoint[];
+  pointsOfInterest: PointOfInterest[];
   publicRunDisplayRef: RefObject<HTMLDivElement>;
   settings: RunDisplaySettings;
   setActiveRoute: (routeId: string) => void;
@@ -39,12 +47,14 @@ export const RouteOverlay = ({
   elevations,
   publicRunDisplayRef,
   waypoints,
+  pointsOfInterest,
   activeWaypoint,
   settings,
   toggleActiveWidget,
   onWidgetAnimationFinished,
   toggleDrawer,
   setActiveWaypoint,
+  setActivePointOfInterest,
   setActiveRoute,
   resetState,
 }: RouteOverlayProps) => {
@@ -56,8 +66,13 @@ export const RouteOverlay = ({
   const { visibleWidgets, showWaypoints } = settings;
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
+  const pointsOfInterestDrawerWidth = convertRemToPixels('15rem');
   const openDrawerSize =
-    activeDrawer === 'settings' ? settingsDrawerWidth : null;
+    activeDrawer === 'settings'
+      ? settingsDrawerWidth
+      : activeDrawer === 'points-of-interest'
+        ? pointsOfInterestDrawerWidth
+        : null;
   const extendedWaypoints = useMemo(
     () =>
       coordinates.length > 0
@@ -116,7 +131,7 @@ export const RouteOverlay = ({
             buttonSize={optionItemSize}
             openDrawerSize={openDrawerSize}
             isInBackground={activeDrawer !== null}
-            onClick={() => setActiveWaypoint(startWaypointId)}
+            onClick={() => toggleDrawer('points-of-interest')}
           >
             <Icon name="location" className="size-6.5" />
           </OptionButton>
@@ -151,6 +166,17 @@ export const RouteOverlay = ({
         width={settingsDrawerWidth}
         isOpen={activeDrawer === 'settings'}
         toggleDrawer={() => toggleDrawer('settings')}
+      />
+      <PointsOfInterestDrawer
+        width={pointsOfInterestDrawerWidth}
+        isOpen={activeDrawer === 'points-of-interest'}
+        pointsOfInterest={pointsOfInterest}
+        waypoints={waypoints}
+        showPointsOfInterest={settings.showPointsOfInterest}
+        showWaypoints={settings.showWaypoints}
+        toggleDrawer={() => toggleDrawer('points-of-interest')}
+        setActivePointOfInterest={setActivePointOfInterest}
+        setActiveWaypoint={setActiveWaypoint}
       />
 
       <motion.div
