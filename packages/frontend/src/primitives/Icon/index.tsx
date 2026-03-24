@@ -23,6 +23,16 @@ import { Drop } from './Drop';
 import { Clock } from './Clock';
 import { Toilet } from './Toilet';
 import { Error } from './Error';
+import { Home } from './Home';
+import { Bag } from './Bag';
+import { Shower } from './Shower';
+import { Trophy } from './Trophy';
+import { Flame } from './Flame';
+import { People } from './People';
+import { Information } from './Information';
+import { Food } from './Food';
+import { Aid } from './Aid';
+import { Parking } from './Parking';
 
 import { cn } from '~/utils';
 
@@ -49,7 +59,17 @@ export type IconName =
   | 'drop'
   | 'clock'
   | 'toilet'
-  | 'error';
+  | 'error'
+  | 'home'
+  | 'bag'
+  | 'shower'
+  | 'trophy'
+  | 'flame'
+  | 'people'
+  | 'information'
+  | 'food'
+  | 'aid'
+  | 'parking';
 
 interface IconProps {
   name: IconName;
@@ -105,6 +125,26 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Toilet />;
     case 'error':
       return <Error />;
+    case 'home':
+      return <Home />;
+    case 'bag':
+      return <Bag />;
+    case 'shower':
+      return <Shower />;
+    case 'trophy':
+      return <Trophy />;
+    case 'flame':
+      return <Flame />;
+    case 'people':
+      return <People />;
+    case 'information':
+      return <Information />;
+    case 'food':
+      return <Food />;
+    case 'aid':
+      return <Aid />;
+    case 'parking':
+      return <Parking />;
     default:
       return null;
   }

@@ -11,7 +11,7 @@ import type {
   PointOfInterestType,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
-import { getWaypointIconSize, getPointOfInterestIconSize } from '~/utils/route';
+import { getWaypointPoiIconSize } from '~/utils/route';
 
 import {
   BOUNDS_PADDING,
@@ -68,6 +68,10 @@ export const getRouteLayer = () => {
   } as const;
 };
 
+export const getIcon = (icon: string): string => {
+  return ICONS[icon as InnerWayPointType | PointOfInterestType] ?? '';
+};
+
 export const getMarkerElement = (
   color: string,
   hoverColor: string,
@@ -109,8 +113,8 @@ export const getWaypointMarkerElement = (
   marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
   marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
   marker.style.color = 'white';
-  marker.innerHTML = ICONS[type as InnerWayPointType];
-  const iconSize = getWaypointIconSize(type);
+  marker.innerHTML = getIcon(type);
+  const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
 
   marker.addEventListener('click', onClick);
@@ -132,8 +136,8 @@ export const getPointOfInterestMarkerElement = (
   marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
   marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
   marker.style.color = 'white';
-  marker.innerHTML = ICONS[type as InnerWayPointType];
-  const iconSize = getPointOfInterestIconSize();
+  marker.innerHTML = getIcon(type);
+  const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
 
   marker.addEventListener('click', onClick);
@@ -186,9 +190,9 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
                 (amenity) =>
                   `<div class="bg-secondary-500 flex h-6 w-6 items-center justify-center rounded-md shadow-sm">
                   <div
-                    class="scale-[1.1] text-white ${getWaypointIconSize(amenity).size}"
+                    class="scale-[1.1] text-white ${getWaypointPoiIconSize(amenity).size}"
                   >
-                    ${ICONS[amenity]}
+                    ${getIcon(amenity)}
                   </div>
                 </div>`,
               )
