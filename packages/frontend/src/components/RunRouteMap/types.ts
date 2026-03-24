@@ -1,6 +1,12 @@
 import type { MutableRefObject } from 'react';
 
-import type { BoundingBox, Coordinates, Waypoint, Elevation } from '~/types';
+import type {
+  BoundingBox,
+  Coordinates,
+  Waypoint,
+  Elevation,
+  PointOfInterest,
+} from '~/types';
 
 import type { RunDisplaySettings } from '../PublicRunDisplay/hooks/useSettings';
 
@@ -30,11 +36,14 @@ export interface RouteMapProps extends MapState {
   boundingBox: BoundingBox;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
+  pointsOfInterest: PointOfInterest[];
   elevations: Elevation[];
   isFullscreen: boolean;
   hideActiveMarker?: boolean;
   activeWaypoint: string | null;
+  activePointOfInterest: string | null;
   settings: RunDisplaySettings;
-  onWaypointClick: (id: string) => void;
+  onWaypointClick: (id: string | null) => void;
+  onPointOfInterestClick: (id: string | null) => void;
   onReset: () => void;
 }

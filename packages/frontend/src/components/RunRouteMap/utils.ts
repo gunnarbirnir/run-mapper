@@ -7,9 +7,11 @@ import type {
   InnerWayPointType,
   Bounds,
   Waypoint,
+  PointOfInterest,
+  PointOfInterestType,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
-import { getWaypointIconSize } from '~/utils/route';
+import { getWaypointIconSize, getPointOfInterestIconSize } from '~/utils/route';
 
 import {
   BOUNDS_PADDING,
@@ -122,6 +124,29 @@ export const getWaypointMarkerElement = (
   return marker;
 };
 
+export const getPointOfInterestMarkerElement = (
+  type: PointOfInterestType,
+  onClick: () => void,
+): HTMLElement => {
+  const marker = document.createElement('div');
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer`;
+  marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
+  marker.style.color = 'white';
+  marker.innerHTML = ICONS[type as InnerWayPointType];
+  const iconSize = getPointOfInterestIconSize();
+  marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
+
+  marker.addEventListener('click', onClick);
+  marker.addEventListener('mouseenter', () => {
+    marker.style.backgroundColor = getCssVariableValue('--color-secondary-500');
+  });
+  marker.addEventListener('mouseleave', () => {
+    marker.style.backgroundColor = getCssVariableValue('--color-secondary-600');
+  });
+
+  return marker;
+};
+
 export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
   const waypointAmenities: InnerWayPointType[] =
     waypoint.amenities && waypoint.amenities.length > 0
@@ -136,9 +161,9 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
     closeButton: false,
     closeOnClick: false,
     offset: [0, -16],
-    className: 'waypoint-popup',
+    className: 'waypoint-poi-popup',
   }).setHTML(
-    `<div class="flex flex-col gap-1 max-w-60 min-w-40 max-h-60 overflow-y-auto p-3 pt-2">
+    `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3 pt-2">
       <h2 class="text-base font-medium text-gray-900">${waypoint.name}</h2>
       <div class="flex items-center gap-1">
         <div class="size-4 text-gray-500">
@@ -175,6 +200,38 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
   );
 };
 
+// Tab index of buttons comes after elevation graph
+export const getPointOfInterestTooltip = (
+  pointOfInterest: PointOfInterest,
+  onClose: () => void,
+): Popup => {
+  const tooltip = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    offset: [0, -16],
+    className: 'waypoint-poi-popup',
+  }).setHTML(
+    `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-base font-medium text-gray-900">${pointOfInterest.name}</h2>
+        <button class="bg-gray-200 text-gray-800 hover:bg-gray-300 size-6 rounded-full flex items-center justify-center cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="size-4" tab-index="50">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2.125" d="M5 19 19 5M19 19 5 5"/>
+          </svg>
+        </button>
+      </div>
+      ${pointOfInterest.description ? `<p class="text-sm text-gray-500 mt-1">${pointOfInterest.description}</p>` : ''}
+    </div>`,
+  );
+
+  const button = tooltip._content?.querySelector('button');
+  if (button) {
+    button.addEventListener('click', onClose);
+  }
+
+  return tooltip;
+};
+
 const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;
 const MIN_ROUTE_ANIMATION_DURATION = 1000;
 const MAX_ROUTE_ANIMATION_DURATION = 3000;
@@ -197,12 +254,16 @@ const WAYPOINT_BASE_LAT_OFFSET = 0.001;
 const WAYPOINT_OFFSET_MULTIPLIER_MIN = 1;
 const WAYPOINT_OFFSET_MULTIPLIER_MAX = 3;
 
-export const getWaypointLatOffset = (waypoint: Waypoint): number => {
+export const getTooltipLatOffset = ({
+  description,
+}: {
+  description?: string;
+}): number => {
   const multiplier = Math.min(
     WAYPOINT_OFFSET_MULTIPLIER_MAX,
     Math.max(
       WAYPOINT_OFFSET_MULTIPLIER_MIN,
-      Math.floor((waypoint.description?.length ?? 0) / 100),
+      Math.floor((description?.length ?? 0) / 100),
     ),
   );
 

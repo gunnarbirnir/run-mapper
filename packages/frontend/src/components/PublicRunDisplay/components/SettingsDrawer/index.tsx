@@ -23,9 +23,11 @@ export const SettingsDrawer = ({
   settings: {
     visibleWidgets,
     showWaypoints,
+    showPointsOfInterest,
     mapStyle,
     toggleVisibleWidget,
     toggleShowWaypoints,
+    toggleShowPointsOfInterest,
     setMapStyle,
   },
   isOpen,
@@ -71,6 +73,13 @@ export const SettingsDrawer = ({
         tabIndex={TAB_INDEX}
       >
         Waypoints
+      </VisibleToggle>
+      <VisibleToggle
+        isVisible={showPointsOfInterest}
+        onToggle={toggleShowPointsOfInterest}
+        tabIndex={TAB_INDEX}
+      >
+        Points of interest
       </VisibleToggle>
       <SectionLabel>Map style</SectionLabel>
       <Radio.Group

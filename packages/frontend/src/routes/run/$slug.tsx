@@ -73,7 +73,7 @@ const ErrorMessage = ({ message }: { message: string }) => {
   return (
     <Fallback>
       <div className="flex max-w-md flex-col items-center text-center">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Icon name="error" className="text-primary-500 size-8" />
           <Text
             element="h1"

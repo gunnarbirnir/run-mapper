@@ -9,7 +9,7 @@ import {
   getMarkerElement,
   getWaypointTooltip,
   getWaypointMarkerElement,
-  getWaypointLatOffset,
+  getTooltipLatOffset,
 } from '../utils';
 import { useHandlers } from './useHandlers';
 
@@ -155,7 +155,7 @@ export const useWaypoints = ({
       center: [
         activeWaypointDetails.coordinates.lng,
         activeWaypointDetails.coordinates.lat +
-          getWaypointLatOffset(activeWaypointDetails),
+          getTooltipLatOffset(activeWaypointDetails),
       ],
       zoom: WAYPOINT_ZOOM,
       duration: FLY_TO_WAYPOINT_DURATION,

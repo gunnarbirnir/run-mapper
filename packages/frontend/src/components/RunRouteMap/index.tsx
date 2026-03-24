@@ -14,6 +14,7 @@ import { useMapRoute } from './hooks/useMapRoute';
 import { useMapState } from './hooks/useMapState';
 import { useMapStyle } from './hooks/useMapStyle';
 import { useWaypoints } from './hooks/useWaypoints';
+import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import type { RouteMapProps } from './types';
 import { getPaddedBounds } from './utils';
 
@@ -23,8 +24,10 @@ export const RunRouteMap = ({
   boundingBox,
   coordinates,
   waypoints,
+  pointsOfInterest,
   elevations,
   activeWaypoint,
+  activePointOfInterest,
   hideActiveMarker = false,
   routeIsAnimating,
   isMapLoaded,
@@ -34,11 +37,12 @@ export const RunRouteMap = ({
   animateRouteRef,
   fitToInitialBoundsRef,
   isResettingBoundsRef,
-  settings: { mapStyle, showWaypoints },
+  settings: { mapStyle, showWaypoints, showPointsOfInterest },
   setIsMapLoaded,
   setIsAtInitialBounds,
   setRouteIsAnimating,
   onWaypointClick,
+  onPointOfInterestClick,
   onReset,
   animateRoute,
   fitToInitialBounds,
@@ -93,6 +97,16 @@ export const RunRouteMap = ({
     onWaypointClick,
     mapRef,
     fitToInitialBounds,
+  });
+
+  usePointsOfInterest({
+    isMapLoaded,
+    pointsOfInterest,
+    showPointsOfInterest,
+    activePointOfInterest,
+    onPointOfInterestClick,
+    fitToInitialBounds,
+    mapRef,
   });
 
   useFitToInitialBounds({

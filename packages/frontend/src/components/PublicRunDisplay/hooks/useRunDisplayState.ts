@@ -10,6 +10,7 @@ export interface RunDisplayState {
   expandedWidget: WidgetType | null;
   activeDrawer: DrawerType | null;
   activeWaypoint: string | null;
+  activePointOfInterest: string | null;
 }
 
 const initialState: RunDisplayState = {
@@ -18,6 +19,7 @@ const initialState: RunDisplayState = {
   expandedWidget: null,
   activeDrawer: null,
   activeWaypoint: null,
+  activePointOfInterest: null,
 };
 
 type RunDisplayAction =
@@ -34,6 +36,10 @@ type RunDisplayAction =
     }
   | {
       type: 'SET_ACTIVE_WAYPOINT';
+      payload: string | null;
+    }
+  | {
+      type: 'SET_ACTIVE_POINT_OF_INTEREST';
       payload: string | null;
     }
   | {
@@ -60,6 +66,7 @@ const runDisplayReducer = (
               openWidget: action.payload,
               activeDrawer: null,
               activeWaypoint: null,
+              activePointOfInterest: null,
             }),
       };
     case 'WIDGET_ANIMATION_FINISHED':
@@ -88,6 +95,7 @@ const runDisplayReducer = (
               activeDrawer: action.payload,
               activeWidget: null,
               activeWaypoint: null,
+              activePointOfInterest: null,
               openWidget: null,
               expandedWidget: null,
             }),
@@ -96,6 +104,17 @@ const runDisplayReducer = (
       return {
         ...state,
         activeWaypoint: action.payload,
+        activePointOfInterest: null,
+        activeDrawer: null,
+        activeWidget: null,
+        openWidget: null,
+        expandedWidget: null,
+      };
+    case 'SET_ACTIVE_POINT_OF_INTEREST':
+      return {
+        ...state,
+        activePointOfInterest: action.payload,
+        activeWaypoint: null,
         activeDrawer: null,
         activeWidget: null,
         openWidget: null,
@@ -141,6 +160,16 @@ export const useRunDisplayState = () => {
     [dispatch],
   );
 
+  const setActivePointOfInterest = useCallback(
+    (pointOfInterest: string | null) => {
+      dispatch({
+        type: 'SET_ACTIVE_POINT_OF_INTEREST',
+        payload: pointOfInterest,
+      });
+    },
+    [dispatch],
+  );
+
   const resetState = useCallback(() => {
     dispatch({ type: 'RESET_STATE' });
   }, [dispatch]);
@@ -152,6 +181,7 @@ export const useRunDisplayState = () => {
       onWidgetAnimationFinished,
       toggleDrawer,
       setActiveWaypoint,
+      setActivePointOfInterest,
       resetState,
     }),
     [
@@ -160,6 +190,7 @@ export const useRunDisplayState = () => {
       onWidgetAnimationFinished,
       toggleDrawer,
       setActiveWaypoint,
+      setActivePointOfInterest,
       resetState,
     ],
   );

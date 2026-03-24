@@ -82,7 +82,7 @@ path:focus {
   outline-color: var(--color-secondary-500);
 }
 
-.waypoint-popup .mapboxgl-popup-content {
+.waypoint-poi-popup .mapboxgl-popup-content {
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgb(0 0 0 / 0.2);
   padding: 0px;

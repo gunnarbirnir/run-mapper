@@ -141,6 +141,11 @@ export const getWaypointIconSize = (
   }
 };
 
+export const getPointOfInterestIconSize = () // type: PointOfInterestType,
+: { height: string; width: string; size: string } => {
+  return { height: 'h-3.5', width: 'w-3.5', size: 'size-3.5' };
+};
+
 export const getWaypointLabel = (type: WayPointType): string => {
   switch (type) {
     case 'energy':

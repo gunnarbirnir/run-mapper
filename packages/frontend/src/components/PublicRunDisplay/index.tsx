@@ -37,14 +37,15 @@ export const PublicRunDisplay = ({
     () => processRunRoute(route.coordinates),
     [route.coordinates],
   );
-  const waypoints = useMemo(() => route.waypoints, [route.waypoints]);
 
   const runDisplayState = useRunDisplayState();
   const {
     activeWaypoint,
+    activePointOfInterest,
     activeWidget,
     activeDrawer,
     setActiveWaypoint,
+    setActivePointOfInterest,
     resetState,
   } = runDisplayState;
   const settings = useSettings();
@@ -73,14 +74,17 @@ export const PublicRunDisplay = ({
           isFullscreen={isFullscreen}
           boundingBox={route.boundingBox}
           coordinates={coordinates}
-          waypoints={waypoints}
+          waypoints={route.waypoints}
+          pointsOfInterest={run.pointsOfInterest}
           elevations={elevations}
           activeWaypoint={activeWaypoint}
+          activePointOfInterest={activePointOfInterest}
           hideActiveMarker={
             elevationWidgetActive || anyDrawerActive || routeIsAnimating
           }
           settings={settings}
           onWaypointClick={setActiveWaypoint}
+          onPointOfInterestClick={setActivePointOfInterest}
           onReset={resetState}
         />
       </div>
@@ -102,7 +106,7 @@ export const PublicRunDisplay = ({
         routeId={route.id}
         coordinates={coordinates}
         elevations={elevations}
-        waypoints={waypoints}
+        waypoints={route.waypoints}
         publicRunDisplayRef={publicRunDisplayRef}
         settings={settings}
         setActiveRoute={setActiveRoute}

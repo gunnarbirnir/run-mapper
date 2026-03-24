@@ -24,7 +24,6 @@ export const useWaypointsHotkeys = ({
   });
 
   useHotkey('Escape', resetState, {
-    enabled: true,
     conflictBehavior: 'allow',
   });
 };
