@@ -15,6 +15,7 @@ type ButtonProps = {
   disabled?: boolean;
   isLoading?: boolean;
   color?: ButtonColor;
+  size?: 'small' | 'regular';
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
@@ -28,6 +29,7 @@ export const Button = ({
   disabled = false,
   isLoading = false,
   color = 'black',
+  size = 'regular',
   ...props
 }: ButtonProps) => {
   const isDisabled = disabled || isLoading;
@@ -36,6 +38,7 @@ export const Button = ({
     BASE_CLASS_NAME,
     getColorClassName(color, { disabled: isDisabled }),
     { [ENABLED_CLASS_NAME]: !isDisabled },
+    { 'px-4 py-1.5 text-sm': size === 'small' },
     className,
   );
 

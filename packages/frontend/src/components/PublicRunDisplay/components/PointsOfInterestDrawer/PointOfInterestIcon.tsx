@@ -10,7 +10,7 @@ export const PointOfInterestIcon = ({ type }: PointOfInterestIconProps) => {
   const iconSize = getWaypointPoiIconSize(type);
 
   return (
-    <div className="bg-secondary-600 flex h-6.5 w-6.5 items-center justify-center rounded-full border-3 border-white text-white shadow-md">
+    <div className="bg-secondary-600 flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-full border-3 border-white text-white shadow-md">
       <span
         dangerouslySetInnerHTML={{ __html: groupIcon }}
         className={iconSize.width}

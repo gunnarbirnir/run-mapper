@@ -50,12 +50,14 @@ export const PointOfInterestNestedItem = ({
           duration: DEFAULT_FADE_IN_DURATION + index * ANIMATION_STAGGER,
           ease: DEFAULT_EASING,
         }}
-        className={cn('w-full rounded-md px-2 py-0.5', {
+        className={cn('w-full truncate rounded-md px-2 py-0.5', {
           'cursor-pointer hover:bg-gray-200': isClickable,
         })}
         onClick={handleClick}
       >
-        <Text className="text-sm text-gray-700">{pointOfInterest.name}</Text>
+        <Text className="truncate text-sm text-gray-700">
+          {pointOfInterest.name}
+        </Text>
       </motion.div>
     </div>
   );

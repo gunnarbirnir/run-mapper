@@ -1,11 +1,13 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
 import { useMemo, useCallback, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer } from '~/primitives';
 import type { PointOfInterest, Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { PointOfInterestGroup } from './PointOfInterestGroup';
+import { NotVisibleWarning } from './NotVisibleWarning';
 
 interface SettingsDrawerProps {
   isOpen: boolean;
@@ -17,6 +19,7 @@ interface SettingsDrawerProps {
   toggleDrawer: () => void;
   setActivePointOfInterest: (poiId: string, fromDrawer: boolean) => void;
   setActiveWaypoint: (waypointId: string) => void;
+  setShowPointsOfInterest: () => void;
 }
 
 const TAB_INDEX = 25;
@@ -46,6 +49,7 @@ export const PointsOfInterestDrawer = ({
   toggleDrawer,
   setActivePointOfInterest,
   // setActiveWaypoint,
+  setShowPointsOfInterest,
 }: SettingsDrawerProps) => {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {},
@@ -96,6 +100,17 @@ export const PointsOfInterestDrawer = ({
       hideCloseButton={!isSmallScreen}
       onClose={toggleDrawer}
     >
+      <AnimatePresence>
+        {!showPointsOfInterest && (
+          <NotVisibleWarning
+            className="mb-3"
+            tabIndex={TAB_INDEX}
+            onShowClick={setShowPointsOfInterest}
+          >
+            Points of interest are not visible. Click to show.
+          </NotVisibleWarning>
+        )}
+      </AnimatePresence>
       <div className="flex flex-col gap-1">
         {poiGroups.map((poiGroup) => (
           <PointOfInterestGroup

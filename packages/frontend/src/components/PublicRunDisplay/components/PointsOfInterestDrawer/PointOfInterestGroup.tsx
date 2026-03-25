@@ -66,15 +66,18 @@ export const PointOfInterestGroup = ({
         onClick={() => toggleExpanded(groupType)}
         tabIndex={tabIndex}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 truncate">
           <PointOfInterestIcon type={groupType} />
-          <Text>{groupLabel}</Text>
+          <Text className="truncate">{groupLabel}</Text>
         </div>
         <Icon
           name="chevron"
-          className={cn('size-4 rotate-90 transition-transform ease-out', {
-            'rotate-180': isExpanded,
-          })}
+          className={cn(
+            'size-4 shrink-0 rotate-90 transition-transform ease-out',
+            {
+              'rotate-180': isExpanded,
+            },
+          )}
           style={{
             transitionDuration: `${DEFAULT_FADE_IN_DURATION * 1000}ms`,
           }}

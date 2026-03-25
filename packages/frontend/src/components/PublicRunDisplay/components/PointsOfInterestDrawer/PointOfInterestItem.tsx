@@ -44,7 +44,7 @@ export const PointOfInterestItem = ({
       tabIndex={tabIndex}
     >
       <PointOfInterestIcon type={pointOfInterest.type} />
-      <Text>{pointOfInterest.name}</Text>
+      <Text className="truncate">{pointOfInterest.name}</Text>
     </div>
   );
 };

@@ -177,6 +177,7 @@ export const RouteOverlay = ({
         toggleDrawer={() => toggleDrawer('points-of-interest')}
         setActivePointOfInterest={setActivePointOfInterest}
         setActiveWaypoint={setActiveWaypoint}
+        setShowPointsOfInterest={settings.toggleShowPointsOfInterest}
       />
 
       <motion.div
