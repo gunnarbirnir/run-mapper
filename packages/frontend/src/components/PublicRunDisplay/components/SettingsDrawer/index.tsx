@@ -68,18 +68,18 @@ export const SettingsDrawer = ({
       </VisibleToggle>
       <SectionLabel>Map</SectionLabel>
       <VisibleToggle
-        isVisible={showWaypoints}
-        onToggle={toggleShowWaypoints}
-        tabIndex={TAB_INDEX}
-      >
-        Waypoints
-      </VisibleToggle>
-      <VisibleToggle
         isVisible={showPointsOfInterest}
         onToggle={toggleShowPointsOfInterest}
         tabIndex={TAB_INDEX}
       >
         Points of interest
+      </VisibleToggle>
+      <VisibleToggle
+        isVisible={showWaypoints}
+        onToggle={toggleShowWaypoints}
+        tabIndex={TAB_INDEX}
+      >
+        Waypoints
       </VisibleToggle>
       <SectionLabel>Map style</SectionLabel>
       <Radio.Group

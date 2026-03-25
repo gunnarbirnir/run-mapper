@@ -5,7 +5,7 @@ interface UseWaypointsHotkeysProps {
   previousDisabled: boolean;
   goToPreviousWaypoint: () => void;
   goToNextWaypoint: () => void;
-  resetState: () => void;
+  closeWaypointsButtons: () => void;
 }
 
 export const useWaypointsHotkeys = ({
@@ -13,7 +13,7 @@ export const useWaypointsHotkeys = ({
   previousDisabled,
   goToPreviousWaypoint,
   goToNextWaypoint,
-  resetState,
+  closeWaypointsButtons,
 }: UseWaypointsHotkeysProps) => {
   useHotkey('ArrowLeft', goToPreviousWaypoint, {
     enabled: !previousDisabled,
@@ -23,7 +23,7 @@ export const useWaypointsHotkeys = ({
     enabled: !nextDisabled,
   });
 
-  useHotkey('Escape', resetState, {
+  useHotkey('Escape', closeWaypointsButtons, {
     conflictBehavior: 'allow',
   });
 };

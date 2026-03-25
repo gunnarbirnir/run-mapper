@@ -10,6 +10,7 @@ export interface RunDisplayState {
   expandedWidget: WidgetType | null;
   activeDrawer: DrawerType | null;
   activeWaypoint: string | null;
+  activeWaypointFromDrawer: boolean;
   activePointOfInterest: string | null;
   activePoiFromDrawer: boolean;
 }
@@ -20,6 +21,7 @@ const initialState: RunDisplayState = {
   expandedWidget: null,
   activeDrawer: null,
   activeWaypoint: null,
+  activeWaypointFromDrawer: false,
   activePointOfInterest: null,
   activePoiFromDrawer: false,
 };
@@ -38,7 +40,7 @@ type RunDisplayAction =
     }
   | {
       type: 'SET_ACTIVE_WAYPOINT';
-      payload: string | null;
+      payload: { id: string | null; fromDrawer: boolean };
     }
   | {
       type: 'SET_ACTIVE_POINT_OF_INTEREST';
@@ -99,7 +101,12 @@ const runDisplayReducer = (
     case 'SET_ACTIVE_WAYPOINT':
       return {
         ...initialState,
-        activeWaypoint: action.payload,
+        activeWaypoint: action.payload.id,
+        activeWaypointFromDrawer: action.payload.fromDrawer,
+        activeDrawer:
+          action.payload.id === null && state.activeWaypointFromDrawer
+            ? ('points-of-interest' as DrawerType)
+            : null,
       };
     case 'SET_ACTIVE_POINT_OF_INTEREST':
       return {
@@ -142,10 +149,10 @@ export const useRunDisplayState = () => {
   );
 
   const setActiveWaypoint = useCallback(
-    (waypoint: string | null) => {
+    (waypoint: string | null, fromDrawer: boolean = false) => {
       dispatch({
         type: 'SET_ACTIVE_WAYPOINT',
-        payload: waypoint,
+        payload: { id: waypoint, fromDrawer },
       });
     },
     [dispatch],

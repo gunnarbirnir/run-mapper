@@ -50,7 +50,7 @@ export const PointOfInterestNestedItem = ({
           duration: DEFAULT_FADE_IN_DURATION + index * ANIMATION_STAGGER,
           ease: DEFAULT_EASING,
         }}
-        className={cn('w-full truncate rounded-md px-2 py-0.5', {
+        className={cn('w-full min-w-0 rounded-md px-2 py-0.5', {
           'cursor-pointer hover:bg-gray-200': isClickable,
         })}
         onClick={handleClick}

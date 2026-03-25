@@ -66,7 +66,7 @@ export const PointOfInterestGroup = ({
         onClick={() => toggleExpanded(groupType)}
         tabIndex={tabIndex}
       >
-        <div className="flex items-center gap-2 truncate">
+        <div className="flex min-w-0 items-center gap-2">
           <PointOfInterestIcon type={groupType} />
           <Text className="truncate">{groupLabel}</Text>
         </div>

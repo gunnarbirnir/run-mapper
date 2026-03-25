@@ -12,8 +12,8 @@ import { useWaypointsHotkeys } from './useWaypointsHotkeys';
 interface WaypointsButtonsProps {
   waypoints: Waypoint[];
   activeWaypoint: string;
-  setActiveWaypoint: (waypoint: string) => void;
-  resetState: () => void;
+  activeWaypointFromDrawer: boolean;
+  setActiveWaypoint: (waypoint: string | null, fromDrawer?: boolean) => void;
 }
 
 const FADE_IN_DISTANCE = 20;
@@ -23,8 +23,8 @@ const TAB_INDEX = 35;
 export const WaypointsButtons = ({
   waypoints,
   activeWaypoint,
+  activeWaypointFromDrawer,
   setActiveWaypoint,
-  resetState,
 }: WaypointsButtonsProps) => {
   const { height: graphHeight } = useElevationGraphHeight();
 
@@ -40,19 +40,23 @@ export const WaypointsButtons = ({
   const nextDisabled = activeWaypointIndex === waypoints.length - 1;
 
   const goToPreviousWaypoint = useCallback(() => {
-    setActiveWaypoint(previousWaypoint.id);
-  }, [previousWaypoint, setActiveWaypoint]);
+    setActiveWaypoint(previousWaypoint.id, activeWaypointFromDrawer);
+  }, [previousWaypoint, activeWaypointFromDrawer, setActiveWaypoint]);
 
   const goToNextWaypoint = useCallback(() => {
-    setActiveWaypoint(nextWaypoint.id);
-  }, [nextWaypoint, setActiveWaypoint]);
+    setActiveWaypoint(nextWaypoint.id, activeWaypointFromDrawer);
+  }, [nextWaypoint, activeWaypointFromDrawer, setActiveWaypoint]);
+
+  const closeWaypointsButtons = useCallback(() => {
+    setActiveWaypoint(null);
+  }, [setActiveWaypoint]);
 
   useWaypointsHotkeys({
     nextDisabled,
     previousDisabled,
     goToPreviousWaypoint,
     goToNextWaypoint,
-    resetState,
+    closeWaypointsButtons,
   });
 
   if (!activeWaypointDetails) {
@@ -89,7 +93,11 @@ export const WaypointsButtons = ({
           <Icon name="arrow" className="size-5 rotate-90" />
         </RoundButton>
       </div>
-      <RoundButton color="gray" onClick={resetState} tabIndex={TAB_INDEX}>
+      <RoundButton
+        color="gray"
+        onClick={closeWaypointsButtons}
+        tabIndex={TAB_INDEX}
+      >
         <Icon name="close" className="size-5" />
       </RoundButton>
     </motion.div>

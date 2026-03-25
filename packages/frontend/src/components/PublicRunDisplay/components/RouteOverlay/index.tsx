@@ -49,6 +49,7 @@ export const RouteOverlay = ({
   waypoints,
   pointsOfInterest,
   activeWaypoint,
+  activeWaypointFromDrawer,
   settings,
   toggleActiveWidget,
   onWidgetAnimationFinished,
@@ -63,7 +64,6 @@ export const RouteOverlay = ({
     elevationWidgetActive,
   );
 
-  const { visibleWidgets, showWaypoints } = settings;
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
   const pointsOfInterestDrawerWidth = convertRemToPixels('15rem');
@@ -103,7 +103,7 @@ export const RouteOverlay = ({
         activeWidget={activeWidget}
         openWidget={openWidget}
         expandedWidget={expandedWidget}
-        visibleWidgets={visibleWidgets}
+        visibleWidgets={settings.visibleWidgets}
         coordinates={coordinates}
         elevations={elevations}
         toggleActiveWidget={toggleActiveWidget}
@@ -124,18 +124,16 @@ export const RouteOverlay = ({
             <Icon name="close" className="size-5.5" />
           )}
         </OptionButton>
-        {showWaypoints && (
-          <OptionButton
-            index={optionsButtonIndex++}
-            tooltipLabel="Points of interest"
-            buttonSize={optionItemSize}
-            openDrawerSize={openDrawerSize}
-            isInBackground={activeDrawer !== null}
-            onClick={() => toggleDrawer('points-of-interest')}
-          >
-            <Icon name="location" className="size-6.5" />
-          </OptionButton>
-        )}
+        <OptionButton
+          index={optionsButtonIndex++}
+          tooltipLabel="Points of interest"
+          buttonSize={optionItemSize}
+          openDrawerSize={openDrawerSize}
+          isInBackground={activeDrawer !== null}
+          onClick={() => toggleDrawer('points-of-interest')}
+        >
+          <Icon name="location" className="size-6.5" />
+        </OptionButton>
       </Tooltip.Provider>
 
       <AnimatePresence>
@@ -155,8 +153,8 @@ export const RouteOverlay = ({
           <WaypointsButtons
             waypoints={extendedWaypoints}
             activeWaypoint={activeWaypoint}
+            activeWaypointFromDrawer={activeWaypointFromDrawer}
             setActiveWaypoint={setActiveWaypoint}
-            resetState={resetState}
           />
         )}
       </AnimatePresence>
@@ -171,13 +169,14 @@ export const RouteOverlay = ({
         width={pointsOfInterestDrawerWidth}
         isOpen={activeDrawer === 'points-of-interest'}
         pointsOfInterest={pointsOfInterest}
-        waypoints={waypoints}
+        waypoints={extendedWaypoints}
         showPointsOfInterest={settings.showPointsOfInterest}
         showWaypoints={settings.showWaypoints}
         toggleDrawer={() => toggleDrawer('points-of-interest')}
         setActivePointOfInterest={setActivePointOfInterest}
         setActiveWaypoint={setActiveWaypoint}
         setShowPointsOfInterest={settings.toggleShowPointsOfInterest}
+        setShowWaypoints={settings.toggleShowWaypoints}
       />
 
       <motion.div
