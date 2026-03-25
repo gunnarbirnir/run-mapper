@@ -76,6 +76,19 @@ path:focus {
   --color-error-800: #a50036;
   --color-error-900: #8b0836;
   --color-error-950: #4d0218;
+
+  /* Amber from Tailwind */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c6;
+  --color-warning-200: #fee685;
+  --color-warning-300: #ffd230;
+  --color-warning-400: #ffb93b;
+  --color-warning-500: #fe9a37;
+  --color-warning-600: #e1712b;
+  --color-warning-700: #bb4d1a;
+  --color-warning-800: #973c08;
+  --color-warning-900: #7b3306;
+  --color-warning-950: #461901;
 }
 
 * {

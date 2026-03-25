@@ -1,5 +1,5 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 
 import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer } from '~/primitives';
@@ -19,8 +19,7 @@ interface SettingsDrawerProps {
   setActiveWaypoint: (waypointId: string) => void;
 }
 
-// const TAB_INDEX = 25;
-// const ALL_EXPANDED_MAX = 10;
+const TAB_INDEX = 25;
 
 const POI_ORDER = [
   'expo',
@@ -48,7 +47,11 @@ export const PointsOfInterestDrawer = ({
   setActivePointOfInterest,
   // setActiveWaypoint,
 }: SettingsDrawerProps) => {
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {},
+  );
   const { isSmallScreen } = useMediaQuery();
+
   const poiGroups = useMemo(() => {
     const groups = pointsOfInterest.reduce(
       (acc: Record<string, PointOfInterest[]>, poi) => {
@@ -64,14 +67,20 @@ export const PointsOfInterestDrawer = ({
     );
   }, [pointsOfInterest]);
 
-  // const allExpanded = poiGroups.length <= ALL_EXPANDED_MAX;
-
   const handleSetActivePointOfInterest = useCallback(
     (poiId: string) => {
       setActivePointOfInterest(poiId, true);
     },
     [setActivePointOfInterest],
   );
+
+  const handleSetExpanded = useCallback((groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newExpandedGroups = { ...prev };
+      newExpandedGroups[groupId] = !newExpandedGroups[groupId];
+      return newExpandedGroups;
+    });
+  }, []);
 
   useHotkey('I', () => {
     toggleDrawer();
@@ -93,6 +102,9 @@ export const PointsOfInterestDrawer = ({
             key={poiGroup[0].type}
             pointsOfInterest={poiGroup}
             isClickable={showPointsOfInterest}
+            isExpanded={Boolean(expandedGroups[poiGroup[0].type])}
+            tabIndex={TAB_INDEX}
+            toggleExpanded={handleSetExpanded}
             setActivePointOfInterest={handleSetActivePointOfInterest}
           />
         ))}

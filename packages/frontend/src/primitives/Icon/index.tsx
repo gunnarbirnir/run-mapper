@@ -33,6 +33,7 @@ import { Information } from './Information';
 import { Food } from './Food';
 import { Aid } from './Aid';
 import { Parking } from './Parking';
+import { Chevron } from './Chevron';
 
 import { cn } from '~/utils';
 
@@ -69,7 +70,8 @@ export type IconName =
   | 'information'
   | 'food'
   | 'aid'
-  | 'parking';
+  | 'parking'
+  | 'chevron';
 
 interface IconProps {
   name: IconName;
@@ -145,6 +147,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Aid />;
     case 'parking':
       return <Parking />;
+    case 'chevron':
+      return <Chevron />;
     default:
       return null;
   }

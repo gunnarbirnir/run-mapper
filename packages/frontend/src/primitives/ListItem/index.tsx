@@ -33,7 +33,7 @@ const ListItem = ({
             />
           </div>
         )}
-        <Text variant="medium">{label}</Text>
+        <Text>{label}</Text>
       </div>
       <Text variant="subtle">{value}</Text>
     </div>
