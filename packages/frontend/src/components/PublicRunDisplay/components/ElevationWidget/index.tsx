@@ -10,7 +10,7 @@ import {
   calculateMinElevation,
 } from '~/utils/route';
 
-import type { WidgetBaseProps } from '../types';
+import type { WidgetBaseProps } from '../../types';
 import { WidgetContainer } from '../WidgetContainer';
 
 export interface ElevationWidgetProps extends WidgetBaseProps {

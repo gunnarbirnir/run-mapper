@@ -1,4 +1,12 @@
-import type { Coordinates, Elevation, Waypoint, WayPointType } from '~/types';
+import type {
+  Coordinates,
+  Elevation,
+  Waypoint,
+  WayPointType,
+  PointOfInterestType,
+  InnerWayPointType,
+} from '~/types';
+import { MAP_ICONS } from '~/constants/mapIcons';
 
 export const haversineDistance = (
   coord1: Coordinates,
@@ -129,19 +137,27 @@ export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
   };
 };
 
-export const getWaypointIconSize = (
-  type: WayPointType,
+export const getWaypointPoiIcon = (icon: string): string => {
+  return MAP_ICONS[icon as InnerWayPointType | PointOfInterestType] ?? '';
+};
+
+export const getWaypointPoiIconSize = (
+  type: WayPointType | PointOfInterestType,
 ): { height: string; width: string; size: string } => {
   switch (type) {
     case 'energy':
     case 'entertainment':
       return { height: 'h-4', width: 'w-4', size: 'size-4' };
+    case 'award-ceremony':
+      return { height: 'h-3', width: 'w-3', size: 'size-3' };
     default:
       return { height: 'h-3.5', width: 'w-3.5', size: 'size-3.5' };
   }
 };
 
-export const getWaypointLabel = (type: WayPointType): string => {
+export const getWaypointPoiLabel = (
+  type: WayPointType | PointOfInterestType,
+): string => {
   switch (type) {
     case 'energy':
       return 'Energy';
@@ -157,7 +173,27 @@ export const getWaypointLabel = (type: WayPointType): string => {
       return 'Start';
     case 'end':
       return 'End';
+    case 'expo':
+      return 'Expo';
+    case 'bag-drop-off':
+      return 'Bag drop off';
+    case 'warm-up-area':
+      return 'Warm up area';
+    case 'food-and-drinks':
+      return 'Food and drinks';
+    case 'spectator-area':
+      return 'Spectator area';
+    case 'aid-station':
+      return 'Aid station';
+    case 'showers-and-changing-rooms':
+      return 'Showers and changing rooms';
+    case 'award-ceremony':
+      return 'Award ceremony';
+    case 'information':
+      return 'Information';
+    case 'parking':
+      return 'Parking';
     default:
-      return ' ';
+      return type;
   }
 };

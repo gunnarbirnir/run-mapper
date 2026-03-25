@@ -4,19 +4,19 @@ import type {
   BoundingBox,
   Coordinates,
   Waypoint,
-  MapStyle,
   Elevation,
+  PointOfInterest,
 } from '~/types';
+
+import type { RunDisplaySettings } from '../PublicRunDisplay/hooks/useSettings';
 
 export type LineFeature = GeoJSON.Feature<GeoJSON.LineString>;
 
 export interface MapState {
-  mapStyle: MapStyle;
-  showWaypoints: boolean;
+  isMapLoaded: boolean;
   isAtInitialBounds: boolean;
   routeIsAnimating: boolean;
-  setMapStyle: (mapStyle: MapStyle) => void;
-  setShowWaypoints: (showWaypoints: boolean) => void;
+  setIsMapLoaded: (isMapLoaded: boolean) => void;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   setRouteIsAnimating: (routeIsAnimating: boolean) => void;
   animateRouteRef: MutableRefObject<(() => void) | null>;
@@ -26,7 +26,6 @@ export interface MapState {
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
   isResettingBoundsRef: MutableRefObject<boolean>;
   animateRoute: () => void;
-  toggleShowWaypoints: () => void;
   setActiveMarkerIndex: (updatedIndex: number | null) => void;
   fitToInitialBounds: () => void;
 }
@@ -37,10 +36,14 @@ export interface RouteMapProps extends MapState {
   boundingBox: BoundingBox;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
+  pointsOfInterest: PointOfInterest[];
   elevations: Elevation[];
   isFullscreen: boolean;
   hideActiveMarker?: boolean;
   activeWaypoint: string | null;
-  onWaypointClick: (id: string) => void;
-  resetOverlayState: () => void;
+  activePointOfInterest: string | null;
+  settings: RunDisplaySettings;
+  onWaypointClick: (id: string | null) => void;
+  onPointOfInterestClick: (id: string | null) => void;
+  onReset: () => void;
 }

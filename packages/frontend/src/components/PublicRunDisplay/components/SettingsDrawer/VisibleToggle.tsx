@@ -17,7 +17,7 @@ export const VisibleToggle = ({
 }: VisibleToggleProps) => {
   return (
     <div
-      className="mb-1 flex cursor-pointer items-center gap-2 rounded-md px-1 hover:bg-gray-100"
+      className="mb-1 flex cursor-pointer items-center gap-2 rounded-md px-1 hover:bg-gray-200"
       onClick={onToggle}
       tabIndex={tabIndex}
     >

@@ -5,8 +5,6 @@ import { Location } from './Location';
 import { Settings } from './Settings';
 import { Visible } from './Visible';
 import { Hidden } from './Hidden';
-import { Lightning } from './Lightning';
-import { Star } from './Star';
 import { Arrow } from './Arrow';
 import { Reset } from './Reset';
 import { ArrowTrendingUp } from './ArrowTrendingUp';
@@ -18,10 +16,7 @@ import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
-import { Magnifier } from './Magnifier';
-import { Drop } from './Drop';
-import { Clock } from './Clock';
-import { Toilet } from './Toilet';
+import { Chevron } from './Chevron';
 import { Error } from './Error';
 
 import { cn } from '~/utils';
@@ -32,8 +27,6 @@ export type IconName =
   | 'settings'
   | 'visible'
   | 'hidden'
-  | 'lightning'
-  | 'star'
   | 'arrow'
   | 'reset'
   | 'arrowTrendingUp'
@@ -45,10 +38,7 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler'
-  | 'magnifier'
-  | 'drop'
-  | 'clock'
-  | 'toilet'
+  | 'chevron'
   | 'error';
 
 interface IconProps {
@@ -69,10 +59,6 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Visible />;
     case 'hidden':
       return <Hidden />;
-    case 'lightning':
-      return <Lightning />;
-    case 'star':
-      return <Star />;
     case 'arrow':
       return <Arrow />;
     case 'reset':
@@ -95,14 +81,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Spretta />;
     case 'ruler':
       return <Ruler />;
-    case 'magnifier':
-      return <Magnifier />;
-    case 'drop':
-      return <Drop />;
-    case 'clock':
-      return <Clock />;
-    case 'toilet':
-      return <Toilet />;
+    case 'chevron':
+      return <Chevron />;
     case 'error':
       return <Error />;
     default:

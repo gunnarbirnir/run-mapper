@@ -19,10 +19,6 @@ export type WayPointType =
 
 export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
 
-export type WaypointAmenity = {
-  type: InnerWayPointType;
-};
-
 export type Waypoint = {
   id: string;
   name: string;
@@ -30,19 +26,19 @@ export type Waypoint = {
   coordinates: Coordinates;
   type: WayPointType;
   distance: number;
-  amenities?: WaypointAmenity[];
+  amenities?: InnerWayPointType[];
 };
 
 export type PointOfInterestType =
   | 'expo'
-  | 'food-and-drink'
+  | 'food-and-drinks'
   | 'entertainment'
   | 'aid-station'
   | 'parking'
   | 'restrooms'
   | 'information'
   | 'bag-drop-off'
-  | 'shower-and-changing-rooms'
+  | 'showers-and-changing-rooms'
   | 'award-ceremony'
   | 'warm-up-area'
   | 'spectator-area';

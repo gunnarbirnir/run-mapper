@@ -3,12 +3,12 @@ import { useRef, type ReactNode } from 'react';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { type IconName } from '~/primitives';
+import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
 
-import type { WidgetBaseProps } from '../types';
+import type { WidgetBaseProps } from '../../types';
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
 import { useWidgetSize } from './useWidgetSize';
-import { useWidgetHotkeys } from './useWidgetHotkeys';
 
 interface WidgetContainerProps extends WidgetBaseProps {
   children?: ReactNode;
@@ -40,7 +40,13 @@ export const WidgetContainer = ({
   const widgetRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isClickable = Boolean(children && toggleActive && !isAnyOpen);
-  useWidgetHotkeys({ isOpen, isClickable, containerRef, toggleActive });
+  useFocusedElementHotkeys({
+    containerRef,
+    enterEnabled: !isOpen && isClickable,
+    forceEscapeEnabled: isOpen,
+    onEnter: toggleActive,
+    onEscape: toggleActive,
+  });
 
   const {
     top,
