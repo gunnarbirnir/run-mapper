@@ -1,12 +1,15 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
 
 import { PointOfInterest } from '~/types';
 import { Text, Icon } from '~/primitives';
 import { getWaypointPoiLabel } from '~/utils/route';
 import { cn } from '~/utils';
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
 
 import { PointOfInterestIcon } from './PointOfInterestIcon';
+import { PointOfInterestItem } from './PointOfInterestItem';
+import { PointOfInterestNestedItem } from './PointOfInterestNestedItem';
 
 interface PointOfInterestGroupProps {
   pointsOfInterest: PointOfInterest[];
@@ -17,8 +20,6 @@ interface PointOfInterestGroupProps {
   toggleExpanded: (groupId: string) => void;
 }
 
-const ANIMATION_STAGGER = 0.05;
-
 export const PointOfInterestGroup = ({
   pointsOfInterest,
   isClickable,
@@ -27,6 +28,14 @@ export const PointOfInterestGroup = ({
   setActivePointOfInterest,
   toggleExpanded,
 }: PointOfInterestGroupProps) => {
+  const groupRef = useRef<HTMLDivElement>(null);
+
+  useFocusedElementHotkeys({
+    containerRef: groupRef,
+    enterEnabled: isClickable,
+    onEnter: () => toggleExpanded(pointsOfInterest[0].type),
+  });
+
   if (pointsOfInterest.length === 0) {
     return null;
   }
@@ -34,21 +43,14 @@ export const PointOfInterestGroup = ({
   const isSingleItem = pointsOfInterest.length === 1;
 
   if (isSingleItem) {
-    const poiItem = pointsOfInterest[0];
-
     return (
-      <div
-        className={cn('flex items-center gap-2 rounded-md px-1 py-0.5', {
-          'cursor-pointer hover:bg-gray-200': isClickable,
-        })}
-        onClick={() =>
-          isClickable ? setActivePointOfInterest(poiItem.id) : undefined
-        }
+      <PointOfInterestItem
+        key={pointsOfInterest[0].id}
+        pointOfInterest={pointsOfInterest[0]}
+        isClickable={isClickable}
         tabIndex={tabIndex}
-      >
-        <PointOfInterestIcon type={poiItem.type} />
-        <Text>{poiItem.name}</Text>
-      </div>
+        setActivePointOfInterest={setActivePointOfInterest}
+      />
     );
   }
 
@@ -59,6 +61,7 @@ export const PointOfInterestGroup = ({
     <div className="relative">
       <div className="absolute top-2 bottom-3.5 left-4 z-0 w-0.5 bg-gray-300" />
       <div
+        ref={groupRef}
         className="relative flex cursor-pointer items-center justify-between gap-2 rounded-md px-1 py-0.5 hover:bg-gray-200"
         onClick={() => toggleExpanded(groupType)}
         tabIndex={tabIndex}
@@ -78,31 +81,16 @@ export const PointOfInterestGroup = ({
         />
       </div>
       {isExpanded && (
-        <div
-          className="relative mt-1 ml-3 flex flex-col gap-1"
-          tabIndex={tabIndex}
-        >
-          {pointsOfInterest.map((poi, index) => (
-            <div key={poi.id} className="flex items-center gap-2">
-              <div className="size-2.5 shrink-0 rounded-full bg-gray-600" />
-              <motion.div
-                initial={{ opacity: 0, translateX: 10 }}
-                animate={{ opacity: 1, translateX: 0 }}
-                transition={{
-                  duration:
-                    DEFAULT_FADE_IN_DURATION + index * ANIMATION_STAGGER,
-                  ease: DEFAULT_EASING,
-                }}
-                className={cn('w-full rounded-md px-2 py-0.5', {
-                  'cursor-pointer hover:bg-gray-200': isClickable,
-                })}
-                onClick={() =>
-                  isClickable ? setActivePointOfInterest(poi.id) : undefined
-                }
-              >
-                <Text className="text-sm text-gray-700">{poi.name}</Text>
-              </motion.div>
-            </div>
+        <div className="relative mt-1 ml-3 flex flex-col gap-1">
+          {pointsOfInterest.map((pointOfInterest, index) => (
+            <PointOfInterestNestedItem
+              key={pointOfInterest.id}
+              pointOfInterest={pointOfInterest}
+              isClickable={isClickable}
+              index={index}
+              tabIndex={tabIndex}
+              setActivePointOfInterest={setActivePointOfInterest}
+            />
           ))}
         </div>
       )}
