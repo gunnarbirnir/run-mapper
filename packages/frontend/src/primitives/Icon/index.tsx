@@ -5,8 +5,6 @@ import { Location } from './Location';
 import { Settings } from './Settings';
 import { Visible } from './Visible';
 import { Hidden } from './Hidden';
-import { Lightning } from './Lightning';
-import { Star } from './Star';
 import { Arrow } from './Arrow';
 import { Reset } from './Reset';
 import { ArrowTrendingUp } from './ArrowTrendingUp';
@@ -18,22 +16,8 @@ import { Play } from './Play';
 import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
-import { Magnifier } from './Magnifier';
-import { Drop } from './Drop';
-import { Clock } from './Clock';
-import { Toilet } from './Toilet';
-import { Error } from './Error';
-import { Home } from './Home';
-import { Bag } from './Bag';
-import { Shower } from './Shower';
-import { Trophy } from './Trophy';
-import { Flame } from './Flame';
-import { People } from './People';
-import { Information } from './Information';
-import { Food } from './Food';
-import { Aid } from './Aid';
-import { Parking } from './Parking';
 import { Chevron } from './Chevron';
+import { Error } from './Error';
 
 import { cn } from '~/utils';
 
@@ -43,8 +27,6 @@ export type IconName =
   | 'settings'
   | 'visible'
   | 'hidden'
-  | 'lightning'
-  | 'star'
   | 'arrow'
   | 'reset'
   | 'arrowTrendingUp'
@@ -56,22 +38,8 @@ export type IconName =
   | 'externalLink'
   | 'spretta'
   | 'ruler'
-  | 'magnifier'
-  | 'drop'
-  | 'clock'
-  | 'toilet'
-  | 'error'
-  | 'home'
-  | 'bag'
-  | 'shower'
-  | 'trophy'
-  | 'flame'
-  | 'people'
-  | 'information'
-  | 'food'
-  | 'aid'
-  | 'parking'
-  | 'chevron';
+  | 'chevron'
+  | 'error';
 
 interface IconProps {
   name: IconName;
@@ -91,10 +59,6 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Visible />;
     case 'hidden':
       return <Hidden />;
-    case 'lightning':
-      return <Lightning />;
-    case 'star':
-      return <Star />;
     case 'arrow':
       return <Arrow />;
     case 'reset':
@@ -117,38 +81,10 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Spretta />;
     case 'ruler':
       return <Ruler />;
-    case 'magnifier':
-      return <Magnifier />;
-    case 'drop':
-      return <Drop />;
-    case 'clock':
-      return <Clock />;
-    case 'toilet':
-      return <Toilet />;
-    case 'error':
-      return <Error />;
-    case 'home':
-      return <Home />;
-    case 'bag':
-      return <Bag />;
-    case 'shower':
-      return <Shower />;
-    case 'trophy':
-      return <Trophy />;
-    case 'flame':
-      return <Flame />;
-    case 'people':
-      return <People />;
-    case 'information':
-      return <Information />;
-    case 'food':
-      return <Food />;
-    case 'aid':
-      return <Aid />;
-    case 'parking':
-      return <Parking />;
     case 'chevron':
       return <Chevron />;
+    case 'error':
+      return <Error />;
     default:
       return null;
   }
