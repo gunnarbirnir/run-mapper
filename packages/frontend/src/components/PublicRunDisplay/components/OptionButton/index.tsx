@@ -5,8 +5,10 @@ import { RoundButton, Tooltip } from '~/primitives';
 import { spacingPx, cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { useId } from '~/hooks/useId';
 
 interface OptionButtonProps {
+  id?: string;
   index: number;
   disabled?: boolean;
   tooltipLabel?: string;
@@ -19,6 +21,7 @@ interface OptionButtonProps {
 }
 
 export const OptionButton = ({
+  id,
   index,
   disabled = false,
   tooltipLabel,
@@ -32,6 +35,7 @@ export const OptionButton = ({
   const buttonRef = useRef<HTMLDivElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const { isSmallScreen } = useMediaQuery();
+  const closeButtonId = useId('close-option-button');
 
   const baseSpacing = spacingPx(3);
   const mainAxisInset = baseSpacing + index * (buttonSize + baseSpacing);
@@ -52,6 +56,12 @@ export const OptionButton = ({
     }
   }, [isInitialized]);
 
+  useEffect(() => {
+    if (isInBackground && buttonRef.current?.contains(document.activeElement)) {
+      document.getElementById(closeButtonId)?.focus();
+    }
+  }, [isInBackground, closeButtonId]);
+
   return (
     <motion.div
       ref={buttonRef}
@@ -68,6 +78,7 @@ export const OptionButton = ({
     >
       <Tooltip label={tooltipLabel ?? ''} disabled={tooltipLabel === undefined}>
         <RoundButton
+          id={id}
           onClick={onClick}
           color="white"
           disabled={disabled}

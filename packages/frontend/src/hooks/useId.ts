@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { IdContext } from '~/context/IdContext';
 
@@ -9,5 +9,5 @@ export const useId = (id: string) => {
     throw new Error('useId must be used within an IdContext provider');
   }
 
-  return `${baseId}-${id}`;
+  return useMemo(() => `${baseId}-${id}`, [baseId, id]);
 };

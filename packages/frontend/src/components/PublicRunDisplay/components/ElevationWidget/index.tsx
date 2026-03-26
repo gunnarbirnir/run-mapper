@@ -22,7 +22,11 @@ export const ElevationWidget = ({
   ...props
 }: ElevationWidgetProps) => {
   useHotkey('E', () => {
-    props.toggleActive?.();
+    if (props.isOpen) {
+      props.onClose?.();
+    } else {
+      props.onOpen?.();
+    }
   });
 
   const elevationGain = useMemo(

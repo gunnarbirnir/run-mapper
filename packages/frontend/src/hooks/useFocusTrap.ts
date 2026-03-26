@@ -80,6 +80,7 @@ export const useFocusTrap = ({
       inertElements.forEach((el) => el.removeAttribute('inert'));
       previouslyFocused?.focus();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
 
   return containerRef;

@@ -16,7 +16,7 @@ interface OverlayWidgetsProps {
   visibleWidgets: Record<WidgetType, boolean>;
   coordinates: Coordinates[];
   elevations: Elevation[];
-  toggleActiveWidget: (widget: WidgetType) => void;
+  setActiveWidget: (widget: WidgetType | null) => void;
 }
 
 export const OverlayWidgets = ({
@@ -27,7 +27,7 @@ export const OverlayWidgets = ({
   visibleWidgets,
   coordinates,
   elevations,
-  toggleActiveWidget,
+  setActiveWidget,
 }: OverlayWidgetsProps) => {
   const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const [widgetSizes, setWidgetSizes] = useState<number[]>([]);
@@ -44,7 +44,8 @@ export const OverlayWidgets = ({
       isAnyActive: activeWidget !== null,
       isAnyOpen: openWidget !== null,
       isAnyExpanded: expandedWidget !== null,
-      toggleActive: () => toggleActiveWidget(widget),
+      onOpen: () => setActiveWidget(widget),
+      onClose: () => setActiveWidget(null),
       setWidgetSizes,
     };
   };

@@ -23,7 +23,8 @@ export interface WidgetBaseProps {
   isAnyActive?: boolean;
   isAnyOpen?: boolean;
   isAnyExpanded?: boolean;
-  toggleActive?: () => void;
+  onOpen?: () => void;
+  onClose?: () => void;
   setWidgetSizes: (sizes: SetStateAction<number[]>) => void;
 }
 

@@ -14,7 +14,8 @@ interface SettingsDrawerProps {
   settings: RunDisplaySettings;
   isOpen: boolean;
   width: number;
-  toggleDrawer: () => void;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
 const TAB_INDEX = 25;
@@ -32,12 +33,17 @@ export const SettingsDrawer = ({
   },
   isOpen,
   width,
-  toggleDrawer,
+  onOpen,
+  onClose,
 }: SettingsDrawerProps) => {
   const { isSmallScreen } = useMediaQuery();
 
   useHotkey('S', () => {
-    toggleDrawer();
+    if (isOpen) {
+      onClose();
+    } else {
+      onOpen();
+    }
   });
 
   return (
@@ -49,7 +55,7 @@ export const SettingsDrawer = ({
       className="pointer-events-auto z-20"
       titleSectionClassName="mb-0"
       hideCloseButton={!isSmallScreen}
-      onClose={toggleDrawer}
+      onClose={onClose}
     >
       <SectionLabel>Widgets</SectionLabel>
       <VisibleToggle
