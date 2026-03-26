@@ -18,6 +18,7 @@ import { getCssVariableValue, spacingPx } from '~/utils';
 import { calculateMaxElevation } from '~/utils/route';
 import type { Elevation } from '~/types';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { useId } from '~/hooks/useId';
 
 import { processElevationData, getActiveIndexValue } from './utils';
 import { GraphTooltip } from './GraphTooltip';
@@ -43,6 +44,8 @@ export const ElevationGraph = ({
   const { compactHeight, expandedHeight } = useElevationGraphHeight(isExpanded);
   const [startExpansion, setStartExpansion] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const elevationGraphId = useId('elevation-graph');
+
   const lineColor = getCssVariableValue('--color-secondary-500');
   const gridColor = getCssVariableValue('--color-gray-300');
   const textColor = getCssVariableValue('--color-gray-500');
@@ -99,6 +102,7 @@ export const ElevationGraph = ({
 
   return (
     <motion.div
+      id={elevationGraphId}
       animate={
         isExpanded
           ? {

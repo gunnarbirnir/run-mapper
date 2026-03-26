@@ -3,7 +3,15 @@ import { useEffect, useRef } from 'react';
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export const useFocusTrap = (isActive: boolean) => {
+interface UseFocusTrapProps {
+  isActive: boolean;
+  excludedIds?: string[];
+}
+
+export const useFocusTrap = ({
+  isActive,
+  excludedIds = [],
+}: UseFocusTrapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,7 +65,8 @@ export const useFocusTrap = (isActive: boolean) => {
         if (
           sibling instanceof HTMLElement &&
           sibling !== ancestor &&
-          !sibling.hasAttribute('inert')
+          !sibling.hasAttribute('inert') &&
+          !excludedIds.includes(sibling.id)
         ) {
           sibling.setAttribute('inert', '');
           inertElements.push(sibling);

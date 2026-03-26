@@ -7,6 +7,7 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
+import { IdProvider } from '~/context/IdContext';
 
 import { useRoute } from './hooks/useRoute';
 import { useRunDisplayState } from './hooks/useRunDisplayState';
@@ -56,63 +57,68 @@ export const PublicRunDisplay = ({
   const anyDrawerActive = Boolean(activeDrawer);
 
   return (
-    <div
-      className={cn('relative isolate flex h-full w-full flex-col', {
-        fixed: isFullscreen,
-      })}
-      style={{
-        minHeight: PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
-        minWidth: PUBLIC_RUN_DISPLAY_MIN_WIDTH,
-      }}
-      ref={publicRunDisplayRef}
-    >
-      <div className="flex-1">
-        <RunRouteMap
-          {...mapState}
+    <IdProvider baseId="public-run">
+      <div
+        className={cn('relative isolate flex h-full w-full flex-col', {
+          fixed: isFullscreen,
+        })}
+        style={{
+          minHeight: PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
+          minWidth: PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+        }}
+        ref={publicRunDisplayRef}
+      >
+        <div className="flex-1">
+          <RunRouteMap
+            {...mapState}
+            routeId={route.id}
+            runSlug={run.publicSlug}
+            isFullscreen={isFullscreen}
+            boundingBox={route.boundingBox}
+            coordinates={coordinates}
+            waypoints={route.waypoints}
+            pointsOfInterest={run.pointsOfInterest}
+            elevations={elevations}
+            activeWaypoint={activeWaypoint}
+            activePointOfInterest={activePointOfInterest}
+            hideActiveMarker={
+              elevationWidgetActive || anyDrawerActive || routeIsAnimating
+            }
+            settings={settings}
+            onWaypointClick={setActiveWaypoint}
+            onPointOfInterestClick={setActivePointOfInterest}
+            onReset={resetState}
+          />
+        </div>
+        <Suspense
+          fallback={
+            <div
+              className="w-full bg-gray-50"
+              style={{ height: graphHeight }}
+            />
+          }
+        >
+          <ElevationGraph
+            elevations={elevations}
+            isExpanded={elevationWidgetActive}
+            isTooltipActive={!anyDrawerActive}
+            onActiveIndexChange={setActiveMarkerIndex}
+          />
+        </Suspense>
+        <RouteOverlay
+          {...runDisplayState}
+          routes={run.routes}
           routeId={route.id}
-          runSlug={run.publicSlug}
-          isFullscreen={isFullscreen}
-          boundingBox={route.boundingBox}
           coordinates={coordinates}
+          elevations={elevations}
           waypoints={route.waypoints}
           pointsOfInterest={run.pointsOfInterest}
-          elevations={elevations}
-          activeWaypoint={activeWaypoint}
-          activePointOfInterest={activePointOfInterest}
-          hideActiveMarker={
-            elevationWidgetActive || anyDrawerActive || routeIsAnimating
-          }
+          publicRunDisplayRef={publicRunDisplayRef}
           settings={settings}
-          onWaypointClick={setActiveWaypoint}
-          onPointOfInterestClick={setActivePointOfInterest}
-          onReset={resetState}
+          setActiveRoute={setActiveRoute}
         />
       </div>
-      <Suspense
-        fallback={
-          <div className="w-full bg-gray-50" style={{ height: graphHeight }} />
-        }
-      >
-        <ElevationGraph
-          elevations={elevations}
-          isExpanded={elevationWidgetActive}
-          isTooltipActive={!anyDrawerActive}
-          onActiveIndexChange={setActiveMarkerIndex}
-        />
-      </Suspense>
-      <RouteOverlay
-        {...runDisplayState}
-        routes={run.routes}
-        routeId={route.id}
-        coordinates={coordinates}
-        elevations={elevations}
-        waypoints={route.waypoints}
-        pointsOfInterest={run.pointsOfInterest}
-        publicRunDisplayRef={publicRunDisplayRef}
-        settings={settings}
-        setActiveRoute={setActiveRoute}
-      />
-    </div>
+    </IdProvider>
   );
 };
 

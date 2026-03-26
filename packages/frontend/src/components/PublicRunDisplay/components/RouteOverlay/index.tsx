@@ -4,6 +4,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { useId } from '~/hooks/useId';
 import { Icon, Tooltip } from '~/primitives';
 import type {
   Coordinates,
@@ -63,6 +64,7 @@ export const RouteOverlay = ({
   const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
+  const overlayBackgroundId = useId('overlay-background');
 
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
@@ -180,6 +182,7 @@ export const RouteOverlay = ({
       />
 
       <motion.div
+        id={overlayBackgroundId}
         initial={{ opacity: 0 }}
         animate={{ opacity: activeWidget ? 1 : 0 }}
         transition={{
