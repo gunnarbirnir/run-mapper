@@ -4,6 +4,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { useId } from '~/hooks/useId';
 import { Icon, Tooltip } from '~/primitives';
 import type {
   Coordinates,
@@ -49,11 +50,10 @@ export const RouteOverlay = ({
   waypoints,
   pointsOfInterest,
   activeWaypoint,
-  activeWaypointFromDrawer,
   settings,
-  toggleActiveWidget,
+  setActiveWidget,
   onWidgetAnimationFinished,
-  toggleDrawer,
+  setActiveDrawer,
   setActiveWaypoint,
   setActivePointOfInterest,
   setActiveRoute,
@@ -63,7 +63,10 @@ export const RouteOverlay = ({
   const { height: graphHeight } = useElevationGraphHeight(
     elevationWidgetActive,
   );
+  const closeButtonId = useId('close-option-button');
+  const overlayBackgroundId = useId('overlay-background');
 
+  const drawerIsOpen = activeDrawer !== null;
   const optionItemSize = spacingPx(10);
   const settingsDrawerWidth = convertRemToPixels('13rem');
   const pointsOfInterestDrawerWidth = convertRemToPixels('15rem');
@@ -106,22 +109,23 @@ export const RouteOverlay = ({
         visibleWidgets={settings.visibleWidgets}
         coordinates={coordinates}
         elevations={elevations}
-        toggleActiveWidget={toggleActiveWidget}
+        setActiveWidget={setActiveWidget}
       />
 
       <Tooltip.Provider>
         <OptionButton
+          id={closeButtonId}
           index={optionsButtonIndex++}
-          tooltipLabel={activeDrawer === null ? 'Settings' : undefined}
+          tooltipLabel={drawerIsOpen ? 'Close' : 'Settings'}
           buttonSize={optionItemSize}
           openDrawerSize={openDrawerSize}
-          onClick={() => toggleDrawer('settings')}
-          buttonClassName={activeDrawer !== null ? 'active:scale-100' : ''}
+          onClick={() => setActiveDrawer(drawerIsOpen ? null : 'settings')}
+          buttonClassName={drawerIsOpen ? 'active:scale-100' : ''}
         >
-          {activeDrawer === null ? (
-            <Icon name="settings" className="size-7.5" />
-          ) : (
+          {drawerIsOpen ? (
             <Icon name="close" className="size-5.5" />
+          ) : (
+            <Icon name="settings" className="size-7.5" />
           )}
         </OptionButton>
         <OptionButton
@@ -129,15 +133,15 @@ export const RouteOverlay = ({
           tooltipLabel="Points of interest"
           buttonSize={optionItemSize}
           openDrawerSize={openDrawerSize}
-          isInBackground={activeDrawer !== null}
-          onClick={() => toggleDrawer('points-of-interest')}
+          isInBackground={drawerIsOpen}
+          onClick={() => setActiveDrawer('points-of-interest')}
         >
           <Icon name="location" className="size-6.5" />
         </OptionButton>
       </Tooltip.Provider>
 
       <AnimatePresence>
-        {activeDrawer === null && (
+        {!drawerIsOpen && (
           <RouteDropdown
             routes={routes}
             activeRouteId={routeId}
@@ -153,7 +157,6 @@ export const RouteOverlay = ({
           <WaypointsButtons
             waypoints={extendedWaypoints}
             activeWaypoint={activeWaypoint}
-            activeWaypointFromDrawer={activeWaypointFromDrawer}
             setActiveWaypoint={setActiveWaypoint}
           />
         )}
@@ -163,7 +166,8 @@ export const RouteOverlay = ({
         settings={settings}
         width={settingsDrawerWidth}
         isOpen={activeDrawer === 'settings'}
-        toggleDrawer={() => toggleDrawer('settings')}
+        onOpen={() => setActiveDrawer('settings')}
+        onClose={() => setActiveDrawer(null)}
       />
       <PointsOfInterestDrawer
         width={pointsOfInterestDrawerWidth}
@@ -172,7 +176,8 @@ export const RouteOverlay = ({
         waypoints={extendedWaypoints}
         showPointsOfInterest={settings.showPointsOfInterest}
         showWaypoints={settings.showWaypoints}
-        toggleDrawer={() => toggleDrawer('points-of-interest')}
+        onOpen={() => setActiveDrawer('points-of-interest')}
+        onClose={() => setActiveDrawer(null)}
         setActivePointOfInterest={setActivePointOfInterest}
         setActiveWaypoint={setActiveWaypoint}
         setShowPointsOfInterest={settings.toggleShowPointsOfInterest}
@@ -180,6 +185,7 @@ export const RouteOverlay = ({
       />
 
       <motion.div
+        id={overlayBackgroundId}
         initial={{ opacity: 0 }}
         animate={{ opacity: activeWidget ? 1 : 0 }}
         transition={{
@@ -191,9 +197,7 @@ export const RouteOverlay = ({
           pointerEvents: activeWidget ? 'auto' : 'none',
           bottom: openWidget === 'elevation' ? graphHeight : 0,
         }}
-        onClick={
-          activeWidget ? () => toggleActiveWidget(activeWidget) : undefined
-        }
+        onClick={activeWidget ? () => setActiveWidget(null) : undefined}
         onAnimationComplete={onWidgetAnimationFinished}
       />
     </div>

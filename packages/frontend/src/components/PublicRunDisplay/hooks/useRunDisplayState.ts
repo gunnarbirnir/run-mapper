@@ -28,15 +28,15 @@ const initialState: RunDisplayState = {
 
 type RunDisplayAction =
   | {
-      type: 'TOGGLE_ACTIVE_WIDGET';
-      payload: WidgetType;
+      type: 'SET_ACTIVE_WIDGET';
+      payload: WidgetType | null;
     }
   | {
       type: 'WIDGET_ANIMATION_FINISHED';
     }
   | {
-      type: 'TOGGLE_DRAWER';
-      payload: DrawerType;
+      type: 'SET_ACTIVE_DRAWER';
+      payload: DrawerType | null;
     }
   | {
       type: 'SET_ACTIVE_WAYPOINT';
@@ -55,10 +55,10 @@ const runDisplayReducer = (
   action: RunDisplayAction,
 ) => {
   switch (action.type) {
-    case 'TOGGLE_ACTIVE_WIDGET':
+    case 'SET_ACTIVE_WIDGET':
       return {
         ...state,
-        ...(state.activeWidget
+        ...(action.payload === null
           ? {
               // Close widget
               activeWidget: null,
@@ -84,10 +84,10 @@ const runDisplayReducer = (
               openWidget: null,
             }),
       };
-    case 'TOGGLE_DRAWER':
+    case 'SET_ACTIVE_DRAWER':
       return {
         ...state,
-        ...(state.activeDrawer
+        ...(action.payload === null
           ? {
               // Close drawer
               activeDrawer: null,
@@ -102,7 +102,10 @@ const runDisplayReducer = (
       return {
         ...initialState,
         activeWaypoint: action.payload.id,
-        activeWaypointFromDrawer: action.payload.fromDrawer,
+        activeWaypointFromDrawer:
+          action.payload.id === null
+            ? false
+            : state.activeWaypointFromDrawer || action.payload.fromDrawer,
         activeDrawer:
           action.payload.id === null && state.activeWaypointFromDrawer
             ? ('points-of-interest' as DrawerType)
@@ -112,7 +115,10 @@ const runDisplayReducer = (
       return {
         ...initialState,
         activePointOfInterest: action.payload.id,
-        activePoiFromDrawer: action.payload.fromDrawer,
+        activePoiFromDrawer:
+          action.payload.id === null
+            ? false
+            : state.activePoiFromDrawer || action.payload.fromDrawer,
         activeDrawer:
           action.payload.id === null && state.activePoiFromDrawer
             ? ('points-of-interest' as DrawerType)
@@ -130,9 +136,9 @@ const runDisplayReducer = (
 export const useRunDisplayState = () => {
   const [state, dispatch] = useReducer(runDisplayReducer, initialState);
 
-  const toggleActiveWidget = useCallback(
-    (widget: WidgetType) => {
-      dispatch({ type: 'TOGGLE_ACTIVE_WIDGET', payload: widget });
+  const setActiveWidget = useCallback(
+    (widget: WidgetType | null) => {
+      dispatch({ type: 'SET_ACTIVE_WIDGET', payload: widget });
     },
     [dispatch],
   );
@@ -141,9 +147,9 @@ export const useRunDisplayState = () => {
     dispatch({ type: 'WIDGET_ANIMATION_FINISHED' });
   }, [dispatch]);
 
-  const toggleDrawer = useCallback(
-    (drawer: DrawerType) => {
-      dispatch({ type: 'TOGGLE_DRAWER', payload: drawer });
+  const setActiveDrawer = useCallback(
+    (drawer: DrawerType | null) => {
+      dispatch({ type: 'SET_ACTIVE_DRAWER', payload: drawer });
     },
     [dispatch],
   );
@@ -175,18 +181,18 @@ export const useRunDisplayState = () => {
   return useMemo(
     () => ({
       ...state,
-      toggleActiveWidget,
+      setActiveWidget,
       onWidgetAnimationFinished,
-      toggleDrawer,
+      setActiveDrawer,
       setActiveWaypoint,
       setActivePointOfInterest,
       resetState,
     }),
     [
       state,
-      toggleActiveWidget,
+      setActiveWidget,
       onWidgetAnimationFinished,
-      toggleDrawer,
+      setActiveDrawer,
       setActiveWaypoint,
       setActivePointOfInterest,
       resetState,

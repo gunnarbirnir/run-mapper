@@ -11,14 +11,15 @@ import { PointOfInterestGroup } from './PointOfInterestGroup';
 import { NotVisibleWarning } from './NotVisibleWarning';
 import { WaypointsTimeline } from './WaypointsTimeline';
 
-interface SettingsDrawerProps {
+interface PointsOfInterestDrawerProps {
   isOpen: boolean;
   width: number;
   pointsOfInterest: PointOfInterest[];
   waypoints: Waypoint[];
   showPointsOfInterest: boolean;
   showWaypoints: boolean;
-  toggleDrawer: () => void;
+  onOpen: () => void;
+  onClose: () => void;
   setActivePointOfInterest: (poiId: string, fromDrawer: boolean) => void;
   setActiveWaypoint: (waypointId: string, fromDrawer: boolean) => void;
   setShowPointsOfInterest: () => void;
@@ -49,12 +50,13 @@ export const PointsOfInterestDrawer = ({
   waypoints,
   showPointsOfInterest,
   showWaypoints,
-  toggleDrawer,
+  onOpen,
+  onClose,
   setActivePointOfInterest,
   setActiveWaypoint,
   setShowPointsOfInterest,
   setShowWaypoints,
-}: SettingsDrawerProps) => {
+}: PointsOfInterestDrawerProps) => {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {},
   );
@@ -98,7 +100,11 @@ export const PointsOfInterestDrawer = ({
   }, []);
 
   useHotkey('I', () => {
-    toggleDrawer();
+    if (isOpen) {
+      onClose();
+    } else {
+      onOpen();
+    }
   });
 
   return (
@@ -109,7 +115,7 @@ export const PointsOfInterestDrawer = ({
       minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
       className="pointer-events-auto z-20"
       hideCloseButton={!isSmallScreen}
-      onClose={toggleDrawer}
+      onClose={onClose}
     >
       <AnimatePresence>
         {!showPointsOfInterest && (

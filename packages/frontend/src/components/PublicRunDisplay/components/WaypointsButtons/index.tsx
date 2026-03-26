@@ -12,8 +12,7 @@ import { useWaypointsHotkeys } from './useWaypointsHotkeys';
 interface WaypointsButtonsProps {
   waypoints: Waypoint[];
   activeWaypoint: string;
-  activeWaypointFromDrawer: boolean;
-  setActiveWaypoint: (waypoint: string | null, fromDrawer?: boolean) => void;
+  setActiveWaypoint: (waypoint: string | null) => void;
 }
 
 const FADE_IN_DISTANCE = 20;
@@ -23,7 +22,6 @@ const TAB_INDEX = 35;
 export const WaypointsButtons = ({
   waypoints,
   activeWaypoint,
-  activeWaypointFromDrawer,
   setActiveWaypoint,
 }: WaypointsButtonsProps) => {
   const { height: graphHeight } = useElevationGraphHeight();
@@ -40,12 +38,12 @@ export const WaypointsButtons = ({
   const nextDisabled = activeWaypointIndex === waypoints.length - 1;
 
   const goToPreviousWaypoint = useCallback(() => {
-    setActiveWaypoint(previousWaypoint.id, activeWaypointFromDrawer);
-  }, [previousWaypoint, activeWaypointFromDrawer, setActiveWaypoint]);
+    setActiveWaypoint(previousWaypoint.id);
+  }, [previousWaypoint, setActiveWaypoint]);
 
   const goToNextWaypoint = useCallback(() => {
-    setActiveWaypoint(nextWaypoint.id, activeWaypointFromDrawer);
-  }, [nextWaypoint, activeWaypointFromDrawer, setActiveWaypoint]);
+    setActiveWaypoint(nextWaypoint.id);
+  }, [nextWaypoint, setActiveWaypoint]);
 
   const closeWaypointsButtons = useCallback(() => {
     setActiveWaypoint(null);

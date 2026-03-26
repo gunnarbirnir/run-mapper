@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { Icon, RoundButton, Text, type IconName } from '~/primitives';
 import { cn } from '~/utils';
 import { useFocusTrap } from '~/hooks/useFocusTrap';
+import { useId } from '~/hooks/useId';
 
 interface ModalContentProps {
   isOpen: boolean;
@@ -21,7 +22,12 @@ export const ModalContent = ({
   iconClassName,
   onClose,
 }: ModalContentProps) => {
-  const containerRef = useFocusTrap(isOpen);
+  const overlayBackgroundId = useId('overlay-background');
+  const elevationGraphId = useId('elevation-graph');
+  const containerRef = useFocusTrap({
+    isActive: isOpen,
+    excludedIds: [overlayBackgroundId, elevationGraphId],
+  });
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {

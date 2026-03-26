@@ -69,7 +69,6 @@ export const Drawer = ({
       className={cn(
         'absolute top-0 bottom-0 bg-gray-50',
         { 'shadow-md/20': isOpen },
-        { 'px-4 pt-5 pb-6': !disablePadding },
         className,
       )}
       ref={ref}
@@ -85,19 +84,26 @@ export const Drawer = ({
         }
       }}
     >
-      {(title || hasCloseButton) && (
-        <div className="flex items-center justify-between">
-          <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
-            {title}
-          </Text>
-          {hasCloseButton && (
-            <RoundButton onClick={onClose}>
-              <Icon name="close" className="size-5.5" />
-            </RoundButton>
-          )}
-        </div>
-      )}
-      {children}
+      <div
+        className={cn('h-full overflow-y-auto', {
+          'px-4 pt-5 pb-6': !disablePadding,
+        })}
+      >
+        {(title || hasCloseButton) && (
+          <div className="flex items-center justify-between">
+            <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
+              {title}
+            </Text>
+            {hasCloseButton && (
+              <RoundButton onClick={onClose}>
+                <Icon name="close" className="size-5.5" />
+              </RoundButton>
+            )}
+          </div>
+        )}
+
+        {children}
+      </div>
     </motion.aside>
   );
 };

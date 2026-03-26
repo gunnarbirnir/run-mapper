@@ -34,18 +34,19 @@ export const WidgetContainer = ({
   isExpanded = false,
   isAnyOpen = false,
   publicRunDisplaySize,
-  toggleActive,
+  onOpen,
+  onClose,
   setWidgetSizes,
 }: WidgetContainerProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isClickable = Boolean(children && toggleActive && !isAnyOpen);
+  const isClickable = Boolean(children && onOpen && !isAnyOpen);
   useFocusedElementHotkeys({
     containerRef,
     enterEnabled: !isOpen && isClickable,
     forceEscapeEnabled: isOpen,
-    onEnter: toggleActive,
-    onEscape: toggleActive,
+    onEnter: onOpen,
+    onEscape: onClose,
   });
 
   const {
@@ -99,7 +100,7 @@ export const WidgetContainer = ({
           zIndex: isOpen ? 1000 : index,
           cursor: isClickable ? 'pointer' : undefined,
         }}
-        onClick={isClickable ? toggleActive : undefined}
+        onClick={isClickable ? onOpen : undefined}
       >
         {!isOpen && (
           <WidgetContent
@@ -118,7 +119,7 @@ export const WidgetContainer = ({
           <ModalContent
             isOpen={isOpen}
             title={title}
-            onClose={toggleActive}
+            onClose={onClose}
             icon={icon}
             iconClassName={iconClassName}
           >
