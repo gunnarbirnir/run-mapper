@@ -11,7 +11,11 @@ import type {
   PointOfInterestType,
 } from '~/types';
 import { getCssVariableValue, cn, formatNumber } from '~/utils';
-import { getWaypointPoiIconSize, getWaypointPoiIcon } from '~/utils/route';
+import {
+  getWaypointPoiIconSize,
+  getWaypointPoiIcon,
+  getPoiIconColor,
+} from '~/utils/route';
 
 import {
   BOUNDS_PADDING,
@@ -104,7 +108,7 @@ export const getWaypointMarkerElement = (
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-500 text-white hover:bg-secondary-600`;
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-500 text-white hover:brightness-110`;
   marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
@@ -118,7 +122,8 @@ export const getPointOfInterestMarkerElement = (
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-600 text-white hover:bg-secondary-500`;
+  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer text-white hover:brightness-110`;
+  marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
   marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
