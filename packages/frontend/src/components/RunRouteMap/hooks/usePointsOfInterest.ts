@@ -17,6 +17,7 @@ interface UsePointsOfInterestProps {
   pointsOfInterest: PointOfInterest[];
   showPointsOfInterest: boolean;
   activePointOfInterest: string | null;
+  activeWaypoint: string | null;
   onPointOfInterestClick: (pointOfInterest: string | null) => void;
   fitToInitialBounds: () => void;
   mapRef: RefObject<Map>;
@@ -27,6 +28,7 @@ export const usePointsOfInterest = ({
   pointsOfInterest,
   showPointsOfInterest,
   activePointOfInterest,
+  activeWaypoint,
   onPointOfInterestClick,
   fitToInitialBounds,
   mapRef,
@@ -90,11 +92,15 @@ export const usePointsOfInterest = ({
 
   // React to active point of interest change
   useEffect(() => {
+    if (activePointOfInterest === activePointOfInterestRef.current) {
+      return;
+    }
+
     if (activePointOfInterestRef.current) {
       popupsRef.current[activePointOfInterestRef.current]?.remove();
     }
 
-    if (!activePointOfInterest) {
+    if (!activePointOfInterest && !activeWaypoint) {
       fitToInitialBounds();
     }
 
@@ -128,5 +134,11 @@ export const usePointsOfInterest = ({
       zoom: WAYPOINT_ZOOM,
       duration: FLY_TO_WAYPOINT_DURATION,
     });
-  }, [activePointOfInterest, fitToInitialBounds, mapRef, pointsOfInterest]);
+  }, [
+    activePointOfInterest,
+    activeWaypoint,
+    fitToInitialBounds,
+    mapRef,
+    pointsOfInterest,
+  ]);
 };

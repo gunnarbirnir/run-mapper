@@ -16,6 +16,7 @@ import { useHandlers } from './useHandlers';
 interface UseWaypointsProps {
   isMapLoaded: boolean;
   activeWaypoint: string | null;
+  activePointOfInterest: string | null;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   showWaypoints: boolean;
@@ -27,6 +28,7 @@ interface UseWaypointsProps {
 export const useWaypoints = ({
   isMapLoaded,
   activeWaypoint,
+  activePointOfInterest,
   coordinates,
   waypoints,
   showWaypoints,
@@ -123,11 +125,15 @@ export const useWaypoints = ({
 
   // React to active waypoint change
   useEffect(() => {
+    if (activeWaypoint === activeWaypointRef.current) {
+      return;
+    }
+
     if (activeWaypointRef.current) {
       popupsRef.current[activeWaypointRef.current]?.remove();
     }
 
-    if (!activeWaypoint) {
+    if (!activeWaypoint && !activePointOfInterest) {
       fitToInitialBounds();
     }
 
@@ -160,5 +166,11 @@ export const useWaypoints = ({
       zoom: WAYPOINT_ZOOM,
       duration: FLY_TO_WAYPOINT_DURATION,
     });
-  }, [activeWaypoint, mapRef, extendedWaypoints, fitToInitialBounds]);
+  }, [
+    activeWaypoint,
+    activePointOfInterest,
+    mapRef,
+    extendedWaypoints,
+    fitToInitialBounds,
+  ]);
 };
