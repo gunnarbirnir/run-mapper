@@ -89,6 +89,20 @@ path:focus {
   --color-warning-800: #973c08;
   --color-warning-900: #7b3306;
   --color-warning-950: #461901;
+
+  /* For map icons */
+  --color-util-light-blue: #1288e5;
+  --color-util-dark-blue: #0562b6;
+  --color-util-cyan: #0ea5e9;
+  --color-util-light-gray: #99a1af;
+  --color-util-dark-gray: #4a5565;
+  --color-util-green: #16a34a;
+  --color-util-red: #ff2056;
+  --color-util-purple: #7c3aed;
+  --color-util-pink: #f472b6;
+  --color-util-yellow: #eab308;
+  --color-util-orange: #f97316;
+  --color-util-brown: #a16207;
 }
 
 * {

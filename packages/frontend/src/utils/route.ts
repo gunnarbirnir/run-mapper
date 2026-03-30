@@ -155,6 +155,37 @@ export const getWaypointPoiIconSize = (
   }
 };
 
+export const getPoiIconColor = (type: PointOfInterestType): string => {
+  switch (type) {
+    case 'expo':
+      return '--color-util-dark-gray';
+    case 'food-and-drinks':
+      return '--color-util-green';
+    case 'entertainment':
+      return '--color-util-purple';
+    case 'aid-station':
+      return '--color-util-red';
+    case 'parking':
+      return '--color-util-dark-blue';
+    case 'restrooms':
+      return '--color-util-light-gray';
+    case 'information':
+      return '--color-util-light-blue';
+    case 'bag-drop-off':
+      return '--color-util-brown';
+    case 'showers-and-changing-rooms':
+      return '--color-util-cyan';
+    case 'award-ceremony':
+      return '--color-util-yellow';
+    case 'warm-up-area':
+      return '--color-util-orange';
+    case 'spectator-area':
+      return '--color-util-pink';
+    default:
+      return '--color-util-dark-blue';
+  }
+};
+
 export const getWaypointPoiLabel = (
   type: WayPointType | PointOfInterestType,
 ): string => {
