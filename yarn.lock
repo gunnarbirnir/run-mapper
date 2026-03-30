@@ -5544,6 +5544,13 @@ setprototypeof@1.2.0, setprototypeof@~1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
+shaders@^2.5.84:
+  version "2.5.84"
+  resolved "https://registry.yarnpkg.com/shaders/-/shaders-2.5.84.tgz#cde5834cff019acce53018f8f840a9c9bc6141f2"
+  integrity sha512-nTDLI7cUjaxCjatg2GS/v+Q1jn/85+QACJYdiF5S/owYYjbG+UHiyBVQs7o7vGTQFLHG46JjNCr4UymiZbbXCg==
+  dependencies:
+    three "^0.183.0"
+
 shebang-command@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-2.0.0.tgz#ccd0af4f8835fbdc265b82461aaf0c36663f34ea"
@@ -5797,6 +5804,11 @@ teeny-request@^9.0.0:
     node-fetch "^2.6.9"
     stream-events "^1.0.5"
     uuid "^9.0.0"
+
+three@^0.183.0:
+  version "0.183.2"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.183.2.tgz#606e3195bf210ef8d1eaaca2ab8c59d92d2bbc18"
+  integrity sha512-di3BsL2FEQ1PA7Hcvn4fyJOlxRRgFYBpMTcyOgkwJIaDOdJMebEFPA+t98EvjuljDx4hNulAGwF6KIjtwI5jgQ==
 
 tiny-invariant@^1.3.3:
   version "1.3.3"
