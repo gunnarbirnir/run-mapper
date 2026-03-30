@@ -121,6 +121,7 @@ export const RouteOverlay = ({
           openDrawerSize={openDrawerSize}
           onClick={() => setActiveDrawer(drawerIsOpen ? null : 'settings')}
           buttonClassName={drawerIsOpen ? 'active:scale-100' : ''}
+          routeDropdownIsVisible={routes.length > 1}
         >
           {drawerIsOpen ? (
             <Icon name="close" className="size-5.5" />
@@ -134,6 +135,7 @@ export const RouteOverlay = ({
           buttonSize={optionItemSize}
           openDrawerSize={openDrawerSize}
           isInBackground={drawerIsOpen}
+          routeDropdownIsVisible={routes.length > 1}
           onClick={() => setActiveDrawer('points-of-interest')}
         >
           <Icon name="location" className="size-6.5" />
@@ -141,7 +143,7 @@ export const RouteOverlay = ({
       </Tooltip.Provider>
 
       <AnimatePresence>
-        {!drawerIsOpen && (
+        {!drawerIsOpen && routes.length > 1 && (
           <RouteDropdown
             routes={routes}
             activeRouteId={routeId}

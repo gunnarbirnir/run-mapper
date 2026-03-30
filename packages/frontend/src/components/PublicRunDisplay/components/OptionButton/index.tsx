@@ -17,6 +17,7 @@ interface OptionButtonProps {
   children: ReactNode;
   buttonClassName?: string;
   isInBackground?: boolean;
+  routeDropdownIsVisible?: boolean;
   onClick: () => void;
 }
 
@@ -30,6 +31,7 @@ export const OptionButton = ({
   children,
   buttonClassName,
   isInBackground = false,
+  routeDropdownIsVisible = false,
   onClick,
 }: OptionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export const OptionButton = ({
   const mainAxisInset = baseSpacing + index * (buttonSize + baseSpacing);
   const top = isSmallScreen
     ? // To be below the route dropdown
-      mainAxisInset + buttonSize + baseSpacing
+      mainAxisInset + (routeDropdownIsVisible ? buttonSize + baseSpacing : 0)
     : baseSpacing;
   const right = isSmallScreen
     ? baseSpacing
