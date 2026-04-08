@@ -14,6 +14,7 @@ import { getCssVariableValue, cn, formatNumber } from '~/utils';
 import {
   getWaypointPoiIconSize,
   getWaypointPoiIcon,
+  getWaypointPoiLabel,
   getPoiIconColor,
 } from '~/utils/route';
 
@@ -170,15 +171,20 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
               .map(
                 (amenity) =>
                   `<div class="bg-secondary-500 flex h-6 w-6 items-center justify-center rounded-md shadow-sm">
-                  <div
-                    class="scale-[1.1] text-white ${getWaypointPoiIconSize(amenity).size}"
-                  >
-                    ${getWaypointPoiIcon(amenity)}
-                  </div>
-                </div>`,
+                    <div class="scale-[1.1] text-white ${getWaypointPoiIconSize(amenity).size}">
+                      ${getWaypointPoiIcon(amenity)}
+                    </div>
+                  </div>`,
               )
               .join('')}
             </div>`
+          : ''
+      }
+      ${
+        waypointAmenities.length > 0
+          ? `<p class="text-tiny text-gray-400">
+              ${waypointAmenities.map((amenity) => getWaypointPoiLabel(amenity)).join(', ')}
+            </p>`
           : ''
       }
     </div>`,
@@ -235,22 +241,26 @@ export const getRouteAnimationDuration = (
   );
 };
 
-const WAYPOINT_BASE_LAT_OFFSET = 0.001;
-const WAYPOINT_OFFSET_MULTIPLIER_MIN = 1;
-const WAYPOINT_OFFSET_MULTIPLIER_MAX = 3;
+const TOOLTIP_BASE_LAT_OFFSET = 0.001;
+const TOOLTIP_OFFSET_MULTIPLIER_MIN = 1;
+const TOOLTIP_OFFSET_MULTIPLIER_MAX = 3;
+const TOOLTIP_AMENITIES_WEIGHT = 50;
 
 export const getTooltipLatOffset = ({
   description,
+  amenities,
 }: {
   description?: string;
+  amenities?: unknown[];
 }): number => {
+  const contentLength =
+    (description?.length ?? 0) +
+    (amenities?.length ? TOOLTIP_AMENITIES_WEIGHT : 0);
+
   const multiplier = Math.min(
-    WAYPOINT_OFFSET_MULTIPLIER_MAX,
-    Math.max(
-      WAYPOINT_OFFSET_MULTIPLIER_MIN,
-      Math.floor((description?.length ?? 0) / 100),
-    ),
+    TOOLTIP_OFFSET_MULTIPLIER_MAX,
+    Math.max(TOOLTIP_OFFSET_MULTIPLIER_MIN, Math.ceil(contentLength / 100)),
   );
 
-  return multiplier * WAYPOINT_BASE_LAT_OFFSET;
+  return multiplier * TOOLTIP_BASE_LAT_OFFSET;
 };

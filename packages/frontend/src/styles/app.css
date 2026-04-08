@@ -103,6 +103,9 @@ path:focus {
   --color-util-yellow: #eab308;
   --color-util-orange: #f97316;
   --color-util-brown: #a16207;
+
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 1rem;
 }
 
 * {
