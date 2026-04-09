@@ -13,7 +13,7 @@ import { MAP_STYLES } from '~/components/RunRouteMap/constants';
 
 const MAX_ROUTE_PAYLOAD_BYTES = 1024 * 1024;
 
-export const Route = createFileRoute('/editor/runs/new')({
+export const Route = createFileRoute('/editor/run/new')({
   component: NewEditorRun,
 });
 
@@ -341,7 +341,7 @@ function NewEditorRun() {
       );
 
       if (response.success) {
-        navigate({ to: `/editor/runs/${response.data.id}` });
+        navigate({ to: `/editor/run/${response.data.id}` });
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('Payload exceeds')) {

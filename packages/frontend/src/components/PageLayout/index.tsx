@@ -1,15 +1,17 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '~/utils';
+import { LoadingSpinner } from '~/primitives';
 
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
 
 interface PageLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   isFullscreenDisplay?: boolean;
   hideNavBar?: boolean;
   hideFooter?: boolean;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -18,8 +20,17 @@ const PageLayout = ({
   isFullscreenDisplay = false,
   hideNavBar = false,
   hideFooter = false,
+  isLoading = false,
   className,
 }: PageLayoutProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoadingSpinner className="text-primary-500 size-10" />
+      </div>
+    );
+  }
+
   if (isFullscreenDisplay) {
     return (
       <div className="relative h-screen w-screen" style={{ height: '100dvh' }}>

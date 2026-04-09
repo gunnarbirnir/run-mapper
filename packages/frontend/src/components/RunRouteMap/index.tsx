@@ -88,6 +88,17 @@ export const RunRouteMap = ({
     setActiveIndexRef,
   });
 
+  usePointsOfInterest({
+    isMapLoaded,
+    pointsOfInterest,
+    showPointsOfInterest,
+    activePointOfInterest,
+    activeWaypoint,
+    onPointOfInterestClick,
+    fitToInitialBounds,
+    mapRef,
+  });
+
   useWaypoints({
     isMapLoaded,
     activeWaypoint,
@@ -98,17 +109,6 @@ export const RunRouteMap = ({
     onWaypointClick,
     mapRef,
     fitToInitialBounds,
-  });
-
-  usePointsOfInterest({
-    isMapLoaded,
-    pointsOfInterest,
-    showPointsOfInterest,
-    activePointOfInterest,
-    activeWaypoint,
-    onPointOfInterestClick,
-    fitToInitialBounds,
-    mapRef,
   });
 
   useFitToInitialBounds({

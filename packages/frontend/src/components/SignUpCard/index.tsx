@@ -30,7 +30,7 @@ export function SignUpCard() {
 
     try {
       await signUp(email, password);
-      navigate({ to: '/editor/runs' });
+      navigate({ to: '/runs' });
     } catch (err: unknown) {
       setError(parseSignUpError(err));
     } finally {

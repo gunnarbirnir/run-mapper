@@ -9,7 +9,7 @@ import { api } from '~/service';
 import { Button, Form, Text } from '~/primitives';
 import type { ApiResponse, EditorRun } from '~/types';
 
-export const Route = createFileRoute('/editor/runs/$runId')({
+export const Route = createFileRoute('/editor/run/$runId')({
   component: EditorRunDetail,
 });
 
@@ -22,7 +22,7 @@ function EditorRunDetail() {
   const [copied, setCopied] = useState(false);
 
   const { data, isPending, error } = useQuery<ApiResponse<EditorRun>>({
-    queryKey: ['editor-runs', runId],
+    queryKey: ['editor-run', runId],
     queryFn: () => api.get(`/runs/editor/${runId}`),
     enabled: authIsLoaded && Boolean(user),
   });
@@ -49,7 +49,7 @@ function EditorRunDetail() {
       api.delete<ApiResponse<{ id: string }>>(`/runs/editor/${runId}`),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['runs'] });
-      navigate({ to: '/editor/runs' });
+      navigate({ to: '/runs' });
     },
   });
 

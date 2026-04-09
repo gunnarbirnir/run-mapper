@@ -7,7 +7,7 @@ import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text } from '~/primitives';
 import type { EditorRun, ApiResponse } from '~/types';
 
-export const Route = createFileRoute('/editor/runs/')({
+export const Route = createFileRoute('/runs/')({
   component: EditorRunsList,
 });
 
@@ -75,12 +75,12 @@ function EditorRunsList() {
                         </Text>
                       )}
                     </div>
-                    <Button linkTo={`/editor/runs/${run.id}`}>View</Button>
+                    <Button linkTo={`/editor/run/${run.id}`}>View</Button>
                   </div>
                 ))}
               </div>
             )}
-            <Button linkTo="/editor/runs/new" className="mt-4">
+            <Button linkTo="/editor/run/new" className="mt-4">
               Create New Run
             </Button>
           </>

@@ -33,7 +33,7 @@ export const NavBar = () => {
                 <Text>Home</Text>
               </Link>
               <Link
-                to="/editor/runs"
+                to="/runs"
                 activeProps={{
                   className: 'font-bold',
                 }}

@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { PageLayout } from '~/components/PageLayout';
 
-export const Route = createFileRoute('/editor')({
+export const Route = createFileRoute('/runs')({
   beforeLoad: ({ context, location }) => {
     if (context.auth.isLoaded && !context.auth.user) {
       throw redirect({
@@ -11,10 +11,10 @@ export const Route = createFileRoute('/editor')({
       });
     }
   },
-  component: EditorLayout,
+  component: RunsLayout,
 });
 
-function EditorLayout() {
+function RunsLayout() {
   const { auth } = Route.useRouteContext();
 
   if (!auth.isLoaded) {
