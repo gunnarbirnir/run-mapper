@@ -146,7 +146,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
   return new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
-    offset: [0, -16],
+    offset: 16,
     className: 'waypoint-poi-popup',
   }).setHTML(
     `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3 pt-2">
@@ -199,7 +199,7 @@ export const getPointOfInterestTooltip = (
   const tooltip = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
-    offset: [0, -16],
+    offset: 16,
     className: 'waypoint-poi-popup',
   }).setHTML(
     `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3">
