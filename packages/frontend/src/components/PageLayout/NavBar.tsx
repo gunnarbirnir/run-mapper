@@ -40,7 +40,7 @@ export const NavBar = () => {
                 activeOptions={{ exact: true }}
                 className="hidden sm:block"
               >
-                <Text>My Runs</Text>
+                <Text>Runs</Text>
               </Link>
             </>
           )}
