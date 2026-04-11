@@ -10,6 +10,8 @@ interface ShaderBackgroundProps {
   className?: string;
 }
 
+const DEFAULT_LINE_WIDTH = 2;
+
 const getSeedValue = (seed?: number) => {
   return seed ?? Math.random() * 100;
 };
@@ -22,6 +24,7 @@ export const ShaderBackground = memo(
     className,
   }: ShaderBackgroundProps) => {
     const [seedValue, setSeedValue] = useState(() => getSeedValue(seed));
+    const [lineWidth, setLineWidth] = useState(DEFAULT_LINE_WIDTH);
     const colorTransparent = `${color}00`;
     const colorOpaque = `${color}ff`;
 
@@ -29,10 +32,19 @@ export const ShaderBackground = memo(
       setSeedValue(getSeedValue(seed));
     }, [seed]);
 
+    useEffect(() => {
+      setLineWidth(window?.devicePixelRatio ?? DEFAULT_LINE_WIDTH);
+    }, []);
+
     return (
       <div className={cn('bg-white opacity-50', className)}>
         <Shader style={{ width: '100%', height: '100%' }}>
-          <ContourLines source="alpha" visible={true}>
+          <ContourLines
+            source="alpha"
+            visible={true}
+            levels={5}
+            lineWidth={lineWidth}
+          >
             <FlowingGradient
               seed={seedValue}
               speed={speed}
