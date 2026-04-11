@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import 'tailwindcss';
 
 /* For elevation graph */
@@ -110,6 +111,7 @@ path:focus {
 
 * {
   outline-color: var(--color-secondary-500);
+  font-family: 'Inter', sans-serif;
 }
 
 .waypoint-poi-popup .mapboxgl-popup-content {

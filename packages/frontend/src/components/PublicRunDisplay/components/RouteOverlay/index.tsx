@@ -68,8 +68,8 @@ export const RouteOverlay = ({
 
   const drawerIsOpen = activeDrawer !== null;
   const optionItemSize = spacingPx(10);
-  const settingsDrawerWidth = convertRemToPixels('13rem');
-  const pointsOfInterestDrawerWidth = convertRemToPixels('15rem');
+  const settingsDrawerWidth = convertRemToPixels('14rem');
+  const pointsOfInterestDrawerWidth = convertRemToPixels('16rem');
   const openDrawerSize =
     activeDrawer === 'settings'
       ? settingsDrawerWidth

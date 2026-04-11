@@ -18,7 +18,7 @@ const getSeedValue = (seed?: number) => {
 
 export const ShaderBackground = memo(
   ({
-    color = '#f83b80',
+    color = '#ff1180',
     speed = 0.5,
     seed,
     className,
