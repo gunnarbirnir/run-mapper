@@ -54,15 +54,13 @@ export const Button = ({
 
   if (linkTo) {
     return (
-      <Link to={linkTo}>
-        <BaseUiButton
-          {...props}
-          disabled={isDisabled}
-          className={combinedClassName}
-        >
-          {buttonContent}
-        </BaseUiButton>
-      </Link>
+      <BaseUiButton
+        {...props}
+        disabled={isDisabled}
+        className={combinedClassName}
+      >
+        <Link to={linkTo}>{buttonContent}</Link>
+      </BaseUiButton>
     );
   }
 

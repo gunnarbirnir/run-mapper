@@ -18,7 +18,7 @@ function RunsLayout() {
   const { auth } = Route.useRouteContext();
 
   if (!auth.isLoaded) {
-    return <PageLayout isLoading />;
+    return <PageLayout isLoading isFullscreenDisplay />;
   }
 
   return <Outlet />;

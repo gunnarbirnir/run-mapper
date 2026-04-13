@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '~/utils';
-import { LoadingSpinner } from '~/primitives';
+import { LoadingSpinner, Text } from '~/primitives';
 
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
@@ -23,18 +23,18 @@ const PageLayout = ({
   isLoading = false,
   className,
 }: PageLayoutProps) => {
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner className="text-primary-500 size-10" />
-      </div>
-    );
-  }
+  const content = isLoading ? (
+    <div className="flex h-full flex-1 items-center justify-center">
+      <LoadingSpinner className="text-primary-500 size-10" />
+    </div>
+  ) : (
+    children
+  );
 
   if (isFullscreenDisplay) {
     return (
       <div className="relative h-screen w-screen" style={{ height: '100dvh' }}>
-        {children}
+        {content}
       </div>
     );
   }
@@ -45,7 +45,7 @@ const PageLayout = ({
       style={{ minHeight: '100dvh' }}
     >
       {!hideNavBar && <NavBar />}
-      {children}
+      {content}
       {!hideFooter && <Footer />}
     </div>
   );
@@ -65,6 +65,29 @@ const MainContent = ({
   );
 };
 
+const ErrorContent = ({
+  title,
+  message,
+  children,
+  className,
+}: {
+  title?: string;
+  message?: string;
+  children?: ReactNode;
+  className?: string;
+}) => {
+  return (
+    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+      <div className="relative container mx-auto">
+        {title && <Text element="h1">{title}</Text>}
+        {message && <Text variant="paragraph">{message}</Text>}
+        {children}
+      </div>
+    </main>
+  );
+};
+
 PageLayout.MainContent = MainContent;
+PageLayout.ErrorContent = ErrorContent;
 
 export { PageLayout };
