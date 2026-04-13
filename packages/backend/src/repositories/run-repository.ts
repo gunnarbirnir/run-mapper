@@ -1,16 +1,7 @@
 import { db } from '../firebase/admin.js';
-import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { EditorRun, EditorRunRecord } from '../types/index.js';
+import type { RunRecordWithId, RunRecord } from '../types/index.js';
 
-export interface RunRecord extends NormalizedRouteData {
-  userId: string;
-  name: string;
-  createdAt: string;
-  isPublic: boolean;
-  publicSlug?: string;
-}
-
-export interface RunWithId extends RunRecord {
+export interface RunWithId extends RunRecordWithId {
   id: string;
 }
 
@@ -22,7 +13,7 @@ export class RunRepository {
   /**
    * Get all runs for a user
    */
-  async findByUserId(userId: string): Promise<RunWithId[]> {
+  async findByUserId(userId: string): Promise<RunRecordWithId[]> {
     const runsSnapshot = await db
       .collection('runs')
       .where('userId', '==', userId)
@@ -31,7 +22,7 @@ export class RunRepository {
     return runsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as RunWithId[];
+    })) as RunRecordWithId[];
   }
 
   /**
@@ -139,7 +130,7 @@ export class RunRepository {
   /**
    * Find a public run by slug
    */
-  async findRunBySlug(slug: string): Promise<EditorRun | null> {
+  async findRunBySlug(slug: string): Promise<RunRecordWithId | null> {
     const runsSnapshot = await db
       .collection('runs')
       .where('publicSlug', '==', slug)
@@ -151,7 +142,7 @@ export class RunRepository {
       return null;
     }
 
-    const runData = runDoc.data() as EditorRunRecord | undefined;
+    const runData = runDoc.data() as RunRecord | undefined;
     if (!runData || runData.isPublic !== true) {
       return null;
     }

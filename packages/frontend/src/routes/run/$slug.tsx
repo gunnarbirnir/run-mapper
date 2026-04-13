@@ -19,14 +19,14 @@ export const Route = createFileRoute('/run/$slug')({
 function PublicRun() {
   const { slug } = Route.useParams();
   const { isFullscreen, routeId } = Route.useSearch();
-  const { data, isPending, error } = useQuery<ApiResponse<PublicRun>>({
-    queryKey: ['public-runs', slug],
+  const { data, isLoading, error } = useQuery<ApiResponse<PublicRun>>({
+    queryKey: ['public-run', slug],
     queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
   const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
 
   // Public run relies on window object and css variables
-  if (isPending || !areCssVariablesLoaded() || typeof window === 'undefined') {
+  if (isLoading || !areCssVariablesLoaded() || typeof window === 'undefined') {
     return (
       <Fallback>
         <LoadingSpinner className="text-primary-500 size-10" />

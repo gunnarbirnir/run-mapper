@@ -75,6 +75,15 @@ export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
   publicSlug?: string;
 }
 
+export interface ListRun {
+  id: string;
+  name: string;
+  publicSlug: string;
+  createdAt: string;
+  updatedAt?: string;
+  imageSeed: number;
+}
+
 export type ApiResponse<T> = {
   data: T;
   success: boolean;

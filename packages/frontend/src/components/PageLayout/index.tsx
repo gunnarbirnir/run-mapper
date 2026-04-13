@@ -52,15 +52,27 @@ const PageLayout = ({
 };
 
 const MainContent = ({
+  title,
+  subtitle,
   children,
   className,
 }: {
+  title?: string;
+  subtitle?: string;
   children: ReactNode;
   className?: string;
 }) => {
   return (
     <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
-      <div className="relative container mx-auto">{children}</div>
+      <div className="relative container mx-auto">
+        {title && <Text element="h1">{title}</Text>}
+        {subtitle && (
+          <div className="max-w-2xl">
+            <Text variant="paragraph">{subtitle}</Text>
+          </div>
+        )}
+        {children}
+      </div>
     </main>
   );
 };
@@ -80,7 +92,11 @@ const ErrorContent = ({
     <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
       <div className="relative container mx-auto">
         {title && <Text element="h1">{title}</Text>}
-        {message && <Text variant="paragraph">{message}</Text>}
+        {message && (
+          <div className="max-w-2xl">
+            <Text variant="paragraph">{message}</Text>
+          </div>
+        )}
         {children}
       </div>
     </main>

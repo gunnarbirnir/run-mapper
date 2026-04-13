@@ -13,7 +13,7 @@ interface ShaderBackgroundProps {
 const DEFAULT_LINE_WIDTH = 2;
 
 const getSeedValue = (seed?: number) => {
-  return seed ?? Math.random() * 100;
+  return seed ?? Math.round(Math.random() * 100);
 };
 
 export const ShaderBackground = memo(

@@ -1,5 +1,9 @@
 import { PUBLIC_SLUG_REGEX } from '../config/constants.js';
 
+export const getImageSeed = (): number => {
+  return Math.round(Math.random() * 100);
+};
+
 export const normalizePublicSlug = (value: string) => {
   return value.trim().toLowerCase();
 };
