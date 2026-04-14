@@ -10,7 +10,7 @@ import {
   MAX_ROUTE_WAYPOINTS,
   MAX_RUN_NAME_LENGTH,
 } from '../config/constants.js';
-import { isValidPublicSlug, normalizePublicSlug } from './publicSlug.js';
+import { isValidPublicSlug, normalizePublicSlug } from './index.js';
 
 export interface RouteDataPayload {
   boundingBox?: BoundingBox;

@@ -1,15 +1,17 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '~/utils';
+import { LoadingSpinner, Text } from '~/primitives';
 
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
 
 interface PageLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   isFullscreenDisplay?: boolean;
   hideNavBar?: boolean;
   hideFooter?: boolean;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -18,42 +20,90 @@ const PageLayout = ({
   isFullscreenDisplay = false,
   hideNavBar = false,
   hideFooter = false,
+  isLoading = false,
   className,
 }: PageLayoutProps) => {
+  const content = isLoading ? (
+    <div className="flex h-full flex-1 items-center justify-center">
+      <LoadingSpinner className="text-primary-500 size-10" />
+    </div>
+  ) : (
+    children
+  );
+
   if (isFullscreenDisplay) {
     return (
       <div className="relative h-screen w-screen" style={{ height: '100dvh' }}>
-        {children}
+        {content}
       </div>
     );
   }
 
   return (
     <div
-      className={cn('relative flex min-h-screen flex-col', className)}
+      className={cn('relative flex min-h-screen min-w-80 flex-col', className)}
       style={{ minHeight: '100dvh' }}
     >
       {!hideNavBar && <NavBar />}
-      {children}
+      {content}
       {!hideFooter && <Footer />}
     </div>
   );
 };
 
 const MainContent = ({
+  title,
+  subtitle,
   children,
   className,
 }: {
+  title?: string;
+  subtitle?: string;
   children: ReactNode;
   className?: string;
 }) => {
   return (
     <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
-      <div className="relative container mx-auto">{children}</div>
+      <div className="relative container mx-auto">
+        {title && <Text element="h1">{title}</Text>}
+        {subtitle && (
+          <div className="max-w-2xl">
+            <Text variant="paragraph">{subtitle}</Text>
+          </div>
+        )}
+        {children}
+      </div>
+    </main>
+  );
+};
+
+const ErrorContent = ({
+  title,
+  message,
+  children,
+  className,
+}: {
+  title?: string;
+  message?: string;
+  children?: ReactNode;
+  className?: string;
+}) => {
+  return (
+    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+      <div className="relative container mx-auto">
+        {title && <Text element="h1">{title}</Text>}
+        {message && (
+          <div className="max-w-2xl">
+            <Text variant="paragraph">{message}</Text>
+          </div>
+        )}
+        {children}
+      </div>
     </main>
   );
 };
 
 PageLayout.MainContent = MainContent;
+PageLayout.ErrorContent = ErrorContent;
 
 export { PageLayout };

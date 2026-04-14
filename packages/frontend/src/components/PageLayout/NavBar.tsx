@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 
 import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text, Icon } from '~/primitives';
+import { cn } from '~/utils';
 
 export const NavBar = () => {
   const { user, isLoaded, logOut } = useAuthState();
@@ -24,23 +25,22 @@ export const NavBar = () => {
           {user && (
             <>
               <Link
-                to="/editor/runs"
+                to="/"
+                className={cn('hidden sm:block', {
+                  'font-bold': pathname === '/' || pathname === '/home',
+                })}
+              >
+                <Text>Home</Text>
+              </Link>
+              <Link
+                to="/runs"
                 activeProps={{
                   className: 'font-bold',
                 }}
                 activeOptions={{ exact: true }}
                 className="hidden sm:block"
               >
-                <Text>My Runs</Text>
-              </Link>
-              <Link
-                to="/editor/runs/new"
-                activeProps={{
-                  className: 'font-bold',
-                }}
-                className="hidden sm:block"
-              >
-                <Text>New Run</Text>
+                <Text>Runs</Text>
               </Link>
             </>
           )}

@@ -1,11 +1,12 @@
 import type { Context } from 'hono';
+
 import { MAX_ROUTE_DATA_BYTES } from '../config/constants.js';
 import { runService } from '../services/run-service.js';
 import {
   validateCreateRunBody,
-  validateUpdatePublicBody
+  validateUpdatePublicBody,
 } from '../utils/runValidation.js';
-import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
+import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
 import type { AuthContext } from '../middleware/auth.js';
 
 /**
@@ -14,10 +15,14 @@ import type { AuthContext } from '../middleware/auth.js';
  */
 export class RunController {
   /**
-   * GET /runs/editor - List all runs for authenticated user
+   * GET /runs/list - List all runs for authenticated user
    */
-  async listUserRuns(c: AuthContext) {
+  async getRunsList(c: AuthContext) {
     try {
+      if (!c.user?.uid) {
+        throw new Error('User ID missing in auth context');
+      }
+
       const runsList = await runService.getUserRuns(c.user.uid);
 
       return c.json({
@@ -127,7 +132,7 @@ export class RunController {
       );
     } catch (error) {
       console.error('Error creating run:', error);
-      
+
       // Handle specific service errors
       if (error instanceof Error && error.message === 'Slug already exists') {
         return c.json(

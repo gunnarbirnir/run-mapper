@@ -10,15 +10,16 @@ export const Route = createFileRoute('/home/')({
 export function Home() {
   return (
     <PageLayout>
-      <PageLayout.MainContent>
-        <Text element="h1">Spretta</Text>
+      <PageLayout.MainContent title="Spretta">
         <div className="mb-8 max-w-2xl">
           <Text variant="paragraph">
             Visualize your running routes on interactive maps with elevation
             profiles, distance tracking, and animated playback. Share your runs
             with a single link.
           </Text>
-          <Text variant="paragraph">Here is a demo of the app:</Text>
+          <Text variant="paragraph" className="mt-8">
+            Here is a demo of the app:
+          </Text>
         </div>
         <div className="flex justify-center">
           <iframe

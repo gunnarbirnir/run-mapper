@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type SetStateAction } from 'react';
 
 import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { useFontLoaded } from '~/hooks/useFontLoaded';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { spacingPx } from '~/utils';
 
@@ -33,6 +34,7 @@ export const useWidgetSize = ({
 }: UseWidgetSizeProps) => {
   const { isSmallScreen } = useMediaQuery();
   const { expandedHeight: graphHeight } = useElevationGraphHeight();
+  const isFontLoaded = useFontLoaded();
   const [isInitialized, setIsInitialized] = useState(false);
 
   const widgetWidth = widgetSizes[index];
@@ -94,11 +96,11 @@ export const useWidgetSize = ({
 
   // Calculate widget size when not expanded
   useEffect(() => {
-    if (!isOpen && !isInitialized) {
+    if (!isOpen && !isInitialized && isFontLoaded) {
       const newSize = widgetRef.current ? widgetRef.current.offsetWidth : 0;
       updateWidgetSize(newSize);
     }
-  }, [widgetRef, isOpen, isInitialized, updateWidgetSize]);
+  }, [widgetRef, isOpen, isInitialized, updateWidgetSize, isFontLoaded]);
 
   // Initialize widget when size is known
   useEffect(() => {

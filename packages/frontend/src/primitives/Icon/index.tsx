@@ -17,7 +17,7 @@ import { ExternalLink } from './ExternalLink';
 import { Spretta } from './Spretta';
 import { Ruler } from './Ruler';
 import { Chevron } from './Chevron';
-import { Error } from './Error';
+import { Link } from './Link';
 
 import { cn } from '~/utils';
 
@@ -39,7 +39,7 @@ export type IconName =
   | 'spretta'
   | 'ruler'
   | 'chevron'
-  | 'error';
+  | 'link';
 
 interface IconProps {
   name: IconName;
@@ -83,8 +83,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Ruler />;
     case 'chevron':
       return <Chevron />;
-    case 'error':
-      return <Error />;
+    case 'link':
+      return <Link />;
     default:
       return null;
   }

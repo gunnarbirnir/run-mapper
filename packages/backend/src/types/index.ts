@@ -64,13 +64,29 @@ export interface PublicRun {
   pointsOfInterest: PointOfInterest[];
 }
 
-export type PublicRunRecord = Omit<PublicRun, 'id'>;
-
-export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
+export interface RunRecordWithId extends PublicRun {
+  userId: string;
   createdAt: string;
   updatedAt?: string;
   isPublic?: boolean;
+  imageSeed?: number;
+}
+
+export type RunRecord = Omit<RunRecordWithId, 'id'>;
+
+export interface EditorRun extends Omit<
+  RunRecordWithId,
+  'publicSlug' | 'userId'
+> {
   publicSlug?: string;
 }
 
-export type EditorRunRecord = Omit<EditorRun, 'id'>;
+export interface ListRun {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  publicSlug: string;
+  createdAt: string;
+  updatedAt?: string;
+  imageSeed: number;
+}

@@ -1,12 +1,11 @@
 import {
   runRepository,
-  type RunRecord,
   type RunWithId,
 } from '../repositories/run-repository.js';
 import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { PublicRun } from '../types/index.js';
-import { isValidPublicSlug, normalizePublicSlug } from '../utils/publicSlug.js';
-import { sanitizePublicRun } from '../utils/publicRun.js';
+import type { PublicRun, ListRun, RunRecord } from '../types/index.js';
+import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
+import { sanitizeListRun, sanitizePublicRun } from '../utils/sanitize.js';
 
 /**
  * Service layer - handles business logic
@@ -16,8 +15,9 @@ export class RunService {
   /**
    * Get all runs for a user
    */
-  async getUserRuns(userId: string): Promise<RunWithId[]> {
-    return runRepository.findByUserId(userId);
+  async getUserRuns(userId: string): Promise<ListRun[]> {
+    const runs = await runRepository.findByUserId(userId);
+    return runs.map(sanitizeListRun);
   }
 
   /**

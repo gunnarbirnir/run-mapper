@@ -9,18 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RunsRouteRouteImport } from './routes/runs/route'
 import { Route as EditorRouteRouteImport } from './routes/editor/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RunsIndexRouteImport } from './routes/runs/index'
 import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as R404IndexRouteImport } from './routes/404/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as EditorRunsIndexRouteImport } from './routes/editor/runs/index'
-import { Route as EditorRunsNewRouteImport } from './routes/editor/runs/new'
-import { Route as EditorRunsRunIdRouteImport } from './routes/editor/runs/$runId'
+import { Route as EditorRunNewRouteImport } from './routes/editor/run/new'
+import { Route as EditorRunRunIdRouteImport } from './routes/editor/run/$runId'
 
+const RunsRouteRoute = RunsRouteRouteImport.update({
+  id: '/runs',
+  path: '/runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorRouteRoute = EditorRouteRouteImport.update({
   id: '/editor',
   path: '/editor',
@@ -30,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const RunsIndexRoute = RunsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RunsRouteRoute,
 } as any)
 const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
   id: '/playground/',
@@ -61,34 +72,30 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EditorRunsIndexRoute = EditorRunsIndexRouteImport.update({
-  id: '/runs/',
-  path: '/runs/',
+const EditorRunNewRoute = EditorRunNewRouteImport.update({
+  id: '/run/new',
+  path: '/run/new',
   getParentRoute: () => EditorRouteRoute,
 } as any)
-const EditorRunsNewRoute = EditorRunsNewRouteImport.update({
-  id: '/runs/new',
-  path: '/runs/new',
-  getParentRoute: () => EditorRouteRoute,
-} as any)
-const EditorRunsRunIdRoute = EditorRunsRunIdRouteImport.update({
-  id: '/runs/$runId',
-  path: '/runs/$runId',
+const EditorRunRunIdRoute = EditorRunRunIdRouteImport.update({
+  id: '/run/$runId',
+  path: '/run/$runId',
   getParentRoute: () => EditorRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteRouteWithChildren
+  '/runs': typeof RunsRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
   '/404': typeof R404IndexRoute
   '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
-  '/editor/runs/$runId': typeof EditorRunsRunIdRoute
-  '/editor/runs/new': typeof EditorRunsNewRoute
-  '/editor/runs': typeof EditorRunsIndexRoute
+  '/runs/': typeof RunsIndexRoute
+  '/editor/run/$runId': typeof EditorRunRunIdRoute
+  '/editor/run/new': typeof EditorRunNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,38 +106,40 @@ export interface FileRoutesByTo {
   '/404': typeof R404IndexRoute
   '/home': typeof HomeIndexRoute
   '/playground': typeof PlaygroundIndexRoute
-  '/editor/runs/$runId': typeof EditorRunsRunIdRoute
-  '/editor/runs/new': typeof EditorRunsNewRoute
-  '/editor/runs': typeof EditorRunsIndexRoute
+  '/runs': typeof RunsIndexRoute
+  '/editor/run/$runId': typeof EditorRunRunIdRoute
+  '/editor/run/new': typeof EditorRunNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteRouteWithChildren
+  '/runs': typeof RunsRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
   '/404/': typeof R404IndexRoute
   '/home/': typeof HomeIndexRoute
   '/playground/': typeof PlaygroundIndexRoute
-  '/editor/runs/$runId': typeof EditorRunsRunIdRoute
-  '/editor/runs/new': typeof EditorRunsNewRoute
-  '/editor/runs/': typeof EditorRunsIndexRoute
+  '/runs/': typeof RunsIndexRoute
+  '/editor/run/$runId': typeof EditorRunRunIdRoute
+  '/editor/run/new': typeof EditorRunNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/editor'
+    | '/runs'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
     | '/404'
     | '/home'
     | '/playground'
-    | '/editor/runs/$runId'
-    | '/editor/runs/new'
-    | '/editor/runs'
+    | '/runs/'
+    | '/editor/run/$runId'
+    | '/editor/run/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,27 +150,29 @@ export interface FileRouteTypes {
     | '/404'
     | '/home'
     | '/playground'
-    | '/editor/runs/$runId'
-    | '/editor/runs/new'
-    | '/editor/runs'
+    | '/runs'
+    | '/editor/run/$runId'
+    | '/editor/run/new'
   id:
     | '__root__'
     | '/'
     | '/editor'
+    | '/runs'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
     | '/404/'
     | '/home/'
     | '/playground/'
-    | '/editor/runs/$runId'
-    | '/editor/runs/new'
-    | '/editor/runs/'
+    | '/runs/'
+    | '/editor/run/$runId'
+    | '/editor/run/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditorRouteRoute: typeof EditorRouteRouteWithChildren
+  RunsRouteRoute: typeof RunsRouteRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   RunSlugRoute: typeof RunSlugRoute
@@ -172,6 +183,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/runs': {
+      id: '/runs'
+      path: '/runs'
+      fullPath: '/runs'
+      preLoaderRoute: typeof RunsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editor': {
       id: '/editor'
       path: '/editor'
@@ -185,6 +203,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/runs/': {
+      id: '/runs/'
+      path: '/'
+      fullPath: '/runs/'
+      preLoaderRoute: typeof RunsIndexRouteImport
+      parentRoute: typeof RunsRouteRoute
     }
     '/playground/': {
       id: '/playground/'
@@ -228,49 +253,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/editor/runs/': {
-      id: '/editor/runs/'
-      path: '/runs'
-      fullPath: '/editor/runs'
-      preLoaderRoute: typeof EditorRunsIndexRouteImport
+    '/editor/run/new': {
+      id: '/editor/run/new'
+      path: '/run/new'
+      fullPath: '/editor/run/new'
+      preLoaderRoute: typeof EditorRunNewRouteImport
       parentRoute: typeof EditorRouteRoute
     }
-    '/editor/runs/new': {
-      id: '/editor/runs/new'
-      path: '/runs/new'
-      fullPath: '/editor/runs/new'
-      preLoaderRoute: typeof EditorRunsNewRouteImport
-      parentRoute: typeof EditorRouteRoute
-    }
-    '/editor/runs/$runId': {
-      id: '/editor/runs/$runId'
-      path: '/runs/$runId'
-      fullPath: '/editor/runs/$runId'
-      preLoaderRoute: typeof EditorRunsRunIdRouteImport
+    '/editor/run/$runId': {
+      id: '/editor/run/$runId'
+      path: '/run/$runId'
+      fullPath: '/editor/run/$runId'
+      preLoaderRoute: typeof EditorRunRunIdRouteImport
       parentRoute: typeof EditorRouteRoute
     }
   }
 }
 
 interface EditorRouteRouteChildren {
-  EditorRunsRunIdRoute: typeof EditorRunsRunIdRoute
-  EditorRunsNewRoute: typeof EditorRunsNewRoute
-  EditorRunsIndexRoute: typeof EditorRunsIndexRoute
+  EditorRunRunIdRoute: typeof EditorRunRunIdRoute
+  EditorRunNewRoute: typeof EditorRunNewRoute
 }
 
 const EditorRouteRouteChildren: EditorRouteRouteChildren = {
-  EditorRunsRunIdRoute: EditorRunsRunIdRoute,
-  EditorRunsNewRoute: EditorRunsNewRoute,
-  EditorRunsIndexRoute: EditorRunsIndexRoute,
+  EditorRunRunIdRoute: EditorRunRunIdRoute,
+  EditorRunNewRoute: EditorRunNewRoute,
 }
 
 const EditorRouteRouteWithChildren = EditorRouteRoute._addFileChildren(
   EditorRouteRouteChildren,
 )
 
+interface RunsRouteRouteChildren {
+  RunsIndexRoute: typeof RunsIndexRoute
+}
+
+const RunsRouteRouteChildren: RunsRouteRouteChildren = {
+  RunsIndexRoute: RunsIndexRoute,
+}
+
+const RunsRouteRouteWithChildren = RunsRouteRoute._addFileChildren(
+  RunsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRouteRoute: EditorRouteRouteWithChildren,
+  RunsRouteRoute: RunsRouteRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   RunSlugRoute: RunSlugRoute,

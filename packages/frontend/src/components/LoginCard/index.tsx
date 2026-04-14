@@ -30,7 +30,7 @@ export const LoginCard = () => {
 
     try {
       await signIn(email, password);
-      navigate({ to: redirect ?? '/editor/runs' });
+      navigate({ to: redirect ?? '/runs' });
     } catch (err: unknown) {
       setError(parseLoginError(err));
     } finally {
