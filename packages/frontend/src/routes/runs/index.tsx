@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { api } from '~/service';
 import { PageLayout } from '~/components/PageLayout';
+import { RunCard } from '~/components/RunCard';
 import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text } from '~/primitives';
-import type { EditorRun, ApiResponse } from '~/types';
+import type { ListRun, ApiResponse } from '~/types';
 
 export const Route = createFileRoute('/runs/')({
   component: Runs,
@@ -13,7 +14,7 @@ export const Route = createFileRoute('/runs/')({
 
 function Runs() {
   const { user } = useAuthState();
-  const { data, isLoading, error } = useQuery<ApiResponse<EditorRun[]>>({
+  const { data, isLoading, error } = useQuery<ApiResponse<ListRun[]>>({
     queryKey: ['runs-list', user?.uid],
     queryFn: () => api.get(`/runs/list`),
   });
@@ -29,15 +30,24 @@ function Runs() {
     );
   }
 
+  const runs = data?.data || [];
+
   return (
     <PageLayout isLoading={isLoading}>
       <PageLayout.MainContent title="Runs">
-        {data?.data.length === 0 && (
+        {runs.length === 0 && (
           <Text variant="paragraph" className="mb-6">
             No runs yet. Create your first run!
           </Text>
         )}
-        <Button linkTo="/editor/run/new">Create New Run</Button>
+        <Button linkTo="/editor/run/new">Create new run</Button>
+        {runs.length > 0 && (
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {runs.map((run, index) => (
+              <RunCard key={run.id + index} run={run} />
+            ))}
+          </div>
+        )}
       </PageLayout.MainContent>
     </PageLayout>
   );

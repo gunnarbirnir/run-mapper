@@ -84,6 +84,7 @@ export interface EditorRun extends Omit<
 export interface ListRun {
   id: string;
   name: string;
+  isPublic: boolean;
   publicSlug: string;
   createdAt: string;
   updatedAt?: string;

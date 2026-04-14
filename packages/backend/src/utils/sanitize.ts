@@ -22,6 +22,7 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   return {
     id: runData.id,
     name: runData.name || 'Untitled Run',
+    isPublic: runData.isPublic ?? false,
     publicSlug: runData.publicSlug ?? '',
     createdAt: runData.createdAt,
     updatedAt: runData.updatedAt,

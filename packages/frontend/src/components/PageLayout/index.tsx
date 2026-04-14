@@ -41,7 +41,7 @@ const PageLayout = ({
 
   return (
     <div
-      className={cn('relative flex min-h-screen flex-col', className)}
+      className={cn('relative flex min-h-screen min-w-80 flex-col', className)}
       style={{ minHeight: '100dvh' }}
     >
       {!hideNavBar && <NavBar />}

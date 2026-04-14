@@ -3,7 +3,7 @@ import type { PVariant } from './types';
 export const pGetVariantClassName = (variant: PVariant = 'default') => {
   switch (variant) {
     case 'label':
-      return 'text-xs text-gray-500 uppercase';
+      return 'text-xs text-gray-500 uppercase tracking-wide';
     case 'bold':
       return 'font-bold text-gray-900';
     case 'medium':
