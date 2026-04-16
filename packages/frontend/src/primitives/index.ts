@@ -8,3 +8,5 @@ export { ListItem } from './ListItem';
 export { Dropdown } from './Dropdown';
 export { Tooltip } from './Tooltip';
 export { LoadingSpinner } from './LoadingSpinner';
+export { SidePanel } from './SidePanel';
+export { SidePanelGroup } from './SidePanel/SidePanelGroup';
