@@ -65,7 +65,10 @@ export const Text = ({
       return (
         <label
           htmlFor={'htmlFor' in props ? props.htmlFor : undefined}
-          className={cn('block text-xs text-gray-500 uppercase', className)}
+          className={cn(
+            'block text-xs tracking-wide text-gray-500 uppercase',
+            className,
+          )}
           style={style}
         >
           {children}
