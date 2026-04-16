@@ -8,6 +8,7 @@ import { Footer } from './Footer';
 
 interface PageLayoutProps {
   children?: ReactNode;
+  isFullWidth?: boolean;
   isFullscreenDisplay?: boolean;
   hideNavBar?: boolean;
   hideFooter?: boolean;
@@ -17,6 +18,7 @@ interface PageLayoutProps {
 
 const PageLayout = ({
   children,
+  isFullWidth = false,
   isFullscreenDisplay = false,
   hideNavBar = false,
   hideFooter = false,
@@ -44,9 +46,9 @@ const PageLayout = ({
       className={cn('relative flex min-h-screen min-w-80 flex-col', className)}
       style={{ minHeight: '100dvh' }}
     >
-      {!hideNavBar && <NavBar />}
+      {!hideNavBar && <NavBar isFullWidth={isFullWidth} />}
       {content}
-      {!hideFooter && <Footer />}
+      {!hideFooter && <Footer isFullWidth={isFullWidth} />}
     </div>
   );
 };

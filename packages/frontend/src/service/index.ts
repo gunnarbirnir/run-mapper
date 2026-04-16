@@ -6,7 +6,9 @@ const API_BASE_URL =
 const getAuthToken = async (forceRefresh = false): Promise<string | null> => {
   try {
     const user = auth.currentUser;
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
     return await user.getIdToken(forceRefresh);
   } catch {
     return null;

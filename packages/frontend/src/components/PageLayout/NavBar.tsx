@@ -4,7 +4,11 @@ import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text, Icon } from '~/primitives';
 import { cn } from '~/utils';
 
-export const NavBar = () => {
+interface NavBarProps {
+  isFullWidth: boolean;
+}
+
+export const NavBar = ({ isFullWidth }: NavBarProps) => {
   const { user, isLoaded, logOut } = useAuthState();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -16,8 +20,16 @@ export const NavBar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-10 bg-gray-50/95 px-4 py-2 shadow-sm">
-      <div className="container mx-auto flex items-center justify-between">
+    <nav
+      className={cn('sticky top-0 z-10 bg-gray-50/95 px-4 py-2 shadow-sm', {
+        'px-6': isFullWidth,
+      })}
+    >
+      <div
+        className={cn('flex items-center justify-between', {
+          'container mx-auto': !isFullWidth,
+        })}
+      >
         <div className="flex items-center gap-6">
           <Link to="/">
             <Icon name="spretta" className="size-8" />
