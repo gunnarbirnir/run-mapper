@@ -3,6 +3,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { PageLayout } from '~/components/PageLayout';
 
 export const Route = createFileRoute('/editor')({
+  ssr: false,
   beforeLoad: ({ context, location }) => {
     if (context.auth.isLoaded && !context.auth.user) {
       throw redirect({
