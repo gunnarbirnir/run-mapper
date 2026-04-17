@@ -1,10 +1,17 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { cn, getCssVariableValue } from '~/utils';
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { cn, convertRemToPixels } from '~/utils';
+import { DEFAULT_EASING } from '~/constants';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 
-import { SidePanel, type SidePanelProps } from '.';
+import {
+  SidePanel,
+  type SidePanelProps,
+  PANEL_WIDTH,
+  SLIDE_IN_DURATION,
+} from '.';
 
 type SidePanelItem = Omit<SidePanelProps, 'children'> & {
   id: string;
@@ -17,46 +24,80 @@ interface SidePanelGroupProps {
   className?: string;
 }
 
-const SLIDE_IN_DURATION = 0.1;
-const MAX_PANELS_IN_VIEW = 2;
-
 export const SidePanelGroup = ({ panels, className }: SidePanelGroupProps) => {
-  const panelWidth = (getCssVariableValue('--w-70') || 280) as number;
+  const { isSmallScreen, isMediumScreen } = useMediaQuery();
+  const { width: windowWidth } = useWindowDimensions();
+  const [isAnimating, setIsAnimating] = useState<Record<string, boolean>>({});
+
+  const panelWidth = isSmallScreen
+    ? windowWidth
+    : convertRemToPixels(PANEL_WIDTH);
+  const maxPanelsInView = isMediumScreen ? 1 : 2;
   const visiblePanelsCount = panels.filter(
     (panel) => panel.isVisible !== false,
   ).length;
-  const inViewPanelsCount = Math.min(visiblePanelsCount, MAX_PANELS_IN_VIEW);
+  const inViewPanelsCount = Math.min(visiblePanelsCount, maxPanelsInView);
   const inViewVisibleDiff = visiblePanelsCount - inViewPanelsCount;
 
   return (
     <motion.div
+      initial={false}
       className={cn('relative isolate', className)}
       animate={{ width: panelWidth * inViewPanelsCount }}
-      transition={{ duration: DEFAULT_FADE_IN_DURATION, ease: DEFAULT_EASING }}
+      transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
     >
-      {[...panels].reverse().map(({ isVisible = true, ...panel }, index) => (
-        <motion.div
-          key={panel.id}
-          className="absolute top-0 bottom-0"
-          animate={{
-            left:
-              (isVisible
-                ? panels.length - index - inViewVisibleDiff - 1
-                : visiblePanelsCount - 1) * panelWidth,
-          }}
-          transition={{
-            duration: SLIDE_IN_DURATION,
-            ease: DEFAULT_EASING,
-          }}
-        >
-          <SidePanel
-            {...panel}
-            className={cn(panel.className, { 'shadow-none': !isVisible })}
+      {panels.map(({ isVisible = true, onClose, ...panel }, index) => {
+        const isTopVisibleItem = isVisible && index === visiblePanelsCount - 1;
+
+        return (
+          <motion.div
+            key={panel.id}
+            className="absolute top-0 bottom-0"
+            style={{
+              zIndex: isMediumScreen ? index : panels.length - index,
+            }}
+            initial={false}
+            animate={{
+              left: isMediumScreen
+                ? isVisible
+                  ? 0
+                  : -panelWidth
+                : (isVisible
+                    ? index - inViewVisibleDiff
+                    : inViewPanelsCount - 1) * panelWidth,
+            }}
+            transition={{
+              duration: SLIDE_IN_DURATION,
+              ease: DEFAULT_EASING,
+            }}
+            onAnimationStart={() =>
+              setIsAnimating((prevIsAnimating) => ({
+                ...prevIsAnimating,
+                [panel.id]: true,
+              }))
+            }
+            onAnimationComplete={() =>
+              setIsAnimating((prevIsAnimating) => ({
+                ...prevIsAnimating,
+                [panel.id]: false,
+              }))
+            }
           >
-            {panel.content}
-          </SidePanel>
-        </motion.div>
-      ))}
+            <SidePanel
+              {...panel}
+              animateCloseButton
+              onClose={isTopVisibleItem ? onClose : undefined}
+              className={cn(panel.className, {
+                'shadow-none': isMediumScreen
+                  ? !isTopVisibleItem && !isAnimating[panel.id]
+                  : !isVisible,
+              })}
+            >
+              {panel.content}
+            </SidePanel>
+          </motion.div>
+        );
+      })}
     </motion.div>
   );
 };

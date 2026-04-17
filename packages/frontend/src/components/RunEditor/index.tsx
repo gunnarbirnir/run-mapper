@@ -11,6 +11,7 @@ interface RunEditorProps {
 }
 
 export const RunEditor = ({ existingRun }: RunEditorProps) => {
+  const [showMainPanel, setShowMainPanel] = useState(true);
   const [showRoutePanel, setShowRoutePanel] = useState(false);
   const [showWaypointPanel, setShowWaypointPanel] = useState(false);
   const isNewRun = !existingRun;
@@ -24,8 +25,10 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
               id: 'main',
               title: isNewRun ? 'New run' : 'Edit run',
               className: 'p-6 pb-12',
+              isVisible: showMainPanel,
+              onClose: () => setShowMainPanel(false),
               content: (
-                <Button onClick={() => setShowRoutePanel(!showRoutePanel)}>
+                <Button onClick={() => setShowRoutePanel(true)}>
                   Show Route
                 </Button>
               ),
@@ -34,21 +37,21 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
               id: 'route',
               title: 'Route',
               className: 'p-6 pb-12',
+              isVisible: showRoutePanel,
+              onClose: () => setShowRoutePanel(false),
               content: (
-                <Button
-                  onClick={() => setShowWaypointPanel(!showWaypointPanel)}
-                >
-                  Show Waypoints
+                <Button onClick={() => setShowWaypointPanel(true)}>
+                  Show Waypoint
                 </Button>
               ),
-              isVisible: showRoutePanel,
             },
             {
               id: 'waypoint',
               title: 'Waypoint',
               className: 'p-6 pb-12',
-              content: 'Waypoint panel content',
               isVisible: showWaypointPanel,
+              onClose: () => setShowWaypointPanel(false),
+              content: <div>Waypoint content</div>,
             },
           ]}
         />
