@@ -62,12 +62,18 @@ export const SidePanelItem = ({
   return (
     <aside
       ref={ref}
-      className={cn('h-full bg-white shadow-lg/20', className)}
+      className={cn('h-full bg-white p-6 pb-12 shadow-lg/20', className)}
       style={{ width: panelWidth }}
     >
       {Boolean(title || onClose) && (
-        <div className="mb-4 flex h-8 items-start justify-between">
-          {title ? <Text element="h2">{title}</Text> : <div />}
+        <div className="mb-4 flex h-8 items-start justify-between gap-2">
+          {title ? (
+            <Text element="h2" className="truncate">
+              {title}
+            </Text>
+          ) : (
+            <div />
+          )}
           {onClose && (
             <motion.div
               initial={{ opacity: 0 }}

@@ -3,52 +3,52 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { EditorRun } from '~/types';
 import { IdProvider } from '~/context/IdContext';
-import { SidePanel, Button } from '~/primitives';
+import { SidePanel, Button, Form } from '~/primitives';
 
 import { EditorMap } from './components/EditorMap';
+import { RootPanel } from './components/RootPanel';
+import { getRunEditorFormDefaults, useRunEditorForm } from './form';
 
 interface RunEditorProps {
   existingRun?: EditorRun;
 }
 
 export const RunEditor = ({ existingRun }: RunEditorProps) => {
-  const [showMainPanel, setShowMainPanel] = useState(true);
+  const [showRootPanel, setShowRootPanel] = useState(true);
   const [showRoutePanel, setShowRoutePanel] = useState(false);
   const [showWaypointPanel, setShowWaypointPanel] = useState(false);
   const isNewRun = !existingRun;
 
+  const editorForm = useRunEditorForm({
+    defaultValues: getRunEditorFormDefaults(existingRun),
+  });
+
   useHotkey('P', () => {
-    if (showMainPanel) {
-      setShowMainPanel(false);
+    if (showRootPanel) {
+      setShowRootPanel(false);
       setShowRoutePanel(false);
       setShowWaypointPanel(false);
     } else {
-      setShowMainPanel(true);
+      setShowRootPanel(true);
     }
   });
 
   return (
     <IdProvider baseId="run-editor">
-      <div className="relative flex flex-1">
+      <Form className="relative flex flex-1" onSubmit={editorForm.handleSubmit}>
         <SidePanel
-          onOpen={() => setShowMainPanel(true)}
+          onOpen={() => setShowRootPanel(true)}
           panels={[
             {
-              id: 'main',
+              id: 'root',
               title: isNewRun ? 'New run' : 'Edit run',
-              className: 'p-6 pb-12',
-              isVisible: showMainPanel,
-              onClose: () => setShowMainPanel(false),
-              content: (
-                <Button onClick={() => setShowRoutePanel(true)}>
-                  Show Route
-                </Button>
-              ),
+              isVisible: showRootPanel,
+              onClose: () => setShowRootPanel(false),
+              content: <RootPanel form={editorForm} />,
             },
             {
               id: 'route',
               title: 'Route',
-              className: 'p-6 pb-12',
               isVisible: showRoutePanel,
               onClose: () => setShowRoutePanel(false),
               content: (
@@ -60,7 +60,6 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             {
               id: 'waypoint',
               title: 'Waypoint',
-              className: 'p-6 pb-12',
               isVisible: showWaypointPanel,
               onClose: () => setShowWaypointPanel(false),
               content: <div>Waypoint content</div>,
@@ -71,7 +70,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
         <div className="flex-1">
           <EditorMap />
         </div>
-      </div>
+      </Form>
     </IdProvider>
   );
 };

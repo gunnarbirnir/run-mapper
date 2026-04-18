@@ -9,6 +9,7 @@ interface TextInputProps {
   label: string;
   type?: string;
   placeholder?: string;
+  infoText?: string;
   className?: string;
   labelClassName?: string;
   containerClassName?: string;
@@ -22,6 +23,7 @@ export const TextInput = ({
   label,
   type = 'text',
   placeholder,
+  infoText,
   className,
   labelClassName,
   containerClassName,
@@ -29,7 +31,7 @@ export const TextInput = ({
 }: TextInputProps) => {
   return (
     <div className={containerClassName}>
-      <InputLabel htmlFor={id} className={labelClassName}>
+      <InputLabel htmlFor={id} className={labelClassName} infoText={infoText}>
         {label}
       </InputLabel>
       <input
@@ -37,7 +39,7 @@ export const TextInput = ({
         id={id}
         name={name}
         value={value}
-        placeholder={placeholder}
+        placeholder={placeholder || label}
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
           className,
