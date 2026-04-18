@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { EditorRun } from '~/types';
 import { IdProvider } from '~/context/IdContext';
@@ -16,9 +17,19 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   const [showWaypointPanel, setShowWaypointPanel] = useState(false);
   const isNewRun = !existingRun;
 
+  useHotkey('P', () => {
+    if (showMainPanel) {
+      setShowMainPanel(false);
+      setShowRoutePanel(false);
+      setShowWaypointPanel(false);
+    } else {
+      setShowMainPanel(true);
+    }
+  });
+
   return (
     <IdProvider baseId="run-editor">
-      <div className="flex flex-1">
+      <div className="relative flex flex-1">
         <SidePanelGroup
           panels={[
             {

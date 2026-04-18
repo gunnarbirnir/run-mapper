@@ -1,5 +1,6 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { cn, convertRemToPixels } from '~/utils';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
@@ -42,6 +43,16 @@ export const SidePanel = ({
     }
   }, [isFirstRender]);
 
+  useHotkey(
+    'Escape',
+    () => {
+      if (onClose) {
+        onClose();
+      }
+    },
+    { conflictBehavior: 'allow' },
+  );
+
   return (
     <aside
       className={cn('h-full bg-white shadow-lg/20', className)}
@@ -60,7 +71,6 @@ export const SidePanel = ({
                     ? DEFAULT_FADE_IN_DURATION
                     : 0,
                 ease: DEFAULT_EASING,
-                delay: SLIDE_IN_DURATION,
               }}
             >
               <RoundButton onClick={onClose}>
