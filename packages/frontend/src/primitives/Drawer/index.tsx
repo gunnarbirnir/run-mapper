@@ -6,6 +6,8 @@ import { cn } from '~/utils';
 import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
+import { useInertAttribute } from '~/hooks/useInertAttribute';
+
 import { Text } from '../Text';
 import { RoundButton } from '../Button';
 import { Icon } from '../Icon';
@@ -42,20 +44,12 @@ export const Drawer = ({
   const activeWidth = isSmallScreen ? Math.max(windowWidth, minWidth) : width;
   const hasCloseButton = !hideCloseButton && Boolean(onClose);
 
+  useInertAttribute(ref, !isOpen);
+
   useEffect(() => {
     if (isOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsAnimating(true);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (ref.current) {
-      if (isOpen) {
-        ref.current.removeAttribute('inert');
-      } else {
-        ref.current.setAttribute('inert', '');
-      }
     }
   }, [isOpen]);
 

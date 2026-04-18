@@ -3,7 +3,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { EditorRun } from '~/types';
 import { IdProvider } from '~/context/IdContext';
-import { SidePanelGroup, Button } from '~/primitives';
+import { SidePanel, Button } from '~/primitives';
 
 import { EditorMap } from './components/EditorMap';
 
@@ -30,7 +30,8 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   return (
     <IdProvider baseId="run-editor">
       <div className="relative flex flex-1">
-        <SidePanelGroup
+        <SidePanel
+          onOpen={() => setShowMainPanel(true)}
           panels={[
             {
               id: 'main',

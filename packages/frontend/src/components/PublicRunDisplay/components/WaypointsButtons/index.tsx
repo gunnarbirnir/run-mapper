@@ -96,7 +96,7 @@ export const WaypointsButtons = ({
         onClick={closeWaypointsButtons}
         tabIndex={TAB_INDEX}
       >
-        <Icon name="close" className="size-5" />
+        <Icon name="close" className="size-5.5" />
       </RoundButton>
     </motion.div>
   );

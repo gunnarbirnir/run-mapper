@@ -1,86 +1,141 @@
-import { type ReactNode, useState, useEffect } from 'react';
+import { type ReactNode, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { cn, convertRemToPixels } from '~/utils';
+import { DEFAULT_EASING } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { useInertAttribute } from '~/hooks/useInertAttribute';
 
-import { Text } from '../Text';
+import {
+  SidePanelItem,
+  type SidePanelItemProps,
+  PANEL_WIDTH,
+  SLIDE_IN_DURATION,
+} from './SidePanelItem';
 import { RoundButton } from '../Button';
 import { Icon } from '../Icon';
+import { Tooltip } from '../Tooltip';
 
-export interface SidePanelProps {
-  title?: string;
-  children?: ReactNode;
+type SidePanelItem = Omit<SidePanelItemProps, 'children'> & {
+  id: string;
+  content: ReactNode;
+  isVisible?: boolean;
+};
+
+interface SidePanelProps {
+  panels: SidePanelItem[];
   className?: string;
-  animateCloseButton?: boolean;
-  onClose?: () => void;
+  onOpen?: () => void;
 }
 
-export const PANEL_WIDTH = '17.5rem';
-export const SLIDE_IN_DURATION = 0.15;
+const TOGGLE_WIDTH = '3.5rem';
 
-export const SidePanel = ({
-  title,
-  children,
-  className,
-  animateCloseButton = false,
-  onClose,
-}: SidePanelProps) => {
-  const { isSmallScreen } = useMediaQuery();
+export const SidePanel = ({ panels, className, onOpen }: SidePanelProps) => {
+  const toggleRef = useRef<HTMLDivElement>(null);
+  const { isSmallScreen, isMediumScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
-  const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isAnimating, setIsAnimating] = useState<Record<string, boolean>>({});
+
   const panelWidth = isSmallScreen
     ? windowWidth
     : convertRemToPixels(PANEL_WIDTH);
-
-  useEffect(() => {
-    if (isFirstRender) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsFirstRender(false);
-    }
-  }, [isFirstRender]);
-
-  useHotkey(
-    'Escape',
-    () => {
-      if (onClose) {
-        onClose();
-      }
-    },
-    { conflictBehavior: 'allow' },
+  const maxPanelsInView = isMediumScreen ? 1 : 2;
+  const visiblePanelsCount = panels.filter(
+    (panel) => panel.isVisible !== false,
+  ).length;
+  const inViewPanelsCount = Math.min(visiblePanelsCount, maxPanelsInView);
+  const inViewVisibleDiff = visiblePanelsCount - inViewPanelsCount;
+  const isAnyAnimating = Object.values(isAnimating).some(
+    (animating) => animating,
   );
 
+  useInertAttribute(toggleRef, visiblePanelsCount > 0);
+
   return (
-    <aside
-      className={cn('h-full bg-white shadow-lg/20', className)}
-      style={{ width: panelWidth }}
-    >
-      {Boolean(title || onClose) && (
-        <div className="mb-4 flex h-8 items-start justify-between">
-          {title ? <Text element="h2">{title}</Text> : <div />}
-          {onClose && (
+    <>
+      <motion.div
+        initial={false}
+        className={cn(
+          'relative isolate',
+          { 'absolute top-0 bottom-0 left-0': isSmallScreen },
+          className,
+        )}
+        animate={{ width: panelWidth * inViewPanelsCount }}
+        transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
+      >
+        {panels.map(({ isVisible = true, onClose, ...panel }, index) => {
+          const isTopVisibleItem =
+            isVisible && index === visiblePanelsCount - 1;
+          const showShadow = isMediumScreen
+            ? isTopVisibleItem || isAnimating[panel.id]
+            : isVisible;
+
+          return (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              key={panel.id}
+              className="absolute top-0 bottom-0"
+              style={{
+                zIndex: isMediumScreen ? index : panels.length - index,
+              }}
+              initial={false}
+              animate={{
+                left: isMediumScreen
+                  ? isVisible
+                    ? 0
+                    : -panelWidth
+                  : (isVisible
+                      ? index - inViewVisibleDiff
+                      : inViewPanelsCount - 1) * panelWidth,
+              }}
               transition={{
-                duration:
-                  animateCloseButton && !isFirstRender
-                    ? DEFAULT_FADE_IN_DURATION
-                    : 0,
+                duration: SLIDE_IN_DURATION,
                 ease: DEFAULT_EASING,
               }}
+              onAnimationStart={() =>
+                setIsAnimating((prevIsAnimating) => ({
+                  ...prevIsAnimating,
+                  [panel.id]: true,
+                }))
+              }
+              onAnimationComplete={() =>
+                setIsAnimating((prevIsAnimating) => ({
+                  ...prevIsAnimating,
+                  [panel.id]: false,
+                }))
+              }
             >
-              <RoundButton onClick={onClose}>
-                <Icon name="close" className="size-5.5" />
-              </RoundButton>
+              <SidePanelItem
+                {...panel}
+                animateCloseButton
+                isOpen={isVisible}
+                onClose={
+                  isTopVisibleItem && !isAnyAnimating ? onClose : undefined
+                }
+                className={cn(panel.className, { 'shadow-none': !showShadow })}
+              >
+                {panel.content}
+              </SidePanelItem>
             </motion.div>
-          )}
-        </div>
+          );
+        })}
+      </motion.div>
+      {onOpen && (
+        <motion.div
+          ref={toggleRef}
+          initial={false}
+          style={{ width: TOGGLE_WIDTH, zIndex: panels.length + 1 }}
+          className="absolute top-5 z-50 flex justify-end rounded-r-full bg-white shadow-md"
+          animate={{ left: visiblePanelsCount === 0 ? 0 : `-${TOGGLE_WIDTH}` }}
+          transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
+        >
+          <Tooltip label="Open panel" side="right">
+            <RoundButton className="m-1" onClick={onOpen}>
+              <Icon name="arrow" className="size-5 rotate-90" />
+            </RoundButton>
+          </Tooltip>
+        </motion.div>
       )}
-      {children}
-    </aside>
+    </>
   );
 };
