@@ -30,7 +30,10 @@ export const Text = ({
       );
     case 'h3':
       return (
-        <h3 className={className} style={style}>
+        <h3
+          className={cn('text-base font-medium text-gray-900', className)}
+          style={style}
+        >
           {children}
         </h3>
       );

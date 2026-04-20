@@ -15,8 +15,7 @@ export const getRunEditorFormDefaults = (
   publicSlug: existingRun?.publicSlug ?? '',
 });
 
-export const { fieldContext, formContext, useFieldContext, useFormContext } =
-  createFormHookContexts();
+const { fieldContext, formContext, useFieldContext } = createFormHookContexts();
 
 interface TextFieldProps {
   label: string;
@@ -34,8 +33,8 @@ const TextField = ({ label, placeholder, infoText }: TextFieldProps) => {
       label={label}
       placeholder={placeholder}
       value={field.state.value}
-      onChange={field.handleChange}
       infoText={infoText}
+      onChange={field.handleChange}
     />
   );
 };

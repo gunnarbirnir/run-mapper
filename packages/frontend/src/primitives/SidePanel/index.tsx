@@ -21,6 +21,7 @@ type SidePanelItem = Omit<SidePanelItemProps, 'children'> & {
   id: string;
   content: ReactNode;
   isVisible?: boolean;
+  position?: number;
 };
 
 interface SidePanelProps {
@@ -31,24 +32,37 @@ interface SidePanelProps {
 
 const TOGGLE_WIDTH = '3.5rem';
 
-export const SidePanel = ({ panels, className, onOpen }: SidePanelProps) => {
+export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen, isMediumScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const [isAnimating, setIsAnimating] = useState<Record<string, boolean>>({});
 
+  const panels = props.panels.map((panel, index) => ({
+    ...panel,
+    position: panel.position ?? index,
+  }));
   const panelWidth = isSmallScreen
     ? windowWidth
     : convertRemToPixels(PANEL_WIDTH);
   const maxPanelsInView = isMediumScreen ? 1 : 2;
-  const visiblePanelsCount = panels.filter(
-    (panel) => panel.isVisible !== false,
-  ).length;
+  const visiblePanelsCount = panels.reduce(
+    (panelCount, panel) => {
+      if (panel.isVisible && !panelCount.seen.has(panel.position)) {
+        panelCount.seen.add(panel.position);
+        return { ...panelCount, value: panelCount.value + 1 };
+      }
+      return panelCount;
+    },
+    { seen: new Set<number>(), value: 0 },
+  ).value;
   const inViewPanelsCount = Math.min(visiblePanelsCount, maxPanelsInView);
   const inViewVisibleDiff = visiblePanelsCount - inViewPanelsCount;
   const isAnyAnimating = Object.values(isAnimating).some(
     (animating) => animating,
   );
+  const leftOffsets: Record<number, number> = {};
+  const statusIds: Record<string, boolean> = {};
 
   useInertAttribute(toggleRef, visiblePanelsCount > 0);
 
@@ -61,33 +75,39 @@ export const SidePanel = ({ panels, className, onOpen }: SidePanelProps) => {
           { 'absolute top-0 bottom-0 left-0': isSmallScreen },
           className,
         )}
-        animate={{ width: panelWidth * inViewPanelsCount }}
+        animate={{
+          width: panelWidth * inViewPanelsCount,
+        }}
         transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
       >
-        {panels.map(({ isVisible = true, onClose, ...panel }, index) => {
+        {panels.map(({ isVisible = true, position, onClose, ...panel }) => {
+          const leftOffset = isMediumScreen
+            ? isVisible
+              ? 0
+              : -panelWidth
+            : isVisible
+              ? (position - inViewVisibleDiff) * panelWidth
+              : (leftOffsets[position - 1] ?? -panelWidth);
+          const statusId = `${leftOffset}-${isAnimating[panel.id] ? 'animating' : 'static'}`;
           const isTopVisibleItem =
-            isVisible && index === visiblePanelsCount - 1;
+            isVisible && position === visiblePanelsCount - 1;
           const showShadow = isMediumScreen
             ? isTopVisibleItem || isAnimating[panel.id]
-            : isVisible;
+            : // Group panels by offset+isAnimating to determine if they're stacked
+              !statusIds[statusId];
+
+          leftOffsets[position] = leftOffset;
+          statusIds[statusId] = true;
 
           return (
             <motion.div
               key={panel.id}
               className="absolute top-0 bottom-0"
               style={{
-                zIndex: isMediumScreen ? index : panels.length - index,
+                zIndex: isMediumScreen ? position : panels.length - position,
               }}
               initial={false}
-              animate={{
-                left: isMediumScreen
-                  ? isVisible
-                    ? 0
-                    : -panelWidth
-                  : (isVisible
-                      ? index - inViewVisibleDiff
-                      : inViewPanelsCount - 1) * panelWidth,
-              }}
+              animate={{ left: leftOffset }}
               transition={{
                 duration: SLIDE_IN_DURATION,
                 ease: DEFAULT_EASING,
@@ -112,7 +132,9 @@ export const SidePanel = ({ panels, className, onOpen }: SidePanelProps) => {
                 onClose={
                   isTopVisibleItem && !isAnyAnimating ? onClose : undefined
                 }
-                className={cn(panel.className, { 'shadow-none': !showShadow })}
+                className={cn(panel.className, {
+                  'shadow-none': !showShadow,
+                })}
               >
                 {panel.content}
               </SidePanelItem>
@@ -125,7 +147,7 @@ export const SidePanel = ({ panels, className, onOpen }: SidePanelProps) => {
           ref={toggleRef}
           initial={false}
           style={{ width: TOGGLE_WIDTH, zIndex: panels.length + 1 }}
-          className="absolute top-5 z-50 flex justify-end rounded-r-full bg-white shadow-md"
+          className="absolute top-5 flex justify-end rounded-r-full bg-white shadow-md"
           animate={{ left: visiblePanelsCount === 0 ? 0 : `-${TOGGLE_WIDTH}` }}
           transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
         >
