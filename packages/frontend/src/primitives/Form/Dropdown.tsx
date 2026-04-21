@@ -1,57 +1,62 @@
 import { cn } from '~/utils';
 
-import { InputLabel } from './InputLabel';
+import { Dropdown as DropdownComponent } from '../Dropdown';
 import { Text } from '../Text';
+import { InputLabel } from './InputLabel';
 
-interface TextInputProps {
+interface DropdownProps {
   id: string;
-  name: string;
-  value: string;
   label: string;
-  type?: string;
-  placeholder?: string;
-  infoText?: string;
+  items: { label: string; value: string }[];
+  value?: string;
   error?: string;
+  infoText?: string;
   className?: string;
-  labelClassName?: string;
   containerClassName?: string;
+  labelClassName?: string;
+  popupClassName?: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
 }
 
-export const TextInput = ({
+export const Dropdown = ({
   id,
-  name,
-  value,
   label,
-  type = 'text',
-  placeholder,
-  infoText,
+  items,
+  value,
   error,
+  infoText,
   className,
-  labelClassName,
   containerClassName,
+  labelClassName,
+  popupClassName,
   onChange,
   onBlur,
-}: TextInputProps) => {
+}: DropdownProps) => {
   return (
     <div className={containerClassName}>
       <InputLabel htmlFor={id} className={labelClassName} infoText={infoText}>
         {label}
       </InputLabel>
-      <input
-        type={type}
+      <DropdownComponent
         id={id}
-        name={name}
+        items={items}
         value={value}
-        placeholder={placeholder || label}
+        // side="left"
+        align="start"
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
           { 'border-error-600': error },
           className,
         )}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
+        popupClassName={cn(
+          'w-(--anchor-width)rounded bg-white text-gray-900 shadow-md border border-gray-300',
+          popupClassName,
+        )}
+        onChange={(val) => {
+          onChange(val ?? '');
+          onBlur?.();
+        }}
       />
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>

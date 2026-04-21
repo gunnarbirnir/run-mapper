@@ -65,7 +65,7 @@ const MainContent = ({
   className?: string;
 }) => {
   return (
-    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+    <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
         {title && <Text element="h1">{title}</Text>}
         {subtitle && (
@@ -91,7 +91,7 @@ const ErrorContent = ({
   className?: string;
 }) => {
   return (
-    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+    <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
         {title && <Text element="h1">{title}</Text>}
         {message && (

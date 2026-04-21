@@ -43,7 +43,7 @@ export function SignUpCard() {
       <Text element="h1" className="text-center">
         Sign up
       </Text>
-      <Form onSubmit={handleSubmit} className="space-y-5">
+      <Form onSubmit={handleSubmit} className="space-y-6">
         <Form.TextInput
           id="email"
           name="email"

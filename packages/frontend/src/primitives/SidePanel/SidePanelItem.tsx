@@ -62,7 +62,10 @@ export const SidePanelItem = ({
   return (
     <aside
       ref={ref}
-      className={cn('h-full bg-white p-6 pb-12 shadow-lg/20', className)}
+      className={cn(
+        'h-full overflow-y-auto bg-white p-6 shadow-lg/20',
+        className,
+      )}
       style={{ width: panelWidth }}
     >
       {Boolean(title || onClose) && (

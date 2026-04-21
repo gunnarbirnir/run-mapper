@@ -102,7 +102,7 @@ export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
           return (
             <motion.div
               key={panel.id}
-              className="absolute top-0 bottom-0"
+              className="absolute top-0 bottom-0 bg-white"
               style={{
                 zIndex: isMediumScreen ? position : panels.length - position,
               }}

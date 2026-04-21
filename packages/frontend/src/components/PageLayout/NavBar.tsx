@@ -20,11 +20,7 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
   };
 
   return (
-    <nav
-      className={cn('sticky top-0 z-10 bg-gray-50/95 px-4 py-2 shadow-sm', {
-        'px-6': isFullWidth,
-      })}
-    >
+    <nav className={'sticky top-0 z-10 bg-gray-50/95 px-6 py-2 shadow-sm'}>
       <div
         className={cn('flex items-center justify-between', {
           'container mx-auto': !isFullWidth,

@@ -1,10 +1,14 @@
 import { useCallback } from 'react';
 
+import type { PointOfInterest } from '~/types';
+
 interface UseHandlersProps {
   setShowRootPanel: (isVisible: boolean) => void;
   setShowRoutePanel: (isVisible: boolean) => void;
   setShowPointOfInterestPanel: (isVisible: boolean) => void;
   setShowWaypointPanel: (isVisible: boolean) => void;
+  setEditPointOfInterestId: (id: string | null) => void;
+  setCurrentPointsOfInterest: (pointsOfInterest: PointOfInterest[]) => void;
 }
 
 export const useHandlers = ({
@@ -12,6 +16,8 @@ export const useHandlers = ({
   setShowRoutePanel,
   setShowPointOfInterestPanel,
   setShowWaypointPanel,
+  setEditPointOfInterestId,
+  setCurrentPointsOfInterest,
 }: UseHandlersProps) => {
   const handleOpenPanel = useCallback(() => {
     setShowRootPanel(true);
@@ -32,10 +38,15 @@ export const useHandlers = ({
     setShowRoutePanel(false);
   }, [setShowRoutePanel]);
 
-  const handleOpenPointOfInterestPanel = useCallback(() => {
+  const handleAddPointOfInterest = useCallback(() => {
+    setEditPointOfInterestId(null);
     setShowRoutePanel(false);
     setShowPointOfInterestPanel(true);
-  }, [setShowRoutePanel, setShowPointOfInterestPanel]);
+  }, [
+    setEditPointOfInterestId,
+    setShowRoutePanel,
+    setShowPointOfInterestPanel,
+  ]);
 
   const handleClosePointOfInterestPanel = useCallback(() => {
     setShowPointOfInterestPanel(false);
@@ -49,14 +60,33 @@ export const useHandlers = ({
     setShowWaypointPanel(false);
   }, [setShowWaypointPanel]);
 
+  const handleEditPointOfInterest = useCallback(
+    (poiId: string) => {
+      setEditPointOfInterestId(poiId);
+      setShowRoutePanel(false);
+      setShowPointOfInterestPanel(true);
+    },
+    [setEditPointOfInterestId, setShowRoutePanel, setShowPointOfInterestPanel],
+  );
+
+  const handleUpdatePointsOfInterest = useCallback(
+    (pointsOfInterest: PointOfInterest[]) => {
+      setCurrentPointsOfInterest(pointsOfInterest);
+      setShowPointOfInterestPanel(false);
+    },
+    [setCurrentPointsOfInterest, setShowPointOfInterestPanel],
+  );
+
   return {
     handleOpenPanel,
     handleClosePanel,
     handleOpenRoutePanel,
     handleCloseRoutePanel,
-    handleOpenPointOfInterestPanel,
+    handleAddPointOfInterest,
     handleClosePointOfInterestPanel,
     handleOpenWaypointPanel,
     handleCloseWaypointPanel,
+    handleEditPointOfInterest,
+    handleUpdatePointsOfInterest,
   };
 };

@@ -2,6 +2,7 @@ import { type FormHTMLAttributes } from 'react';
 
 import { TextInput } from './TextInput';
 import { TextArea } from './TextArea';
+import { Dropdown } from './Dropdown';
 
 type FormProps = FormHTMLAttributes<HTMLFormElement>;
 
@@ -20,5 +21,6 @@ const Form = ({ children, onSubmit, ...props }: FormProps) => {
 
 Form.TextInput = TextInput;
 Form.TextArea = TextArea;
+Form.Dropdown = Dropdown;
 
 export { Form };

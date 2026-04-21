@@ -7,9 +7,7 @@ interface FooterProps {
 
 export const Footer = ({ isFullWidth }: FooterProps) => {
   return (
-    <footer
-      className={cn('relative bg-gray-200 p-4 pb-5', { 'px-6': isFullWidth })}
-    >
+    <footer className={'relative bg-gray-200 px-6 pt-4 pb-5'}>
       <div
         className={cn('flex items-center justify-between', {
           'container mx-auto': !isFullWidth,

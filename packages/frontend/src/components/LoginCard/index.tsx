@@ -43,7 +43,7 @@ export const LoginCard = () => {
       <Text element="h1" className="text-center">
         Sign in
       </Text>
-      <Form onSubmit={handleSubmit} className="space-y-5">
+      <Form onSubmit={handleSubmit} className="space-y-6">
         <Form.TextInput
           id="email"
           name="email"

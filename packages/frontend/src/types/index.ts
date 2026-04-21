@@ -29,19 +29,22 @@ export type Waypoint = {
   amenities?: InnerWayPointType[];
 };
 
-export type PointOfInterestType =
-  | 'expo'
-  | 'food-and-drinks'
-  | 'entertainment'
-  | 'aid-station'
-  | 'parking'
-  | 'restrooms'
-  | 'information'
-  | 'bag-drop-off'
-  | 'showers-and-changing-rooms'
-  | 'award-ceremony'
-  | 'warm-up-area'
-  | 'spectator-area';
+export const PointOfInterestTypeValues = [
+  'expo',
+  'food-and-drinks',
+  'entertainment',
+  'aid-station',
+  'parking',
+  'restrooms',
+  'information',
+  'bag-drop-off',
+  'showers-and-changing-rooms',
+  'award-ceremony',
+  'warm-up-area',
+  'spectator-area',
+] as const;
+
+export type PointOfInterestType = (typeof PointOfInterestTypeValues)[number];
 
 export type PointOfInterest = {
   id: string;

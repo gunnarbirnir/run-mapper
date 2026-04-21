@@ -4,8 +4,11 @@ import { Select } from '@base-ui/react/select';
 import { cn, spacingPx } from '~/utils';
 
 interface DropdownProps {
+  id?: string;
   items: { label: string; value: string }[];
   value?: string;
+  side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
+  align?: 'start' | 'center' | 'end';
   className?: string;
   popupClassName?: string;
   style?: CSSProperties;
@@ -25,8 +28,11 @@ const HIGHLIGHTED_CLASSES =
 const SCROLL_ARROW_BASE_CLASSES = `z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-gray-100 text-center text-xs before:absolute before:left-0 before:h-full before:w-full before:content-[''] text-gray-900`;
 
 export const Dropdown = ({
+  id,
   items,
   value,
+  side,
+  align,
   className,
   popupClassName,
   style,
@@ -34,7 +40,7 @@ export const Dropdown = ({
   onChange,
 }: DropdownProps) => {
   return (
-    <Select.Root items={items} value={value} onValueChange={onChange}>
+    <Select.Root id={id} items={items} value={value} onValueChange={onChange}>
       <Select.Trigger
         className={cn(
           'flex h-10 min-w-40 cursor-pointer items-center justify-between gap-3 rounded-lg bg-white px-3 text-gray-900 select-none hover:bg-gray-100 data-popup-open:bg-gray-100',
@@ -48,6 +54,9 @@ export const Dropdown = ({
       </Select.Trigger>
       <Select.Portal>
         <Select.Positioner
+          side={side}
+          align={align}
+          alignItemWithTrigger={false}
           className="z-10 outline-none select-none"
           sideOffset={spacingPx(2)}
           collisionPadding={spacingPx(3)}
@@ -105,7 +114,7 @@ function ChevronUpDownIcon() {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="size-4"
+      className="size-4 shrink-0"
     >
       <path
         fill="currentColor"
@@ -123,7 +132,7 @@ function CheckIcon() {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="size-3.5"
+      className="size-3.5 shrink-0"
     >
       <path
         fill="currentColor"

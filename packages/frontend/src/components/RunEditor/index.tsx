@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
-import type { EditorRun } from '~/types';
+import type { EditorRun, PointOfInterest } from '~/types';
 import { IdProvider } from '~/context/IdContext';
-import { SidePanel, Form } from '~/primitives';
+import { SidePanel } from '~/primitives';
 
 import { EditorMap } from './components/EditorMap';
 import { RootPanel } from './components/RootPanel';
@@ -11,7 +11,6 @@ import { RoutePanel } from './components/RoutePanel';
 import { PointOfInterestPanel } from './components/PointOfInterestPanel';
 import { WaypointPanel } from './components/WaypointPanel';
 
-import { getRunEditorFormDefaults, useRunEditorForm } from './form';
 import { useHandlers } from './hooks/useHandlers';
 
 interface RunEditorProps {
@@ -24,6 +23,14 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   const [showPointOfInterestPanel, setShowPointOfInterestPanel] =
     useState(false);
   const [showWaypointPanel, setShowWaypointPanel] = useState(false);
+
+  const [editPointOfInterestId, setEditPointOfInterestId] = useState<
+    string | null
+  >(null);
+  const [currentPointsOfInterest, setCurrentPointsOfInterest] = useState<
+    PointOfInterest[]
+  >(existingRun?.pointsOfInterest ?? []);
+
   const isNewRun = !existingRun;
 
   const {
@@ -31,19 +38,19 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
     handleClosePanel,
     handleOpenRoutePanel,
     handleCloseRoutePanel,
-    handleOpenPointOfInterestPanel,
+    handleAddPointOfInterest,
     handleClosePointOfInterestPanel,
     handleOpenWaypointPanel,
     handleCloseWaypointPanel,
+    handleEditPointOfInterest,
+    handleUpdatePointsOfInterest,
   } = useHandlers({
     setShowRootPanel,
     setShowRoutePanel,
     setShowPointOfInterestPanel,
     setShowWaypointPanel,
-  });
-
-  const editorForm = useRunEditorForm({
-    defaultValues: getRunEditorFormDefaults(existingRun),
+    setEditPointOfInterestId,
+    setCurrentPointsOfInterest,
   });
 
   useHotkey('P', () => {
@@ -56,7 +63,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
 
   return (
     <IdProvider baseId="run-editor">
-      <Form className="relative flex flex-1" onSubmit={editorForm.handleSubmit}>
+      <div className="relative flex flex-1">
         <SidePanel
           onOpen={handleOpenPanel}
           panels={[
@@ -68,21 +75,28 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
               onClose: handleClosePanel,
               content: (
                 <RootPanel
-                  form={editorForm}
+                  existingRun={existingRun}
+                  currentPointsOfInterest={currentPointsOfInterest}
                   handleOpenRoutePanel={handleOpenRoutePanel}
-                  handleOpenPointOfInterestPanel={
-                    handleOpenPointOfInterestPanel
-                  }
+                  handleAddPointOfInterest={handleAddPointOfInterest}
+                  handleEditPointOfInterest={handleEditPointOfInterest}
                 />
               ),
             },
             {
               id: 'point-of-interest',
               position: 1,
-              title: 'Add POI',
+              title: editPointOfInterestId ? 'Edit POI' : 'Add POI',
               isVisible: showPointOfInterestPanel,
               onClose: handleClosePointOfInterestPanel,
-              content: <PointOfInterestPanel form={editorForm} />,
+              content: (
+                <PointOfInterestPanel
+                  editPointOfInterestId={editPointOfInterestId}
+                  currentPointsOfInterest={currentPointsOfInterest}
+                  handleUpdatePointsOfInterest={handleUpdatePointsOfInterest}
+                  onClose={handleClosePointOfInterestPanel}
+                />
+              ),
             },
             {
               id: 'route',
@@ -91,10 +105,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
               isVisible: showRoutePanel,
               onClose: handleCloseRoutePanel,
               content: (
-                <RoutePanel
-                  form={editorForm}
-                  handleOpenWaypointPanel={handleOpenWaypointPanel}
-                />
+                <RoutePanel handleOpenWaypointPanel={handleOpenWaypointPanel} />
               ),
             },
             {
@@ -103,7 +114,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
               title: 'Add waypoint',
               isVisible: showWaypointPanel,
               onClose: handleCloseWaypointPanel,
-              content: <WaypointPanel form={editorForm} />,
+              content: <WaypointPanel />,
             },
           ]}
         />
@@ -111,7 +122,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
         <div className="flex-1">
           <EditorMap />
         </div>
-      </Form>
+      </div>
     </IdProvider>
   );
 };
