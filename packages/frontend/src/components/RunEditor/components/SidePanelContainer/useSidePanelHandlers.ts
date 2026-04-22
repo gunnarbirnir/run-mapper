@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import type { PointOfInterest } from '~/types';
 
-interface UseHandlersProps {
+interface UseSidePanelHandlersProps {
   setShowRootPanel: (isVisible: boolean) => void;
   setShowRoutePanel: (isVisible: boolean) => void;
   setShowPointOfInterestPanel: (isVisible: boolean) => void;
@@ -11,14 +11,14 @@ interface UseHandlersProps {
   setCurrentPointsOfInterest: (pointsOfInterest: PointOfInterest[]) => void;
 }
 
-export const useHandlers = ({
+export const useSidePanelHandlers = ({
   setShowRootPanel,
   setShowRoutePanel,
   setShowPointOfInterestPanel,
   setShowWaypointPanel,
   setEditPointOfInterestId,
   setCurrentPointsOfInterest,
-}: UseHandlersProps) => {
+}: UseSidePanelHandlersProps) => {
   const handleOpenPanel = useCallback(() => {
     setShowRootPanel(true);
   }, [setShowRootPanel]);

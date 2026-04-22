@@ -8,4 +8,4 @@ export { ListItem } from './ListItem';
 export { Dropdown } from './Dropdown';
 export { Tooltip } from './Tooltip';
 export { LoadingSpinner } from './LoadingSpinner';
-export { SidePanel } from './SidePanel';
+export { SidePanel, useSidePanelItemContext } from './SidePanel';

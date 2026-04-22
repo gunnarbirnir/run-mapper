@@ -7,22 +7,22 @@ import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useInertAttribute } from '~/hooks/useInertAttribute';
 
-import {
-  SidePanelItem,
-  type SidePanelItemProps,
-  PANEL_WIDTH,
-  SLIDE_IN_DURATION,
-} from './SidePanelItem';
+import { SidePanelItem, PANEL_WIDTH, SLIDE_IN_DURATION } from './SidePanelItem';
+import { SidePanelContent } from './SidePanelContent';
 import { RoundButton } from '../Button';
 import { Icon } from '../Icon';
 import { Tooltip } from '../Tooltip';
+import {
+  SidePanelItemProvider,
+  useSidePanelItemContext,
+} from './SidePanelItemContext';
 
-type SidePanelItem = Omit<SidePanelItemProps, 'children'> & {
+interface SidePanelItem {
   id: string;
   content: ReactNode;
   isVisible?: boolean;
   position?: number;
-};
+}
 
 interface SidePanelProps {
   panels: SidePanelItem[];
@@ -32,7 +32,7 @@ interface SidePanelProps {
 
 const TOGGLE_WIDTH = '3.5rem';
 
-export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
+const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen, isMediumScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
@@ -80,7 +80,7 @@ export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
         }}
         transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
       >
-        {panels.map(({ isVisible = true, position, onClose, ...panel }) => {
+        {panels.map(({ isVisible = true, position, ...panel }) => {
           const leftOffset = isMediumScreen
             ? isVisible
               ? 0
@@ -125,18 +125,12 @@ export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
                 }))
               }
             >
-              <SidePanelItem
-                {...panel}
-                animateCloseButton
-                isOpen={isVisible}
-                onClose={
-                  isTopVisibleItem && !isAnyAnimating ? onClose : undefined
-                }
-                className={cn(panel.className, {
-                  'shadow-none': !showShadow,
-                })}
-              >
-                {panel.content}
+              <SidePanelItem isVisible={isVisible} showShadow={showShadow}>
+                <SidePanelItemProvider
+                  hideCloseButton={!isTopVisibleItem || isAnyAnimating}
+                >
+                  {panel.content}
+                </SidePanelItemProvider>
               </SidePanelItem>
             </motion.div>
           );
@@ -161,3 +155,7 @@ export const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
     </>
   );
 };
+
+SidePanel.Content = SidePanelContent;
+
+export { SidePanel, useSidePanelItemContext };
