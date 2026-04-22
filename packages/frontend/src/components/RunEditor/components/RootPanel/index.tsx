@@ -33,7 +33,7 @@ export const RootPanel = ({
 
   return (
     <Form className="space-y-8" onSubmit={rootForm.handleSubmit}>
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-5">
         <rootForm.Field name="name">
           {(field) => (
             <Form.TextInput

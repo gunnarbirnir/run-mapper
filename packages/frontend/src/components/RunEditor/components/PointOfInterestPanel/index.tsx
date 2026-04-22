@@ -7,7 +7,7 @@ import {
   PointOfInterestType,
   PointOfInterestTypeValues,
 } from '~/types';
-import { Form, Button } from '~/primitives';
+import { Form, Button, Text } from '~/primitives';
 import { useId } from '~/hooks/useId';
 import { getWaypointPoiLabel } from '~/utils/route';
 
@@ -22,14 +22,16 @@ const pointOfInterestFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.string().min(1, 'Type is required'),
   description: z.string(),
-  lat: z.number(),
-  lng: z.number(),
-  /* lat: z.number().refine((val) => val >= -90 && val <= 90, {
-    message: 'Latitude must be between -90 and 90',
-  }),
-  lng: z.number().refine((val) => val >= -180 && val <= 180, {
-    message: 'Longitude must be between -180 and 180',
-  }), */
+  lat: z
+    .number('Coordinates are required')
+    .refine((val) => val >= -90 && val <= 90, {
+      message: 'Latitude must be between -90 and 90',
+    }),
+  lng: z
+    .number('Coordinates are required')
+    .refine((val) => val >= -180 && val <= 180, {
+      message: 'Longitude must be between -180 and 180',
+    }),
 });
 
 const pointOfInterestTypeOptions = PointOfInterestTypeValues.map((type) => ({
@@ -51,10 +53,11 @@ export const PointOfInterestPanel = ({
       name: editPointOfInterest?.name || '',
       type: editPointOfInterest?.type || '',
       description: editPointOfInterest?.description || '',
-      lat: editPointOfInterest?.coordinates.lat || 0,
-      lng: editPointOfInterest?.coordinates.lng || 0,
+      lat: editPointOfInterest?.coordinates.lat,
+      lng: editPointOfInterest?.coordinates.lng,
     };
   }, [currentPointsOfInterest, editPointOfInterestId]);
+  const isEditing = Boolean(editPointOfInterestId);
 
   const nameId = useId('poi-name');
   const typeId = useId('poi-type');
@@ -71,8 +74,8 @@ export const PointOfInterestPanel = ({
         type: value.type as PointOfInterestType,
         description: value.description,
         coordinates: {
-          lat: value.lat,
-          lng: value.lng,
+          lat: value.lat as number,
+          lng: value.lng as number,
         },
       };
       const editPointOfInterestIndex = currentPointsOfInterest.findIndex(
@@ -104,7 +107,7 @@ export const PointOfInterestPanel = ({
 
   return (
     <Form onSubmit={pointOfInterestForm.handleSubmit}>
-      <div className="mb-6 space-y-6">
+      <div className="mb-6 space-y-5">
         <pointOfInterestForm.Field name="name">
           {(field) => (
             <Form.TextInput
@@ -159,8 +162,48 @@ export const PointOfInterestPanel = ({
             />
           )}
         </pointOfInterestForm.Field>
+        <div>
+          <Text variant="label" className="mb-2">
+            Coordinates
+          </Text>
+          <pointOfInterestForm.Field name="lat">
+            {(field) => (
+              <Text variant="subtle" className="text-sm">
+                <strong className="font-medium text-gray-900">lat: </strong>
+                {field.state.value ?? '-'}
+              </Text>
+            )}
+          </pointOfInterestForm.Field>
+          <pointOfInterestForm.Field name="lng">
+            {(field) => (
+              <Text variant="subtle" className="text-sm">
+                <strong className="font-medium text-gray-900">lng: </strong>
+                {field.state.value ?? '-'}
+              </Text>
+            )}
+          </pointOfInterestForm.Field>
+          <pointOfInterestForm.Subscribe
+            selector={(state) => [
+              state.submissionAttempts > 0,
+              state.fieldMeta.lat?.errors[0],
+              state.fieldMeta.lng?.errors[0],
+            ]}
+            children={([hasSubmitted, latError, lngError]) =>
+              hasSubmitted && (latError || lngError) ? (
+                <Text className="text-error-600 mt-2 text-xs">
+                  {latError ? latError.message : lngError?.message}
+                </Text>
+              ) : (
+                <Text variant="subtle" className="mt-3 text-xs">
+                  Click on the map to update the coordinates of the point of
+                  interest.
+                </Text>
+              )
+            }
+          />
+        </div>
       </div>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-3">
         <pointOfInterestForm.Subscribe
           selector={(state) => [
             state.canSubmit,
@@ -174,13 +217,32 @@ export const PointOfInterestPanel = ({
               disabled={!canSubmit || isPristine}
               isLoading={isSubmitting}
             >
-              {editPointOfInterestId ? 'Update POI' : 'Add POI'}
+              {isEditing ? 'Update POI' : 'Add POI'}
             </Button>
           )}
         />
-        <Button color="gray" className="w-full" onClick={onClose}>
+        <Button
+          color="gray"
+          className="w-full"
+          onClick={() => {
+            onClose();
+            pointOfInterestForm.reset(formDefaultValues);
+          }}
+        >
           Cancel
         </Button>
+        {isEditing && (
+          <Button
+            color="error"
+            className="w-full"
+            onClick={() => {
+              onClose();
+              pointOfInterestForm.reset(formDefaultValues);
+            }}
+          >
+            Delete
+          </Button>
+        )}
       </div>
     </Form>
   );

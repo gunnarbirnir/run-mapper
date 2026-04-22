@@ -44,10 +44,11 @@ export const TextArea = ({
           { 'border-error-600': error },
           className,
         )}
+        style={{ verticalAlign: 'bottom' }}
         onChange={(e) => onChange?.(e.target.value)}
         onBlur={onBlur}
       />
-      {error && <Text className="text-error-600 mt-0.5 text-xs">{error}</Text>}
+      {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>
   );
 };
