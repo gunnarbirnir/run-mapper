@@ -1,11 +1,15 @@
 import { createContext, useContext, type ReactNode } from 'react';
 
 interface SidePanelItemContextValue {
-  hideCloseButton: boolean;
+  itemId: string;
+  isTopVisibleItem: boolean;
+  isAnyAnimating: boolean;
 }
 
 const SidePanelItemContext = createContext<SidePanelItemContextValue>({
-  hideCloseButton: false,
+  itemId: '',
+  isTopVisibleItem: false,
+  isAnyAnimating: false,
 });
 
 type SidePanelItemProviderProps = SidePanelItemContextValue & {
@@ -13,11 +17,11 @@ type SidePanelItemProviderProps = SidePanelItemContextValue & {
 };
 
 export const SidePanelItemProvider = ({
-  hideCloseButton,
   children,
+  ...value
 }: SidePanelItemProviderProps) => {
   return (
-    <SidePanelItemContext.Provider value={{ hideCloseButton }}>
+    <SidePanelItemContext.Provider value={value}>
       {children}
     </SidePanelItemContext.Provider>
   );

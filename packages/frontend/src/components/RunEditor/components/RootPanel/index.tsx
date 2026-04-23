@@ -1,14 +1,8 @@
 import { useForm } from '@tanstack/react-form';
 
-import type { EditorRun, PointOfInterest } from '~/types';
-import {
-  Text,
-  Button,
-  Form,
-  SidePanel,
-  useSidePanelItemContext,
-} from '~/primitives';
 import { useId } from '~/hooks/useId';
+import { Button, Form, SidePanel, Text } from '~/primitives';
+import type { EditorRun, PointOfInterest } from '~/types';
 
 import { PointOfInterestItem } from './PointOfInterestItem';
 
@@ -38,13 +32,11 @@ export const RootPanel = ({
     },
     // onSubmit: ({ value }) => {}
   });
-  const { hideCloseButton } = useSidePanelItemContext();
 
   return (
     <SidePanel.Content
       title={existingRun ? 'Edit run' : 'New run'}
       onClose={onClose}
-      hideCloseButton={hideCloseButton}
     >
       <Form className="space-y-8" onSubmit={rootForm.handleSubmit}>
         <section className="flex flex-col gap-5">

@@ -95,6 +95,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
             ? isTopVisibleItem || isAnimating[panel.id]
             : // Group panels by offset+isAnimating to determine if they're stacked
               !statusIds[statusId];
+          const itemId = `${panel.id}-item`;
 
           leftOffsets[position] = leftOffset;
           statusIds[statusId] = true;
@@ -125,9 +126,15 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
                 }))
               }
             >
-              <SidePanelItem isVisible={isVisible} showShadow={showShadow}>
+              <SidePanelItem
+                id={itemId}
+                isVisible={isVisible}
+                showShadow={showShadow}
+              >
                 <SidePanelItemProvider
-                  hideCloseButton={!isTopVisibleItem || isAnyAnimating}
+                  itemId={itemId}
+                  isTopVisibleItem={isTopVisibleItem}
+                  isAnyAnimating={isAnyAnimating}
                 >
                   {panel.content}
                 </SidePanelItemProvider>

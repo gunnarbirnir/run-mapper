@@ -6,6 +6,7 @@ import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { cn, convertRemToPixels } from '~/utils';
 
 interface SidePanelItemProps {
+  id: string;
   isVisible?: boolean;
   showShadow?: boolean;
   children?: ReactNode;
@@ -16,6 +17,7 @@ export const PANEL_WIDTH = '17.5rem';
 export const SLIDE_IN_DURATION = 0.15;
 
 export const SidePanelItem = ({
+  id,
   isVisible = true,
   showShadow = true,
   children,
@@ -32,6 +34,7 @@ export const SidePanelItem = ({
 
   return (
     <aside
+      id={id}
       ref={ref}
       className={cn(
         'h-full overflow-y-auto bg-white p-6',

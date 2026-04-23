@@ -1,33 +1,31 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
 import { motion } from 'framer-motion';
-import { type ReactNode, useEffect, useState } from 'react';
+import { memo, type ReactNode, useEffect, useState } from 'react';
 
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 
 import { RoundButton } from '../Button';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
+import { useSidePanelItemContext } from './SidePanelItemContext';
+import { SLIDE_IN_DURATION } from './SidePanelItem';
 
 export interface SidePanelContentProps {
   title?: string;
   children?: ReactNode;
-  hideCloseButton?: boolean;
   animateCloseButton?: boolean;
   onClose?: () => void;
 }
 
-export const PANEL_WIDTH = '17.5rem';
-export const SLIDE_IN_DURATION = 0.15;
-
-export const SidePanelContent = ({
+export const SidePanelContent = memo(function SidePanelContent({
   title,
   children,
-  hideCloseButton = false,
   animateCloseButton = true,
   ...props
-}: SidePanelContentProps) => {
+}: SidePanelContentProps) {
   const [isFirstRender, setIsFirstRender] = useState(true);
-  const onClose = hideCloseButton ? undefined : props.onClose;
+  const { isTopVisibleItem, isAnyAnimating } = useSidePanelItemContext();
+  const onClose = isTopVisibleItem ? props.onClose : undefined;
 
   useEffect(() => {
     if (isFirstRender) {
@@ -67,9 +65,10 @@ export const SidePanelContent = ({
                     ? DEFAULT_FADE_IN_DURATION
                     : 0,
                 ease: DEFAULT_EASING,
+                delay: !isFirstRender ? SLIDE_IN_DURATION : 0,
               }}
             >
-              <RoundButton onClick={onClose}>
+              <RoundButton onClick={onClose} disabled={isAnyAnimating}>
                 <Icon name="close" className="size-5.5" />
               </RoundButton>
             </motion.div>
@@ -79,4 +78,4 @@ export const SidePanelContent = ({
       {children}
     </>
   );
-};
+});

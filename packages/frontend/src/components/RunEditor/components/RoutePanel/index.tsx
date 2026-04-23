@@ -1,4 +1,4 @@
-import { Text, Button, SidePanel, useSidePanelItemContext } from '~/primitives';
+import { Text, Button, SidePanel } from '~/primitives';
 
 interface RoutePanelProps {
   onClose: () => void;
@@ -9,14 +9,8 @@ export const RoutePanel = ({
   onClose,
   handleOpenWaypointPanel,
 }: RoutePanelProps) => {
-  const { hideCloseButton } = useSidePanelItemContext();
-
   return (
-    <SidePanel.Content
-      title="Add route"
-      onClose={onClose}
-      hideCloseButton={hideCloseButton}
-    >
+    <SidePanel.Content title="Add route" onClose={onClose}>
       <div className="space-y-8">
         <Text element="h3" className="mb-4">
           Waypoints
