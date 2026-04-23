@@ -10,18 +10,18 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentPointsOfInterest: PointOfInterest[];
   onClose: () => void;
-  handleOpenRoutePanel: () => void;
-  handleAddPointOfInterest: () => void;
-  handleEditPointOfInterest: (id: string) => void;
+  onOpenRoutePanel: () => void;
+  onAddPointOfInterest: () => void;
+  onEditPointOfInterest: (id: string) => void;
 }
 
 export const RootPanel = ({
   existingRun,
   currentPointsOfInterest,
   onClose,
-  handleOpenRoutePanel,
-  handleAddPointOfInterest,
-  handleEditPointOfInterest,
+  onOpenRoutePanel,
+  onAddPointOfInterest,
+  onEditPointOfInterest,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
@@ -70,7 +70,7 @@ export const RootPanel = ({
           <Text element="h3" className="mb-4">
             Routes
           </Text>
-          <Button className="w-full" onClick={handleOpenRoutePanel}>
+          <Button className="w-full" onClick={onOpenRoutePanel}>
             Add route
           </Button>
         </section>
@@ -84,12 +84,12 @@ export const RootPanel = ({
                 <PointOfInterestItem
                   key={pointOfInterest.id}
                   pointOfInterest={pointOfInterest}
-                  handleEditPointOfInterest={handleEditPointOfInterest}
+                  onEditPointOfInterest={onEditPointOfInterest}
                 />
               ))}
             </div>
           )}
-          <Button className="w-full" onClick={handleAddPointOfInterest}>
+          <Button className="w-full" onClick={onAddPointOfInterest}>
             Add POI
           </Button>
         </section>

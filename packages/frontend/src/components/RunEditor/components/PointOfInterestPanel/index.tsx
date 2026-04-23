@@ -19,14 +19,7 @@ import {
 import { useId } from '~/hooks/useId';
 import { getWaypointPoiLabel } from '~/utils/route';
 
-interface PointOfInterestPanelProps {
-  editPointOfInterestId: string | null;
-  currentPointsOfInterest: PointOfInterest[];
-  handleUpdatePointsOfInterest: (pointsOfInterest: PointOfInterest[]) => void;
-  handleDeletePointOfInterest: (poiId: string) => void;
-  handleHasMadeChangesPoi: (hasMadeChanges: boolean) => void;
-  onClose: () => void;
-}
+import type { PanelState } from '../../hooks/usePanelState';
 
 const pointOfInterestFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -50,25 +43,24 @@ const pointOfInterestTypeOptions = PointOfInterestTypeValues.map((type) => ({
 }));
 
 export const PointOfInterestPanel = ({
-  editPointOfInterestId,
-  currentPointsOfInterest,
-  handleUpdatePointsOfInterest,
-  handleDeletePointOfInterest,
-  handleHasMadeChangesPoi,
+  editId,
+  currentItems,
+  onUpdateItem,
+  onAddItem,
+  onDeleteItem,
+  onHasMadeChanges,
   onClose,
-}: PointOfInterestPanelProps) => {
+}: PanelState<PointOfInterest>) => {
   const nameId = useId('poi-name');
   const typeId = useId('poi-type');
   const descriptionId = useId('poi-description');
   const { itemId, isTopVisibleItem } = useSidePanelItemContext();
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isEditing = Boolean(editPointOfInterestId);
+  const isEditing = Boolean(editId);
 
   const formDefaultValues = useMemo(() => {
-    const editPointOfInterest = currentPointsOfInterest.find(
-      (poi) => poi.id === editPointOfInterestId,
-    );
+    const editPointOfInterest = currentItems.find((poi) => poi.id === editId);
     return {
       name: editPointOfInterest?.name || '',
       type: editPointOfInterest?.type || '',
@@ -76,7 +68,7 @@ export const PointOfInterestPanel = ({
       lat: editPointOfInterest?.coordinates.lat,
       lng: editPointOfInterest?.coordinates.lng,
     };
-  }, [editPointOfInterestId, currentPointsOfInterest]);
+  }, [editId, currentItems]);
 
   const pointOfInterestForm = useForm({
     defaultValues: formDefaultValues,
@@ -93,25 +85,11 @@ export const PointOfInterestPanel = ({
           lng: value.lng as number,
         },
       };
-      const editPointOfInterestIndex = currentPointsOfInterest.findIndex(
-        (poi) => poi.id === editPointOfInterestId,
-      );
 
-      if (editPointOfInterestIndex !== -1) {
-        const updatedPointsOfInterest = [...currentPointsOfInterest];
-        updatedPointsOfInterest[editPointOfInterestIndex] = {
-          ...updatedPointsOfInterest[editPointOfInterestIndex],
-          ...updatedPointOfInterest,
-        };
-        handleUpdatePointsOfInterest(updatedPointsOfInterest);
+      if (editId) {
+        onUpdateItem(editId, updatedPointOfInterest);
       } else {
-        handleUpdatePointsOfInterest([
-          ...currentPointsOfInterest,
-          {
-            id: `new-poi-${Date.now()}`,
-            ...updatedPointOfInterest,
-          },
-        ]);
+        onAddItem(updatedPointOfInterest);
       }
     },
   });
@@ -136,23 +114,20 @@ export const PointOfInterestPanel = ({
   useEffect(() => {
     resetForm();
     document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [editPointOfInterestId, resetForm, itemId]);
+  }, [editId, resetForm, itemId]);
 
   useEffect(() => {
-    handleHasMadeChangesPoi(
-      !isDefaultValue && !closeDialogOpen && !deleteDialogOpen,
-    );
-  }, [
-    isDefaultValue,
-    closeDialogOpen,
-    deleteDialogOpen,
-    handleHasMadeChangesPoi,
-  ]);
+    onHasMadeChanges(!isDefaultValue && !closeDialogOpen && !deleteDialogOpen);
+  }, [isDefaultValue, closeDialogOpen, deleteDialogOpen, onHasMadeChanges]);
 
   useHotkey(
     'Enter',
     () => {
-      pointOfInterestForm.handleSubmit();
+      if (isDefaultValue) {
+        onClose();
+      } else {
+        pointOfInterestForm.handleSubmit();
+      }
     },
     {
       enabled: isTopVisibleItem,
@@ -162,7 +137,7 @@ export const PointOfInterestPanel = ({
 
   return (
     <SidePanel.Content
-      title={editPointOfInterestId ? 'Edit POI' : 'Add POI'}
+      title={editId ? 'Edit POI' : 'Add POI'}
       onClose={handleOnClose}
     >
       <Form onSubmit={pointOfInterestForm.handleSubmit}>
@@ -326,8 +301,8 @@ export const PointOfInterestPanel = ({
               color: 'error',
               onClick: () => {
                 setDeleteDialogOpen(false);
-                if (editPointOfInterestId) {
-                  handleDeletePointOfInterest(editPointOfInterestId);
+                if (editId) {
+                  onDeleteItem(editId);
                 }
               },
             },

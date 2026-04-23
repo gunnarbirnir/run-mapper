@@ -1,9 +1,8 @@
 import { SidePanel } from '~/primitives';
+import { Waypoint } from '~/types';
 
-interface WaypointPanelProps {
-  onClose: () => void;
-}
+import type { PanelState } from '../../hooks/usePanelState';
 
-export const WaypointPanel = ({ onClose }: WaypointPanelProps) => {
+export const WaypointPanel = ({ onClose }: PanelState<Waypoint>) => {
   return <SidePanel.Content title="Add waypoint" onClose={onClose} />;
 };

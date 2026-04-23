@@ -1,13 +1,15 @@
 import { Text, Button, SidePanel } from '~/primitives';
+import { PublicRoute } from '~/types';
 
-interface RoutePanelProps {
-  onClose: () => void;
-  handleOpenWaypointPanel: () => void;
+import type { PanelState } from '../../hooks/usePanelState';
+
+interface RoutePanelProps extends PanelState<PublicRoute> {
+  onOpenWaypointPanel: () => void;
 }
 
 export const RoutePanel = ({
   onClose,
-  handleOpenWaypointPanel,
+  onOpenWaypointPanel,
 }: RoutePanelProps) => {
   return (
     <SidePanel.Content title="Add route" onClose={onClose}>
@@ -15,7 +17,7 @@ export const RoutePanel = ({
         <Text element="h3" className="mb-4">
           Waypoints
         </Text>
-        <Button className="w-full" onClick={handleOpenWaypointPanel}>
+        <Button className="w-full" onClick={onOpenWaypointPanel}>
           Add Waypoint
         </Button>
       </div>
