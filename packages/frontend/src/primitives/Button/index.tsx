@@ -8,7 +8,7 @@ import { RoundButton } from './RoundButton';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { type ButtonColor, getColorClassName } from './utils';
 
-type ButtonProps = {
+export type ButtonProps = {
   children: string;
   className?: string;
   linkTo?: string;

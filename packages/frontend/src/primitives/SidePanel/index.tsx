@@ -1,8 +1,8 @@
 import { type ReactNode, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { cn, convertRemToPixels } from '~/utils';
-import { DEFAULT_EASING } from '~/constants';
+import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useInertAttribute } from '~/hooks/useInertAttribute';
@@ -21,6 +21,7 @@ interface SidePanelItem {
   id: string;
   content: ReactNode;
   isVisible?: boolean;
+  disabled?: boolean;
   position?: number;
 }
 
@@ -80,68 +81,82 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
         }}
         transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
       >
-        {panels.map(({ isVisible = true, position, ...panel }) => {
-          const leftOffset = isMediumScreen
-            ? isVisible
-              ? 0
-              : -panelWidth
-            : isVisible
-              ? (position - inViewVisibleDiff) * panelWidth
-              : (leftOffsets[position - 1] ?? -panelWidth);
-          const statusId = `${leftOffset}-${isAnimating[panel.id] ? 'animating' : 'static'}`;
-          const isTopVisibleItem =
-            isVisible && position === visiblePanelsCount - 1;
-          const showShadow = isMediumScreen
-            ? isTopVisibleItem || isAnimating[panel.id]
-            : // Group panels by offset+isAnimating to determine if they're stacked
-              !statusIds[statusId];
-          const itemId = `${panel.id}-item`;
+        {panels.map(
+          ({ isVisible = true, position, disabled = false, ...panel }) => {
+            const leftOffset = isMediumScreen
+              ? isVisible
+                ? 0
+                : -panelWidth
+              : isVisible
+                ? (position - inViewVisibleDiff) * panelWidth
+                : (leftOffsets[position - 1] ?? -panelWidth);
+            const statusId = `${leftOffset}-${isAnimating[panel.id] ? 'animating' : 'static'}`;
+            const isTopVisibleItem =
+              isVisible && position === visiblePanelsCount - 1;
+            const showShadow = isMediumScreen
+              ? isTopVisibleItem || isAnimating[panel.id]
+              : // Group panels by offset+isAnimating to determine if they're stacked
+                !statusIds[statusId];
+            const itemId = `${panel.id}-item`;
 
-          leftOffsets[position] = leftOffset;
-          statusIds[statusId] = true;
+            leftOffsets[position] = leftOffset;
+            statusIds[statusId] = true;
 
-          return (
-            <motion.div
-              key={panel.id}
-              className="absolute top-0 bottom-0 bg-white"
-              style={{
-                zIndex: isMediumScreen ? position : panels.length - position,
-              }}
-              initial={false}
-              animate={{ left: leftOffset }}
-              transition={{
-                duration: SLIDE_IN_DURATION,
-                ease: DEFAULT_EASING,
-              }}
-              onAnimationStart={() =>
-                setIsAnimating((prevIsAnimating) => ({
-                  ...prevIsAnimating,
-                  [panel.id]: true,
-                }))
-              }
-              onAnimationComplete={() =>
-                setIsAnimating((prevIsAnimating) => ({
-                  ...prevIsAnimating,
-                  [panel.id]: false,
-                }))
-              }
-            >
-              <SidePanelItem
-                id={itemId}
-                isVisible={isVisible}
-                showShadow={showShadow}
+            return (
+              <motion.div
+                key={panel.id}
+                className="absolute top-0 bottom-0 bg-white"
+                style={{
+                  zIndex: isMediumScreen ? position : panels.length - position,
+                }}
+                initial={false}
+                animate={{ left: leftOffset }}
+                transition={{
+                  duration: SLIDE_IN_DURATION,
+                  ease: DEFAULT_EASING,
+                }}
+                onAnimationStart={() =>
+                  setIsAnimating((prevIsAnimating) => ({
+                    ...prevIsAnimating,
+                    [panel.id]: true,
+                  }))
+                }
+                onAnimationComplete={() =>
+                  setIsAnimating((prevIsAnimating) => ({
+                    ...prevIsAnimating,
+                    [panel.id]: false,
+                  }))
+                }
               >
-                <SidePanelItemProvider
-                  itemId={itemId}
-                  isTopVisibleItem={isTopVisibleItem}
-                  isAnyAnimating={isAnyAnimating}
+                <SidePanelItem
+                  id={itemId}
+                  isVisible={isVisible}
+                  disabled={disabled}
+                  showShadow={showShadow}
                 >
-                  {panel.content}
-                </SidePanelItemProvider>
-              </SidePanelItem>
-            </motion.div>
-          );
-        })}
+                  <SidePanelItemProvider
+                    itemId={itemId}
+                    isTopVisibleItem={isTopVisibleItem}
+                    isAnyAnimating={isAnyAnimating}
+                  >
+                    {panel.content}
+                  </SidePanelItemProvider>
+                </SidePanelItem>
+                <AnimatePresence>
+                  {disabled && (
+                    <motion.div
+                      exit={{ opacity: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.5 }}
+                      transition={{ duration: DEFAULT_FADE_IN_DURATION }}
+                      className="pointer-events-none absolute inset-0 bg-black"
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          },
+        )}
       </motion.div>
       {onOpen && (
         <motion.div

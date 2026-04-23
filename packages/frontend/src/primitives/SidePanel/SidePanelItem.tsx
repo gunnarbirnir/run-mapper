@@ -7,9 +7,10 @@ import { cn, convertRemToPixels } from '~/utils';
 
 interface SidePanelItemProps {
   id: string;
-  isVisible?: boolean;
-  showShadow?: boolean;
-  children?: ReactNode;
+  isVisible: boolean;
+  disabled: boolean;
+  showShadow: boolean;
+  children: ReactNode;
   className?: string;
 }
 
@@ -18,8 +19,9 @@ export const SLIDE_IN_DURATION = 0.15;
 
 export const SidePanelItem = ({
   id,
-  isVisible = true,
-  showShadow = true,
+  isVisible,
+  disabled,
+  showShadow,
   children,
   className,
 }: SidePanelItemProps) => {
@@ -30,7 +32,7 @@ export const SidePanelItem = ({
     ? windowWidth
     : convertRemToPixels(PANEL_WIDTH);
 
-  useInertAttribute(ref, !isVisible);
+  useInertAttribute(ref, !isVisible || disabled);
 
   return (
     <aside

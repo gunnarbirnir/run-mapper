@@ -23,6 +23,7 @@ export const SidePanelContainer = ({
     useState(false);
   const [showWaypointPanel, setShowWaypointPanel] = useState(false);
 
+  const [hasMadeChangesPoi, setHasMadeChangesPoi] = useState(false);
   const [editPointOfInterestId, setEditPointOfInterestId] = useState<
     string | null
   >(null);
@@ -37,17 +38,21 @@ export const SidePanelContainer = ({
     handleCloseRoutePanel,
     handleAddPointOfInterest,
     handleClosePointOfInterestPanel,
-    handleOpenWaypointPanel,
-    handleCloseWaypointPanel,
     handleEditPointOfInterest,
     handleUpdatePointsOfInterest,
+    handleDeletePointOfInterest,
+    handleHasMadeChangesPoi,
+    handleOpenWaypointPanel,
+    handleCloseWaypointPanel,
   } = useSidePanelHandlers({
+    currentPointsOfInterest,
     setShowRootPanel,
     setShowRoutePanel,
     setShowPointOfInterestPanel,
-    setShowWaypointPanel,
     setEditPointOfInterestId,
     setCurrentPointsOfInterest,
+    setHasMadeChangesPoi,
+    setShowWaypointPanel,
   });
 
   useHotkey('P', () => {
@@ -66,6 +71,7 @@ export const SidePanelContainer = ({
           id: 'root',
           position: 0,
           isVisible: showRootPanel,
+          disabled: hasMadeChangesPoi,
           content: (
             <RootPanel
               existingRun={existingRun}
@@ -87,6 +93,8 @@ export const SidePanelContainer = ({
               currentPointsOfInterest={currentPointsOfInterest}
               onClose={handleClosePointOfInterestPanel}
               handleUpdatePointsOfInterest={handleUpdatePointsOfInterest}
+              handleDeletePointOfInterest={handleDeletePointOfInterest}
+              handleHasMadeChangesPoi={handleHasMadeChangesPoi}
             />
           ),
         },
