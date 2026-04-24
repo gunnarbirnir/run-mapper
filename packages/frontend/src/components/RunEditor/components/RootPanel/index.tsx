@@ -67,19 +67,19 @@ export const RootPanel = ({
           </rootForm.Field>
         </section>
         <section>
-          <Text element="h3" className="mb-4">
-            Routes
+          <Text element="h3">Routes</Text>
+          <Text variant="subtle" className="mt-3 mb-5 text-sm">
+            Your run can have multiple routes, one for each distance. Create the
+            first one here:
           </Text>
           <Button className="w-full" onClick={onOpenRoutePanel}>
             Add route
           </Button>
         </section>
         <section>
-          <Text element="h3" className="mb-4">
-            Points of interest
-          </Text>
-          {currentPointsOfInterest.length > 0 && (
-            <div className="mb-6 space-y-2">
+          <Text element="h3">Points of interest</Text>
+          {currentPointsOfInterest.length > 0 ? (
+            <div className="mt-4 mb-6 space-y-2">
               {currentPointsOfInterest.map((pointOfInterest) => (
                 <PointOfInterestItem
                   key={pointOfInterest.id}
@@ -88,6 +88,11 @@ export const RootPanel = ({
                 />
               ))}
             </div>
+          ) : (
+            <Text variant="subtle" className="mt-3 mb-5 text-sm">
+              Points of interest are notable locations related to your running
+              event. Create the first one here:
+            </Text>
           )}
           <Button className="w-full" onClick={onAddPointOfInterest}>
             Add POI
