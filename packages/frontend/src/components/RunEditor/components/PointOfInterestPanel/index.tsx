@@ -67,10 +67,11 @@ export const PointOfInterestPanel = ({
     };
   }, [editId, currentItems]);
 
-  const pointOfInterestForm = useForm({
+  const poiForm = useForm({
     defaultValues: formDefaultValues,
     validators: {
       onBlur: pointOfInterestFormSchema,
+      onSubmit: pointOfInterestFormSchema,
     },
     onSubmit: ({ value }) => {
       const updatedPointOfInterest = {
@@ -92,13 +93,13 @@ export const PointOfInterestPanel = ({
   });
 
   const isDefaultValue = useStore(
-    pointOfInterestForm.store,
+    poiForm.store,
     (state) => state.isDefaultValue,
   );
 
   const resetForm = useCallback(() => {
-    pointOfInterestForm.reset(formDefaultValues);
-  }, [formDefaultValues, pointOfInterestForm]);
+    poiForm.reset(formDefaultValues);
+  }, [formDefaultValues, poiForm]);
 
   const handleOnClose = useCallback(() => {
     if (isDefaultValue) {
@@ -123,7 +124,7 @@ export const PointOfInterestPanel = ({
       if (isDefaultValue) {
         onClose();
       } else {
-        pointOfInterestForm.handleSubmit();
+        poiForm.handleSubmit();
       }
     },
     {
@@ -134,12 +135,12 @@ export const PointOfInterestPanel = ({
 
   return (
     <SidePanel.Content
-      title={editId ? 'Edit POI' : 'Add POI'}
+      title={isEditing ? 'Edit POI' : 'Add POI'}
       onClose={handleOnClose}
     >
-      <Form onSubmit={pointOfInterestForm.handleSubmit}>
+      <Form onSubmit={poiForm.handleSubmit}>
         <div className="mb-6 space-y-5">
-          <pointOfInterestForm.Field name="name">
+          <poiForm.Field name="name">
             {(field) => (
               <Form.TextInput
                 id={nameId}
@@ -156,8 +157,8 @@ export const PointOfInterestPanel = ({
                 onBlur={field.handleBlur}
               />
             )}
-          </pointOfInterestForm.Field>
-          <pointOfInterestForm.Field name="type">
+          </poiForm.Field>
+          <poiForm.Field name="type">
             {(field) => (
               <Form.Dropdown
                 id={typeId}
@@ -173,8 +174,8 @@ export const PointOfInterestPanel = ({
                 onBlur={field.handleBlur}
               />
             )}
-          </pointOfInterestForm.Field>
-          <pointOfInterestForm.Field name="description">
+          </poiForm.Field>
+          <poiForm.Field name="description">
             {(field) => (
               <Form.TextArea
                 id={descriptionId}
@@ -192,28 +193,28 @@ export const PointOfInterestPanel = ({
                 onBlur={field.handleBlur}
               />
             )}
-          </pointOfInterestForm.Field>
+          </poiForm.Field>
           <div>
             <Text variant="label" className="mb-2">
               Coordinates
             </Text>
-            <pointOfInterestForm.Field name="lat">
+            <poiForm.Field name="lat">
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
                   {field.state.value ?? '-'}
                 </Text>
               )}
-            </pointOfInterestForm.Field>
-            <pointOfInterestForm.Field name="lng">
+            </poiForm.Field>
+            <poiForm.Field name="lng">
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
                   {field.state.value ?? '-'}
                 </Text>
               )}
-            </pointOfInterestForm.Field>
-            <pointOfInterestForm.Subscribe
+            </poiForm.Field>
+            <poiForm.Subscribe
               selector={(state) => [
                 state.submissionAttempts > 0,
                 state.fieldMeta.lat?.errors[0],
@@ -235,7 +236,7 @@ export const PointOfInterestPanel = ({
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          <pointOfInterestForm.Subscribe
+          <poiForm.Subscribe
             selector={(state) => [
               state.canSubmit,
               state.isSubmitting,
@@ -274,7 +275,7 @@ export const PointOfInterestPanel = ({
               label: 'Save',
               onClick: () => {
                 setCloseDialogOpen(false);
-                pointOfInterestForm.handleSubmit();
+                poiForm.handleSubmit();
               },
             },
             {

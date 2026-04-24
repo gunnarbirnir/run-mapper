@@ -47,7 +47,7 @@ const Tooltip = ({
         >
           <BaseUiTooltip.Popup
             className={cn(
-              'flex origin-top flex-col rounded-md bg-gray-700 px-2 py-1 text-sm text-white shadow-sm',
+              'flex max-w-65 origin-top flex-col rounded-md bg-gray-700 px-2 py-1 text-center text-sm text-white shadow-sm',
               ANIMATION_CLASSES,
               className,
             )}

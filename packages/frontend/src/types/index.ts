@@ -40,6 +40,7 @@ export interface PublicRoute {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
+  displayDistance?: number;
 }
 
 export interface PublicRun {

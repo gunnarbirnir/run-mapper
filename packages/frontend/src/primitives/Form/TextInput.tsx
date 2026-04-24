@@ -1,28 +1,20 @@
+import type { InputHTMLAttributes } from 'react';
 import { cn } from '~/utils';
 
 import { InputLabel } from './InputLabel';
 import { Text } from '../Text';
 
-interface TextInputProps {
-  id: string;
-  name: string;
-  value: string;
+type TextInputProps = {
   label: string;
-  type?: string;
-  placeholder?: string;
   infoText?: string;
   error?: string;
-  className?: string;
   labelClassName?: string;
   containerClassName?: string;
   onChange: (value: string) => void;
-  onBlur?: () => void;
-}
+} & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>;
 
 export const TextInput = ({
   id,
-  name,
-  value,
   label,
   type = 'text',
   placeholder,
@@ -32,7 +24,7 @@ export const TextInput = ({
   labelClassName,
   containerClassName,
   onChange,
-  onBlur,
+  ...props
 }: TextInputProps) => {
   return (
     <div className={containerClassName}>
@@ -40,18 +32,20 @@ export const TextInput = ({
         {label}
       </InputLabel>
       <input
-        type={type}
+        {...props}
         id={id}
-        name={name}
-        value={value}
+        type={type}
         placeholder={placeholder || label}
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
           { 'border-error-600': error },
           className,
         )}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
+        onChange={(e) => {
+          if (e.target.reportValidity()) {
+            onChange(e.target.value);
+          }
+        }}
       />
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>
