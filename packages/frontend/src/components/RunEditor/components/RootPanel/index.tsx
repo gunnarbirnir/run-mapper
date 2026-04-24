@@ -1,8 +1,10 @@
 import { useForm } from '@tanstack/react-form';
+import { motion } from 'motion/react';
 
 import { useId } from '~/hooks/useId';
 import { Button, Form, SidePanel, Text } from '~/primitives';
 import type { EditorRun, PointOfInterest } from '~/types';
+import { POINT_OF_INTEREST_VALUES } from '~/constants';
 
 import { PointOfInterestItem } from './PointOfInterestItem';
 
@@ -79,15 +81,21 @@ export const RootPanel = ({
         <section>
           <Text element="h3">Points of interest</Text>
           {currentPointsOfInterest.length > 0 ? (
-            <div className="mt-4 mb-6 space-y-2">
-              {currentPointsOfInterest.map((pointOfInterest) => (
-                <PointOfInterestItem
-                  key={pointOfInterest.id}
-                  pointOfInterest={pointOfInterest}
-                  onEditPointOfInterest={onEditPointOfInterest}
-                />
-              ))}
-            </div>
+            <motion.div layout className="mt-4 mb-6 space-y-3">
+              {currentPointsOfInterest
+                .sort(
+                  (a, b) =>
+                    POINT_OF_INTEREST_VALUES.indexOf(a.type) -
+                    POINT_OF_INTEREST_VALUES.indexOf(b.type),
+                )
+                .map((pointOfInterest) => (
+                  <PointOfInterestItem
+                    key={pointOfInterest.id}
+                    pointOfInterest={pointOfInterest}
+                    onEditPointOfInterest={onEditPointOfInterest}
+                  />
+                ))}
+            </motion.div>
           ) : (
             <Text variant="subtle" className="mt-3 mb-5 text-sm">
               Points of interest are notable locations related to your running

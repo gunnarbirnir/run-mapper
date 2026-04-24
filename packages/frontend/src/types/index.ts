@@ -1,3 +1,5 @@
+import { POINT_OF_INTEREST_VALUES, WAYPOINT_VALUES } from '~/constants';
+
 export type Coordinates = { lat: number; lng: number };
 export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
@@ -8,43 +10,21 @@ export type RouteCoordinates = Coordinates & {
   elevation: number;
 };
 
-export type WayPointType =
-  | 'energy'
-  | 'hydration'
-  | 'entertainment'
-  | 'timing'
-  | 'restrooms'
-  | 'start'
-  | 'end';
+export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
-export type InnerWayPointType = Exclude<WayPointType, 'start' | 'end'>;
+export type InnerWaypointType = Exclude<WaypointType, 'start' | 'end'>;
 
 export type Waypoint = {
   id: string;
   name: string;
   description?: string;
   coordinates: Coordinates;
-  type: WayPointType;
+  type: WaypointType;
   distance: number;
-  amenities?: InnerWayPointType[];
+  amenities?: InnerWaypointType[];
 };
 
-export const PointOfInterestTypeValues = [
-  'expo',
-  'food-and-drinks',
-  'entertainment',
-  'aid-station',
-  'parking',
-  'restrooms',
-  'information',
-  'bag-drop-off',
-  'showers-and-changing-rooms',
-  'award-ceremony',
-  'warm-up-area',
-  'spectator-area',
-] as const;
-
-export type PointOfInterestType = (typeof PointOfInterestTypeValues)[number];
+export type PointOfInterestType = (typeof POINT_OF_INTEREST_VALUES)[number];
 
 export type PointOfInterest = {
   id: string;

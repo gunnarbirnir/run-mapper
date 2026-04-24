@@ -3,11 +3,8 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { useHotkey } from '@tanstack/react-hotkeys';
 import z from 'zod';
 
-import {
-  PointOfInterest,
-  PointOfInterestType,
-  PointOfInterestTypeValues,
-} from '~/types';
+import type { PointOfInterest, PointOfInterestType } from '~/types';
+import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import {
   Form,
   Button,
@@ -37,7 +34,7 @@ const pointOfInterestFormSchema = z.object({
     }),
 });
 
-const pointOfInterestTypeOptions = PointOfInterestTypeValues.map((type) => ({
+const pointOfInterestTypeOptions = POINT_OF_INTEREST_VALUES.map((type) => ({
   label: getWaypointPoiLabel(type),
   value: type,
 }));

@@ -2,9 +2,9 @@ import type {
   Coordinates,
   Elevation,
   Waypoint,
-  WayPointType,
+  WaypointType,
   PointOfInterestType,
-  InnerWayPointType,
+  InnerWaypointType,
 } from '~/types';
 import { MAP_ICONS } from '~/constants/mapIcons';
 
@@ -138,11 +138,11 @@ export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
 };
 
 export const getWaypointPoiIcon = (icon: string): string => {
-  return MAP_ICONS[icon as InnerWayPointType | PointOfInterestType] ?? '';
+  return MAP_ICONS[icon as InnerWaypointType | PointOfInterestType] ?? '';
 };
 
 export const getWaypointPoiIconSize = (
-  type: WayPointType | PointOfInterestType,
+  type: WaypointType | PointOfInterestType,
 ): { height: string; width: string; size: string } => {
   switch (type) {
     case 'energy':
@@ -187,7 +187,7 @@ export const getPoiIconColor = (type: PointOfInterestType): string => {
 };
 
 export const getWaypointPoiLabel = (
-  type: WayPointType | PointOfInterestType,
+  type: WaypointType | PointOfInterestType,
 ): string => {
   switch (type) {
     case 'energy':

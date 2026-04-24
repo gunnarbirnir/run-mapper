@@ -1,7 +1,7 @@
-import type { InnerWayPointType, PointOfInterestType } from '~/types';
+import type { InnerWaypointType, PointOfInterestType } from '~/types';
 
 export const MAP_ICONS: Record<
-  InnerWayPointType | PointOfInterestType,
+  InnerWaypointType | PointOfInterestType,
   string
 > = {
   energy:
