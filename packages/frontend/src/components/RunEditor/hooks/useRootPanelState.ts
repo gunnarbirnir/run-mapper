@@ -11,7 +11,10 @@ interface UseRootPanelStateProps {
 }
 
 export const useRootPanelState = ({
-  routePanelState: { setShowPanel: setShowRoutePanel },
+  routePanelState: {
+    setShowPanel: setShowRoutePanel,
+    setEditId: setEditRouteId,
+  },
   pointOfInterestPanelState: {
     setShowPanel: setShowPointOfInterestPanel,
     setEditId: setEditPointOfInterestId,
@@ -36,10 +39,20 @@ export const useRootPanelState = ({
     setShowWaypointPanel,
   ]);
 
-  const onOpenRoutePanel = useCallback(() => {
+  const onAddRoute = useCallback(() => {
+    setEditRouteId(null);
     setShowPointOfInterestPanel(false);
     setShowRoutePanel(true);
-  }, [setShowPointOfInterestPanel, setShowRoutePanel]);
+  }, [setEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel]);
+
+  const onEditRoute = useCallback(
+    (routeId: string) => {
+      setEditRouteId(routeId);
+      setShowPointOfInterestPanel(false);
+      setShowRoutePanel(true);
+    },
+    [setEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel],
+  );
 
   const onAddPointOfInterest = useCallback(() => {
     setEditPointOfInterestId(null);
@@ -68,8 +81,9 @@ export const useRootPanelState = ({
     showRootPanel,
     onOpen,
     onClose,
-    onOpenRoutePanel,
+    onAddRoute,
     onAddPointOfInterest,
+    onEditRoute,
     onEditPointOfInterest,
     onOpenWaypointPanel,
   };

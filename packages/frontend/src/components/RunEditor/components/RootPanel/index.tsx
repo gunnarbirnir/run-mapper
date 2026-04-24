@@ -3,25 +3,30 @@ import { motion } from 'motion/react';
 
 import { useId } from '~/hooks/useId';
 import { Button, Form, SidePanel, Text } from '~/primitives';
-import type { EditorRun, PointOfInterest } from '~/types';
+import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 
 import { PointOfInterestItem } from './PointOfInterestItem';
+import { RouteItem } from './RouteItem';
 
 interface RootPanelProps {
   existingRun?: EditorRun;
+  currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
   onClose: () => void;
-  onOpenRoutePanel: () => void;
+  onAddRoute: () => void;
+  onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
 }
 
 export const RootPanel = ({
   existingRun,
+  currentRoutes,
   currentPointsOfInterest,
   onClose,
-  onOpenRoutePanel,
+  onAddRoute,
+  onEditRoute,
   onAddPointOfInterest,
   onEditPointOfInterest,
 }: RootPanelProps) => {
@@ -70,11 +75,23 @@ export const RootPanel = ({
         </section>
         <section>
           <Text element="h3">Routes</Text>
-          <Text variant="subtle" className="mt-3 mb-5 text-sm">
-            Your run can have multiple routes, one for each distance. Create the
-            first one here:
-          </Text>
-          <Button className="w-full" onClick={onOpenRoutePanel}>
+          {currentPointsOfInterest.length > 0 ? (
+            <motion.div layout className="mt-4 mb-6 space-y-3">
+              {currentRoutes.map((route) => (
+                <RouteItem
+                  key={route.id}
+                  route={route}
+                  onEditRoute={onEditRoute}
+                />
+              ))}
+            </motion.div>
+          ) : (
+            <Text variant="subtle" className="mt-3 mb-5 text-sm">
+              Your run can have multiple routes, one for each distance. Create
+              the first one here:
+            </Text>
+          )}
+          <Button className="w-full" onClick={onAddRoute}>
             Add route
           </Button>
         </section>

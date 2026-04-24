@@ -153,6 +153,7 @@ export const RoutePanel = ({
                 name="displayDistance"
                 label="Display distance"
                 infoText="In case the distance of the actual route is slightly off"
+                placeholder="12.34"
                 value={field.state.value}
                 pattern="[0-9]+(\.[0-9]{0,2})?"
                 error={

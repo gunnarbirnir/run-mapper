@@ -25,7 +25,7 @@ export const PointOfInterestItem = ({
       onClick={() => onEditPointOfInterest(id)}
     >
       <PointOfInterestIcon type={type} />
-      <Text className="mt-0.5">{name}</Text>
+      <Text className="mt-0.5 truncate">{name}</Text>
     </motion.div>
   );
 };

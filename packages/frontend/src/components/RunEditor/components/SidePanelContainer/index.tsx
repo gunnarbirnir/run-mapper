@@ -22,7 +22,9 @@ interface SidePanelContainerProps {
 export const SidePanelContainer = ({
   existingRun,
 }: SidePanelContainerProps) => {
-  const routePanelState = usePanelState<PublicRoute>();
+  const routePanelState = usePanelState<PublicRoute>({
+    existingItems: existingRun?.routes,
+  });
   const pointOfInterestPanelState = usePanelState<PointOfInterest>({
     existingItems: existingRun?.pointsOfInterest,
   });
@@ -31,7 +33,8 @@ export const SidePanelContainer = ({
     showRootPanel,
     onOpen,
     onClose,
-    onOpenRoutePanel,
+    onAddRoute,
+    onEditRoute,
     onAddPointOfInterest,
     onEditPointOfInterest,
     onOpenWaypointPanel,
@@ -65,9 +68,11 @@ export const SidePanelContainer = ({
           content: (
             <RootPanel
               existingRun={existingRun}
+              currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               onClose={onClose}
-              onOpenRoutePanel={onOpenRoutePanel}
+              onAddRoute={onAddRoute}
+              onEditRoute={onEditRoute}
               onAddPointOfInterest={onAddPointOfInterest}
               onEditPointOfInterest={onEditPointOfInterest}
             />
