@@ -1,16 +1,21 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { useCallback, useMemo } from 'react';
+import { motion } from 'motion/react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
-import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import { BoundingBox, PublicRoute } from '~/types';
+import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
+import { BoundingBox, PublicRoute, Waypoint } from '~/types';
 
 import type { PanelState } from '../../hooks/usePanelState';
 import { usePanelForm } from '../../hooks/usePanelForm';
 
+import { WaypointItem } from './WaypointItem';
+
 interface RoutePanelProps extends PanelState<PublicRoute> {
-  onOpenWaypointPanel: () => void;
+  currentWaypoints: Record<string, Waypoint[]>;
+  onAddWaypoint: () => void;
+  onEditWaypoint: (waypointId: string) => void;
 }
 
 const routeFormSchema = z.object({
@@ -24,12 +29,14 @@ const routeFormSchema = z.object({
 export const RoutePanel = ({
   editId,
   currentItems,
+  currentWaypoints,
   onClose,
   onUpdateItem,
   onAddItem,
   onHasMadeChanges,
   onDeleteItem,
-  // onOpenWaypointPanel,
+  onAddWaypoint,
+  onEditWaypoint,
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
@@ -41,6 +48,10 @@ export const RoutePanel = ({
       displayDistance: editRoute?.displayDistance?.toString() || '',
     };
   }, [editId, currentItems]);
+
+  const currentWaypointsItems = useMemo(() => {
+    return editId ? (currentWaypoints[editId] ?? []) : [];
+  }, [editId, currentWaypoints]);
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -110,7 +121,7 @@ export const RoutePanel = ({
       onClose={handleOnClose}
     >
       <Form onSubmit={submitForm}>
-        <div className="mb-6 space-y-5">
+        <section className="mb-6 space-y-5">
           <routeForm.Field name="name">
             {(field) => (
               <Form.TextInput
@@ -149,8 +160,32 @@ export const RoutePanel = ({
               />
             )}
           </routeForm.Field>
-        </div>
-        <div className="flex flex-col gap-3">
+        </section>
+        <section>
+          <Text element="h3">Waypoints</Text>
+          {currentWaypointsItems.length > 0 ? (
+            <motion.div layout className="mt-4 mb-6 space-y-3">
+              {currentWaypointsItems
+                // TODO: Sort by position in route
+                .map((waypoint) => (
+                  <WaypointItem
+                    key={waypoint.id}
+                    waypoint={waypoint}
+                    onEditWaypoint={onEditWaypoint}
+                  />
+                ))}
+            </motion.div>
+          ) : (
+            <Text variant="subtle" className="mt-2 mb-5 text-sm">
+              Waypoints are notable locations along your route. It's recommended
+              that you create the route first before adding waypoints.
+            </Text>
+          )}
+          <Button className="w-full" onClick={onAddWaypoint}>
+            Add waypoint
+          </Button>
+        </section>
+        <section className="flex flex-col gap-3">
           <routeForm.Subscribe
             selector={(state) => [
               state.canSubmit,
@@ -176,7 +211,7 @@ export const RoutePanel = ({
               Delete
             </Button>
           )}
-        </div>
+        </section>
         <Dialog
           title="Save changes"
           description="Are you sure you want to close without saving your changes?"

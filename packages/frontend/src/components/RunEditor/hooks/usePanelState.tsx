@@ -22,7 +22,6 @@ export const usePanelState = <T extends { id: string }>({
       { ...item, id: `new-poi-${Date.now()}` } as T,
     ]);
     setShowPanel(false);
-    setHasMadeChanges(true);
   }, []);
 
   const onUpdateItem = useCallback((updateId: string, update: Partial<T>) => {
@@ -32,18 +31,15 @@ export const usePanelState = <T extends { id: string }>({
       ),
     );
     setShowPanel(false);
-    setHasMadeChanges(true);
   }, []);
 
-  const onDeleteItem = useCallback(
-    (deleteId: string) => {
-      const updatedItems = currentItems.filter((item) => item.id !== deleteId);
-      setCurrentItems(updatedItems);
-      setShowPanel(false);
-      setEditId(null);
-    },
-    [currentItems],
-  );
+  const onDeleteItem = useCallback((deleteId: string) => {
+    setCurrentItems((prevItems) =>
+      prevItems.filter((item) => item.id !== deleteId),
+    );
+    setShowPanel(false);
+    setEditId(null);
+  }, []);
 
   return {
     showPanel,

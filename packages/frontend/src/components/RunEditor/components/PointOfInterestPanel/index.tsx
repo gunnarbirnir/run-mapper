@@ -121,7 +121,7 @@ export const PointOfInterestPanel = ({
       onClose={handleOnClose}
     >
       <Form onSubmit={poiForm.handleSubmit}>
-        <div className="mb-6 space-y-5">
+        <section className="mb-6 space-y-5">
           <poiForm.Field name="name">
             {(field) => (
               <Form.TextInput
@@ -216,8 +216,8 @@ export const PointOfInterestPanel = ({
               }
             />
           </div>
-        </div>
-        <div className="flex flex-col gap-3">
+        </section>
+        <section className="flex flex-col gap-3">
           <poiForm.Subscribe
             selector={(state) => [
               state.canSubmit,
@@ -243,7 +243,7 @@ export const PointOfInterestPanel = ({
               Delete
             </Button>
           )}
-        </div>
+        </section>
         <Dialog
           title="Save changes"
           description="Are you sure you want to close without saving your changes?"
