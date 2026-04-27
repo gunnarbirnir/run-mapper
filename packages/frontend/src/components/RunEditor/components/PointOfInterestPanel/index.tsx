@@ -1,21 +1,14 @@
-import { useMemo, useCallback, useEffect, useState } from 'react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { useHotkey } from '@tanstack/react-hotkeys';
+import { useCallback, useMemo } from 'react';
 import z from 'zod';
 
-import type { PointOfInterest, PointOfInterestType } from '~/types';
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
-import {
-  Form,
-  Button,
-  Text,
-  SidePanel,
-  useSidePanelItemContext,
-  Dialog,
-} from '~/primitives';
 import { useId } from '~/hooks/useId';
+import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
+import type { PointOfInterest, PointOfInterestType } from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
+import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
 
 const pointOfInterestFormSchema = z.object({
@@ -51,10 +44,6 @@ export const PointOfInterestPanel = ({
   const nameId = useId('poi-name');
   const typeId = useId('poi-type');
   const descriptionId = useId('poi-description');
-  const { itemId, isTopVisibleItem } = useSidePanelItemContext();
-  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isEditing = Boolean(editId);
 
   const formDefaultValues = useMemo(() => {
     const editPointOfInterest = currentItems.find((poi) => poi.id === editId);
@@ -97,41 +86,34 @@ export const PointOfInterestPanel = ({
     (state) => state.isDefaultValue,
   );
 
+  const submitForm = useCallback(() => {
+    poiForm.handleSubmit();
+  }, [poiForm]);
+
   const resetForm = useCallback(() => {
     poiForm.reset(formDefaultValues);
   }, [formDefaultValues, poiForm]);
 
-  const handleOnClose = useCallback(() => {
-    if (isDefaultValue) {
-      onClose();
-    } else {
-      setCloseDialogOpen(true);
-    }
-  }, [isDefaultValue, onClose]);
-
-  useEffect(() => {
-    resetForm();
-    document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [editId, resetForm, itemId]);
-
-  useEffect(() => {
-    onHasMadeChanges(!isDefaultValue && !closeDialogOpen && !deleteDialogOpen);
-  }, [isDefaultValue, closeDialogOpen, deleteDialogOpen, onHasMadeChanges]);
-
-  useHotkey(
-    'Enter',
-    () => {
-      if (isDefaultValue) {
-        onClose();
-      } else {
-        poiForm.handleSubmit();
-      }
-    },
-    {
-      enabled: isTopVisibleItem,
-      conflictBehavior: 'allow',
-    },
-  );
+  const {
+    isEditing,
+    saveDialogOpen,
+    deleteDialogOpen,
+    handleOnClose,
+    handleOnDelete,
+    handleSaveChanges,
+    handleDiscardChanges,
+    handleDeleteItem,
+    handleCloseSaveDialog,
+    handleCloseDeleteDialog,
+  } = usePanelForm({
+    editId,
+    isDefaultValue,
+    onClose,
+    resetForm,
+    submitForm,
+    onHasMadeChanges,
+    onDeleteItem,
+  });
 
   return (
     <SidePanel.Content
@@ -257,11 +239,7 @@ export const PointOfInterestPanel = ({
             Cancel
           </Button>
           {isEditing && (
-            <Button
-              color="error"
-              className="w-full"
-              onClick={() => setDeleteDialogOpen(true)}
-            >
+            <Button color="error" className="w-full" onClick={handleOnDelete}>
               Delete
             </Button>
           )}
@@ -269,25 +247,19 @@ export const PointOfInterestPanel = ({
         <Dialog
           title="Save changes"
           description="Are you sure you want to close without saving your changes?"
-          isOpen={closeDialogOpen}
+          isOpen={saveDialogOpen}
           buttons={[
             {
               label: 'Save',
-              onClick: () => {
-                setCloseDialogOpen(false);
-                poiForm.handleSubmit();
-              },
+              onClick: handleSaveChanges,
             },
             {
               label: 'Close',
-              onClick: () => {
-                setCloseDialogOpen(false);
-                resetForm();
-                onClose();
-              },
+              color: 'error',
+              onClick: handleDiscardChanges,
             },
           ]}
-          onClose={() => setCloseDialogOpen(false)}
+          onClose={handleCloseSaveDialog}
         />
         <Dialog
           title="Delete POI"
@@ -297,19 +269,14 @@ export const PointOfInterestPanel = ({
             {
               label: 'Delete',
               color: 'error',
-              onClick: () => {
-                setDeleteDialogOpen(false);
-                if (editId) {
-                  onDeleteItem(editId);
-                }
-              },
+              onClick: handleDeleteItem,
             },
             {
               label: 'Cancel',
-              onClick: () => setDeleteDialogOpen(false),
+              onClick: handleCloseDeleteDialog,
             },
           ]}
-          onClose={() => setDeleteDialogOpen(false)}
+          onClose={handleCloseDeleteDialog}
         />
       </Form>
     </SidePanel.Content>

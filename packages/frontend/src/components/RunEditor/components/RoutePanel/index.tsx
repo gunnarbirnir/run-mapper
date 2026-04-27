@@ -1,19 +1,13 @@
-import { useMemo, useCallback, useEffect, useState } from 'react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { useHotkey } from '@tanstack/react-hotkeys';
+import { useCallback, useMemo } from 'react';
 import z from 'zod';
 
-import {
-  Dialog,
-  Button,
-  SidePanel,
-  useSidePanelItemContext,
-  Form,
-} from '~/primitives';
-import { PublicRoute, BoundingBox } from '~/types';
 import { useId } from '~/hooks/useId';
+import { Button, Dialog, Form, SidePanel } from '~/primitives';
+import { BoundingBox, PublicRoute } from '~/types';
 
 import type { PanelState } from '../../hooks/usePanelState';
+import { usePanelForm } from '../../hooks/usePanelForm';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
   onOpenWaypointPanel: () => void;
@@ -39,10 +33,6 @@ export const RoutePanel = ({
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
-  const { itemId, isTopVisibleItem } = useSidePanelItemContext();
-  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isEditing = Boolean(editId);
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -85,48 +75,41 @@ export const RoutePanel = ({
     (state) => state.isDefaultValue,
   );
 
+  const submitForm = useCallback(() => {
+    routeForm.handleSubmit();
+  }, [routeForm]);
+
   const resetForm = useCallback(() => {
     routeForm.reset(formDefaultValues);
   }, [formDefaultValues, routeForm]);
 
-  const handleOnClose = useCallback(() => {
-    if (isDefaultValue) {
-      onClose();
-    } else {
-      setCloseDialogOpen(true);
-    }
-  }, [isDefaultValue, onClose]);
-
-  useEffect(() => {
-    resetForm();
-    document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [editId, resetForm, itemId]);
-
-  useEffect(() => {
-    onHasMadeChanges(!isDefaultValue && !closeDialogOpen && !deleteDialogOpen);
-  }, [isDefaultValue, closeDialogOpen, deleteDialogOpen, onHasMadeChanges]);
-
-  useHotkey(
-    'Enter',
-    () => {
-      if (isDefaultValue) {
-        onClose();
-      } else {
-        routeForm.handleSubmit();
-      }
-    },
-    {
-      enabled: isTopVisibleItem,
-      conflictBehavior: 'allow',
-    },
-  );
+  const {
+    isEditing,
+    saveDialogOpen,
+    deleteDialogOpen,
+    handleOnClose,
+    handleOnDelete,
+    handleSaveChanges,
+    handleDiscardChanges,
+    handleDeleteItem,
+    handleCloseSaveDialog,
+    handleCloseDeleteDialog,
+  } = usePanelForm({
+    editId,
+    isDefaultValue,
+    onClose,
+    resetForm,
+    submitForm,
+    onHasMadeChanges,
+    onDeleteItem,
+  });
 
   return (
     <SidePanel.Content
       title={isEditing ? 'Edit route' : 'Add route'}
       onClose={handleOnClose}
     >
-      <Form onSubmit={routeForm.handleSubmit}>
+      <Form onSubmit={submitForm}>
         <div className="mb-6 space-y-5">
           <routeForm.Field name="name">
             {(field) => (
@@ -189,11 +172,7 @@ export const RoutePanel = ({
             Cancel
           </Button>
           {isEditing && (
-            <Button
-              color="error"
-              className="w-full"
-              onClick={() => setDeleteDialogOpen(true)}
-            >
+            <Button color="error" className="w-full" onClick={handleOnDelete}>
               Delete
             </Button>
           )}
@@ -201,25 +180,18 @@ export const RoutePanel = ({
         <Dialog
           title="Save changes"
           description="Are you sure you want to close without saving your changes?"
-          isOpen={closeDialogOpen}
+          isOpen={saveDialogOpen}
           buttons={[
             {
               label: 'Save',
-              onClick: () => {
-                setCloseDialogOpen(false);
-                routeForm.handleSubmit();
-              },
+              onClick: handleSaveChanges,
             },
             {
               label: 'Close',
-              onClick: () => {
-                setCloseDialogOpen(false);
-                resetForm();
-                onClose();
-              },
+              onClick: handleDiscardChanges,
             },
           ]}
-          onClose={() => setCloseDialogOpen(false)}
+          onClose={handleCloseSaveDialog}
         />
         <Dialog
           title="Delete Route"
@@ -229,19 +201,14 @@ export const RoutePanel = ({
             {
               label: 'Delete',
               color: 'error',
-              onClick: () => {
-                setDeleteDialogOpen(false);
-                if (editId) {
-                  onDeleteItem(editId);
-                }
-              },
+              onClick: handleDeleteItem,
             },
             {
               label: 'Cancel',
-              onClick: () => setDeleteDialogOpen(false),
+              onClick: handleCloseDeleteDialog,
             },
           ]}
-          onClose={() => setDeleteDialogOpen(false)}
+          onClose={handleCloseDeleteDialog}
         />
       </Form>
     </SidePanel.Content>

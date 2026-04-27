@@ -86,7 +86,7 @@ export const RootPanel = ({
               ))}
             </motion.div>
           ) : (
-            <Text variant="subtle" className="mt-3 mb-5 text-sm">
+            <Text variant="subtle" className="mt-2 mb-5 text-sm">
               Your run can have multiple routes, one for each distance. Create
               the first one here:
             </Text>
@@ -114,7 +114,7 @@ export const RootPanel = ({
                 ))}
             </motion.div>
           ) : (
-            <Text variant="subtle" className="mt-3 mb-5 text-sm">
+            <Text variant="subtle" className="mt-2 mb-5 text-sm">
               Points of interest are notable locations related to your running
               event. Create the first one here:
             </Text>
