@@ -1,8 +1,244 @@
-import { SidePanel } from '~/primitives';
-import { Waypoint } from '~/types';
+import { useForm, useStore } from '@tanstack/react-form';
+import { useCallback, useMemo } from 'react';
+import z from 'zod';
 
+import { INNER_WAYPOINT_VALUES } from '~/constants';
+import { useId } from '~/hooks/useId';
+import { Button, Dialog, Form, SidePanel } from '~/primitives';
+import type { Waypoint, WaypointType } from '~/types';
+import { getWaypointPoiLabel } from '~/utils/route';
+
+import { usePanelForm } from '../../hooks/usePanelForm';
 import { RecordPanelState } from '../../hooks/useRecordPanelState';
 
-export const WaypointPanel = ({ onClose }: RecordPanelState<Waypoint>) => {
-  return <SidePanel.Content title="Add waypoint" onClose={onClose} />;
+interface WaypointPanelProps extends RecordPanelState<Waypoint> {
+  routeId: string | null;
+}
+
+const waypointFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  type: z.string().min(1, 'Type is required'),
+  description: z.string(),
+});
+
+const waypointTypeOptions = INNER_WAYPOINT_VALUES.map((type) => ({
+  label: getWaypointPoiLabel(type),
+  value: type,
+}));
+
+export const WaypointPanel = ({
+  editId,
+  routeId,
+  currentItems,
+  onUpdateItem,
+  onAddItem,
+  onDeleteItem,
+  onHasMadeChanges,
+  onClose,
+}: WaypointPanelProps) => {
+  const nameId = useId('waypoint-name');
+  const typeId = useId('waypoint-type');
+  const descriptionId = useId('waypoint-description');
+
+  const formDefaultValues = useMemo(() => {
+    const editWaypoint = currentItems[routeId || '']?.find(
+      (waypoint) => waypoint.id === editId,
+    );
+    return {
+      name: editWaypoint?.name || '',
+      type: editWaypoint?.type || '',
+      description: editWaypoint?.description || '',
+    };
+  }, [editId, currentItems, routeId]);
+
+  const waypointForm = useForm({
+    defaultValues: formDefaultValues,
+    validators: {
+      onBlur: waypointFormSchema,
+      onSubmit: waypointFormSchema,
+    },
+    onSubmit: ({ value }) => {
+      const updatedWaypoint = {
+        name: value.name,
+        type: value.type as WaypointType,
+        description: value.description,
+        coordinates: { lat: 0, lng: 0 },
+        distance: 0,
+        amenities: [],
+      };
+
+      if (editId) {
+        onUpdateItem(editId, updatedWaypoint, routeId!);
+      } else {
+        onAddItem(updatedWaypoint, routeId!);
+      }
+    },
+  });
+
+  const isDefaultValue = useStore(
+    waypointForm.store,
+    (state) => state.isDefaultValue,
+  );
+
+  const submitForm = useCallback(() => {
+    waypointForm.handleSubmit();
+  }, [waypointForm]);
+
+  const resetForm = useCallback(() => {
+    waypointForm.reset(formDefaultValues);
+  }, [formDefaultValues, waypointForm]);
+
+  const deleteWaypoint = useCallback(() => {
+    if (editId && routeId) {
+      onDeleteItem(editId, routeId);
+    }
+  }, [editId, onDeleteItem, routeId]);
+
+  const {
+    isEditing,
+    saveDialogOpen,
+    deleteDialogOpen,
+    handleOnClose,
+    handleOnDelete,
+    handleSaveChanges,
+    handleDiscardChanges,
+    handleDeleteItem,
+    handleCloseSaveDialog,
+    handleCloseDeleteDialog,
+  } = usePanelForm({
+    editId,
+    isDefaultValue,
+    onClose,
+    resetForm,
+    submitForm,
+    onHasMadeChanges,
+    onDeleteItem: deleteWaypoint,
+  });
+
+  return (
+    <SidePanel.Content
+      title={editId ? 'Edit waypoint' : 'Add waypoint'}
+      onClose={handleOnClose}
+    >
+      <Form className="space-y-8" onSubmit={submitForm}>
+        <section className="space-y-5">
+          <waypointForm.Field name="name">
+            {(field) => (
+              <Form.TextInput
+                id={nameId}
+                name="name"
+                label="Name"
+                placeholder="Waypoint name"
+                value={field.state.value}
+                error={
+                  field.state.meta.isTouched
+                    ? field.state.meta.errors[0]?.message
+                    : undefined
+                }
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </waypointForm.Field>
+          <waypointForm.Field name="type">
+            {(field) => (
+              <Form.Dropdown
+                id={typeId}
+                label="Type"
+                items={waypointTypeOptions}
+                value={field.state.value}
+                error={
+                  field.state.meta.isTouched
+                    ? field.state.meta.errors[0]?.message
+                    : undefined
+                }
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </waypointForm.Field>
+          <waypointForm.Field name="description">
+            {(field) => (
+              <Form.TextArea
+                id={descriptionId}
+                name="description"
+                label="Description"
+                placeholder="Waypoint description"
+                className="h-40 max-h-60 min-h-20"
+                value={field.state.value}
+                error={
+                  field.state.meta.isTouched
+                    ? field.state.meta.errors[0]?.message
+                    : undefined
+                }
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </waypointForm.Field>
+        </section>
+        <section className="flex flex-col gap-3">
+          <waypointForm.Subscribe
+            selector={(state) => [
+              state.canSubmit,
+              state.isSubmitting,
+              state.isDefaultValue,
+            ]}
+            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!canSubmit || isDefaultValue}
+                isLoading={isSubmitting}
+              >
+                {isEditing ? 'Update waypoint' : 'Add waypoint'}
+              </Button>
+            )}
+          />
+          <Button color="gray" className="w-full" onClick={handleOnClose}>
+            Cancel
+          </Button>
+          {isEditing && (
+            <Button color="error" className="w-full" onClick={handleOnDelete}>
+              Delete
+            </Button>
+          )}
+        </section>
+        <Dialog
+          title="Save changes"
+          description="Are you sure you want to close without saving your changes?"
+          isOpen={saveDialogOpen}
+          buttons={[
+            {
+              label: 'Save',
+              onClick: handleSaveChanges,
+            },
+            {
+              label: 'Close',
+              color: 'error',
+              onClick: handleDiscardChanges,
+            },
+          ]}
+          onClose={handleCloseSaveDialog}
+        />
+        <Dialog
+          title="Delete waypoint"
+          description="Are you sure you want to delete this waypoint?"
+          isOpen={deleteDialogOpen}
+          buttons={[
+            {
+              label: 'Delete',
+              color: 'error',
+              onClick: handleDeleteItem,
+            },
+            {
+              label: 'Cancel',
+              onClick: handleCloseDeleteDialog,
+            },
+          ]}
+          onClose={handleCloseDeleteDialog}
+        />
+      </Form>
+    </SidePanel.Content>
+  );
 };

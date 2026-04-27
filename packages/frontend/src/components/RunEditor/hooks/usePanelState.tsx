@@ -38,7 +38,6 @@ export const usePanelState = <T extends { id: string }>({
       prevItems.filter((item) => item.id !== deleteId),
     );
     setShowPanel(false);
-    setEditId(null);
   }, []);
 
   return {

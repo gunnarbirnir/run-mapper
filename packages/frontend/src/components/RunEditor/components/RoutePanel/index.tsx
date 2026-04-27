@@ -120,8 +120,8 @@ export const RoutePanel = ({
       title={isEditing ? 'Edit route' : 'Add route'}
       onClose={handleOnClose}
     >
-      <Form onSubmit={submitForm}>
-        <section className="mb-6 space-y-5">
+      <Form className="space-y-8" onSubmit={submitForm}>
+        <section className="space-y-5">
           <routeForm.Field name="name">
             {(field) => (
               <Form.TextInput
@@ -161,7 +161,7 @@ export const RoutePanel = ({
             )}
           </routeForm.Field>
         </section>
-        <section>
+        <section className="mb-6">
           <Text element="h3">Waypoints</Text>
           {currentWaypointsItems.length > 0 ? (
             <motion.div layout className="mt-4 mb-6 space-y-3">
@@ -177,14 +177,15 @@ export const RoutePanel = ({
             </motion.div>
           ) : (
             <Text variant="subtle" className="mt-2 mb-5 text-sm">
-              Waypoints are notable locations along your route. It's recommended
-              that you create the route first before adding waypoints.
+              Waypoints are notable locations along the route. Create the first
+              one here:
             </Text>
           )}
           <Button className="w-full" onClick={onAddWaypoint}>
             Add waypoint
           </Button>
         </section>
+        <hr className="mx-2 mb-6 text-gray-300" />
         <section className="flex flex-col gap-3">
           <routeForm.Subscribe
             selector={(state) => [

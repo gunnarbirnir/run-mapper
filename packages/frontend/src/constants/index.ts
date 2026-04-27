@@ -21,12 +21,16 @@ export const POINT_OF_INTEREST_VALUES = [
   'parking',
 ] as const;
 
-export const WAYPOINT_VALUES = [
+export const INNER_WAYPOINT_VALUES = [
   'energy',
   'hydration',
   'entertainment',
   'timing',
   'restrooms',
+] as const;
+
+export const WAYPOINT_VALUES = [
+  ...INNER_WAYPOINT_VALUES,
   'start',
   'end',
 ] as const;

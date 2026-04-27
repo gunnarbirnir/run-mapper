@@ -98,6 +98,7 @@ export const SidePanelContainer = ({
           id: 'route',
           position: 1,
           isVisible: routePanelState.showPanel,
+          disabled: waypointPanelState.hasMadeChanges,
           content: (
             <RoutePanel
               {...routePanelState}
@@ -111,7 +112,12 @@ export const SidePanelContainer = ({
           id: 'waypoint',
           position: 2,
           isVisible: waypointPanelState.showPanel,
-          content: <WaypointPanel {...waypointPanelState} />,
+          content: (
+            <WaypointPanel
+              {...waypointPanelState}
+              routeId={routePanelState.editId}
+            />
+          ),
         },
       ]}
     />

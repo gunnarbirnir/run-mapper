@@ -120,8 +120,8 @@ export const PointOfInterestPanel = ({
       title={isEditing ? 'Edit POI' : 'Add POI'}
       onClose={handleOnClose}
     >
-      <Form onSubmit={poiForm.handleSubmit}>
-        <section className="mb-6 space-y-5">
+      <Form className="space-y-8" onSubmit={submitForm}>
+        <section className="space-y-5">
           <poiForm.Field name="name">
             {(field) => (
               <Form.TextInput

@@ -49,7 +49,6 @@ export const useRecordPanelState = <T extends { id: string }>({
       [recordId]: prevItems[recordId].filter((item) => item.id !== deleteId),
     }));
     setShowPanel(false);
-    setEditId(null);
   }, []);
 
   return {
