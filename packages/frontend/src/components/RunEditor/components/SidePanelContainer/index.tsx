@@ -50,8 +50,10 @@ export const SidePanelContainer = ({
     waypointPanelState,
   });
   const newRouteId = useNewRouteId({
-    editRouteId: routePanelState.editId,
+    routePanelVisible: routePanelState.showPanel,
+    routeEditId: routePanelState.editId,
     setRouteWaypoints: waypointPanelState.setItemRecord,
+    deleteRouteWaypoint: waypointPanelState.deleteItemRecord,
   });
 
   useHotkey('P', () => {

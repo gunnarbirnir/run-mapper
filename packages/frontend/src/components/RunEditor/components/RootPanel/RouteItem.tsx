@@ -25,7 +25,7 @@ export const RouteItem = ({
       onClick={() => onEditRoute(id)}
     >
       {/* TODO: Use actual distance here and also use to order items */}
-      <Text className="shrink-0 rounded-md bg-gray-300 px-2 py-1 text-sm font-medium">
+      <Text className="shrink-0 rounded-md bg-gray-300 px-1.5 py-0.5 text-sm font-medium">
         {displayDistance ? `${formatNumber(displayDistance, 2)} km` : '10 km'}
       </Text>
       <Text className="mt-0.5 truncate">{name}</Text>

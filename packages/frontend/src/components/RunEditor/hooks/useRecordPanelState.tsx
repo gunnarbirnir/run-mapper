@@ -15,13 +15,6 @@ export const useRecordPanelState = <T extends { id: string }>({
     existingItems ?? {},
   );
 
-  const setItemRecord = useCallback((updateId: string, update: T[]) => {
-    setCurrentItems((prevItems) => ({
-      ...prevItems,
-      [updateId]: update,
-    }));
-  }, []);
-
   const onClose = useCallback(() => {
     setShowPanel(false);
   }, [setShowPanel]);
@@ -61,6 +54,21 @@ export const useRecordPanelState = <T extends { id: string }>({
     setShowPanel(false);
   }, []);
 
+  const setItemRecord = useCallback((updateId: string, update: T[]) => {
+    setCurrentItems((prevItems) => ({
+      ...prevItems,
+      [updateId]: update,
+    }));
+  }, []);
+
+  const deleteItemRecord = useCallback((deleteId: string) => {
+    setCurrentItems((prevItems) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [deleteId]: _, ...rest } = prevItems;
+      return rest;
+    });
+  }, []);
+
   return {
     showPanel,
     hasMadeChanges,
@@ -72,6 +80,7 @@ export const useRecordPanelState = <T extends { id: string }>({
     setEditRecordId,
     setCurrentItems,
     setItemRecord,
+    deleteItemRecord,
     onClose,
     onHasMadeChanges: setHasMadeChanges,
     onAddItem,

@@ -28,6 +28,7 @@ const routeFormSchema = z.object({
 });
 
 export const RoutePanel = ({
+  showPanel,
   editId,
   newRouteId,
   currentItems,
@@ -85,10 +86,11 @@ export const RoutePanel = ({
     },
   });
 
-  const isDefaultValue = useStore(
-    routeForm.store,
-    (state) => state.isDefaultValue,
-  );
+  const isNewRouteInVisiblePanel = !editId && showPanel;
+  const isDefaultValue =
+    useStore(routeForm.store, (state) => state.isDefaultValue) &&
+    // For new routes, changes to waypoints will be lost if the panel is closed without saving
+    !isNewRouteInVisiblePanel;
 
   const submitForm = useCallback(() => {
     routeForm.handleSubmit();
@@ -168,7 +170,11 @@ export const RoutePanel = ({
         <section className="mb-6">
           <Text element="h3">Waypoints</Text>
           {currentWaypointsItems.length > 0 ? (
-            <motion.div layout className="mt-4 mb-6 space-y-3">
+            <motion.div
+              layout
+              key={routeId ? `waypoints-${routeId}` : undefined}
+              className="mt-4 mb-6 space-y-3"
+            >
               {currentWaypointsItems
                 .sort((a, b) => {
                   const getSortValue = (w: Waypoint) => {
