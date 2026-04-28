@@ -13,6 +13,7 @@ import { usePanelForm } from '../../hooks/usePanelForm';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
+  newRouteId: string | null;
   currentWaypoints: Record<string, Waypoint[]>;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
@@ -28,6 +29,7 @@ const routeFormSchema = z.object({
 
 export const RoutePanel = ({
   editId,
+  newRouteId,
   currentItems,
   currentWaypoints,
   onClose,
@@ -40,6 +42,7 @@ export const RoutePanel = ({
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
+  const routeId = editId ?? newRouteId ?? undefined;
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -50,8 +53,8 @@ export const RoutePanel = ({
   }, [editId, currentItems]);
 
   const currentWaypointsItems = useMemo(() => {
-    return editId ? (currentWaypoints[editId] ?? []) : [];
-  }, [editId, currentWaypoints]);
+    return routeId ? (currentWaypoints[routeId] ?? []) : [];
+  }, [routeId, currentWaypoints]);
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -61,6 +64,7 @@ export const RoutePanel = ({
     },
     onSubmit: ({ value }) => {
       const updatedRoute = {
+        id: routeId,
         name: value.name,
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
@@ -166,7 +170,18 @@ export const RoutePanel = ({
           {currentWaypointsItems.length > 0 ? (
             <motion.div layout className="mt-4 mb-6 space-y-3">
               {currentWaypointsItems
-                // TODO: Sort by position in route
+                .sort((a, b) => {
+                  const getSortValue = (w: Waypoint) => {
+                    if (w.type === 'start') {
+                      return -1;
+                    }
+                    if (w.type === 'end') {
+                      return Infinity;
+                    }
+                    return w.distance || 0;
+                  };
+                  return getSortValue(a) - getSortValue(b);
+                })
                 .map((waypoint) => (
                   <WaypointItem
                     key={waypoint.id}

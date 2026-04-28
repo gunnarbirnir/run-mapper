@@ -15,20 +15,30 @@ export const useRecordPanelState = <T extends { id: string }>({
     existingItems ?? {},
   );
 
+  const setItemRecord = useCallback((updateId: string, update: T[]) => {
+    setCurrentItems((prevItems) => ({
+      ...prevItems,
+      [updateId]: update,
+    }));
+  }, []);
+
   const onClose = useCallback(() => {
     setShowPanel(false);
   }, [setShowPanel]);
 
-  const onAddItem = useCallback((item: Omit<T, 'id'>, recordId: string) => {
-    setCurrentItems((prevItems) => ({
-      ...prevItems,
-      [recordId]: [
-        ...(prevItems[recordId] || []),
-        { ...item, id: `new-poi-${Date.now()}` } as T,
-      ],
-    }));
-    setShowPanel(false);
-  }, []);
+  const onAddItem = useCallback(
+    (item: Omit<T, 'id'> & { id?: string }, recordId: string) => {
+      setCurrentItems((prevItems) => ({
+        ...prevItems,
+        [recordId]: [
+          ...(prevItems[recordId] || []),
+          { id: `new-poi-${Date.now()}`, ...item } as T,
+        ],
+      }));
+      setShowPanel(false);
+    },
+    [],
+  );
 
   const onUpdateItem = useCallback(
     (updateId: string, update: Partial<T>, recordId: string) => {
@@ -61,6 +71,7 @@ export const useRecordPanelState = <T extends { id: string }>({
     setEditId,
     setEditRecordId,
     setCurrentItems,
+    setItemRecord,
     onClose,
     onHasMadeChanges: setHasMadeChanges,
     onAddItem,

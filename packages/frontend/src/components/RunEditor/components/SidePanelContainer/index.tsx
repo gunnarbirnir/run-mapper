@@ -14,7 +14,9 @@ import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
 import { useRootPanelState } from '../../hooks/useRootPanelState';
 import { usePanelState } from '../../hooks/usePanelState';
+import { useNewRouteId } from '../../hooks/useNewRouteId';
 import { useRecordPanelState } from '../../hooks/useRecordPanelState';
+import { getInitialWaypoints } from '../../utils';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
@@ -30,13 +32,7 @@ export const SidePanelContainer = ({
     existingItems: existingRun?.pointsOfInterest,
   });
   const waypointPanelState = useRecordPanelState<Waypoint>({
-    existingItems: existingRun?.routes.reduce(
-      (acc, route) => {
-        acc[route.id] = route.waypoints;
-        return acc;
-      },
-      {} as Record<string, Waypoint[]>,
-    ),
+    existingItems: getInitialWaypoints(existingRun),
   });
   const {
     showRootPanel,
@@ -52,6 +48,10 @@ export const SidePanelContainer = ({
     routePanelState,
     pointOfInterestPanelState,
     waypointPanelState,
+  });
+  const newRouteId = useNewRouteId({
+    editRouteId: routePanelState.editId,
+    setRouteWaypoints: waypointPanelState.setItemRecord,
   });
 
   useHotkey('P', () => {
@@ -102,6 +102,7 @@ export const SidePanelContainer = ({
           content: (
             <RoutePanel
               {...routePanelState}
+              newRouteId={newRouteId}
               currentWaypoints={waypointPanelState.currentItems}
               onAddWaypoint={onAddWaypoint}
               onEditWaypoint={onEditWaypoint}
@@ -115,7 +116,7 @@ export const SidePanelContainer = ({
           content: (
             <WaypointPanel
               {...waypointPanelState}
-              routeId={routePanelState.editId}
+              routeId={routePanelState.editId ?? newRouteId}
             />
           ),
         },

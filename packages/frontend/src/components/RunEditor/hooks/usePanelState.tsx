@@ -16,10 +16,10 @@ export const usePanelState = <T extends { id: string }>({
     setShowPanel(false);
   }, [setShowPanel]);
 
-  const onAddItem = useCallback((item: Omit<T, 'id'>) => {
+  const onAddItem = useCallback((item: Omit<T, 'id'> & { id?: string }) => {
     setCurrentItems((prevItems) => [
       ...prevItems,
-      { ...item, id: `new-poi-${Date.now()}` } as T,
+      { id: `new-poi-${Date.now()}`, ...item } as T,
     ]);
     setShowPanel(false);
   }, []);
