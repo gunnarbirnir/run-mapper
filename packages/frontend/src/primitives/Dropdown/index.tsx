@@ -9,6 +9,7 @@ interface DropdownProps {
   value?: string;
   side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
   align?: 'start' | 'center' | 'end';
+  disabled?: boolean;
   className?: string;
   popupClassName?: string;
   style?: CSSProperties;
@@ -33,6 +34,7 @@ export const Dropdown = ({
   value,
   side,
   align,
+  disabled,
   className,
   popupClassName,
   style,
@@ -40,10 +42,17 @@ export const Dropdown = ({
   onChange,
 }: DropdownProps) => {
   return (
-    <Select.Root id={id} items={items} value={value} onValueChange={onChange}>
+    <Select.Root
+      id={id}
+      items={items}
+      value={value}
+      disabled={disabled}
+      onValueChange={onChange}
+    >
       <Select.Trigger
         className={cn(
-          'flex h-10 min-w-40 cursor-pointer items-center justify-between gap-3 rounded-lg bg-white px-3 text-gray-900 select-none hover:bg-gray-100 data-popup-open:bg-gray-100',
+          'flex h-10 min-w-40 items-center justify-between gap-3 rounded-lg bg-white px-3 text-gray-900 select-none hover:bg-gray-100 data-disabled:bg-gray-100 data-disabled:text-gray-700 data-popup-open:bg-gray-100',
+          { 'cursor-pointer': !disabled },
           className,
         )}
         style={style}

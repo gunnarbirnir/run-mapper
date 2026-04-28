@@ -10,6 +10,7 @@ interface DropdownProps {
   items: { label: string; value: string }[];
   value?: string;
   error?: string;
+  disabled?: boolean;
   infoText?: string;
   className?: string;
   containerClassName?: string;
@@ -25,6 +26,7 @@ export const Dropdown = ({
   items,
   value,
   error,
+  disabled,
   infoText,
   className,
   containerClassName,
@@ -42,6 +44,7 @@ export const Dropdown = ({
         id={id}
         items={items}
         value={value}
+        disabled={disabled}
         // side="left"
         align="start"
         className={cn(

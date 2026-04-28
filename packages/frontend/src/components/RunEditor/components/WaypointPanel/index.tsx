@@ -2,7 +2,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { useCallback, useMemo } from 'react';
 import z from 'zod';
 
-import { INNER_WAYPOINT_VALUES } from '~/constants';
+import { INNER_WAYPOINT_VALUES, WAYPOINT_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import type { Waypoint, WaypointType } from '~/types';
@@ -21,7 +21,11 @@ const waypointFormSchema = z.object({
   description: z.string(),
 });
 
-const waypointTypeOptions = INNER_WAYPOINT_VALUES.map((type) => ({
+const innerWaypointTypeOptions = INNER_WAYPOINT_VALUES.map((type) => ({
+  label: getWaypointPoiLabel(type),
+  value: type,
+}));
+const waypointTypeOptions = WAYPOINT_VALUES.map((type) => ({
   label: getWaypointPoiLabel(type),
   value: type,
 }));
@@ -79,6 +83,11 @@ export const WaypointPanel = ({
     waypointForm.store,
     (state) => state.isDefaultValue,
   );
+  const waypointType = useStore(
+    waypointForm.store,
+    (state) => state.values.type,
+  );
+  const isStartOrEnd = waypointType === 'start' || waypointType === 'end';
 
   const submitForm = useCallback(() => {
     waypointForm.handleSubmit();
@@ -145,8 +154,11 @@ export const WaypointPanel = ({
               <Form.Dropdown
                 id={typeId}
                 label="Type"
-                items={waypointTypeOptions}
+                items={
+                  isStartOrEnd ? waypointTypeOptions : innerWaypointTypeOptions
+                }
                 value={field.state.value}
+                disabled={isStartOrEnd}
                 error={
                   field.state.meta.isTouched
                     ? field.state.meta.errors[0]?.message
@@ -214,7 +226,7 @@ export const WaypointPanel = ({
               onClick: handleSaveChanges,
             },
             {
-              label: 'Close',
+              label: 'Discard',
               color: 'error',
               onClick: handleDiscardChanges,
             },

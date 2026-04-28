@@ -238,7 +238,8 @@ export const RoutePanel = ({
               onClick: handleSaveChanges,
             },
             {
-              label: 'Close',
+              label: 'Discard',
+              color: 'error',
               onClick: handleDiscardChanges,
             },
           ]}
