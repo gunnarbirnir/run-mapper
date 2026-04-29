@@ -10,6 +10,7 @@ interface DropdownProps {
   side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
   align?: 'start' | 'center' | 'end';
   disabled?: boolean;
+  placeholder?: string;
   className?: string;
   popupClassName?: string;
   style?: CSSProperties;
@@ -35,6 +36,7 @@ export const Dropdown = ({
   side,
   align,
   disabled,
+  placeholder,
   className,
   popupClassName,
   style,
@@ -58,7 +60,10 @@ export const Dropdown = ({
         style={style}
         tabIndex={tabIndex}
       >
-        <Select.Value className="truncate data-placeholder:opacity-60" />
+        <Select.Value
+          placeholder={placeholder}
+          className="truncate data-placeholder:text-gray-400"
+        />
         <ChevronUpDownIcon />
       </Select.Trigger>
       <Select.Portal>

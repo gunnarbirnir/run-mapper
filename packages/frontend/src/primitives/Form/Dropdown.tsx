@@ -11,6 +11,7 @@ interface DropdownProps {
   value?: string;
   error?: string;
   disabled?: boolean;
+  placeholder?: string;
   infoText?: string;
   className?: string;
   containerClassName?: string;
@@ -27,13 +28,14 @@ export const Dropdown = ({
   value,
   error,
   disabled,
+  placeholder,
   infoText,
   className,
   containerClassName,
   labelClassName,
   popupClassName,
   onChange,
-  onBlur,
+  // onBlur,
 }: DropdownProps) => {
   return (
     <div className={containerClassName}>
@@ -45,20 +47,19 @@ export const Dropdown = ({
         items={items}
         value={value}
         disabled={disabled}
-        // side="left"
+        placeholder={placeholder}
         align="start"
         className={cn(
-          'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
+          'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900',
           { 'border-error-600': error },
           className,
         )}
         popupClassName={cn(
-          'w-(--anchor-width)rounded bg-white text-gray-900 shadow-md border border-gray-300',
+          'w-(--anchor-width) rounded bg-white text-gray-900 shadow-md border border-gray-300',
           popupClassName,
         )}
         onChange={(val) => {
           onChange(val ?? '');
-          onBlur?.();
         }}
       />
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}

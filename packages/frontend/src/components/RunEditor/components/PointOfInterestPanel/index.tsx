@@ -145,6 +145,7 @@ export const PointOfInterestPanel = ({
               <Form.Dropdown
                 id={typeId}
                 label="Type"
+                placeholder="POI type"
                 items={pointOfInterestTypeOptions}
                 value={field.state.value}
                 error={

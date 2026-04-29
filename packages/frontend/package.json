@@ -10,7 +10,7 @@
     "clean": "rm -rf node_modules .vercel .tanstack"
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
+    "@base-ui/react": "^1.4.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-form": "^1.29.0",
     "@tanstack/react-hotkeys": "^0.4.2",

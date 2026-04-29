@@ -154,6 +154,7 @@ export const WaypointPanel = ({
               <Form.Dropdown
                 id={typeId}
                 label="Type"
+                placeholder="Waypoint type"
                 items={
                   isStartOrEnd ? waypointTypeOptions : innerWaypointTypeOptions
                 }

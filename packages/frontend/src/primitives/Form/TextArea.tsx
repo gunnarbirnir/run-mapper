@@ -32,7 +32,7 @@ export const TextArea = ({
         rows={6}
         placeholder={placeholder || label}
         className={cn(
-          'w-full rounded border border-gray-300 px-3 py-2',
+          'w-full rounded border border-gray-300 px-3 py-2 placeholder:text-gray-400',
           { 'border-error-600': error },
           className,
         )}
