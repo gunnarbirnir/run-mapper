@@ -5,7 +5,7 @@ import z from 'zod';
 import { INNER_WAYPOINT_VALUES, WAYPOINT_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import type { Waypoint, WaypointType } from '~/types';
+import type { Waypoint, WaypointType, InnerWaypointType } from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -19,6 +19,7 @@ const waypointFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.string().min(1, 'Type is required'),
   description: z.string(),
+  amenities: z.array(z.string()),
 });
 
 const innerWaypointTypeOptions = INNER_WAYPOINT_VALUES.map((type) => ({
@@ -43,6 +44,7 @@ export const WaypointPanel = ({
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
   const descriptionId = useId('waypoint-description');
+  const amenitiesId = useId('waypoint-amenities');
 
   const formDefaultValues = useMemo(() => {
     const editWaypoint = currentItems[routeId || '']?.find(
@@ -52,6 +54,7 @@ export const WaypointPanel = ({
       name: editWaypoint?.name || '',
       type: editWaypoint?.type || '',
       description: editWaypoint?.description || '',
+      amenities: (editWaypoint?.amenities || []) as string[],
     };
   }, [editId, currentItems, routeId]);
 
@@ -66,9 +69,9 @@ export const WaypointPanel = ({
         name: value.name,
         type: value.type as WaypointType,
         description: value.description,
+        amenities: value.amenities as InnerWaypointType[],
         coordinates: { lat: 0, lng: 0 },
         distance: 0,
-        amenities: [],
       };
 
       if (editId) {
@@ -126,6 +129,7 @@ export const WaypointPanel = ({
 
   return (
     <SidePanel.Content
+      key={editId ?? 'new-waypoint'}
       title={editId ? 'Edit waypoint' : 'Add waypoint'}
       onClose={handleOnClose}
     >
@@ -185,6 +189,28 @@ export const WaypointPanel = ({
                     : undefined
                 }
                 onChange={field.handleChange}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </waypointForm.Field>
+          <waypointForm.Field name="amenities">
+            {(field) => (
+              <Form.Dropdown
+                id={amenitiesId}
+                label="Amenities"
+                placeholder="Waypoint amenities"
+                infoText="Other amenities not included in the main type"
+                items={innerWaypointTypeOptions.filter(
+                  (t) => t.value !== waypointType,
+                )}
+                values={field.state.value}
+                disabled={!waypointType}
+                error={
+                  field.state.meta.isTouched
+                    ? field.state.meta.errors[0]?.message
+                    : undefined
+                }
+                onValuesChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
             )}

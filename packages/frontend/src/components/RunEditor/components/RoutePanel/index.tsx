@@ -123,6 +123,7 @@ export const RoutePanel = ({
 
   return (
     <SidePanel.Content
+      key={routeId ?? 'new-route'}
       title={isEditing ? 'Edit route' : 'Add route'}
       onClose={handleOnClose}
     >
@@ -170,11 +171,7 @@ export const RoutePanel = ({
         <section className="mb-6">
           <Text element="h3">Waypoints</Text>
           {currentWaypointsItems.length > 0 ? (
-            <motion.div
-              layout
-              key={routeId ? `waypoints-${routeId}` : undefined}
-              className="mt-4 mb-6 space-y-3"
-            >
+            <motion.div layout key={routeId} className="mt-4 mb-6 space-y-3">
               {currentWaypointsItems
                 .sort((a, b) => {
                   const getSortValue = (w: Waypoint) => {

@@ -9,6 +9,7 @@ interface DropdownProps {
   label: string;
   items: { label: string; value: string }[];
   value?: string;
+  values?: string[];
   error?: string;
   disabled?: boolean;
   placeholder?: string;
@@ -17,7 +18,8 @@ interface DropdownProps {
   containerClassName?: string;
   labelClassName?: string;
   popupClassName?: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
+  onValuesChange?: (value: string[]) => void;
   onBlur?: () => void;
 }
 
@@ -26,6 +28,7 @@ export const Dropdown = ({
   label,
   items,
   value,
+  values,
   error,
   disabled,
   placeholder,
@@ -35,7 +38,8 @@ export const Dropdown = ({
   labelClassName,
   popupClassName,
   onChange,
-  // onBlur,
+  onValuesChange,
+  onBlur,
 }: DropdownProps) => {
   return (
     <div className={containerClassName}>
@@ -46,6 +50,7 @@ export const Dropdown = ({
         id={id}
         items={items}
         value={value}
+        values={values}
         disabled={disabled}
         placeholder={placeholder}
         align="start"
@@ -59,8 +64,10 @@ export const Dropdown = ({
           popupClassName,
         )}
         onChange={(val) => {
-          onChange(val ?? '');
+          onChange?.(val ?? '');
         }}
+        onValuesChange={onValuesChange}
+        onBlur={onBlur}
       />
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>

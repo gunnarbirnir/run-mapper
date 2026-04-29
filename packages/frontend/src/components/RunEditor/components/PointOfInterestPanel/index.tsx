@@ -117,6 +117,7 @@ export const PointOfInterestPanel = ({
 
   return (
     <SidePanel.Content
+      key={editId ?? 'new-poi'}
       title={isEditing ? 'Edit POI' : 'Add POI'}
       onClose={handleOnClose}
     >

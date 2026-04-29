@@ -42,6 +42,7 @@ export const RootPanel = ({
 
   return (
     <SidePanel.Content
+      key={existingRun?.id ?? 'new-run'}
       title={existingRun ? 'Edit run' : 'New run'}
       onClose={onClose}
     >

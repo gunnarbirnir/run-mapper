@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Select } from '@base-ui/react/select';
 
 import { cn, spacingPx } from '~/utils';
@@ -6,9 +6,10 @@ import { cn, spacingPx } from '~/utils';
 interface DropdownProps {
   id?: string;
   items: { label: string; value: string }[];
-  value?: string;
   side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
   align?: 'start' | 'center' | 'end';
+  value?: string;
+  values?: string[];
   disabled?: boolean;
   placeholder?: string;
   className?: string;
@@ -16,6 +17,8 @@ interface DropdownProps {
   style?: CSSProperties;
   tabIndex?: number;
   onChange?: (value: string | null) => void;
+  onValuesChange?: (value: string[]) => void;
+  onBlur?: () => void;
 }
 
 const ANIMATION_CLASSES =
@@ -33,6 +36,7 @@ export const Dropdown = ({
   id,
   items,
   value,
+  values,
   side,
   align,
   disabled,
@@ -42,14 +46,31 @@ export const Dropdown = ({
   style,
   tabIndex,
   onChange,
+  onValuesChange,
+  onBlur,
 }: DropdownProps) => {
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const isMultiple = Boolean(values);
+
   return (
     <Select.Root
       id={id}
       items={items}
-      value={value}
+      value={isMultiple ? values : value}
       disabled={disabled}
-      onValueChange={onChange}
+      multiple={isMultiple}
+      onValueChange={(val) =>
+        isMultiple
+          ? onValuesChange?.(val as string[])
+          : onChange?.(val as string | null)
+      }
+      onOpenChange={(open) => {
+        if (!open && hasBeenOpened) {
+          onBlur?.();
+        } else {
+          setHasBeenOpened(true);
+        }
+      }}
     >
       <Select.Trigger
         className={cn(

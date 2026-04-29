@@ -67,9 +67,8 @@ export const usePanelForm = ({
 
   // Scroll to top of form when switching between items
   useEffect(() => {
-    resetForm();
     document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [editId, resetForm, itemId]);
+  }, [editId, itemId]);
 
   useEffect(() => {
     onHasMadeChanges(!isDefaultValue && !saveDialogOpen && !deleteDialogOpen);
