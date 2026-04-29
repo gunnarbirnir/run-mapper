@@ -8,14 +8,14 @@ interface UseNewRouteIdProps {
   routePanelVisible: boolean;
   routeEditId?: string | null;
   setRouteWaypoints: (routeId: string, waypoints: Waypoint[]) => void;
-  deleteRouteWaypoint: (routeId: string) => void;
+  deleteRouteWaypoints: (routeId: string) => void;
 }
 
 export const useNewRouteId = ({
   routePanelVisible,
   routeEditId,
   setRouteWaypoints,
-  deleteRouteWaypoint,
+  deleteRouteWaypoints,
 }: UseNewRouteIdProps) => {
   const [newRouteId, setNewRouteId] = useState<string | null>(null);
 
@@ -32,9 +32,9 @@ export const useNewRouteId = ({
     }
 
     return () => {
-      deleteRouteWaypoint(newId);
+      deleteRouteWaypoints(newId);
     };
-  }, [routePanelVisible, routeEditId, setRouteWaypoints, deleteRouteWaypoint]);
+  }, [routePanelVisible, routeEditId, setRouteWaypoints, deleteRouteWaypoints]);
 
   return newRouteId;
 };

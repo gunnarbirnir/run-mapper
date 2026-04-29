@@ -9,7 +9,7 @@ import { BoundingBox, PublicRoute, Waypoint } from '~/types';
 
 import type { PanelState } from '../../hooks/usePanelState';
 import { usePanelForm } from '../../hooks/usePanelForm';
-
+import { isUnchangedDefaultWaypoints } from '../../utils';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
@@ -28,7 +28,6 @@ const routeFormSchema = z.object({
 });
 
 export const RoutePanel = ({
-  showPanel,
   editId,
   newRouteId,
   currentItems,
@@ -56,6 +55,10 @@ export const RoutePanel = ({
   const currentWaypointsItems = useMemo(() => {
     return routeId ? (currentWaypoints[routeId] ?? []) : [];
   }, [routeId, currentWaypoints]);
+
+  const hasDefaultWaypoints = useMemo(() => {
+    return isUnchangedDefaultWaypoints(currentWaypointsItems);
+  }, [currentWaypointsItems]);
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -86,11 +89,11 @@ export const RoutePanel = ({
     },
   });
 
-  const isNewRouteInVisiblePanel = !editId && showPanel;
+  // Only applies to new routes because when editing, waypoints can be saved on their own
+  const hasMadeWaypointChanges = !editId && !hasDefaultWaypoints;
   const isDefaultValue =
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
-    // For new routes, changes to waypoints will be lost if the panel is closed without saving
-    !isNewRouteInVisiblePanel;
+    !hasMadeWaypointChanges;
 
   const submitForm = useCallback(() => {
     routeForm.handleSubmit();
@@ -170,7 +173,13 @@ export const RoutePanel = ({
         </section>
         <section className="mb-6">
           <Text element="h3">Waypoints</Text>
-          {currentWaypointsItems.length > 0 ? (
+          {hasDefaultWaypoints && (
+            <Text variant="subtle" className="mt-2 mb-5 text-sm">
+              Waypoints are notable locations along the route. Start and end are
+              default.
+            </Text>
+          )}
+          {currentWaypointsItems.length > 0 && (
             <motion.div layout key={routeId} className="mt-4 mb-6 space-y-3">
               {currentWaypointsItems
                 .sort((a, b) => {
@@ -193,11 +202,6 @@ export const RoutePanel = ({
                   />
                 ))}
             </motion.div>
-          ) : (
-            <Text variant="subtle" className="mt-2 mb-5 text-sm">
-              Waypoints are notable locations along the route. Create the first
-              one here:
-            </Text>
           )}
           <Button className="w-full" onClick={onAddWaypoint}>
             Add waypoint

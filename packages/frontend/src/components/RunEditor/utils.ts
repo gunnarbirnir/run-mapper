@@ -29,6 +29,22 @@ export const getWaypointsWithStartAndEnd = (
   return updatedWaypoints;
 };
 
+export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {
+  return (
+    // Length 0 for when the panel is not visible
+    waypoints.length === 0 ||
+    (waypoints.length === 2 &&
+      waypoints[0].type === 'start' &&
+      waypoints[1].type === 'end' &&
+      waypoints[0].name === 'Start' &&
+      waypoints[1].name === 'End' &&
+      !waypoints[0].description &&
+      !waypoints[1].description &&
+      !waypoints[0].amenities?.length &&
+      !waypoints[1].amenities?.length)
+  );
+};
+
 // TODO: Remove - only needed for test data
 export const getInitialWaypoints = (existingRun?: EditorRun) => {
   return existingRun?.routes.reduce(

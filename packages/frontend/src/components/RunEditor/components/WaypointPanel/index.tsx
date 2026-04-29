@@ -237,7 +237,7 @@ export const WaypointPanel = ({
           <Button color="gray" className="w-full" onClick={handleOnClose}>
             Cancel
           </Button>
-          {isEditing && (
+          {isEditing && !isStartOrEnd && (
             <Button color="error" className="w-full" onClick={handleOnDelete}>
               Delete
             </Button>
