@@ -35,7 +35,7 @@ const TOGGLE_WIDTH = '3.5rem';
 
 const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
-  const { isSmallScreen, isMediumScreen } = useMediaQuery();
+  const { isSmallScreen, isLargeScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const [isAnimating, setIsAnimating] = useState<Record<string, boolean>>({});
 
@@ -46,7 +46,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
   const panelWidth = isSmallScreen
     ? windowWidth
     : convertRemToPixels(PANEL_WIDTH);
-  const maxPanelsInView = isMediumScreen ? 1 : 2;
+  const maxPanelsInView = isLargeScreen ? 1 : 2;
   const visiblePanelsCount = panels.reduce(
     (panelCount, panel) => {
       if (panel.isVisible && !panelCount.seen.has(panel.position)) {
@@ -83,7 +83,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
       >
         {panels.map(
           ({ isVisible = true, position, disabled = false, ...panel }) => {
-            const leftOffset = isMediumScreen
+            const leftOffset = isLargeScreen
               ? isVisible
                 ? 0
                 : -panelWidth
@@ -93,7 +93,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
             const statusId = `${leftOffset}-${isAnimating[panel.id] ? 'animating' : 'static'}`;
             const isTopVisibleItem =
               isVisible && position === visiblePanelsCount - 1;
-            const showShadow = isMediumScreen
+            const showShadow = isLargeScreen
               ? isTopVisibleItem || isAnimating[panel.id]
               : // Group panels by offset+isAnimating to determine if they're stacked
                 !statusIds[statusId];
@@ -107,7 +107,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
                 key={panel.id}
                 className="absolute top-0 bottom-0 bg-white"
                 style={{
-                  zIndex: isMediumScreen ? position : panels.length - position,
+                  zIndex: isLargeScreen ? position : panels.length - position,
                 }}
                 initial={false}
                 animate={{ left: leftOffset }}
