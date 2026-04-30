@@ -9,11 +9,7 @@ import type { Waypoint, WaypointType, InnerWaypointType } from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
-import { RecordPanelState } from '../../hooks/useRecordPanelState';
-
-interface WaypointPanelProps extends RecordPanelState<Waypoint> {
-  routeId: string | null;
-}
+import { PanelState } from '../../hooks/usePanelState';
 
 const waypointFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -33,21 +29,20 @@ const waypointTypeOptions = WAYPOINT_VALUES.map((type) => ({
 
 export const WaypointPanel = ({
   editId,
-  routeId,
   currentItems,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
   onHasMadeChanges,
   onClose,
-}: WaypointPanelProps) => {
+}: PanelState<Waypoint>) => {
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
   const descriptionId = useId('waypoint-description');
   const amenitiesId = useId('waypoint-amenities');
 
   const formDefaultValues = useMemo(() => {
-    const editWaypoint = currentItems[routeId || '']?.find(
+    const editWaypoint = currentItems.find(
       (waypoint) => waypoint.id === editId,
     );
     return {
@@ -56,7 +51,7 @@ export const WaypointPanel = ({
       description: editWaypoint?.description || '',
       amenities: (editWaypoint?.amenities || []) as string[],
     };
-  }, [editId, currentItems, routeId]);
+  }, [editId, currentItems]);
 
   const waypointForm = useForm({
     defaultValues: formDefaultValues,
@@ -75,9 +70,9 @@ export const WaypointPanel = ({
       };
 
       if (editId) {
-        onUpdateItem(editId, updatedWaypoint, routeId!);
+        onUpdateItem(editId, updatedWaypoint);
       } else {
-        onAddItem(updatedWaypoint, routeId!);
+        onAddItem(updatedWaypoint);
       }
     },
   });
@@ -101,10 +96,10 @@ export const WaypointPanel = ({
   }, [formDefaultValues, waypointForm]);
 
   const deleteWaypoint = useCallback(() => {
-    if (editId && routeId) {
-      onDeleteItem(editId, routeId);
+    if (editId) {
+      onDeleteItem(editId);
     }
-  }, [editId, onDeleteItem, routeId]);
+  }, [editId, onDeleteItem]);
 
   const {
     isEditing,

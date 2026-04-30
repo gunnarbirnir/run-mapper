@@ -1,12 +1,16 @@
-import type { EditorRun, Waypoint } from '~/types';
+import type { Waypoint } from '~/types';
 
 export const getWaypointsWithStartAndEnd = (
   waypoints: Waypoint[],
   baseId?: string,
 ) => {
   const updatedWaypoints = [...waypoints];
+  const waypointTypes = waypoints.reduce((types, wp) => {
+    types.add(wp.type);
+    return types;
+  }, new Set<string>());
 
-  if (updatedWaypoints.length === 0 || updatedWaypoints[0].type !== 'start') {
+  if (!waypointTypes.has('start')) {
     updatedWaypoints.unshift({
       id: `${baseId ? `${baseId}-` : ''}start-waypoint`,
       type: 'start',
@@ -16,7 +20,7 @@ export const getWaypointsWithStartAndEnd = (
     });
   }
 
-  if (updatedWaypoints[updatedWaypoints.length - 1].type !== 'end') {
+  if (!waypointTypes.has('end')) {
     updatedWaypoints.push({
       id: `${baseId ? `${baseId}-` : ''}end-waypoint`,
       type: 'end',
@@ -31,7 +35,6 @@ export const getWaypointsWithStartAndEnd = (
 
 export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {
   return (
-    // Length 0 for when the panel is not visible
     waypoints.length === 0 ||
     (waypoints.length === 2 &&
       waypoints[0].type === 'start' &&
@@ -42,21 +45,5 @@ export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {
       !waypoints[1].description &&
       !waypoints[0].amenities?.length &&
       !waypoints[1].amenities?.length)
-  );
-};
-
-// TODO: Remove - only needed for test data
-export const getInitialWaypoints = (existingRun?: EditorRun) => {
-  return existingRun?.routes.reduce(
-    (acc, route) => {
-      const routeWaypoints = route.waypoints.map((wp) => ({
-        ...wp,
-        id: `${route.id}-${wp.id}`,
-      }));
-
-      acc[route.id] = getWaypointsWithStartAndEnd(routeWaypoints, route.id);
-      return acc;
-    },
-    {} as Record<string, Waypoint[]>,
   );
 };

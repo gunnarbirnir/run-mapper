@@ -14,9 +14,7 @@ import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
 import { useRootPanelState } from '../../hooks/useRootPanelState';
 import { usePanelState } from '../../hooks/usePanelState';
-import { useNewRouteId } from '../../hooks/useNewRouteId';
-import { useRecordPanelState } from '../../hooks/useRecordPanelState';
-import { getInitialWaypoints } from '../../utils';
+import { useWaypointCurrentItems } from '../../hooks/useWaypointCurrentItems';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
@@ -31,8 +29,8 @@ export const SidePanelContainer = ({
   const pointOfInterestPanelState = usePanelState<PointOfInterest>({
     existingItems: existingRun?.pointsOfInterest,
   });
-  const waypointPanelState = useRecordPanelState<Waypoint>({
-    existingItems: getInitialWaypoints(existingRun),
+  const waypointPanelState = usePanelState<Waypoint>({
+    ...useWaypointCurrentItems({ routePanelState }),
   });
   const {
     showRootPanel,
@@ -48,12 +46,6 @@ export const SidePanelContainer = ({
     routePanelState,
     pointOfInterestPanelState,
     waypointPanelState,
-  });
-  const newRouteId = useNewRouteId({
-    routePanelVisible: routePanelState.showPanel,
-    routeEditId: routePanelState.editId,
-    setRouteWaypoints: waypointPanelState.setItemRecord,
-    deleteRouteWaypoints: waypointPanelState.deleteItemRecord,
   });
 
   useHotkey('P', () => {
@@ -104,7 +96,6 @@ export const SidePanelContainer = ({
           content: (
             <RoutePanel
               {...routePanelState}
-              newRouteId={newRouteId}
               currentWaypoints={waypointPanelState.currentItems}
               onAddWaypoint={onAddWaypoint}
               onEditWaypoint={onEditWaypoint}
@@ -115,12 +106,7 @@ export const SidePanelContainer = ({
           id: 'waypoint',
           position: 2,
           isVisible: waypointPanelState.showPanel,
-          content: (
-            <WaypointPanel
-              {...waypointPanelState}
-              routeId={routePanelState.editId ?? newRouteId}
-            />
-          ),
+          content: <WaypointPanel {...waypointPanelState} />,
         },
       ]}
     />

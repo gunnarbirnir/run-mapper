@@ -13,8 +13,7 @@ import { isUnchangedDefaultWaypoints } from '../../utils';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
-  newRouteId: string | null;
-  currentWaypoints: Record<string, Waypoint[]>;
+  currentWaypoints: Waypoint[];
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
 }
@@ -29,7 +28,6 @@ const routeFormSchema = z.object({
 
 export const RoutePanel = ({
   editId,
-  newRouteId,
   currentItems,
   currentWaypoints,
   onClose,
@@ -42,7 +40,6 @@ export const RoutePanel = ({
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
-  const routeId = editId ?? newRouteId ?? undefined;
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -52,13 +49,9 @@ export const RoutePanel = ({
     };
   }, [editId, currentItems]);
 
-  const currentWaypointsItems = useMemo(() => {
-    return routeId ? (currentWaypoints[routeId] ?? []) : [];
-  }, [routeId, currentWaypoints]);
-
   const hasDefaultWaypoints = useMemo(() => {
-    return isUnchangedDefaultWaypoints(currentWaypointsItems);
-  }, [currentWaypointsItems]);
+    return isUnchangedDefaultWaypoints(currentWaypoints);
+  }, [currentWaypoints]);
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -68,7 +61,6 @@ export const RoutePanel = ({
     },
     onSubmit: ({ value }) => {
       const updatedRoute = {
-        id: routeId,
         name: value.name,
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
@@ -78,13 +70,12 @@ export const RoutePanel = ({
           { lat: 0, lng: 0 },
         ] as BoundingBox,
         coordinates: [],
-        waypoints: [],
       };
 
       if (editId) {
         onUpdateItem(editId, updatedRoute);
       } else {
-        onAddItem(updatedRoute);
+        onAddItem({ ...updatedRoute, waypoints: currentWaypoints });
       }
     },
   });
@@ -126,7 +117,7 @@ export const RoutePanel = ({
 
   return (
     <SidePanel.Content
-      key={routeId ?? 'new-route'}
+      key={editId ?? 'new-route'}
       title={isEditing ? 'Edit route' : 'Add route'}
       onClose={handleOnClose}
     >
@@ -179,9 +170,13 @@ export const RoutePanel = ({
               default.
             </Text>
           )}
-          {currentWaypointsItems.length > 0 && (
-            <motion.div layout key={routeId} className="mt-4 mb-6 space-y-3">
-              {currentWaypointsItems
+          {currentWaypoints.length > 0 && (
+            <motion.div
+              layout
+              key={editId ?? 'new-route'}
+              className="mt-4 mb-6 space-y-3"
+            >
+              {currentWaypoints
                 .sort((a, b) => {
                   const getSortValue = (w: Waypoint) => {
                     if (w.type === 'start') {

@@ -3,12 +3,11 @@ import { useCallback, useState } from 'react';
 import type { PointOfInterest, PublicRoute, Waypoint } from '~/types';
 
 import { type PanelState } from './usePanelState';
-import { type RecordPanelState } from './useRecordPanelState';
 
 interface UseRootPanelStateProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
-  waypointPanelState: RecordPanelState<Waypoint>;
+  waypointPanelState: PanelState<Waypoint>;
 }
 
 export const useRootPanelState = ({
@@ -23,18 +22,9 @@ export const useRootPanelState = ({
   waypointPanelState: {
     setShowPanel: setShowWaypointPanel,
     setEditId: setEditWaypointId,
-    setEditRecordId: setEditWaypointRecordId,
   },
 }: UseRootPanelStateProps) => {
   const [showRootPanel, setShowRootPanel] = useState(true);
-
-  const handleSetEditRouteId = useCallback(
-    (routeId: string | null) => {
-      setEditRouteId(routeId);
-      setEditWaypointRecordId(routeId);
-    },
-    [setEditRouteId, setEditWaypointRecordId],
-  );
 
   const onOpen = useCallback(() => {
     setShowRootPanel(true);
@@ -53,18 +43,18 @@ export const useRootPanelState = ({
   ]);
 
   const onAddRoute = useCallback(() => {
-    handleSetEditRouteId(null);
+    setEditRouteId(null);
     setShowPointOfInterestPanel(false);
     setShowRoutePanel(true);
-  }, [handleSetEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel]);
+  }, [setEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel]);
 
   const onEditRoute = useCallback(
     (routeId: string) => {
-      handleSetEditRouteId(routeId);
+      setEditRouteId(routeId);
       setShowPointOfInterestPanel(false);
       setShowRoutePanel(true);
     },
-    [handleSetEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel],
+    [setEditRouteId, setShowPointOfInterestPanel, setShowRoutePanel],
   );
 
   const onAddPointOfInterest = useCallback(() => {
