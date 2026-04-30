@@ -147,8 +147,8 @@ export const RoutePanel = ({
                 id={distanceId}
                 name="displayDistance"
                 label="Display distance"
-                infoText="In case the distance of the actual route is slightly off"
-                placeholder="12.34"
+                infoText="In case the distance of the actual route is slightly off. Unit is km."
+                placeholder="12.34 km"
                 value={field.state.value}
                 pattern="[0-9]+(\.[0-9]{0,2})?"
                 error={
@@ -161,6 +161,14 @@ export const RoutePanel = ({
               />
             )}
           </routeForm.Field>
+        </section>
+        <section>
+          <Text element="h3">Route</Text>
+          {/* TODO: Check if route is empty */}
+          <Text variant="subtle" className="mt-2 text-sm">
+            The route itself is created in the map. Click on the map to start
+            drawing the route.
+          </Text>
         </section>
         <section className="mb-6">
           <Text element="h3">Waypoints</Text>
