@@ -18,6 +18,7 @@ export const useWaypointCurrentItems = ({
   },
 }: UseWaypointCurrentItemsProps): {
   currentItems: Waypoint[];
+  parentPanelVisible: boolean;
   setCurrentItems: (updatedItems: Waypoint[]) => void;
 } => {
   const [newRouteWaypoints, setNewRouteWaypoints] = useState<Waypoint[] | null>(
@@ -75,5 +76,9 @@ export const useWaypointCurrentItems = ({
     [routeEditId, routeCurrentItems, setRouteCurrentItems],
   );
 
-  return { currentItems, setCurrentItems };
+  return {
+    currentItems,
+    parentPanelVisible: routePanelVisible,
+    setCurrentItems,
+  };
 };

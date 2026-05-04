@@ -3,13 +3,15 @@ import { cn } from '~/utils';
 
 interface FooterProps {
   isFullWidth: boolean;
+  hasShadow: boolean;
 }
 
-export const Footer = ({ isFullWidth }: FooterProps) => {
+export const Footer = ({ isFullWidth, hasShadow }: FooterProps) => {
   return (
     <footer className={'relative z-5 bg-gray-200 px-6 pt-4 pb-5'}>
+      {hasShadow && <div className="absolute inset-0 rotate-180 shadow-sm" />}
       <div
-        className={cn('flex items-center justify-between', {
+        className={cn('relative flex items-center justify-between', {
           'container mx-auto': !isFullWidth,
         })}
       >

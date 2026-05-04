@@ -9,7 +9,7 @@ export const Route = createFileRoute('/editor/run/new')({
 
 function NewRunEditor() {
   return (
-    <PageLayout isFullWidth>
+    <PageLayout isFullWidth footerHasShadow>
       <RunEditor />
     </PageLayout>
   );

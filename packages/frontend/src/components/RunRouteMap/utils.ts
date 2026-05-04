@@ -162,7 +162,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
             />
           </svg>
         </div>
-        <h4 class="font-medium text-sm text-gray-700">${formatNumber(waypoint.distance)} km</h4>
+        <h4 class="font-medium text-sm text-gray-700">${formatNumber(waypoint.position)} km</h4>
       </div>
       ${waypoint.description ? `<p class="text-sm text-gray-500 mt-1">${waypoint.description}</p>` : ''}
       ${

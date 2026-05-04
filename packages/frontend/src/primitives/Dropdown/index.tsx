@@ -3,7 +3,7 @@ import { Select } from '@base-ui/react/select';
 
 import { cn, spacingPx } from '~/utils';
 
-interface DropdownProps {
+export interface DropdownProps {
   id?: string;
   items: { label: string; value: string }[];
   side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';

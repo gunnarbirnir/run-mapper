@@ -11,10 +11,15 @@ import { getWaypointPoiLabel } from '~/utils/route';
 import { usePanelForm } from '../../hooks/usePanelForm';
 import { PanelState } from '../../hooks/usePanelState';
 
+interface WaypointPanelProps extends PanelState<Waypoint> {
+  routeDistance: number | undefined;
+}
+
 const waypointFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.string().min(1, 'Type is required'),
   description: z.string(),
+  position: z.number().min(0, 'Position must be at least 0'),
   amenities: z.array(z.string()),
 });
 
@@ -30,16 +35,19 @@ const waypointTypeOptions = WAYPOINT_VALUES.map((type) => ({
 export const WaypointPanel = ({
   editId,
   currentItems,
+  routeDistance,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
   onHasMadeChanges,
   onClose,
-}: PanelState<Waypoint>) => {
+}: WaypointPanelProps) => {
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
   const descriptionId = useId('waypoint-description');
+  const positionId = useId('waypoint-position');
   const amenitiesId = useId('waypoint-amenities');
+  const positionMax = routeDistance ?? 100;
 
   const formDefaultValues = useMemo(() => {
     const editWaypoint = currentItems.find(
@@ -49,9 +57,15 @@ export const WaypointPanel = ({
       name: editWaypoint?.name || '',
       type: editWaypoint?.type || '',
       description: editWaypoint?.description || '',
+      position:
+        editWaypoint?.type === 'start'
+          ? 0
+          : editWaypoint?.type === 'end'
+            ? positionMax
+            : editWaypoint?.position || 0,
       amenities: (editWaypoint?.amenities || []) as string[],
     };
-  }, [editId, currentItems]);
+  }, [editId, currentItems, positionMax]);
 
   const waypointForm = useForm({
     defaultValues: formDefaultValues,
@@ -64,9 +78,9 @@ export const WaypointPanel = ({
         name: value.name,
         type: value.type as WaypointType,
         description: value.description,
+        position: value.position,
         amenities: value.amenities as InnerWaypointType[],
         coordinates: { lat: 0, lng: 0 },
-        distance: 0,
       };
 
       if (editId) {
@@ -188,6 +202,27 @@ export const WaypointPanel = ({
               />
             )}
           </waypointForm.Field>
+          <waypointForm.Field name="position">
+            {(field) => (
+              <Form.Slider
+                id={positionId}
+                label={`Position: ${field.state.value} km`}
+                infoText="Where on the route the waypoint is located"
+                value={field.state.value}
+                min={0}
+                max={positionMax}
+                step={0.1}
+                disabled={isStartOrEnd}
+                error={
+                  field.state.value > positionMax
+                    ? `Position cannot be greater than route distance (${positionMax} km)`
+                    : undefined
+                }
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </waypointForm.Field>
           <waypointForm.Field name="amenities">
             {(field) => (
               <Form.Dropdown
@@ -217,12 +252,18 @@ export const WaypointPanel = ({
               state.canSubmit,
               state.isSubmitting,
               state.isDefaultValue,
+              state.values.position > positionMax,
             ]}
-            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+            children={([
+              canSubmit,
+              isSubmitting,
+              isDefaultValue,
+              invalidPosition,
+            ]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || isDefaultValue}
+                disabled={!canSubmit || isDefaultValue || invalidPosition}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update waypoint' : 'Add waypoint'}

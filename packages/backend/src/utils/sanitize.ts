@@ -53,7 +53,7 @@ const sanitizeWaypoint = (waypoint: Waypoint): Waypoint => {
       ? waypoint.coordinates
       : { lat: 0, lng: 0 },
     type: waypoint.type ?? 'energy',
-    distance: waypoint.distance ?? 0,
+    position: waypoint.position ?? 0,
     amenities: waypoint.amenities ?? [],
   };
 };

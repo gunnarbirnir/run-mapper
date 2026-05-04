@@ -1,58 +1,38 @@
 import { cn } from '~/utils';
 
-import { Dropdown as DropdownComponent } from '../Dropdown';
+import { Dropdown as DropdownComponent, type DropdownProps } from '../Dropdown';
 import { Text } from '../Text';
 import { InputLabel } from './InputLabel';
 
-interface DropdownProps {
+interface DropdownInputProps extends Omit<DropdownProps, 'onChange' | 'id'> {
   id: string;
   label: string;
-  items: { label: string; value: string }[];
-  value?: string;
-  values?: string[];
   error?: string;
-  disabled?: boolean;
-  placeholder?: string;
   infoText?: string;
-  className?: string;
   containerClassName?: string;
   labelClassName?: string;
-  popupClassName?: string;
   onChange?: (value: string) => void;
-  onValuesChange?: (value: string[]) => void;
-  onBlur?: () => void;
 }
 
-export const Dropdown = ({
+export const DropdownInput = ({
   id,
   label,
-  items,
-  value,
-  values,
   error,
-  disabled,
-  placeholder,
   infoText,
   className,
   containerClassName,
   labelClassName,
   popupClassName,
   onChange,
-  onValuesChange,
-  onBlur,
-}: DropdownProps) => {
+  ...props
+}: DropdownInputProps) => {
   return (
     <div className={containerClassName}>
       <InputLabel htmlFor={id} className={labelClassName} infoText={infoText}>
         {label}
       </InputLabel>
       <DropdownComponent
-        id={id}
-        items={items}
-        value={value}
-        values={values}
-        disabled={disabled}
-        placeholder={placeholder}
+        {...props}
         align="start"
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900',
@@ -66,8 +46,6 @@ export const Dropdown = ({
         onChange={(val) => {
           onChange?.(val ?? '');
         }}
-        onValuesChange={onValuesChange}
-        onBlur={onBlur}
       />
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>

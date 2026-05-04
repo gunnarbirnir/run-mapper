@@ -1,13 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useLayoutEffect } from 'react';
 
 interface UsePanelStateProps<T> {
   existingItems?: T[];
   currentItems?: T[];
+  parentPanelVisible?: boolean;
   setCurrentItems?: (updatedItems: T[]) => void;
 }
 
 export const usePanelState = <T extends { id: string }>({
   existingItems,
+  parentPanelVisible,
   ...props
 }: UsePanelStateProps<T> = {}) => {
   const [showPanel, setShowPanel] = useState(false);
@@ -19,6 +21,13 @@ export const usePanelState = <T extends { id: string }>({
 
   const currentItems = props.currentItems ?? currentItemsState;
   const setCurrentItems = props.setCurrentItems ?? setCurrentItemsState;
+
+  useLayoutEffect(() => {
+    if (!parentPanelVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowPanel(false);
+    }
+  }, [parentPanelVisible]);
 
   const onClose = useCallback(() => {
     setShowPanel(false);

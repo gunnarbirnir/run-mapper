@@ -118,7 +118,7 @@ export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
       lng: firstCoordinate.lng,
     },
     type: 'start',
-    distance: 0,
+    position: 0,
   };
 };
 
@@ -133,7 +133,7 @@ export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
       lng: lastCoordinate.lng,
     },
     type: 'end',
-    distance: calculateDistance(coordinates),
+    position: calculateDistance(coordinates),
   };
 };
 

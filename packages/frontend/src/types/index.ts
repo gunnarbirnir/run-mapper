@@ -20,7 +20,7 @@ export type Waypoint = {
   description?: string;
   coordinates: Coordinates;
   type: WaypointType;
-  distance: number;
+  position: number;
   amenities?: InnerWaypointType[];
 };
 

@@ -47,6 +47,10 @@ export const SidePanelContainer = ({
     pointOfInterestPanelState,
     waypointPanelState,
   });
+  const routeDistance = routePanelState.currentItems.find(
+    (route) => route.id === routePanelState.editId,
+    // TODO: Replace with actual distance
+  )?.displayDistance;
 
   useHotkey('P', () => {
     if (showRootPanel) {
@@ -97,6 +101,7 @@ export const SidePanelContainer = ({
             <RoutePanel
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
+              routeDistance={routeDistance}
               onAddWaypoint={onAddWaypoint}
               onEditWaypoint={onEditWaypoint}
             />
@@ -106,7 +111,12 @@ export const SidePanelContainer = ({
           id: 'waypoint',
           position: 2,
           isVisible: waypointPanelState.showPanel,
-          content: <WaypointPanel {...waypointPanelState} />,
+          content: (
+            <WaypointPanel
+              {...waypointPanelState}
+              routeDistance={routeDistance}
+            />
+          ),
         },
       ]}
     />

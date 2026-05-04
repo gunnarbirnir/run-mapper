@@ -16,7 +16,7 @@ export const getWaypointsWithStartAndEnd = (
       type: 'start',
       name: 'Start',
       coordinates: { lat: 0, lng: 0 },
-      distance: 0,
+      position: 0,
     });
   }
 
@@ -26,7 +26,7 @@ export const getWaypointsWithStartAndEnd = (
       type: 'end',
       name: 'End',
       coordinates: { lat: 0, lng: 0 },
-      distance: 0,
+      position: 0,
     });
   }
 
@@ -47,3 +47,25 @@ export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {
       !waypoints[1].amenities?.length)
   );
 };
+
+export const sortWaypoints =
+  (routeDistance: number) => (a: Waypoint, b: Waypoint) => {
+    const getSortValue = (w: Waypoint) => {
+      return {
+        primary:
+          w.type === 'start'
+            ? 0
+            : w.type === 'end'
+              ? routeDistance
+              : w.position || 0,
+        secondary: w.type === 'start' ? -1 : w.type === 'end' ? 1 : 0,
+      };
+    };
+    const aValue = getSortValue(a);
+    const bValue = getSortValue(b);
+
+    if (aValue.primary === bValue.primary) {
+      return aValue.secondary - bValue.secondary;
+    }
+    return aValue.primary - bValue.primary;
+  };

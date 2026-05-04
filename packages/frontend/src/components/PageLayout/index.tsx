@@ -13,6 +13,7 @@ interface PageLayoutProps {
   hideNavBar?: boolean;
   hideFooter?: boolean;
   isLoading?: boolean;
+  footerHasShadow?: boolean;
   className?: string;
 }
 
@@ -23,6 +24,7 @@ const PageLayout = ({
   hideNavBar = false,
   hideFooter = false,
   isLoading = false,
+  footerHasShadow = false,
   className,
 }: PageLayoutProps) => {
   const content = isLoading ? (
@@ -48,7 +50,9 @@ const PageLayout = ({
     >
       {!hideNavBar && <NavBar isFullWidth={isFullWidth} />}
       {content}
-      {!hideFooter && <Footer isFullWidth={isFullWidth} />}
+      {!hideFooter && (
+        <Footer isFullWidth={isFullWidth} hasShadow={footerHasShadow} />
+      )}
     </div>
   );
 };

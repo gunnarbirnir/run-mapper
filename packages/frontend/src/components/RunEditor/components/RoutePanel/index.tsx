@@ -1,19 +1,21 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { useCallback, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
 import { BoundingBox, PublicRoute, Waypoint } from '~/types';
+import { DEFAULT_FADE_IN_DURATION, DEFAULT_EASING } from '~/constants';
 
 import type { PanelState } from '../../hooks/usePanelState';
 import { usePanelForm } from '../../hooks/usePanelForm';
-import { isUnchangedDefaultWaypoints } from '../../utils';
+import { isUnchangedDefaultWaypoints, sortWaypoints } from '../../utils';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
+  routeDistance?: number;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
 }
@@ -30,6 +32,7 @@ export const RoutePanel = ({
   editId,
   currentItems,
   currentWaypoints,
+  routeDistance = 100,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -172,12 +175,23 @@ export const RoutePanel = ({
         </section>
         <section className="mb-6">
           <Text element="h3">Waypoints</Text>
-          {hasDefaultWaypoints && (
-            <Text variant="subtle" className="mt-2 mb-5 text-sm">
-              Waypoints are notable locations along the route. Start and end are
-              default.
-            </Text>
-          )}
+          <AnimatePresence>
+            {hasDefaultWaypoints && (
+              <motion.div
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: DEFAULT_FADE_IN_DURATION,
+                  delay: DEFAULT_FADE_IN_DURATION,
+                  ease: DEFAULT_EASING,
+                }}
+              >
+                <Text variant="subtle" className="mt-2 mb-5 text-sm">
+                  Waypoints are notable locations along the route. Start and end
+                  are default.
+                </Text>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {currentWaypoints.length > 0 && (
             <motion.div
               layout
@@ -185,22 +199,12 @@ export const RoutePanel = ({
               className="mt-4 mb-6 space-y-3"
             >
               {currentWaypoints
-                .sort((a, b) => {
-                  const getSortValue = (w: Waypoint) => {
-                    if (w.type === 'start') {
-                      return -1;
-                    }
-                    if (w.type === 'end') {
-                      return Infinity;
-                    }
-                    return w.distance || 0;
-                  };
-                  return getSortValue(a) - getSortValue(b);
-                })
+                .sort(sortWaypoints(routeDistance))
                 .map((waypoint) => (
                   <WaypointItem
                     key={waypoint.id}
                     waypoint={waypoint}
+                    error={waypoint.position > routeDistance}
                     onEditWaypoint={onEditWaypoint}
                   />
                 ))}

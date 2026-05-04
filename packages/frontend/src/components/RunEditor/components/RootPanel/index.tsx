@@ -76,7 +76,7 @@ export const RootPanel = ({
         </section>
         <section>
           <Text element="h3">Routes</Text>
-          {currentPointsOfInterest.length > 0 ? (
+          {currentRoutes.length > 0 ? (
             <motion.div layout className="mt-4 mb-6 space-y-3">
               {currentRoutes.map((route) => (
                 <RouteItem

@@ -29,7 +29,7 @@ function ExistingRunEditor() {
   }
 
   return (
-    <PageLayout isFullWidth isLoading={isLoading}>
+    <PageLayout isFullWidth footerHasShadow isLoading={isLoading}>
       <RunEditor existingRun={data?.data} />
     </PageLayout>
   );
