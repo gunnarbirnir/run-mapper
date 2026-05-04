@@ -20,6 +20,7 @@ export const TextInput = ({
   placeholder,
   infoText,
   error,
+  pattern,
   className,
   labelClassName,
   containerClassName,
@@ -36,13 +37,14 @@ export const TextInput = ({
         id={id}
         type={type}
         placeholder={placeholder || label}
+        pattern={pattern}
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
           { 'border-error-600': error },
           className,
         )}
         onChange={(e) => {
-          if (e.target.reportValidity()) {
+          if (!pattern || e.target.reportValidity()) {
             onChange(e.target.value);
           }
         }}
