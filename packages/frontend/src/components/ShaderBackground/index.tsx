@@ -2,6 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { Shader, ContourLines, FlowingGradient } from 'shaders/react';
 
 import { useElementSize } from '~/hooks/useElementSize';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 interface ShaderBackgroundProps {
   color?: string;
@@ -32,6 +33,7 @@ export const ShaderBackground = memo(
     );
     const ref = useRef<HTMLDivElement>(null);
     const { width } = useElementSize(ref, [devicePixelRatio]);
+    const isSmallScreen = useMediaQuery();
     const colorTransparent = `${color}00`;
     const colorOpaque = `${color}ff`;
 
@@ -68,7 +70,7 @@ export const ShaderBackground = memo(
               <ContourLines
                 source="alpha"
                 visible={true}
-                levels={5}
+                levels={isSmallScreen ? 3 : 5}
                 lineWidth={lineWidthValue}
                 softness={0.5}
               >
