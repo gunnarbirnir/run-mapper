@@ -35,7 +35,7 @@ export type Waypoint = {
   description?: string;
   coordinates: Coordinates;
   type: WayPointType;
-  distance: number;
+  position: number;
   amenities?: WayPointType[];
 };
 

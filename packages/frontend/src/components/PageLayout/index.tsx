@@ -8,19 +8,23 @@ import { Footer } from './Footer';
 
 interface PageLayoutProps {
   children?: ReactNode;
+  isFullWidth?: boolean;
   isFullscreenDisplay?: boolean;
   hideNavBar?: boolean;
   hideFooter?: boolean;
   isLoading?: boolean;
+  footerHasShadow?: boolean;
   className?: string;
 }
 
 const PageLayout = ({
   children,
+  isFullWidth = false,
   isFullscreenDisplay = false,
   hideNavBar = false,
   hideFooter = false,
   isLoading = false,
+  footerHasShadow = false,
   className,
 }: PageLayoutProps) => {
   const content = isLoading ? (
@@ -44,9 +48,11 @@ const PageLayout = ({
       className={cn('relative flex min-h-screen min-w-80 flex-col', className)}
       style={{ minHeight: '100dvh' }}
     >
-      {!hideNavBar && <NavBar />}
+      {!hideNavBar && <NavBar isFullWidth={isFullWidth} />}
       {content}
-      {!hideFooter && <Footer />}
+      {!hideFooter && (
+        <Footer isFullWidth={isFullWidth} hasShadow={footerHasShadow} />
+      )}
     </div>
   );
 };
@@ -63,7 +69,7 @@ const MainContent = ({
   className?: string;
 }) => {
   return (
-    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+    <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
         {title && <Text element="h1">{title}</Text>}
         {subtitle && (
@@ -89,7 +95,7 @@ const ErrorContent = ({
   className?: string;
 }) => {
   return (
-    <main className={cn('flex-1 px-4 pt-6 pb-12', className)}>
+    <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
         {title && <Text element="h1">{title}</Text>}
         {message && (

@@ -6,8 +6,8 @@ import { getWaypointPoiLabel } from '~/utils/route';
 import { cn } from '~/utils';
 import { DEFAULT_FADE_IN_DURATION } from '~/constants';
 import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
+import { PointOfInterestIcon } from '~/components/LocationIcon';
 
-import { PointOfInterestIcon } from './PointOfInterestIcon';
 import { PointOfInterestItem } from './PointOfInterestItem';
 import { PointOfInterestNestedItem } from './PointOfInterestNestedItem';
 

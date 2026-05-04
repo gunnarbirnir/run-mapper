@@ -5,10 +5,10 @@ import { PublicRunDisplay } from '~/components/PublicRunDisplay';
 import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
-import { areCssVariablesLoaded } from '~/utils';
 import { LoadingSpinner, Text } from '~/primitives';
 
 export const Route = createFileRoute('/run/$slug')({
+  ssr: false,
   component: PublicRun,
   validateSearch: (search: Record<string, unknown>) => ({
     isFullscreen: search.isFullscreen === true,
@@ -25,8 +25,7 @@ function PublicRun() {
   });
   const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
 
-  // Public run relies on window object and css variables
-  if (isLoading || !areCssVariablesLoaded() || typeof window === 'undefined') {
+  if (isLoading) {
     return (
       <Fallback>
         <LoadingSpinner className="text-primary-500 size-10" />

@@ -41,9 +41,9 @@ export function SignUpCard() {
   return (
     <div className="mx-auto mb-12 max-w-md rounded-lg bg-gray-50/95 p-6 shadow-md">
       <Text element="h1" className="text-center">
-        Sign Up
+        Sign up
       </Text>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} className="space-y-6">
         <Form.TextInput
           id="email"
           name="email"

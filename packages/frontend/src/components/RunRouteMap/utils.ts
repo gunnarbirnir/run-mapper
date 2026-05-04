@@ -3,8 +3,8 @@ import mapboxgl, { type Popup } from 'mapbox-gl';
 import type {
   BoundingBox,
   Coordinates,
-  WayPointType,
-  InnerWayPointType,
+  WaypointType,
+  InnerWaypointType,
   Bounds,
   Waypoint,
   PointOfInterest,
@@ -105,7 +105,7 @@ export const getActiveMarkerElement = (): HTMLElement => {
 };
 
 export const getWaypointMarkerElement = (
-  type: WayPointType,
+  type: WaypointType,
   onClick: () => void,
 ): HTMLElement => {
   const marker = document.createElement('div');
@@ -134,9 +134,9 @@ export const getPointOfInterestMarkerElement = (
 };
 
 export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
-  const waypointAmenities: InnerWayPointType[] =
+  const waypointAmenities: InnerWaypointType[] =
     waypoint.amenities && waypoint.amenities.length > 0
-      ? [waypoint.type as InnerWayPointType, ...waypoint.amenities].filter(
+      ? [waypoint.type as InnerWaypointType, ...waypoint.amenities].filter(
           (amenity, index, self) => {
             return self.findIndex((a) => a === amenity) === index;
           },
@@ -162,7 +162,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
             />
           </svg>
         </div>
-        <h4 class="font-medium text-sm text-gray-700">${formatNumber(waypoint.distance)} km</h4>
+        <h4 class="font-medium text-sm text-gray-700">${formatNumber(waypoint.position)} km</h4>
       </div>
       ${waypoint.description ? `<p class="text-sm text-gray-500 mt-1">${waypoint.description}</p>` : ''}
       ${

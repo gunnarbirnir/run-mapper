@@ -1,9 +1,20 @@
 import { Text } from '~/primitives';
+import { cn } from '~/utils';
 
-export const Footer = () => {
+interface FooterProps {
+  isFullWidth: boolean;
+  hasShadow: boolean;
+}
+
+export const Footer = ({ isFullWidth, hasShadow }: FooterProps) => {
   return (
-    <footer className="relative bg-gray-200 p-4 pb-5">
-      <div className="container mx-auto flex items-center justify-between">
+    <footer className={'relative z-5 bg-gray-200 px-6 pt-4 pb-5'}>
+      {hasShadow && <div className="absolute inset-0 rotate-180 shadow-sm" />}
+      <div
+        className={cn('relative flex items-center justify-between', {
+          'container mx-auto': !isFullWidth,
+        })}
+      >
         <Text className="text-gray-600">
           Spretta © {new Date().getFullYear()}
         </Text>

@@ -2,7 +2,10 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { useMemo, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
-import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
+import {
+  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+  POINT_OF_INTEREST_VALUES,
+} from '~/constants';
 import { Drawer, Text } from '~/primitives';
 import type { PointOfInterest, Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
@@ -27,21 +30,6 @@ interface PointsOfInterestDrawerProps {
 }
 
 const TAB_INDEX = 25;
-
-const POI_ORDER = [
-  'expo',
-  'bag-drop-off',
-  'warm-up-area',
-  'food-and-drinks',
-  'entertainment',
-  'spectator-area',
-  'aid-station',
-  'showers-and-changing-rooms',
-  'award-ceremony',
-  'information',
-  'restrooms',
-  'parking',
-];
 
 export const PointsOfInterestDrawer = ({
   isOpen,
@@ -73,7 +61,9 @@ export const PointsOfInterestDrawer = ({
       {},
     );
     return Object.values(groups).sort(
-      (a, b) => POI_ORDER.indexOf(a[0].type) - POI_ORDER.indexOf(b[0].type),
+      (a, b) =>
+        POINT_OF_INTEREST_VALUES.indexOf(a[0].type) -
+        POINT_OF_INTEREST_VALUES.indexOf(b[0].type),
     );
   }, [pointsOfInterest]);
 

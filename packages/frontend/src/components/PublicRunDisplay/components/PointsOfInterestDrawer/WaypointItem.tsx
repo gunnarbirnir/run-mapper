@@ -4,8 +4,7 @@ import { Waypoint } from '~/types';
 import { Text } from '~/primitives';
 import { cn } from '~/utils';
 import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
-
-import { WaypointIcon } from './WaypointIcon';
+import { WaypointIcon } from '~/components/LocationIcon';
 
 interface WaypointItemProps {
   waypoint: Waypoint;

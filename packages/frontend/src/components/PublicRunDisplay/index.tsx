@@ -1,7 +1,6 @@
-import { lazy, Suspense, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { RunRouteMap, useMapState } from '~/components/RunRouteMap';
 
-import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import {
   PUBLIC_RUN_DISPLAY_MIN_WIDTH,
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
@@ -15,13 +14,7 @@ import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
 import { processRunRoute } from './utils';
 import { RouteOverlay } from './components/RouteOverlay';
-
-// Lazy load to fix SSR issue
-const ElevationGraph = lazy(() =>
-  import('~/components/ElevationGraph').then((m) => ({
-    default: m.ElevationGraph,
-  })),
-);
+import { ElevationGraph } from '../ElevationGraph';
 
 export const PublicRunDisplay = ({
   run,
@@ -52,7 +45,6 @@ export const PublicRunDisplay = ({
   const settings = useSettings();
   const mapState = useMapState();
   const { routeIsAnimating, setActiveMarkerIndex } = mapState;
-  const { compactHeight: graphHeight } = useElevationGraphHeight();
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
 
@@ -90,21 +82,12 @@ export const PublicRunDisplay = ({
             onReset={resetState}
           />
         </div>
-        <Suspense
-          fallback={
-            <div
-              className="w-full bg-gray-50"
-              style={{ height: graphHeight }}
-            />
-          }
-        >
-          <ElevationGraph
-            elevations={elevations}
-            isExpanded={elevationWidgetActive}
-            isTooltipActive={!anyDrawerActive}
-            onActiveIndexChange={setActiveMarkerIndex}
-          />
-        </Suspense>
+        <ElevationGraph
+          elevations={elevations}
+          isExpanded={elevationWidgetActive}
+          isTooltipActive={!anyDrawerActive}
+          onActiveIndexChange={setActiveMarkerIndex}
+        />
         <RouteOverlay
           {...runDisplayState}
           routes={run.routes}

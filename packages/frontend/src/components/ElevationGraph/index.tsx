@@ -78,7 +78,7 @@ export const ElevationGraph = ({
   }, [isExpanded]);
 
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
+    let resizeTimeout: ReturnType<typeof setTimeout>;
     let previousWidth = window.innerWidth;
 
     const handleResize = () => {

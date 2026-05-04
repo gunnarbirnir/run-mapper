@@ -10,9 +10,9 @@
     "clean": "rm -rf node_modules .vercel .tanstack"
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
-    "@mapbox/mapbox-gl-draw": "^1.4.3",
+    "@base-ui/react": "^1.4.1",
     "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-form": "^1.29.0",
     "@tanstack/react-hotkeys": "^0.4.2",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-router": "^1.114.3",
@@ -27,11 +27,11 @@
     "recharts": "^3.6.0",
     "shaders": "^2.5.84",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tanstack/react-router-devtools": "^1.144.0",
-    "@types/mapbox__mapbox-gl-draw": "^1.4.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

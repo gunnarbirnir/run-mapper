@@ -48,8 +48,20 @@ export const spacingPx = (factor: number) => {
   }
 };
 
-export const formatNumber = (number: number, maxDecimals: number = 1) => {
-  return parseFloat(number.toFixed(maxDecimals));
+const toFixedFloor = (num: number, decimals: number) => {
+  const factor = Math.pow(10, decimals);
+  return Math.floor(num * factor) / factor;
+};
+
+export const formatNumber = (
+  num: number,
+  maxDecimals: number = 1,
+  floor: boolean = false,
+) => {
+  if (floor) {
+    return toFixedFloor(num, maxDecimals);
+  }
+  return parseFloat(num.toFixed(maxDecimals));
 };
 
 export const formatDate = (date: string) => {

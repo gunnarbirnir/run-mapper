@@ -1,6 +1,6 @@
-import type { InnerWayPointType, PointOfInterestType } from '~/types';
+import type { InnerWaypointType, PointOfInterestType } from '~/types';
 
-export const ICONS: Record<InnerWayPointType | PointOfInterestType, string> = {
+export const ICONS: Record<InnerWaypointType | PointOfInterestType, string> = {
   energy:
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M14.5 2.815c0-1.168-1.46-1.698-2.209-.802l-7.894 9.435c-.681.814-.103 2.052.958 2.052H9.25a.25.25 0 0 1 .25.25v7.435c0 1.168 1.46 1.698 2.209.802l7.894-9.435c.681-.813.102-2.052-.959-2.052H14.75a.25.25 0 0 1-.25-.25V2.815Z"/></svg>',
   entertainment:

@@ -1,6 +1,6 @@
 import { cn } from '~/utils';
 
-export type ButtonColor = 'black' | 'white' | 'gray';
+export type ButtonColor = 'black' | 'white' | 'gray' | 'error';
 
 const BUTTON_COLORS: Record<
   ButtonColor,
@@ -10,6 +10,7 @@ const BUTTON_COLORS: Record<
     hover: string;
     disabled: string;
     disabledText: string;
+    borderColor?: string;
   }
 > = {
   black: {
@@ -33,6 +34,14 @@ const BUTTON_COLORS: Record<
     disabled: 'bg-gray-300',
     disabledText: 'text-gray-500',
   },
+  error: {
+    bg: 'bg-white',
+    text: 'text-error-600',
+    hover: 'hover:bg-error-600 hover:text-white',
+    disabled: 'border-error-300',
+    disabledText: 'text-error-300',
+    borderColor: 'border-error-600',
+  },
 };
 
 export const getColorClassName = (
@@ -42,8 +51,10 @@ export const getColorClassName = (
   return cn(
     BUTTON_COLORS[color].bg,
     BUTTON_COLORS[color].text,
+    BUTTON_COLORS[color].borderColor,
     { [BUTTON_COLORS[color].disabled]: disabled },
     { [BUTTON_COLORS[color].disabledText]: disabled },
     { [BUTTON_COLORS[color].hover]: !disabled },
+    { border: BUTTON_COLORS[color].borderColor },
   );
 };

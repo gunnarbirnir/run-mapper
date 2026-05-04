@@ -1,27 +1,25 @@
+import type { TextareaHTMLAttributes } from 'react';
 import { cn } from '~/utils';
 
 import { InputLabel } from './InputLabel';
+import { Text } from '../Text';
 
-interface TextAreaProps {
-  id: string;
-  name: string;
+type TextAreaProps = {
   label: string;
-  value?: string;
-  placeholder?: string;
-  className?: string;
+  error?: string;
   labelClassName?: string;
   onChange?: (value: string) => void;
-}
+} & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'>;
 
 export const TextArea = ({
   id,
-  name,
   label,
-  value,
   placeholder,
+  error,
   className,
   labelClassName,
   onChange,
+  ...props
 }: TextAreaProps) => {
   return (
     <div>
@@ -29,17 +27,19 @@ export const TextArea = ({
         {label}
       </InputLabel>
       <textarea
+        {...props}
         id={id}
-        name={name}
         rows={6}
-        value={value}
-        placeholder={placeholder}
+        placeholder={placeholder || label}
         className={cn(
-          'w-full rounded border border-gray-300 px-3 py-2',
+          'w-full rounded border border-gray-300 px-3 py-2 placeholder:text-gray-400',
+          { 'border-error-600': error },
           className,
         )}
+        style={{ verticalAlign: 'bottom' }}
         onChange={(e) => onChange?.(e.target.value)}
       />
+      {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>
   );
 };

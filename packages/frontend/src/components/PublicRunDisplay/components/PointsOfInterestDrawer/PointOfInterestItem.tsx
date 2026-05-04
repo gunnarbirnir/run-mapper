@@ -4,8 +4,7 @@ import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
 import { Text } from '~/primitives';
 import { PointOfInterest } from '~/types';
 import { cn } from '~/utils';
-
-import { PointOfInterestIcon } from './PointOfInterestIcon';
+import { PointOfInterestIcon } from '~/components/LocationIcon';
 
 interface PointOfInterestItemProps {
   pointOfInterest: PointOfInterest;

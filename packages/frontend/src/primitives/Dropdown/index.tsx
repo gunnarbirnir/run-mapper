@@ -1,16 +1,24 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Select } from '@base-ui/react/select';
 
 import { cn, spacingPx } from '~/utils';
 
-interface DropdownProps {
+export interface DropdownProps {
+  id?: string;
   items: { label: string; value: string }[];
+  side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
+  align?: 'start' | 'center' | 'end';
   value?: string;
+  values?: string[];
+  disabled?: boolean;
+  placeholder?: string;
   className?: string;
   popupClassName?: string;
   style?: CSSProperties;
   tabIndex?: number;
   onChange?: (value: string | null) => void;
+  onValuesChange?: (value: string[]) => void;
+  onBlur?: () => void;
 }
 
 const ANIMATION_CLASSES =
@@ -25,29 +33,65 @@ const HIGHLIGHTED_CLASSES =
 const SCROLL_ARROW_BASE_CLASSES = `z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-gray-100 text-center text-xs before:absolute before:left-0 before:h-full before:w-full before:content-[''] text-gray-900`;
 
 export const Dropdown = ({
+  id,
   items,
   value,
+  values,
+  side,
+  align,
+  disabled,
+  placeholder,
   className,
   popupClassName,
   style,
   tabIndex,
   onChange,
+  onValuesChange,
+  onBlur,
 }: DropdownProps) => {
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const isMultiple = Boolean(values);
+
   return (
-    <Select.Root items={items} value={value} onValueChange={onChange}>
+    <Select.Root
+      id={id}
+      items={items}
+      value={isMultiple ? values : value}
+      disabled={disabled}
+      multiple={isMultiple}
+      onValueChange={(val) =>
+        isMultiple
+          ? onValuesChange?.(val as string[])
+          : onChange?.(val as string | null)
+      }
+      onOpenChange={(open) => {
+        if (!open && hasBeenOpened) {
+          onBlur?.();
+        } else {
+          setHasBeenOpened(true);
+        }
+      }}
+    >
       <Select.Trigger
         className={cn(
-          'flex h-10 min-w-40 cursor-pointer items-center justify-between gap-3 rounded-lg bg-white px-3 text-gray-900 select-none hover:bg-gray-100 data-popup-open:bg-gray-100',
+          'flex h-10 min-w-40 items-center justify-between gap-3 rounded-lg bg-white px-3 text-gray-900 select-none hover:bg-gray-100 data-disabled:bg-gray-100 data-disabled:text-gray-700 data-popup-open:bg-gray-100',
+          { 'cursor-pointer': !disabled },
           className,
         )}
         style={style}
         tabIndex={tabIndex}
       >
-        <Select.Value className="truncate data-placeholder:opacity-60" />
+        <Select.Value
+          placeholder={placeholder}
+          className="truncate data-placeholder:text-gray-400"
+        />
         <ChevronUpDownIcon />
       </Select.Trigger>
       <Select.Portal>
         <Select.Positioner
+          side={side}
+          align={align}
+          alignItemWithTrigger={false}
           className="z-10 outline-none select-none"
           sideOffset={spacingPx(2)}
           collisionPadding={spacingPx(3)}
@@ -105,7 +149,7 @@ function ChevronUpDownIcon() {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="size-4"
+      className="size-4 shrink-0"
     >
       <path
         fill="currentColor"
@@ -123,7 +167,7 @@ function CheckIcon() {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className="size-3.5"
+      className="size-3.5 shrink-0"
     >
       <path
         fill="currentColor"

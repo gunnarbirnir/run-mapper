@@ -3,7 +3,7 @@ import {
   type RunWithId,
 } from '../repositories/run-repository.js';
 import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { PublicRun, ListRun, RunRecord } from '../types/index.js';
+import type { PublicRun, ListRun } from '../types/index.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
 import { sanitizeListRun, sanitizePublicRun } from '../utils/sanitize.js';
 
@@ -40,7 +40,7 @@ export class RunService {
     isPublic: boolean;
     publicSlug?: string;
   }): Promise<{ id: string }> {
-    const { userId, name, routeData, isPublic, publicSlug } = params;
+    const { /* userId, name, routeData, isPublic, */ publicSlug } = params;
 
     // Check if slug is already in use
     if (publicSlug) {
@@ -50,7 +50,9 @@ export class RunService {
       }
     }
 
-    const runToCreate: RunRecord = {
+    throw new Error('Not implemented yet');
+
+    /* const runToCreate: RunRecord = {
       userId,
       name,
       createdAt: new Date().toISOString(),
@@ -59,7 +61,7 @@ export class RunService {
       ...routeData,
     };
 
-    return runRepository.create(runToCreate);
+    return runRepository.create(runToCreate); */
   }
 
   /**

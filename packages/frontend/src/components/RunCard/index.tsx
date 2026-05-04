@@ -46,7 +46,7 @@ export const RunCard = ({
         seed={imageSeed}
         speed={0}
         lineWidth={1}
-        className="rounded-t-xl bg-gray-200"
+        className="rounded-t-xl bg-gray-100"
       />
       <div className="absolute top-4 left-4">
         <div

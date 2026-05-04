@@ -7,6 +7,7 @@ interface TooltipProps {
   label: string;
   children: ReactNode;
   disabled?: boolean;
+  side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
   sideOffset?: number;
   className?: string;
   triggerClassName?: string;
@@ -22,6 +23,7 @@ const Tooltip = ({
   label,
   children,
   disabled = false,
+  side,
   sideOffset = 0,
   className,
   triggerClassName,
@@ -39,10 +41,13 @@ const Tooltip = ({
         {children}
       </BaseUiTooltip.Trigger>
       <BaseUiTooltip.Portal>
-        <BaseUiTooltip.Positioner sideOffset={sideOffset + BASE_SIDE_OFFSET}>
+        <BaseUiTooltip.Positioner
+          sideOffset={sideOffset + BASE_SIDE_OFFSET}
+          side={side}
+        >
           <BaseUiTooltip.Popup
             className={cn(
-              'flex origin-top flex-col rounded-md bg-gray-700 px-2 py-1 text-sm text-white shadow-sm',
+              'flex max-w-65 origin-top flex-col rounded-md bg-gray-700 px-2 py-1 text-center text-sm text-white shadow-sm',
               ANIMATION_CLASSES,
               className,
             )}
