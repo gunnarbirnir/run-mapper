@@ -1,11 +1,12 @@
 import { useForm } from '@tanstack/react-form';
 import { motion } from 'motion/react';
 
-import { useId } from '~/hooks/useId';
-import { Button, Form, SidePanel, Text } from '~/primitives';
-import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
+import { useId } from '~/hooks/useId';
+import { Form, SidePanel } from '~/primitives';
+import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
 
+import { ItemsSection } from '../ItemsSection';
 import { PointOfInterestItem } from './PointOfInterestItem';
 import { RouteItem } from './RouteItem';
 
@@ -74,10 +75,14 @@ export const RootPanel = ({
             )}
           </rootForm.Field>
         </section>
-        <section>
-          <Text element="h3">Routes</Text>
+        <ItemsSection
+          title="Routes"
+          buttonLabel="Add route"
+          emptyText="Your run can have multiple routes, one for each distance. Create the first one here:"
+          onAddClick={onAddRoute}
+        >
           {currentRoutes.length > 0 ? (
-            <motion.div layout className="mt-4 mb-6 space-y-3">
+            <motion.div layout className="space-y-3">
               {currentRoutes.map((route) => (
                 <RouteItem
                   key={route.id}
@@ -86,20 +91,16 @@ export const RootPanel = ({
                 />
               ))}
             </motion.div>
-          ) : (
-            <Text variant="subtle" className="mt-2 mb-5 text-sm">
-              Your run can have multiple routes, one for each distance. Create
-              the first one here:
-            </Text>
-          )}
-          <Button className="w-full" onClick={onAddRoute}>
-            Add route
-          </Button>
-        </section>
-        <section>
-          <Text element="h3">Points of interest</Text>
+          ) : null}
+        </ItemsSection>
+        <ItemsSection
+          title="Points of interest"
+          buttonLabel="Add POI"
+          emptyText="Points of interest are notable locations related to your running event. Create the first one here:"
+          onAddClick={onAddPointOfInterest}
+        >
           {currentPointsOfInterest.length > 0 ? (
-            <motion.div layout className="mt-4 mb-6 space-y-3">
+            <motion.div layout className="space-y-3">
               {currentPointsOfInterest
                 .sort(
                   (a, b) =>
@@ -114,16 +115,8 @@ export const RootPanel = ({
                   />
                 ))}
             </motion.div>
-          ) : (
-            <Text variant="subtle" className="mt-2 mb-5 text-sm">
-              Points of interest are notable locations related to your running
-              event. Create the first one here:
-            </Text>
-          )}
-          <Button className="w-full" onClick={onAddPointOfInterest}>
-            Add POI
-          </Button>
-        </section>
+          ) : null}
+        </ItemsSection>
       </Form>
     </SidePanel.Content>
   );

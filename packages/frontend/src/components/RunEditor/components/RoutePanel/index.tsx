@@ -1,16 +1,16 @@
 import { useForm, useStore } from '@tanstack/react-form';
+import { motion } from 'motion/react';
 import { useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
-import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
+import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import { BoundingBox, PublicRoute, Waypoint } from '~/types';
-import { DEFAULT_FADE_IN_DURATION, DEFAULT_EASING } from '~/constants';
 
-import type { PanelState } from '../../hooks/usePanelState';
 import { usePanelForm } from '../../hooks/usePanelForm';
+import type { PanelState } from '../../hooks/usePanelState';
 import { isUnchangedDefaultWaypoints, sortWaypoints } from '../../utils';
+import { ItemsSection } from '../ItemsSection';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
@@ -165,38 +165,23 @@ export const RoutePanel = ({
             )}
           </routeForm.Field>
         </section>
-        <section>
-          <Text element="h3">Route</Text>
-          {/* TODO: Check if route is empty */}
-          <Text variant="subtle" className="mt-2 text-sm">
-            The route itself is created in the map. Click on the map to start
-            drawing the route.
-          </Text>
-        </section>
-        <section className="mb-6">
-          <Text element="h3">Waypoints</Text>
-          <AnimatePresence>
-            {hasDefaultWaypoints && (
-              <motion.div
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: DEFAULT_FADE_IN_DURATION,
-                  delay: DEFAULT_FADE_IN_DURATION,
-                  ease: DEFAULT_EASING,
-                }}
-              >
-                <Text variant="subtle" className="mt-2 mb-5 text-sm">
-                  Waypoints are notable locations along the route. Start and end
-                  are default.
-                </Text>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          {currentWaypoints.length > 0 && (
+        <ItemsSection
+          title="Route"
+          /* TODO: Check if route is empty */
+          emptyText="The route itself is created in the map. Click on the map to start drawing the route."
+        />
+        <ItemsSection
+          title="Waypoints"
+          emptyText="Waypoints are notable locations along the route. Start and End are default."
+          showEmptyText={hasDefaultWaypoints}
+          buttonLabel="Add waypoint"
+          onAddClick={onAddWaypoint}
+        >
+          {currentWaypoints.length > 0 ? (
             <motion.div
               layout
               key={editId ?? 'new-route'}
-              className="mt-4 mb-6 space-y-3"
+              className="space-y-3"
             >
               {currentWaypoints
                 .sort(sortWaypoints(routeDistance))
@@ -209,12 +194,8 @@ export const RoutePanel = ({
                   />
                 ))}
             </motion.div>
-          )}
-          <Button className="w-full" onClick={onAddWaypoint}>
-            Add waypoint
-          </Button>
-        </section>
-        <hr className="mx-2 mb-6 text-gray-300" />
+          ) : null}
+        </ItemsSection>
         <section className="flex flex-col gap-3">
           <routeForm.Subscribe
             selector={(state) => [

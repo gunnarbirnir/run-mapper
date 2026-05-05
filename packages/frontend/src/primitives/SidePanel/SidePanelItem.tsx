@@ -4,6 +4,7 @@ import { useInertAttribute } from '~/hooks/useInertAttribute';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { cn, convertRemToPixels } from '~/utils';
+import { PAGE_MIN_WIDTH } from '~/constants';
 
 interface SidePanelItemProps {
   id: string;
@@ -29,7 +30,7 @@ export const SidePanelItem = ({
   const { isSmallScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
   const panelWidth = isSmallScreen
-    ? windowWidth
+    ? Math.max(windowWidth, PAGE_MIN_WIDTH)
     : convertRemToPixels(PANEL_WIDTH);
 
   useInertAttribute(ref, !isVisible || disabled);
@@ -39,7 +40,7 @@ export const SidePanelItem = ({
       id={id}
       ref={ref}
       className={cn(
-        'h-full overflow-y-auto bg-white p-6',
+        'h-full overflow-y-auto bg-white p-6 pb-8',
         { 'shadow-lg/20': showShadow },
         className,
       )}

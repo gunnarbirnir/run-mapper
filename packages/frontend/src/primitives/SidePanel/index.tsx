@@ -2,7 +2,11 @@ import { type ReactNode, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { cn, convertRemToPixels } from '~/utils';
-import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+import {
+  DEFAULT_EASING,
+  DEFAULT_FADE_IN_DURATION,
+  PAGE_MIN_WIDTH,
+} from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useInertAttribute } from '~/hooks/useInertAttribute';
@@ -44,7 +48,7 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
     position: panel.position ?? index,
   }));
   const panelWidth = isSmallScreen
-    ? windowWidth
+    ? Math.max(windowWidth, PAGE_MIN_WIDTH)
     : convertRemToPixels(PANEL_WIDTH);
   const maxPanelsInView = isLargeScreen ? 1 : 2;
   const visiblePanelsCount = panels.reduce(

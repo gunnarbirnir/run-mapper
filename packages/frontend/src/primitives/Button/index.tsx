@@ -19,7 +19,7 @@ export type ButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
-  'inline-block px-6 py-2 rounded-full transition-scale duration-100 min-w-20 flex items-center justify-center relative';
+  'inline-block px-6 py-2 rounded-full transition-scale duration-100 min-w-20 flex items-center justify-center relative whitespace-nowrap';
 const ENABLED_CLASS_NAME = 'cursor-pointer active:scale-95';
 
 export const Button = ({

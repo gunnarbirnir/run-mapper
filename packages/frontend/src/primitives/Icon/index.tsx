@@ -19,6 +19,7 @@ import { Ruler } from './Ruler';
 import { Chevron } from './Chevron';
 import { Link } from './Link';
 import { Info } from './Info';
+import { Plus } from './Plus';
 
 import { cn } from '~/utils';
 
@@ -41,7 +42,8 @@ export type IconName =
   | 'ruler'
   | 'chevron'
   | 'link'
-  | 'info';
+  | 'info'
+  | 'plus';
 
 interface IconProps {
   name: IconName;
@@ -89,6 +91,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Link />;
     case 'info':
       return <Info />;
+    case 'plus':
+      return <Plus />;
     default:
       return null;
   }
