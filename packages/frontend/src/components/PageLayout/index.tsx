@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '~/utils';
 import { LoadingSpinner, Text } from '~/primitives';
+import { PAGE_MIN_WIDTH } from '~/constants';
 
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
@@ -45,8 +46,8 @@ const PageLayout = ({
 
   return (
     <div
-      className={cn('relative flex min-h-screen min-w-80 flex-col', className)}
-      style={{ minHeight: '100dvh' }}
+      className={cn('relative flex min-h-screen flex-col', className)}
+      style={{ minHeight: '100dvh', minWidth: PAGE_MIN_WIDTH }}
     >
       {!hideNavBar && <NavBar isFullWidth={isFullWidth} />}
       {content}

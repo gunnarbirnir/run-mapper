@@ -4,6 +4,7 @@ export const useElementSize = (
   ref: React.RefObject<HTMLElement>,
   dependencies: unknown[] = [],
 ) => {
+  const isClient = Boolean(window);
   const [elementSize, setElementSize] = useState<{
     width: number;
     height: number;
@@ -22,10 +23,14 @@ export const useElementSize = (
   }, [handleResize, ...dependencies]);
 
   useEffect(() => {
+    if (!isClient) {
+      return;
+    }
+
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [handleResize]);
+  }, [isClient, handleResize]);
 
   return elementSize;
 };

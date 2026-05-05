@@ -7,8 +7,9 @@ const getWindowDimensions = () => {
 };
 
 export const useWindowDimensions = () => {
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions(),
+  const isClient = Boolean(window);
+  const [windowDimensions, setWindowDimensions] = useState(() =>
+    isClient ? getWindowDimensions() : { width: 0, height: 0 },
   );
 
   useEffect(() => {
@@ -16,10 +17,15 @@ export const useWindowDimensions = () => {
       setWindowDimensions(getWindowDimensions());
     };
 
+    if (!isClient) {
+      return;
+    }
+
+    handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isClient]);
 
   return windowDimensions;
 };

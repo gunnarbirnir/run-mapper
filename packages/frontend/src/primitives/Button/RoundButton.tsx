@@ -5,6 +5,7 @@ import { Button as BaseUiButton } from '@base-ui/react/button';
 import { cn } from '~/utils';
 
 import { type ButtonColor, getColorClassName } from './utils';
+import { TouchableArea } from './TouchableArea';
 
 type RoundButtonProps = {
   children: ReactElement;
@@ -12,10 +13,11 @@ type RoundButtonProps = {
   linkTo?: string;
   disabled?: boolean;
   color?: ButtonColor;
+  touchablePadding?: number;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BASE_CLASS_NAME =
-  'h-8 w-8 rounded-full transition-scale duration-100 flex items-center justify-center';
+  'h-8 w-8 rounded-full transition-scale duration-100 flex items-center justify-center relative';
 const ENABLED_CLASS_NAME = 'cursor-pointer active:scale-90';
 
 export const RoundButton = ({
@@ -24,6 +26,7 @@ export const RoundButton = ({
   linkTo,
   disabled = false,
   color = 'black',
+  touchablePadding,
   ...props
 }: RoundButtonProps) => {
   const combinedClassName = cn(
@@ -41,7 +44,9 @@ export const RoundButton = ({
           disabled={disabled}
           className={combinedClassName}
         >
-          {children}
+          <TouchableArea touchablePadding={touchablePadding}>
+            {children}
+          </TouchableArea>
         </BaseUiButton>
       </Link>
     );
@@ -49,7 +54,9 @@ export const RoundButton = ({
 
   return (
     <BaseUiButton {...props} disabled={disabled} className={combinedClassName}>
-      {children}
+      <TouchableArea touchablePadding={touchablePadding}>
+        {children}
+      </TouchableArea>
     </BaseUiButton>
   );
 };

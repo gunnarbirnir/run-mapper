@@ -22,7 +22,7 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
   return (
     <nav className={'sticky top-0 z-10 bg-gray-50/95 px-6 py-2 shadow-sm'}>
       <div
-        className={cn('flex items-center justify-between', {
+        className={cn('flex items-center justify-between gap-6', {
           'container mx-auto': !isFullWidth,
         })}
       >
@@ -34,7 +34,7 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
             <>
               <Link
                 to="/"
-                className={cn('hidden sm:block', {
+                className={cn({
                   'font-bold': pathname === '/' || pathname === '/home',
                 })}
               >
@@ -46,7 +46,6 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
                   className: 'font-bold',
                 }}
                 activeOptions={{ exact: true }}
-                className="hidden sm:block"
               >
                 <Text>Runs</Text>
               </Link>
