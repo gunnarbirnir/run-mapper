@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
-import { Form, SidePanel } from '~/primitives';
+import { Form, SidePanel, Button } from '~/primitives';
 import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
 
 import { ItemsSection } from '../ItemsSection';
@@ -40,6 +40,7 @@ export const RootPanel = ({
     },
     // onSubmit: ({ value }) => {}
   });
+  const isEditing = Boolean(existingRun);
 
   return (
     <SidePanel.Content
@@ -117,6 +118,21 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
+        <section className="flex flex-col gap-3">
+          <Button className="w-full" linkTo="/runs">
+            Back to runs
+          </Button>
+          {isEditing && (
+            <Button
+              color="error"
+              className="w-full"
+              // TODO: Delete run
+              onClick={() => console.log('Delete run')}
+            >
+              Delete run
+            </Button>
+          )}
+        </section>
       </Form>
     </SidePanel.Content>
   );

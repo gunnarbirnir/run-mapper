@@ -63,6 +63,9 @@ export const SidePanelContainer = ({
   return (
     <SidePanel
       onOpen={onOpen}
+      className="z-10"
+      // To be below route stats
+      toggleClassName="top-16"
       panels={[
         {
           id: 'root',
