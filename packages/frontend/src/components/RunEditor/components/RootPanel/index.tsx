@@ -79,7 +79,7 @@ export const RootPanel = ({
         <ItemsSection
           title="Routes"
           buttonLabel="Add route"
-          emptyText="Your run can have multiple routes, one for each distance. Create the first one here:"
+          emptyText="Your run can have multiple routes, one for each distance. Create the first one by clicking the plus."
           onAddClick={onAddRoute}
         >
           {currentRoutes.length > 0 ? (
@@ -97,7 +97,7 @@ export const RootPanel = ({
         <ItemsSection
           title="Points of interest"
           buttonLabel="Add POI"
-          emptyText="Points of interest are notable locations related to your running event. Create the first one here:"
+          emptyText="Points of interest are notable locations related to your event. Create the first one by clicking the plus."
           onAddClick={onAddPointOfInterest}
         >
           {currentPointsOfInterest.length > 0 ? (
