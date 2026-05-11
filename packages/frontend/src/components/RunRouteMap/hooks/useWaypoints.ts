@@ -3,8 +3,8 @@ import { useEffect, useRef, type RefObject, useMemo } from 'react';
 
 import type { Coordinates, Waypoint } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
+import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
 
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '../constants';
 import {
   getMarkerElement,
   getWaypointTooltip,

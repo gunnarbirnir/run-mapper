@@ -3,6 +3,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCallback, useMemo, useRef } from 'react';
 
 import { Icon, Tooltip } from '~/primitives';
+import { getPaddedBounds } from '~/utils/map';
 
 import { MapActionButton } from './components/MapActionButton';
 import { PoweredByLabel } from './components/PoweredByLabel';
@@ -16,7 +17,6 @@ import { useMapStyle } from './hooks/useMapStyle';
 import { useWaypoints } from './hooks/useWaypoints';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import type { RouteMapProps } from './types';
-import { getPaddedBounds } from './utils';
 
 export const RunRouteMap = ({
   routeId,

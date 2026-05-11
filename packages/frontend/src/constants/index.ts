@@ -1,5 +1,3 @@
-import type { MapStyle } from '~/types';
-
 export const PAGE_MIN_WIDTH = 350;
 export const DEFAULT_FADE_IN_DURATION = 0.15;
 export const DEFAULT_EASING = 'easeOut';
@@ -38,8 +36,3 @@ export const WAYPOINT_VALUES = [
   'start',
   'end',
 ] as const;
-
-export const MAP_STYLES: Record<MapStyle, string> = {
-  standard: 'mapbox://styles/mapbox/standard',
-  satellite: 'mapbox://styles/mapbox/standard-satellite',
-};

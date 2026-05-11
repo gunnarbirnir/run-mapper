@@ -1,20 +1,42 @@
-import { useRef, useState } from 'react';
-import { Map } from 'mapbox-gl';
+import { useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { RouteStats } from './components/RouteStats';
+import { PublicRoute } from '~/types';
+
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
+import { RouteStats } from './components/RouteStats';
+import { useDrawRoute } from './hooks/useDrawRoute';
+import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
 
-export const EditorMap = () => {
-  const mapRef = useRef<Map | null>(null);
+interface EditorMapProps extends MapState {
+  activeRoute: PublicRoute | undefined;
+  routePanelIsOpen: boolean;
+  isAnimatingPanel: boolean;
+}
+
+export const EditorMap = ({
+  activeRoute,
+  routePanelIsOpen,
+  isAnimatingPanel,
+  isMapLoaded,
+  setIsMapLoaded,
+  mapRef,
+}: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [, setIsMapLoaded] = useState(false);
 
   useLoadMap({
     setIsMapLoaded,
     mapRef,
     mapContainerRef,
+  });
+
+  useDrawRoute({
+    activeRoute,
+    routePanelIsOpen,
+    isAnimatingPanel,
+    isMapLoaded,
+    mapRef,
   });
 
   return (
@@ -26,3 +48,5 @@ export const EditorMap = () => {
     </div>
   );
 };
+
+export { useMapState };

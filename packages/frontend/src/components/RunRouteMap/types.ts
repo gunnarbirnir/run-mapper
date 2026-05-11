@@ -10,8 +10,6 @@ import type {
 
 import type { RunDisplaySettings } from '../PublicRunDisplay/hooks/useSettings';
 
-export type LineFeature = GeoJSON.Feature<GeoJSON.LineString>;
-
 export interface MapState {
   isMapLoaded: boolean;
   isAtInitialBounds: boolean;

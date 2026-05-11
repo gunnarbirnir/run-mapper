@@ -2,8 +2,7 @@ import { type RefObject, useEffect, type MutableRefObject } from 'react';
 import type { Map } from 'mapbox-gl';
 
 import type { Bounds } from '~/types';
-
-import { FIT_INITIAL_BOUNDS_DURATION } from '../constants';
+import { FIT_INITIAL_BOUNDS_DURATION } from '~/constants/map';
 
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;

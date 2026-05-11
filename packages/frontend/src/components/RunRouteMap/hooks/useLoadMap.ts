@@ -3,9 +3,7 @@ import mapboxgl, { Map } from 'mapbox-gl';
 
 import type { Bounds, MapStyle } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { MAP_STYLES } from '~/constants';
-
-import { FIT_INITIAL_BOUNDS_DURATION } from '../constants';
+import { MAP_STYLES, FIT_INITIAL_BOUNDS_DURATION } from '~/constants/map';
 
 interface UseLoadMapProps {
   paddedBounds: Bounds;

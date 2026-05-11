@@ -8,14 +8,11 @@ import {
 } from 'react';
 
 import type { Coordinates, Elevation } from '~/types';
+import { getLineFeature, getRouteLayer } from '~/utils/map';
 
-import {
-  getLineFeature,
-  getRouteLayer,
-  getRouteAnimationDuration,
-} from '../utils';
+import { getRouteAnimationDuration } from '../utils';
 
-interface UseRouteProps {
+interface UseMapRouteProps {
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
   coordinates: Coordinates[];
@@ -79,7 +76,7 @@ export const useMapRoute = ({
   mapRef,
   animateRouteRef,
   setRouteIsAnimating,
-}: UseRouteProps) => {
+}: UseMapRouteProps) => {
   const isInitialLoadRef = useRef(true);
   const isVisibleRef = useRef(document.visibilityState === 'visible');
   const animationDuration = useMemo(

@@ -34,6 +34,8 @@ interface SidePanelProps {
   className?: string;
   toggleClassName?: string;
   onOpen?: () => void;
+  onItemAnimationStart?: (itemId: string) => void;
+  onItemAnimationComplete?: (itemId: string) => void;
 }
 
 const TOGGLE_WIDTH = '3.5rem';
@@ -42,6 +44,8 @@ const SidePanel = ({
   className,
   toggleClassName,
   onOpen,
+  onItemAnimationStart,
+  onItemAnimationComplete,
   ...props
 }: SidePanelProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
@@ -125,18 +129,20 @@ const SidePanel = ({
                   duration: SLIDE_IN_DURATION,
                   ease: DEFAULT_EASING,
                 }}
-                onAnimationStart={() =>
+                onAnimationStart={() => {
                   setIsAnimating((prevIsAnimating) => ({
                     ...prevIsAnimating,
                     [panel.id]: true,
-                  }))
-                }
-                onAnimationComplete={() =>
+                  }));
+                  onItemAnimationStart?.(itemId);
+                }}
+                onAnimationComplete={() => {
                   setIsAnimating((prevIsAnimating) => ({
                     ...prevIsAnimating,
                     [panel.id]: false,
-                  }))
-                }
+                  }));
+                  onItemAnimationComplete?.(itemId);
+                }}
               >
                 <SidePanelItem
                   id={itemId}

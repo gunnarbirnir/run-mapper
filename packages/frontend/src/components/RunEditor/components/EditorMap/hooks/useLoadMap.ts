@@ -1,7 +1,7 @@
 import { RefObject, useEffect, MutableRefObject } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 
-import { MAP_STYLES } from '~/constants';
+import { MAP_STYLES } from '~/constants/map';
 
 import { DEFAULT_EDITOR_BOUNDS } from '../constants';
 

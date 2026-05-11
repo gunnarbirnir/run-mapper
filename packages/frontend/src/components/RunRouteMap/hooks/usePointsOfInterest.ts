@@ -3,8 +3,8 @@ import { useEffect, useRef, type RefObject } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { PointOfInterest } from '~/types';
+import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
 
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '../constants';
 import {
   getPointOfInterestMarkerElement,
   getPointOfInterestTooltip,
