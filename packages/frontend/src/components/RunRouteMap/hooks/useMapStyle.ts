@@ -2,8 +2,7 @@ import { useEffect, type MutableRefObject } from 'react';
 import type { Map } from 'mapbox-gl';
 
 import type { MapStyle } from '~/types';
-
-import { MAP_STYLES } from '../constants';
+import { MAP_STYLES } from '~/constants';
 
 interface UseMapStyleProps {
   isMapLoaded: boolean;

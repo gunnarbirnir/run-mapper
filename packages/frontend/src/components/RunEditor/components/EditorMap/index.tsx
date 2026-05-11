@@ -1,49 +1,28 @@
-import { Tooltip, Icon } from '~/primitives';
+import { useRef, useState } from 'react';
+import { Map } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { RouteStats } from './components/RouteStats';
-import { MapActionButton } from './components/MapActionButton';
+import { ActionButtonsContainer } from './components/ActionButtonsContainer';
+import { useLoadMap } from './hooks/useLoadMap';
 
 export const EditorMap = () => {
-  let mapActionButtonIndex = 0;
+  const mapRef = useRef<Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [, setIsMapLoaded] = useState(false);
+
+  useLoadMap({
+    setIsMapLoaded,
+    mapRef,
+    mapContainerRef,
+  });
 
   return (
-    <div className="bg-secondary-200 relative flex h-full w-full items-center justify-center">
+    <div className="bg-secondary-100 relative flex h-full w-full flex-1">
+      <div ref={mapContainerRef} className="h-full w-full" />
       {/* TODO: Use real numbers */}
       <RouteStats distance={42.2} elevationGain={250} />
-      <Tooltip.Provider>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Back to start"
-          // TODO: Implement back to start functionality
-          onClick={() => console.log('Back to start')}
-        >
-          <Icon name="location" className="size-5.5" />
-        </MapActionButton>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Your location"
-          // TODO: Implement your location functionality
-          onClick={() => console.log('To your location')}
-        >
-          <Icon name="userLocation" className="size-5" />
-        </MapActionButton>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Undo"
-          // TODO: Implement undo functionality
-          onClick={() => console.log('Undo')}
-        >
-          <Icon name="undo" className="size-5" />
-        </MapActionButton>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Redo"
-          // TODO: Implement redo functionality
-          onClick={() => console.log('Redo')}
-        >
-          <Icon name="undo" className="size-5 rotate-y-180" />
-        </MapActionButton>
-      </Tooltip.Provider>
+      <ActionButtonsContainer />
     </div>
   );
 };
