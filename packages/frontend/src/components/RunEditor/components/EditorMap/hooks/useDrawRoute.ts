@@ -1,5 +1,5 @@
 import type { Map } from 'mapbox-gl';
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 
 import type { PublicRoute } from '~/types';
 import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
@@ -20,10 +20,16 @@ export const useDrawRoute = ({
   isMapLoaded,
   mapRef,
 }: UseMapRouteProps) => {
+  const prevRoutePanelIsOpenRef = useRef(routePanelIsOpen);
+
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
       return;
     }
+
+    const routePanelOpenStateChanged =
+      prevRoutePanelIsOpenRef.current !== routePanelIsOpen;
+    prevRoutePanelIsOpenRef.current = routePanelIsOpen;
 
     const map = mapRef.current;
     const coordinates =
@@ -54,7 +60,7 @@ export const useDrawRoute = ({
     };
 
     const drawRoute = () => {
-      if (coordinates.length !== 0) {
+      if (map.isStyleLoaded() && coordinates.length !== 0) {
         map.addSource(routeLayer.source, {
           type: 'geojson',
           data: getLineFeature(coordinates),
@@ -63,21 +69,35 @@ export const useDrawRoute = ({
       }
     };
 
-    fitBounds();
-    clearRoute();
-    drawRoute();
+    const onStyleLoad = () => {
+      if (!map.getSource(routeLayer.source)) {
+        drawRoute();
+        fitBounds();
+      }
+    };
+
+    if (routePanelOpenStateChanged) {
+      clearRoute();
+      if (routePanelIsOpen) {
+        drawRoute();
+        fitBounds();
+      }
+    }
+
+    map.on('style.load', onStyleLoad);
     map.on('resize', fitBounds);
     map.resize();
 
     return () => {
+      map.off('style.load', onStyleLoad);
       map.off('resize', fitBounds);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isMapLoaded,
-    mapRef,
     activeRoute?.id,
     routePanelIsOpen,
     isAnimatingPanel,
+    mapRef,
   ]);
 };

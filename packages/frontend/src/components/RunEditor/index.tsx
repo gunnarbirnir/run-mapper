@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import { IdProvider } from '~/context/IdContext';
 import type {
@@ -30,6 +30,13 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
     ...useWaypointCurrentItems({ routePanelState }),
   });
   const mapState = useMapState();
+  const activeRoute = useMemo(
+    () =>
+      routePanelState.currentItems.find(
+        (route) => route.id === routePanelState.editId,
+      ),
+    [routePanelState.currentItems, routePanelState.editId],
+  );
 
   return (
     <IdProvider baseId="run-editor">
@@ -44,13 +51,11 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            routePanelIsOpen={routePanelState.showPanel}
+            activeRoute={activeRoute}
             isAnimatingPanel={isAnimatingPanel}
-            initialBoundingBox={existingRun?.routes[0].boundingBox}
-            activeRoute={routePanelState.currentItems.find(
-              (route) => route.id === routePanelState.editId,
-            )}
+            routePanelIsOpen={routePanelState.showPanel}
             currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+            initialBoundingBox={existingRun?.routes[0].boundingBox}
           />
           <EditorFooter />
         </div>

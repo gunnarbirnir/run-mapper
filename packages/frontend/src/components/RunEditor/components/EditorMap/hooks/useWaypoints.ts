@@ -11,6 +11,7 @@ interface UseWaypointsProps {
   isMapLoaded: boolean;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
+  routePanelIsOpen: boolean;
   mapRef: RefObject<Map>;
 }
 
@@ -18,13 +19,14 @@ export const useWaypoints = ({
   isMapLoaded,
   coordinates,
   waypoints,
+  routePanelIsOpen,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
 
   // Draw waypoints
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current) {
+    if (!isMapLoaded || !mapRef.current || !routePanelIsOpen) {
       return;
     }
 
@@ -60,5 +62,12 @@ export const useWaypoints = ({
     return () => {
       waypointMarkers.forEach((marker) => marker.remove());
     };
-  }, [isMapLoaded, coordinates, waypoints, addMarker, mapRef]);
+  }, [
+    isMapLoaded,
+    coordinates,
+    waypoints,
+    routePanelIsOpen,
+    addMarker,
+    mapRef,
+  ]);
 };

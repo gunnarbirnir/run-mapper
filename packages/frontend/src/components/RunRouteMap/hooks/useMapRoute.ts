@@ -92,7 +92,6 @@ export const useMapRoute = ({
 
     const map = mapRef.current;
     let animationFrame: number | null = null;
-    let onStyleLoad: () => void = () => {};
     isInitialLoadRef.current = true;
     const routeLayer = getRouteLayer();
 
@@ -153,7 +152,7 @@ export const useMapRoute = ({
       animationFrame = requestAnimationFrame(step);
     };
 
-    onStyleLoad = () => {
+    const onStyleLoad = () => {
       if (isInitialLoadRef.current) {
         isInitialLoadRef.current = false;
         if (isVisibleRef.current) {

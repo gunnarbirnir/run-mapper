@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { PublicRoute, BoundingBox, PointOfInterest } from '~/types';
@@ -35,6 +35,15 @@ export const EditorMap = ({
     ? formatBounds(initialBoundingBox)
     : undefined;
 
+  const activeRouteCoordinates = useMemo(
+    () => activeRoute?.coordinates || [],
+    [activeRoute],
+  );
+  const activeRouteWaypoints = useMemo(
+    () => activeRoute?.waypoints || [],
+    [activeRoute],
+  );
+
   useLoadMap({
     initialBounds,
     setIsMapLoaded,
@@ -58,8 +67,9 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    coordinates: activeRoute ? activeRoute.coordinates : [],
-    waypoints: activeRoute ? activeRoute.waypoints : [],
+    coordinates: activeRouteCoordinates,
+    waypoints: activeRouteWaypoints,
+    routePanelIsOpen,
     mapRef,
   });
 
