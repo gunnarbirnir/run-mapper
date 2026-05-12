@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { Form, SidePanel, Button } from '~/primitives';
 import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
 
@@ -40,6 +41,7 @@ export const RootPanel = ({
     },
     // onSubmit: ({ value }) => {}
   });
+  const { isSmallScreen } = useMediaQuery();
   const isEditing = Boolean(existingRun);
 
   return (
@@ -119,7 +121,20 @@ export const RootPanel = ({
           ) : null}
         </ItemsSection>
         <section className="flex flex-col gap-3">
-          <Button className="w-full" linkTo="/runs">
+          {isSmallScreen && (
+            <Button
+              className="w-full"
+              // TODO: Save run
+              onClick={() => console.log('Save run')}
+            >
+              Save run
+            </Button>
+          )}
+          <Button
+            className="w-full"
+            linkTo="/runs"
+            color={isSmallScreen ? 'gray' : 'black'}
+          >
             Back to runs
           </Button>
           {isEditing && (
@@ -129,7 +144,7 @@ export const RootPanel = ({
               // TODO: Delete run
               onClick={() => console.log('Delete run')}
             >
-              Delete run
+              {isSmallScreen ? 'Delete' : 'Delete run'}
             </Button>
           )}
         </section>
