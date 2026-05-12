@@ -10,6 +10,7 @@ import { useDrawRoute } from './hooks/useDrawRoute';
 import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
+import { useWaypoints } from './hooks/useWaypoints';
 
 interface EditorMapProps extends MapState {
   activeRoute: PublicRoute | undefined;
@@ -52,6 +53,13 @@ export const EditorMap = ({
   usePointsOfInterest({
     isMapLoaded,
     pointsOfInterest: currentPointsOfInterest,
+    mapRef,
+  });
+
+  useWaypoints({
+    isMapLoaded,
+    coordinates: activeRoute ? activeRoute.coordinates : [],
+    waypoints: activeRoute ? activeRoute.waypoints : [],
     mapRef,
   });
 

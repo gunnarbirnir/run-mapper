@@ -42,5 +42,5 @@ export const usePointsOfInterest = ({
     return () => {
       pointsOfInterestMarkers.forEach((marker) => marker.remove());
     };
-  }, [addMarker, isMapLoaded, mapRef, pointsOfInterest]);
+  }, [isMapLoaded, pointsOfInterest, addMarker, mapRef]);
 };

@@ -5,13 +5,9 @@ import type { Coordinates, Waypoint } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
+import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
 
-import {
-  getMarkerElement,
-  getWaypointTooltip,
-  getWaypointMarkerElement,
-  getTooltipLatOffset,
-} from '../utils';
+import { getWaypointTooltip, getTooltipLatOffset } from '../utils';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;

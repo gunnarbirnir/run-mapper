@@ -18,6 +18,7 @@ import { useWaypoints } from './hooks/useWaypoints';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import type { RouteMapProps } from './types';
 
+// Can be moved into PublicRunDisplay folder
 export const RunRouteMap = ({
   routeId,
   runSlug,

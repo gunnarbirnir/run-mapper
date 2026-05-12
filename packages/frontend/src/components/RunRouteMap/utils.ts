@@ -5,57 +5,17 @@ import type {
   InnerWaypointType,
   PointOfInterest,
   Waypoint,
-  WaypointType,
 } from '~/types';
-import { cn, formatNumber, getCssVariableValue } from '~/utils';
+import { formatNumber } from '~/utils';
 import {
   getWaypointPoiIcon,
   getWaypointPoiIconSize,
   getWaypointPoiLabel,
 } from '~/utils/route';
 
-export const getMarkerElement = (
-  color: string,
-  hoverColor: string,
-  onClick?: () => void,
-): HTMLElement => {
-  const marker = document.createElement('div');
-  marker.className = cn(
-    'w-6 h-6 rounded-full border-4 border-white shadow-md/30',
-    { 'cursor-pointer': onClick },
-  );
-  marker.style.backgroundColor = getCssVariableValue(color);
-
-  if (onClick) {
-    marker.addEventListener('click', onClick);
-    marker.addEventListener('mouseenter', () => {
-      marker.style.backgroundColor = getCssVariableValue(hoverColor);
-    });
-    marker.addEventListener('mouseleave', () => {
-      marker.style.backgroundColor = getCssVariableValue(color);
-    });
-  }
-
-  return marker;
-};
-
 export const getActiveMarkerElement = (): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = `w-3 h-3 rounded-full bg-gray-900`;
-
-  return marker;
-};
-
-export const getWaypointMarkerElement = (
-  type: WaypointType,
-  onClick: () => void,
-): HTMLElement => {
-  const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-500 text-white hover:brightness-110`;
-  marker.innerHTML = getWaypointPoiIcon(type);
-  const iconSize = getWaypointPoiIconSize(type);
-  marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
-  marker.addEventListener('click', onClick);
 
   return marker;
 };
