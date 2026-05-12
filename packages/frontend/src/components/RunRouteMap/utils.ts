@@ -4,13 +4,11 @@ import type {
   Coordinates,
   InnerWaypointType,
   PointOfInterest,
-  PointOfInterestType,
   Waypoint,
   WaypointType,
 } from '~/types';
 import { cn, formatNumber, getCssVariableValue } from '~/utils';
 import {
-  getPoiIconColor,
   getWaypointPoiIcon,
   getWaypointPoiIconSize,
   getWaypointPoiLabel,
@@ -54,21 +52,6 @@ export const getWaypointMarkerElement = (
 ): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer bg-secondary-500 text-white hover:brightness-110`;
-  marker.innerHTML = getWaypointPoiIcon(type);
-  const iconSize = getWaypointPoiIconSize(type);
-  marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
-  marker.addEventListener('click', onClick);
-
-  return marker;
-};
-
-export const getPointOfInterestMarkerElement = (
-  type: PointOfInterestType,
-  onClick: () => void,
-): HTMLElement => {
-  const marker = document.createElement('div');
-  marker.className = `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center cursor-pointer text-white hover:brightness-110`;
-  marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
   marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);

@@ -1,6 +1,15 @@
-import type { BoundingBox, Bounds, Coordinates } from '~/types';
-import { getCssVariableValue } from '~/utils';
-
+import type {
+  BoundingBox,
+  Bounds,
+  Coordinates,
+  PointOfInterestType,
+} from '~/types';
+import {
+  getPoiIconColor,
+  getWaypointPoiIcon,
+  getWaypointPoiIconSize,
+} from '~/utils/route';
+import { getCssVariableValue, cn } from '~/utils';
 import { LINE_OPACITY, LINE_WIDTH } from '~/constants/map';
 import type { LineFeature } from '~/types';
 
@@ -43,4 +52,24 @@ export const getRouteLayer = () => {
       'line-opacity': LINE_OPACITY,
     },
   } as const;
+};
+
+export const getPointOfInterestMarkerElement = (
+  type: PointOfInterestType,
+  onClick?: () => void,
+): HTMLElement => {
+  const marker = document.createElement('div');
+  marker.className = cn(
+    `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center text-white hover:brightness-110`,
+    { 'cursor-pointer': onClick },
+  );
+  marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
+  marker.innerHTML = getWaypointPoiIcon(type);
+  const iconSize = getWaypointPoiIconSize(type);
+  marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
+  if (onClick) {
+    marker.addEventListener('click', onClick);
+  }
+
+  return marker;
 };

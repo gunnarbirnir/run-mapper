@@ -4,6 +4,7 @@ import { useEffect, useRef, type RefObject, useMemo } from 'react';
 import type { Coordinates, Waypoint } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
+import { useMapHandlers } from '~/hooks/useMapHandlers';
 
 import {
   getMarkerElement,
@@ -11,7 +12,6 @@ import {
   getWaypointMarkerElement,
   getTooltipLatOffset,
 } from '../utils';
-import { useHandlers } from './useHandlers';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;
@@ -39,7 +39,7 @@ export const useWaypoints = ({
   const activeWaypointRef = useRef<string | null>(null);
   const waypointMarkersRef = useRef<Marker[]>([]);
   const popupsRef = useRef<Record<string, Popup>>({});
-  const { addMarker } = useHandlers({ mapRef });
+  const { addMarker } = useMapHandlers({ mapRef });
 
   const extendedWaypoints = useMemo(
     () =>

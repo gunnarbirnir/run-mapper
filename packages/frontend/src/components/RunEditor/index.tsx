@@ -50,6 +50,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             activeRoute={routePanelState.currentItems.find(
               (route) => route.id === routePanelState.editId,
             )}
+            currentPointsOfInterest={pointOfInterestPanelState.currentItems}
           />
           <EditorFooter />
         </div>

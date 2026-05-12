@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { PublicRoute, BoundingBox } from '~/types';
+import { PublicRoute, BoundingBox, PointOfInterest } from '~/types';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
@@ -9,12 +9,14 @@ import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
 import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
+import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 
 interface EditorMapProps extends MapState {
   activeRoute: PublicRoute | undefined;
   routePanelIsOpen: boolean;
   isAnimatingPanel: boolean;
   initialBoundingBox?: BoundingBox;
+  currentPointsOfInterest: PointOfInterest[];
 }
 
 export const EditorMap = ({
@@ -22,6 +24,7 @@ export const EditorMap = ({
   routePanelIsOpen,
   isAnimatingPanel,
   initialBoundingBox,
+  currentPointsOfInterest,
   isMapLoaded,
   setIsMapLoaded,
   mapRef,
@@ -43,6 +46,12 @@ export const EditorMap = ({
     routePanelIsOpen,
     isAnimatingPanel,
     isMapLoaded,
+    mapRef,
+  });
+
+  usePointsOfInterest({
+    isMapLoaded,
+    pointsOfInterest: currentPointsOfInterest,
     mapRef,
   });
 

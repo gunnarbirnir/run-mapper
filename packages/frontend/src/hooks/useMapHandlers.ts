@@ -7,7 +7,8 @@ interface UseHandlersProps {
   mapRef: MutableRefObject<Map | null>;
 }
 
-export const useHandlers = ({ mapRef }: UseHandlersProps) => {
+// Can more things be added here?
+export const useMapHandlers = ({ mapRef }: UseHandlersProps) => {
   const addMarker = useCallback(
     (element: HTMLElement, markerCoords: Coordinates) => {
       if (mapRef.current) {
