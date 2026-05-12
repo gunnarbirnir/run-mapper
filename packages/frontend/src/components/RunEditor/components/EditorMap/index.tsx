@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { PublicRoute } from '~/types';
+import { PublicRoute, BoundingBox } from '~/types';
+import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { RouteStats } from './components/RouteStats';
@@ -13,19 +14,25 @@ interface EditorMapProps extends MapState {
   activeRoute: PublicRoute | undefined;
   routePanelIsOpen: boolean;
   isAnimatingPanel: boolean;
+  initialBoundingBox?: BoundingBox;
 }
 
 export const EditorMap = ({
   activeRoute,
   routePanelIsOpen,
   isAnimatingPanel,
+  initialBoundingBox,
   isMapLoaded,
   setIsMapLoaded,
   mapRef,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const initialBounds = initialBoundingBox
+    ? formatBounds(initialBoundingBox)
+    : undefined;
 
   useLoadMap({
+    initialBounds,
     setIsMapLoaded,
     mapRef,
     mapContainerRef,

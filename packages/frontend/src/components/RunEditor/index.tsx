@@ -46,6 +46,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             {...mapState}
             routePanelIsOpen={routePanelState.showPanel}
             isAnimatingPanel={isAnimatingPanel}
+            initialBoundingBox={existingRun?.routes[0].boundingBox}
             activeRoute={routePanelState.currentItems.find(
               (route) => route.id === routePanelState.editId,
             )}

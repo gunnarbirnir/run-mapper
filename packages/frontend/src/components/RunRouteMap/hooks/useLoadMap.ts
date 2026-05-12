@@ -3,10 +3,14 @@ import mapboxgl, { Map } from 'mapbox-gl';
 
 import type { Bounds, MapStyle } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { MAP_STYLES, FIT_INITIAL_BOUNDS_DURATION } from '~/constants/map';
+import {
+  MAP_STYLES,
+  FIT_INITIAL_BOUNDS_DURATION,
+  BOUNDS_PADDING,
+} from '~/constants/map';
 
 interface UseLoadMapProps {
-  paddedBounds: Bounds;
+  bounds: Bounds;
   mapStyle: MapStyle;
   setIsMapLoaded: (isMapLoaded: boolean) => void;
   mapRef: MutableRefObject<Map | null>;
@@ -15,7 +19,7 @@ interface UseLoadMapProps {
 }
 
 export const useLoadMap = ({
-  paddedBounds,
+  bounds,
   mapStyle,
   setIsMapLoaded,
   mapRef,
@@ -29,15 +33,20 @@ export const useLoadMap = ({
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
-      bounds: paddedBounds,
+      bounds: bounds,
+      // Commented out for small animation effect
+      /* fitBoundsOptions: {
+        padding: BOUNDS_PADDING,
+      }, */
       style: MAP_STYLES[mapStyle],
       attributionControl: false,
       logoPosition: isSmallScreen ? 'left' : 'bottom',
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
-      mapRef.current?.fitBounds(paddedBounds, {
+      mapRef.current?.fitBounds(bounds, {
         duration: FIT_INITIAL_BOUNDS_DURATION,
+        padding: BOUNDS_PADDING,
       });
       isResettingBoundsRef.current = true;
     });
@@ -49,5 +58,5 @@ export const useLoadMap = ({
       mapRef.current?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paddedBounds]);
+  }, [bounds]);
 };

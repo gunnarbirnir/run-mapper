@@ -2,11 +2,8 @@ import type { Map } from 'mapbox-gl';
 import { RefObject, useEffect } from 'react';
 
 import type { PublicRoute } from '~/types';
-import { getLineFeature, getRouteLayer, getPaddedBounds } from '~/utils/map';
-import {
-  FIT_INITIAL_BOUNDS_DURATION,
-  // BOUNDS_PADDING_PX,
-} from '~/constants/map';
+import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
+import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -34,8 +31,8 @@ export const useDrawRoute = ({
         ? activeRoute.coordinates
         : [];
     const routeLayer = getRouteLayer();
-    const paddedBounds = activeRoute?.boundingBox
-      ? getPaddedBounds(activeRoute?.boundingBox)
+    const bounds = activeRoute?.boundingBox
+      ? formatBounds(activeRoute?.boundingBox)
       : null;
 
     const clearRoute = () => {
@@ -48,9 +45,9 @@ export const useDrawRoute = ({
     };
 
     const fitBounds = () => {
-      if (paddedBounds) {
-        map.fitBounds(paddedBounds, {
-          // padding: BOUNDS_PADDING_PX,
+      if (bounds) {
+        map.fitBounds(bounds, {
+          padding: BOUNDS_PADDING,
           duration: FIT_INITIAL_BOUNDS_DURATION,
         });
       }
