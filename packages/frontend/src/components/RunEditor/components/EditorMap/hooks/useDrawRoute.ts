@@ -20,6 +20,7 @@ export const useDrawRoute = ({
   isMapLoaded,
   mapRef,
 }: UseMapRouteProps) => {
+  const prevRouteIdRef = useRef(activeRoute?.id);
   const prevRoutePanelIsOpenRef = useRef(routePanelIsOpen);
 
   useEffect(() => {
@@ -27,6 +28,8 @@ export const useDrawRoute = ({
       return;
     }
 
+    const routeIdChanged = prevRouteIdRef.current !== activeRoute?.id;
+    prevRouteIdRef.current = activeRoute?.id;
     const routePanelOpenStateChanged =
       prevRoutePanelIsOpenRef.current !== routePanelIsOpen;
     prevRoutePanelIsOpenRef.current = routePanelIsOpen;
@@ -76,7 +79,7 @@ export const useDrawRoute = ({
       }
     };
 
-    if (routePanelOpenStateChanged) {
+    if (routeIdChanged || routePanelOpenStateChanged) {
       clearRoute();
       if (routePanelIsOpen) {
         drawRoute();
