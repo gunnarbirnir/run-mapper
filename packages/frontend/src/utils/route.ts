@@ -108,7 +108,7 @@ export const calculateMinElevation = (
 };
 
 export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
-  const firstCoordinate = coordinates[0] ?? [0, 0];
+  const firstCoordinate = coordinates[0] ?? { lat: 0, lng: 0 };
   return {
     id: 'start',
     name: 'Start',
@@ -123,7 +123,10 @@ export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
 };
 
 export const getEndWaypoint = (coordinates: Coordinates[]): Waypoint => {
-  const lastCoordinate = coordinates[coordinates.length - 1] ?? [0, 0];
+  const lastCoordinate = coordinates[coordinates.length - 1] ?? {
+    lat: 0,
+    lng: 0,
+  };
   return {
     id: 'end',
     name: 'End',

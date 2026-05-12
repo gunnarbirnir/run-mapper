@@ -2,9 +2,9 @@ import type { Map } from 'mapbox-gl';
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 
 import { Coordinates } from '~/types';
+import { useMapHandlers } from '~/hooks/useMapHandlers';
 
 import { getActiveMarkerElement } from '../utils';
-import { useHandlers } from './useHandlers';
 
 interface UseActiveMarkerProps {
   isMapLoaded: boolean;
@@ -24,7 +24,7 @@ export const useActiveMarker = ({
   setActiveIndexRef,
 }: UseActiveMarkerProps) => {
   const hideActiveMarkerRef = useRef(hideActiveMarker);
-  const { addMarker } = useHandlers({ mapRef });
+  const { addMarker } = useMapHandlers({ mapRef });
 
   // Sync ref to state
   useEffect(() => {

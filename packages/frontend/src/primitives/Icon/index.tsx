@@ -20,6 +20,8 @@ import { Chevron } from './Chevron';
 import { Link } from './Link';
 import { Info } from './Info';
 import { Plus } from './Plus';
+import { Undo } from './Undo';
+import { UserLocation } from './UserLocation';
 
 import { cn } from '~/utils';
 
@@ -43,7 +45,9 @@ export type IconName =
   | 'chevron'
   | 'link'
   | 'info'
-  | 'plus';
+  | 'plus'
+  | 'undo'
+  | 'userLocation';
 
 interface IconProps {
   name: IconName;
@@ -93,6 +97,10 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Info />;
     case 'plus':
       return <Plus />;
+    case 'undo':
+      return <Undo />;
+    case 'userLocation':
+      return <UserLocation />;
     default:
       return null;
   }

@@ -75,3 +75,5 @@ export type ApiResponse<T> = {
 };
 
 export type MapStyle = 'standard' | 'satellite';
+
+export type LineFeature = GeoJSON.Feature<GeoJSON.LineString>;

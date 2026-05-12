@@ -1,4 +1,5 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
+import { useCallback, useLayoutEffect } from 'react';
 
 import { SidePanel } from '~/primitives';
 import type {
@@ -13,25 +14,23 @@ import { RootPanel } from '../RootPanel';
 import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
 import { useRootPanelState } from '../../hooks/useRootPanelState';
-import { usePanelState } from '../../hooks/usePanelState';
-import { useWaypointCurrentItems } from '../../hooks/useWaypointCurrentItems';
+import { type PanelState } from '../../hooks/usePanelState';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
+  routePanelState: PanelState<PublicRoute>;
+  pointOfInterestPanelState: PanelState<PointOfInterest>;
+  waypointPanelState: PanelState<Waypoint>;
+  setIsAnimatingPanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SidePanelContainer = ({
   existingRun,
+  routePanelState,
+  pointOfInterestPanelState,
+  waypointPanelState,
+  setIsAnimatingPanel,
 }: SidePanelContainerProps) => {
-  const routePanelState = usePanelState<PublicRoute>({
-    existingItems: existingRun?.routes,
-  });
-  const pointOfInterestPanelState = usePanelState<PointOfInterest>({
-    existingItems: existingRun?.pointsOfInterest,
-  });
-  const waypointPanelState = usePanelState<Waypoint>({
-    ...useWaypointCurrentItems({ routePanelState }),
-  });
   const {
     showRootPanel,
     onOpen,
@@ -60,9 +59,27 @@ export const SidePanelContainer = ({
     }
   });
 
+  const onPanelAnimationComplete = useCallback(() => {
+    setIsAnimatingPanel(false);
+  }, [setIsAnimatingPanel]);
+
+  useLayoutEffect(() => {
+    setIsAnimatingPanel(true);
+  }, [
+    showRootPanel,
+    routePanelState.showPanel,
+    pointOfInterestPanelState.showPanel,
+    waypointPanelState.showPanel,
+    setIsAnimatingPanel,
+  ]);
+
   return (
     <SidePanel
       onOpen={onOpen}
+      className="z-10"
+      // To be below route stats
+      toggleClassName="top-16"
+      onItemAnimationComplete={onPanelAnimationComplete}
       panels={[
         {
           id: 'root',

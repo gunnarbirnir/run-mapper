@@ -1,54 +1,38 @@
 import { RefObject, useEffect, MutableRefObject } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 
-import type { Bounds, MapStyle } from '~/types';
-import { useMediaQuery } from '~/hooks/useMediaQuery';
-import {
-  MAP_STYLES,
-  FIT_INITIAL_BOUNDS_DURATION,
-  BOUNDS_PADDING,
-} from '~/constants/map';
+import { MAP_STYLES } from '~/constants/map';
+import type { Bounds } from '~/types';
+
+import { DEFAULT_EDITOR_BOUNDS } from '../constants';
 
 interface UseLoadMapProps {
-  bounds: Bounds;
-  mapStyle: MapStyle;
+  initialBounds?: Bounds;
   setIsMapLoaded: (isMapLoaded: boolean) => void;
   mapRef: MutableRefObject<Map | null>;
   mapContainerRef: RefObject<HTMLDivElement>;
-  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useLoadMap = ({
-  bounds,
-  mapStyle,
+  initialBounds,
   setIsMapLoaded,
   mapRef,
   mapContainerRef,
-  isResettingBoundsRef,
 }: UseLoadMapProps) => {
-  const { isSmallScreen } = useMediaQuery();
-
   useEffect(() => {
     setIsMapLoaded(false);
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
-      bounds: bounds,
+      bounds: initialBounds ?? DEFAULT_EDITOR_BOUNDS,
       // Commented out for small animation effect
-      /* fitBoundsOptions: {
-        padding: BOUNDS_PADDING,
-      }, */
-      style: MAP_STYLES[mapStyle],
+      // fitBoundsOptions: initialBounds ? { padding: BOUNDS_PADDING } : undefined,
+      style: MAP_STYLES.standard,
       attributionControl: false,
-      logoPosition: isSmallScreen ? 'left' : 'bottom',
+      logoPosition: 'bottom-right',
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
-      mapRef.current?.fitBounds(bounds, {
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-        padding: BOUNDS_PADDING,
-      });
-      isResettingBoundsRef.current = true;
     });
     mapRef.current.addControl(
       new mapboxgl.AttributionControl({ compact: true }),
@@ -58,5 +42,5 @@ export const useLoadMap = ({
       mapRef.current?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bounds]);
+  }, [mapContainerRef, mapRef, setIsMapLoaded]);
 };

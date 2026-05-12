@@ -3,6 +3,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCallback, useMemo, useRef } from 'react';
 
 import { Icon, Tooltip } from '~/primitives';
+import { formatBounds } from '~/utils/map';
 
 import { MapActionButton } from './components/MapActionButton';
 import { PoweredByLabel } from './components/PoweredByLabel';
@@ -16,8 +17,8 @@ import { useMapStyle } from './hooks/useMapStyle';
 import { useWaypoints } from './hooks/useWaypoints';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import type { RouteMapProps } from './types';
-import { getPaddedBounds } from './utils';
 
+// Can be moved into PublicRunDisplay folder
 export const RunRouteMap = ({
   routeId,
   runSlug,
@@ -47,16 +48,13 @@ export const RunRouteMap = ({
   animateRoute,
   fitToInitialBounds,
 }: RouteMapProps) => {
-  const paddedBounds = useMemo(
-    () => getPaddedBounds(boundingBox),
-    [boundingBox],
-  );
+  const bounds = useMemo(() => formatBounds(boundingBox), [boundingBox]);
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   let mapActionButtonIndex = 0;
 
   useLoadMap({
-    paddedBounds,
+    bounds,
     mapStyle,
     setIsMapLoaded,
     mapRef,
@@ -113,7 +111,7 @@ export const RunRouteMap = ({
 
   useFitToInitialBounds({
     isMapLoaded,
-    paddedBounds,
+    bounds,
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,

@@ -8,14 +8,11 @@ import {
 } from 'react';
 
 import type { Coordinates, Elevation } from '~/types';
+import { getLineFeature, getRouteLayer } from '~/utils/map';
 
-import {
-  getLineFeature,
-  getRouteLayer,
-  getRouteAnimationDuration,
-} from '../utils';
+import { getRouteAnimationDuration } from '../utils';
 
-interface UseRouteProps {
+interface UseMapRouteProps {
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
   coordinates: Coordinates[];
@@ -79,7 +76,7 @@ export const useMapRoute = ({
   mapRef,
   animateRouteRef,
   setRouteIsAnimating,
-}: UseRouteProps) => {
+}: UseMapRouteProps) => {
   const isInitialLoadRef = useRef(true);
   const isVisibleRef = useRef(document.visibilityState === 'visible');
   const animationDuration = useMemo(
@@ -95,8 +92,8 @@ export const useMapRoute = ({
 
     const map = mapRef.current;
     let animationFrame: number | null = null;
-    let onStyleLoad: () => void = () => {};
     isInitialLoadRef.current = true;
+    const routeLayer = getRouteLayer();
 
     const addRoute = () => {
       if (map.getSource('route-source')) {
@@ -109,13 +106,18 @@ export const useMapRoute = ({
       map.addLayer(getRouteLayer());
     };
 
+    const clearRoute = () => {
+      if (map.getLayer(routeLayer.id)) {
+        map.removeLayer(routeLayer.id);
+      }
+      if (map.getSource(routeLayer.source)) {
+        map.removeSource(routeLayer.source);
+      }
+    };
+
     const animateRoute = () => {
       setRouteIsAnimating(true);
-
-      if (map.getSource('route-source')) {
-        map.removeLayer('route-layer');
-        map.removeSource('route-source');
-      }
+      clearRoute();
 
       map.addSource('route-source', {
         type: 'geojson',
@@ -150,7 +152,7 @@ export const useMapRoute = ({
       animationFrame = requestAnimationFrame(step);
     };
 
-    onStyleLoad = () => {
+    const onStyleLoad = () => {
       if (isInitialLoadRef.current) {
         isInitialLoadRef.current = false;
         if (isVisibleRef.current) {

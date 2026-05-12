@@ -4,7 +4,7 @@ export const DEFAULT_EASING = 'easeOut';
 
 export const PUBLIC_RUN_DISPLAY_MIN_WIDTH = 300;
 export const PUBLIC_RUN_DISPLAY_MIN_HEIGHT = 400;
-export const WIDGET_ANIMATION_DURATION = 0.1;
+export const WIDGET_ANIMATION_DURATION = 0.15;
 export const DRAWER_ANIMATION_DURATION = 0.1;
 
 // This is also the order they should be displayed in

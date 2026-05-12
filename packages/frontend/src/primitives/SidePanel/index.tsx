@@ -32,12 +32,22 @@ interface SidePanelItem {
 interface SidePanelProps {
   panels: SidePanelItem[];
   className?: string;
+  toggleClassName?: string;
   onOpen?: () => void;
+  onItemAnimationStart?: (itemId: string) => void;
+  onItemAnimationComplete?: (itemId: string) => void;
 }
 
 const TOGGLE_WIDTH = '3.5rem';
 
-const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
+const SidePanel = ({
+  className,
+  toggleClassName,
+  onOpen,
+  onItemAnimationStart,
+  onItemAnimationComplete,
+  ...props
+}: SidePanelProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
   const { isSmallScreen, isLargeScreen } = useMediaQuery();
   const { width: windowWidth } = useWindowDimensions();
@@ -119,18 +129,20 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
                   duration: SLIDE_IN_DURATION,
                   ease: DEFAULT_EASING,
                 }}
-                onAnimationStart={() =>
+                onAnimationStart={() => {
                   setIsAnimating((prevIsAnimating) => ({
                     ...prevIsAnimating,
                     [panel.id]: true,
-                  }))
-                }
-                onAnimationComplete={() =>
+                  }));
+                  onItemAnimationStart?.(itemId);
+                }}
+                onAnimationComplete={() => {
                   setIsAnimating((prevIsAnimating) => ({
                     ...prevIsAnimating,
                     [panel.id]: false,
-                  }))
-                }
+                  }));
+                  onItemAnimationComplete?.(itemId);
+                }}
               >
                 <SidePanelItem
                   id={itemId}
@@ -167,7 +179,10 @@ const SidePanel = ({ className, onOpen, ...props }: SidePanelProps) => {
           ref={toggleRef}
           initial={false}
           style={{ width: TOGGLE_WIDTH, zIndex: panels.length + 1 }}
-          className="absolute top-5 flex justify-end rounded-r-full bg-white shadow-md"
+          className={cn(
+            'absolute top-5 flex justify-end rounded-r-full bg-white shadow-md',
+            toggleClassName,
+          )}
           animate={{ left: visiblePanelsCount === 0 ? 0 : `-${TOGGLE_WIDTH}` }}
           transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
         >

@@ -1,9 +1,8 @@
 import { type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { Button, Text, RoundButton, Icon, Tooltip } from '~/primitives';
+import { Text, RoundButton, Icon, Tooltip } from '~/primitives';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
-import { cn } from '~/utils';
 
 interface ItemsSectionProps {
   title: string;
@@ -25,17 +24,12 @@ export const ItemsSection = ({
   onAddClick,
 }: ItemsSectionProps) => {
   const hasItems = Boolean(children);
-  const hasSmallAddButton = hasItems && onAddClick && buttonLabel;
 
   return (
     <section className={className}>
-      <div
-        className={cn('flex items-center justify-between', {
-          'pb-1': hasSmallAddButton,
-        })}
-      >
+      <div className="flex items-center justify-between">
         <Text element="h3">{title}</Text>
-        {hasSmallAddButton && (
+        {onAddClick && buttonLabel && (
           <Tooltip label={buttonLabel}>
             <RoundButton
               className="size-6"
@@ -57,18 +51,13 @@ export const ItemsSection = ({
               ease: DEFAULT_EASING,
             }}
           >
-            <Text variant="subtle" className="mt-2 text-sm">
+            <Text variant="subtle" className="mt-3 text-sm text-pretty">
               {emptyText}
             </Text>
           </motion.div>
         )}
       </AnimatePresence>
-      {hasItems && <div className="mt-4">{children}</div>}
-      {!hasItems && onAddClick && buttonLabel && (
-        <Button className="mt-5 w-full" onClick={onAddClick}>
-          {buttonLabel}
-        </Button>
-      )}
+      {hasItems && <div className="mt-5">{children}</div>}
     </section>
   );
 };

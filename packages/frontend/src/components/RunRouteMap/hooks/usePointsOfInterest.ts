@@ -3,14 +3,11 @@ import { useEffect, useRef, type RefObject } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { PointOfInterest } from '~/types';
+import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
+import { getPointOfInterestMarkerElement } from '~/utils/map';
+import { useMapHandlers } from '~/hooks/useMapHandlers';
 
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '../constants';
-import {
-  getPointOfInterestMarkerElement,
-  getPointOfInterestTooltip,
-  getTooltipLatOffset,
-} from '../utils';
-import { useHandlers } from './useHandlers';
+import { getPointOfInterestTooltip, getTooltipLatOffset } from '../utils';
 
 interface UsePointsOfInterestProps {
   isMapLoaded: boolean;
@@ -36,7 +33,7 @@ export const usePointsOfInterest = ({
   const activePointOfInterestRef = useRef<string | null>(null);
   const pointsOfInterestMarkersRef = useRef<Marker[]>([]);
   const popupsRef = useRef<Record<string, Popup>>({});
-  const { addMarker } = useHandlers({ mapRef });
+  const { addMarker } = useMapHandlers({ mapRef });
 
   useHotkey('Escape', () => onPointOfInterestClick(null), {
     enabled: Boolean(activePointOfInterest),
