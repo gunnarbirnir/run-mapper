@@ -94,6 +94,7 @@ export const useMapRoute = ({
     let animationFrame: number | null = null;
     let onStyleLoad: () => void = () => {};
     isInitialLoadRef.current = true;
+    const routeLayer = getRouteLayer();
 
     const addRoute = () => {
       if (map.getSource('route-source')) {
@@ -106,13 +107,18 @@ export const useMapRoute = ({
       map.addLayer(getRouteLayer());
     };
 
+    const clearRoute = () => {
+      if (map.getLayer(routeLayer.id)) {
+        map.removeLayer(routeLayer.id);
+      }
+      if (map.getSource(routeLayer.source)) {
+        map.removeSource(routeLayer.source);
+      }
+    };
+
     const animateRoute = () => {
       setRouteIsAnimating(true);
-
-      if (map.getSource('route-source')) {
-        map.removeLayer('route-layer');
-        map.removeSource('route-source');
-      }
+      clearRoute();
 
       map.addSource('route-source', {
         type: 'geojson',

@@ -67,12 +67,12 @@ export const useDrawRoute = ({
     };
 
     fitBounds();
+    clearRoute();
     drawRoute();
     map.on('resize', fitBounds);
     map.resize();
 
     return () => {
-      clearRoute();
       map.off('resize', fitBounds);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
