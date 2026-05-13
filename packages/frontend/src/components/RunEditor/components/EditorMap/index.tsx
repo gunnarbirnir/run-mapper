@@ -7,29 +7,36 @@ import { formatBounds } from '~/utils/map';
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
+import { useResizeMap } from './hooks/useResizeMap';
 import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useWaypoints } from './hooks/useWaypoints';
 
 interface EditorMapProps extends MapState {
+  rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
   routePanelIsOpen: boolean;
-  isAnimatingPanel: boolean;
-  initialBoundingBox?: BoundingBox;
+  routePanelIsAnimating: boolean;
   currentPointsOfInterest: PointOfInterest[];
   activePointOfInterest: string | null;
   pointOfInterestPanelIsOpen: boolean;
+  pointOfInterestPanelIsAnimating: boolean;
+  waypointPanelIsAnimating: boolean;
+  initialBoundingBox?: BoundingBox;
 }
 
 export const EditorMap = ({
+  rootPanelIsAnimating,
   activeRoute,
   routePanelIsOpen,
-  isAnimatingPanel,
-  initialBoundingBox,
+  routePanelIsAnimating,
   currentPointsOfInterest,
   activePointOfInterest,
   pointOfInterestPanelIsOpen,
+  pointOfInterestPanelIsAnimating,
+  waypointPanelIsAnimating,
+  initialBoundingBox,
   isMapLoaded,
   setIsMapLoaded,
   mapRef,
@@ -55,10 +62,17 @@ export const EditorMap = ({
     mapContainerRef,
   });
 
+  useResizeMap({
+    rootPanelIsAnimating,
+    waypointPanelIsAnimating,
+    isMapLoaded,
+    mapRef,
+  });
+
   useDrawRoute({
     activeRoute,
     routePanelIsOpen,
-    isAnimatingPanel,
+    isAnimatingPanel: routePanelIsAnimating,
     isMapLoaded,
     mapRef,
   });
@@ -68,7 +82,7 @@ export const EditorMap = ({
     pointsOfInterest: currentPointsOfInterest,
     activePointOfInterest,
     panelIsOpen: pointOfInterestPanelIsOpen,
-    isAnimatingPanel,
+    isAnimatingPanel: pointOfInterestPanelIsAnimating,
     mapRef,
   });
 

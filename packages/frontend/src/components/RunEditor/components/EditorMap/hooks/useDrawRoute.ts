@@ -87,14 +87,9 @@ export const useDrawRoute = ({
       }
     }
 
-    map.resize();
-
-    if (!routePanelIsOpen) {
-      return;
-    }
-
-    map.on('resize', fitBounds);
     map.on('style.load', onStyleLoad);
+    map.once('resize', fitBounds);
+    map.resize();
 
     return () => {
       map.off('resize', fitBounds);

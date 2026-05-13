@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { IdProvider } from '~/context/IdContext';
 import type {
@@ -8,10 +8,11 @@ import type {
   Waypoint,
 } from '~/types';
 
+import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
 import { SidePanelContainer } from './components/SidePanelContainer';
-import { EditorFooter } from './components/EditorFooter';
 import { usePanelState } from './hooks/usePanelState';
+import { useRootPanelState } from './hooks/useRootPanelState';
 import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 
 interface RunEditorProps {
@@ -19,7 +20,6 @@ interface RunEditorProps {
 }
 
 export const RunEditor = ({ existingRun }: RunEditorProps) => {
-  const [isAnimatingPanel, setIsAnimatingPanel] = useState(false);
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
   });
@@ -29,6 +29,12 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   const waypointPanelState = usePanelState<Waypoint>({
     ...useWaypointCurrentItems({ routePanelState }),
   });
+  const rootPanelState = useRootPanelState({
+    routePanelState,
+    pointOfInterestPanelState,
+    waypointPanelState,
+  });
+
   const mapState = useMapState();
   const activeRoute = useMemo(
     () =>
@@ -43,21 +49,26 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
       <div className="relative isolate flex flex-1">
         <SidePanelContainer
           existingRun={existingRun}
+          rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
-          setIsAnimatingPanel={setIsAnimatingPanel}
         />
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
+            initialBoundingBox={existingRun?.routes[0].boundingBox}
             activeRoute={activeRoute}
-            isAnimatingPanel={isAnimatingPanel}
+            rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
             routePanelIsOpen={routePanelState.showPanel}
+            routePanelIsAnimating={routePanelState.isAnimatingPanel}
             currentPointsOfInterest={pointOfInterestPanelState.currentItems}
             activePointOfInterest={pointOfInterestPanelState.editId}
             pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
-            initialBoundingBox={existingRun?.routes[0].boundingBox}
+            pointOfInterestPanelIsAnimating={
+              pointOfInterestPanelState.isAnimatingPanel
+            }
+            waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
           />
           <EditorFooter />
         </div>

@@ -1,5 +1,4 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { useCallback, useLayoutEffect } from 'react';
 
 import { SidePanel } from '~/primitives';
 import type {
@@ -13,23 +12,23 @@ import { PointOfInterestPanel } from '../PointOfInterestPanel';
 import { RootPanel } from '../RootPanel';
 import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
-import { useRootPanelState } from '../../hooks/useRootPanelState';
+import { type RootPanelState } from '../../hooks/useRootPanelState';
 import { type PanelState } from '../../hooks/usePanelState';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
+  rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
-  setIsAnimatingPanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SidePanelContainer = ({
   existingRun,
+  rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
-  setIsAnimatingPanel,
 }: SidePanelContainerProps) => {
   const {
     showRootPanel,
@@ -41,11 +40,8 @@ export const SidePanelContainer = ({
     onEditPointOfInterest,
     onAddWaypoint,
     onEditWaypoint,
-  } = useRootPanelState({
-    routePanelState,
-    pointOfInterestPanelState,
-    waypointPanelState,
-  });
+    onAnimationComplete,
+  } = rootPanelState;
   const routeDistance = routePanelState.currentItems.find(
     (route) => route.id === routePanelState.editId,
     // TODO: Replace with actual distance
@@ -59,27 +55,12 @@ export const SidePanelContainer = ({
     }
   });
 
-  const onPanelAnimationComplete = useCallback(() => {
-    setIsAnimatingPanel(false);
-  }, [setIsAnimatingPanel]);
-
-  useLayoutEffect(() => {
-    setIsAnimatingPanel(true);
-  }, [
-    showRootPanel,
-    routePanelState.showPanel,
-    pointOfInterestPanelState.showPanel,
-    waypointPanelState.showPanel,
-    setIsAnimatingPanel,
-  ]);
-
   return (
     <SidePanel
       onOpen={onOpen}
       className="z-10"
       // To be below route stats
       toggleClassName="top-16"
-      onItemAnimationComplete={onPanelAnimationComplete}
       panels={[
         {
           id: 'root',
@@ -90,6 +71,7 @@ export const SidePanelContainer = ({
             pointOfInterestPanelState,
             waypointPanelState,
           ].some((state) => state.hasMadeChanges),
+          onAnimationComplete,
           content: (
             <RootPanel
               existingRun={existingRun}
@@ -107,6 +89,7 @@ export const SidePanelContainer = ({
           id: 'point-of-interest',
           position: 1,
           isVisible: pointOfInterestPanelState.showPanel,
+          onAnimationComplete: pointOfInterestPanelState.onAnimationComplete,
           content: <PointOfInterestPanel {...pointOfInterestPanelState} />,
         },
         {
@@ -114,6 +97,7 @@ export const SidePanelContainer = ({
           position: 1,
           isVisible: routePanelState.showPanel,
           disabled: waypointPanelState.hasMadeChanges,
+          onAnimationComplete: routePanelState.onAnimationComplete,
           content: (
             <RoutePanel
               {...routePanelState}
@@ -128,6 +112,7 @@ export const SidePanelContainer = ({
           id: 'waypoint',
           position: 2,
           isVisible: waypointPanelState.showPanel,
+          onAnimationComplete: waypointPanelState.onAnimationComplete,
           content: (
             <WaypointPanel
               {...waypointPanelState}

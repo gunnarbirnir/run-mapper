@@ -18,6 +18,7 @@ export const usePanelState = <T extends { id: string }>({
   const [currentItemsState, setCurrentItemsState] = useState<T[]>(
     existingItems ?? [],
   );
+  const [isAnimatingPanel, setIsAnimatingPanel] = useState(false);
 
   const currentItems = props.currentItems ?? currentItemsState;
   const setCurrentItems = props.setCurrentItems ?? setCurrentItemsState;
@@ -28,6 +29,11 @@ export const usePanelState = <T extends { id: string }>({
       setShowPanel(false);
     }
   }, [parentPanelVisible]);
+
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsAnimatingPanel(true);
+  }, [showPanel]);
 
   const onClose = useCallback(() => {
     setShowPanel(false);
@@ -66,11 +72,16 @@ export const usePanelState = <T extends { id: string }>({
     [currentItems, setCurrentItems],
   );
 
+  const onAnimationComplete = useCallback(() => {
+    setIsAnimatingPanel(false);
+  }, [setIsAnimatingPanel]);
+
   return {
     showPanel,
     hasMadeChanges,
     editId,
     currentItems,
+    isAnimatingPanel,
     setShowPanel,
     setEditId,
     setCurrentItems,
@@ -79,6 +90,7 @@ export const usePanelState = <T extends { id: string }>({
     onAddItem,
     onUpdateItem,
     onDeleteItem,
+    onAnimationComplete,
   };
 };
 

@@ -1,5 +1,5 @@
 import type { Map, Marker } from 'mapbox-gl';
-import { useEffect, type RefObject, useRef } from 'react';
+import { useEffect, type RefObject } from 'react';
 
 import type { PointOfInterest } from '~/types';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
@@ -15,8 +15,6 @@ interface UsePointsOfInterestProps {
   mapRef: RefObject<Map>;
 }
 
-const ZOOM_DELAY = 200;
-
 export const usePointsOfInterest = ({
   isMapLoaded,
   pointsOfInterest,
@@ -25,7 +23,6 @@ export const usePointsOfInterest = ({
   isAnimatingPanel,
   mapRef,
 }: UsePointsOfInterestProps) => {
-  const prevPanelIsOpenRef = useRef(panelIsOpen);
   const { addMarker } = useMapHandlers({ mapRef });
 
   // Draw points of interest
@@ -60,13 +57,11 @@ export const usePointsOfInterest = ({
 
   // React to active point of interest change
   useEffect(() => {
-    if (!panelIsOpen || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
       return;
     }
 
-    const isPanelOpenChanged = prevPanelIsOpenRef.current !== panelIsOpen;
-    prevPanelIsOpenRef.current = panelIsOpen;
-
+    const map = mapRef.current;
     const activePointOfInterestDetails = pointsOfInterest.find(
       (pointOfInterest: PointOfInterest) =>
         pointOfInterest.id === activePointOfInterest,
@@ -76,10 +71,9 @@ export const usePointsOfInterest = ({
       return;
     }
 
-    // To wait for map resize
-    const poiZoomTimeout = setTimeout(
-      () => {
-        mapRef.current?.flyTo({
+    const zoomToPointOfInterest = () => {
+      if (panelIsOpen) {
+        map.flyTo({
           center: [
             activePointOfInterestDetails.coordinates.lng,
             activePointOfInterestDetails.coordinates.lat,
@@ -87,13 +81,22 @@ export const usePointsOfInterest = ({
           zoom: WAYPOINT_ZOOM,
           duration: FLY_TO_WAYPOINT_DURATION,
         });
-      },
-      isPanelOpenChanged ? ZOOM_DELAY : 0,
-    );
+      }
+    };
+
+    zoomToPointOfInterest();
+    map.once('resize', zoomToPointOfInterest);
+    map.resize();
 
     return () => {
-      clearTimeout(poiZoomTimeout);
+      map.off('resize', zoomToPointOfInterest);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePointOfInterest, mapRef, panelIsOpen, isAnimatingPanel]);
+  }, [
+    activePointOfInterest,
+    isAnimatingPanel,
+    isMapLoaded,
+    panelIsOpen,
+    mapRef,
+  ]);
 };
