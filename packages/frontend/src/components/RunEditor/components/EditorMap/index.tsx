@@ -18,6 +18,8 @@ interface EditorMapProps extends MapState {
   isAnimatingPanel: boolean;
   initialBoundingBox?: BoundingBox;
   currentPointsOfInterest: PointOfInterest[];
+  activePointOfInterest: string | null;
+  pointOfInterestPanelIsOpen: boolean;
 }
 
 export const EditorMap = ({
@@ -26,6 +28,8 @@ export const EditorMap = ({
   isAnimatingPanel,
   initialBoundingBox,
   currentPointsOfInterest,
+  activePointOfInterest,
+  pointOfInterestPanelIsOpen,
   isMapLoaded,
   setIsMapLoaded,
   mapRef,
@@ -62,6 +66,9 @@ export const EditorMap = ({
   usePointsOfInterest({
     isMapLoaded,
     pointsOfInterest: currentPointsOfInterest,
+    activePointOfInterest,
+    panelIsOpen: pointOfInterestPanelIsOpen,
+    isAnimatingPanel,
     mapRef,
   });
 

@@ -87,13 +87,18 @@ export const useDrawRoute = ({
       }
     }
 
-    map.on('style.load', onStyleLoad);
-    map.on('resize', fitBounds);
     map.resize();
 
+    if (!routePanelIsOpen) {
+      return;
+    }
+
+    map.on('resize', fitBounds);
+    map.on('style.load', onStyleLoad);
+
     return () => {
-      map.off('style.load', onStyleLoad);
       map.off('resize', fitBounds);
+      map.off('style.load', onStyleLoad);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

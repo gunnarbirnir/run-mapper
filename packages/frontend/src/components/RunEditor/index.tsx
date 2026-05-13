@@ -55,6 +55,8 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             isAnimatingPanel={isAnimatingPanel}
             routePanelIsOpen={routePanelState.showPanel}
             currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+            activePointOfInterest={pointOfInterestPanelState.editId}
+            pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
             initialBoundingBox={existingRun?.routes[0].boundingBox}
           />
           <EditorFooter />
