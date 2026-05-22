@@ -210,4 +210,4 @@ const SidePanel = ({
 
 SidePanel.Content = SidePanelContent;
 
-export { SidePanel, useSidePanelItemContext };
+export { SidePanel, useSidePanelItemContext, SLIDE_IN_DURATION };

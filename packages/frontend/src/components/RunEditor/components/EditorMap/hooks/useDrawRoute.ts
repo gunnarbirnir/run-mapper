@@ -1,5 +1,5 @@
 import type { Map } from 'mapbox-gl';
-import { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useEffect } from 'react';
 
 import type { PublicRoute } from '~/types';
 import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
@@ -20,19 +20,11 @@ export const useDrawRoute = ({
   isMapLoaded,
   mapRef,
 }: UseMapRouteProps) => {
-  const prevRouteIdRef = useRef(activeRoute?.id);
-  const prevRoutePanelIsOpenRef = useRef(routePanelIsOpen);
-
+  // Draw route
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current) {
       return;
     }
-
-    const routeIdChanged = prevRouteIdRef.current !== activeRoute?.id;
-    prevRouteIdRef.current = activeRoute?.id;
-    const routePanelOpenStateChanged =
-      prevRoutePanelIsOpenRef.current !== routePanelIsOpen;
-    prevRoutePanelIsOpenRef.current = routePanelIsOpen;
 
     const map = mapRef.current;
     const coordinates =
@@ -40,9 +32,6 @@ export const useDrawRoute = ({
         ? activeRoute.coordinates
         : [];
     const routeLayer = getRouteLayer();
-    const bounds = activeRoute?.boundingBox
-      ? formatBounds(activeRoute?.boundingBox)
-      : null;
 
     const clearRoute = () => {
       if (map.getLayer(routeLayer.id)) {
@@ -50,15 +39,6 @@ export const useDrawRoute = ({
       }
       if (map.getSource(routeLayer.source)) {
         map.removeSource(routeLayer.source);
-      }
-    };
-
-    const fitBounds = () => {
-      if (bounds) {
-        map.fitBounds(bounds, {
-          padding: BOUNDS_PADDING,
-          duration: FIT_INITIAL_BOUNDS_DURATION,
-        });
       }
     };
 
@@ -75,32 +55,38 @@ export const useDrawRoute = ({
     const onStyleLoad = () => {
       if (!map.getSource(routeLayer.source)) {
         drawRoute();
-        fitBounds();
       }
     };
 
-    if (routeIdChanged || routePanelOpenStateChanged) {
-      clearRoute();
-      if (routePanelIsOpen) {
-        drawRoute();
-        fitBounds();
-      }
-    }
-
+    drawRoute();
     map.on('style.load', onStyleLoad);
-    map.once('resize', fitBounds);
-    map.resize();
 
     return () => {
-      map.off('resize', fitBounds);
+      clearRoute();
       map.off('style.load', onStyleLoad);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isMapLoaded,
-    activeRoute?.id,
-    routePanelIsOpen,
-    isAnimatingPanel,
-    mapRef,
-  ]);
+  }, [isMapLoaded, activeRoute?.id, routePanelIsOpen, mapRef]);
+
+  // Fit to bounds
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const bounds = activeRoute?.boundingBox
+      ? formatBounds(activeRoute?.boundingBox)
+      : null;
+
+    if (bounds) {
+      map.fitBounds(bounds, {
+        padding: BOUNDS_PADDING,
+        duration: FIT_INITIAL_BOUNDS_DURATION,
+      });
+    }
+
+    map.resize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMapLoaded, activeRoute?.id, isAnimatingPanel, mapRef]);
 };

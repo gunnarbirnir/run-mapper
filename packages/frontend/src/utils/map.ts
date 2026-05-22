@@ -83,12 +83,14 @@ export const getMarkerElement = (
 export const getWaypointMarkerElement = (
   type: WaypointType,
   onClick?: () => void,
+  isFocused = false,
 ): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
     'w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center bg-secondary-500 text-white',
     {
       'cursor-pointer hover:brightness-110': onClick,
+      'outline outline-2': isFocused,
     },
   );
   marker.innerHTML = getWaypointPoiIcon(type);
@@ -109,8 +111,10 @@ export const getPointOfInterestMarkerElement = (
   const marker = document.createElement('div');
   marker.className = cn(
     `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center text-white`,
-    { 'cursor-pointer hover:brightness-110': onClick },
-    { 'outline outline-2': isFocused },
+    {
+      'cursor-pointer hover:brightness-110': onClick,
+      'outline outline-2': isFocused,
+    },
   );
   marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
   marker.innerHTML = getWaypointPoiIcon(type);

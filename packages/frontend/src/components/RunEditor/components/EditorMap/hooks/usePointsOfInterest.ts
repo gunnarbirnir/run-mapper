@@ -72,26 +72,18 @@ export const usePointsOfInterest = ({
       return;
     }
 
-    const zoomToPointOfInterest = () => {
-      if (panelIsOpen) {
-        map.flyTo({
-          center: [
-            activePointOfInterestDetails.coordinates.lng,
-            activePointOfInterestDetails.coordinates.lat,
-          ],
-          zoom: WAYPOINT_ZOOM,
-          duration: FLY_TO_WAYPOINT_DURATION,
-        });
-      }
-    };
+    if (panelIsOpen) {
+      map.flyTo({
+        center: [
+          activePointOfInterestDetails.coordinates.lng,
+          activePointOfInterestDetails.coordinates.lat,
+        ],
+        zoom: WAYPOINT_ZOOM,
+        duration: FLY_TO_WAYPOINT_DURATION,
+      });
+    }
 
-    zoomToPointOfInterest();
-    map.once('resize', zoomToPointOfInterest);
     map.resize();
-
-    return () => {
-      map.off('resize', zoomToPointOfInterest);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activePointOfInterest,

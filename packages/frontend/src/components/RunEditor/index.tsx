@@ -68,6 +68,9 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             pointOfInterestPanelIsAnimating={
               pointOfInterestPanelState.isAnimatingPanel
             }
+            currentWaypoints={waypointPanelState.currentItems}
+            activeWaypoint={waypointPanelState.editId}
+            waypointPanelIsOpen={waypointPanelState.showPanel}
             waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
           />
           <EditorFooter />

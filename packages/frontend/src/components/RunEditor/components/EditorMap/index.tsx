@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { PublicRoute, BoundingBox, PointOfInterest } from '~/types';
+import { PublicRoute, BoundingBox, PointOfInterest, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
@@ -22,6 +22,9 @@ interface EditorMapProps extends MapState {
   activePointOfInterest: string | null;
   pointOfInterestPanelIsOpen: boolean;
   pointOfInterestPanelIsAnimating: boolean;
+  currentWaypoints: Waypoint[];
+  activeWaypoint: string | null;
+  waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
   initialBoundingBox?: BoundingBox;
 }
@@ -35,6 +38,9 @@ export const EditorMap = ({
   activePointOfInterest,
   pointOfInterestPanelIsOpen,
   pointOfInterestPanelIsAnimating,
+  currentWaypoints,
+  activeWaypoint,
+  waypointPanelIsOpen,
   waypointPanelIsAnimating,
   initialBoundingBox,
   isMapLoaded,
@@ -48,10 +54,6 @@ export const EditorMap = ({
 
   const activeRouteCoordinates = useMemo(
     () => activeRoute?.coordinates || [],
-    [activeRoute],
-  );
-  const activeRouteWaypoints = useMemo(
-    () => activeRoute?.waypoints || [],
     [activeRoute],
   );
 
@@ -89,8 +91,11 @@ export const EditorMap = ({
   useWaypoints({
     isMapLoaded,
     coordinates: activeRouteCoordinates,
-    waypoints: activeRouteWaypoints,
+    waypoints: currentWaypoints,
+    activeWaypoint,
     routePanelIsOpen,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     mapRef,
   });
 

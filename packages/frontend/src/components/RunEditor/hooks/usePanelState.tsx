@@ -1,5 +1,7 @@
 import { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
+import { SLIDE_IN_DURATION } from '~/primitives/SidePanel';
+
 interface UsePanelStateProps<T> {
   existingItems?: T[];
   currentItems?: T[];
@@ -12,7 +14,7 @@ export const usePanelState = <T extends { id: string }>({
   parentPanelVisible,
   ...props
 }: UsePanelStateProps<T> = {}) => {
-  const [showPanel, setShowPanel] = useState(false);
+  const [showPanel, setShowPanelState] = useState(false);
   const [hasMadeChanges, setHasMadeChanges] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [currentItemsState, setCurrentItemsState] = useState<T[]>(
@@ -23,17 +25,34 @@ export const usePanelState = <T extends { id: string }>({
   const currentItems = props.currentItems ?? currentItemsState;
   const setCurrentItems = props.setCurrentItems ?? setCurrentItemsState;
 
+  const setShowPanel = useCallback(
+    (show: boolean) => {
+      setShowPanelState(show);
+      setIsAnimatingPanel(true);
+    },
+    [setShowPanelState, setIsAnimatingPanel],
+  );
+
   useLayoutEffect(() => {
     if (!parentPanelVisible) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPanel(false);
     }
-  }, [parentPanelVisible]);
+  }, [parentPanelVisible, setShowPanel]);
 
-  useLayoutEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsAnimatingPanel(true);
-  }, [showPanel]);
+  // For when panel doesn't actually animate
+  useEffect(() => {
+    if (!isAnimatingPanel) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setIsAnimatingPanel(false);
+    }, SLIDE_IN_DURATION * 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isAnimatingPanel, setIsAnimatingPanel]);
 
   useEffect(() => {
     if (!showPanel && !isAnimatingPanel) {
@@ -54,7 +73,7 @@ export const usePanelState = <T extends { id: string }>({
       ]);
       setShowPanel(false);
     },
-    [currentItems, setCurrentItems],
+    [currentItems, setCurrentItems, setShowPanel],
   );
 
   const onUpdateItem = useCallback(
@@ -68,7 +87,7 @@ export const usePanelState = <T extends { id: string }>({
       );
       setShowPanel(false);
     },
-    [currentItems, setCurrentItems],
+    [currentItems, setCurrentItems, setShowPanel],
   );
 
   const onDeleteItem = useCallback(
@@ -76,7 +95,7 @@ export const usePanelState = <T extends { id: string }>({
       setCurrentItems(currentItems.filter((item) => item.id !== deleteId));
       setShowPanel(false);
     },
-    [currentItems, setCurrentItems],
+    [currentItems, setCurrentItems, setShowPanel],
   );
 
   const onAnimationComplete = useCallback(() => {
