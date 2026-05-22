@@ -68,6 +68,7 @@ export const usePointsOfInterest = ({
     );
 
     if (!activePointOfInterest || !activePointOfInterestDetails) {
+      map.resize();
       return;
     }
 

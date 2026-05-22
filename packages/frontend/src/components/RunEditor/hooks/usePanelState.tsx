@@ -1,4 +1,4 @@
-import { useState, useCallback, useLayoutEffect } from 'react';
+import { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
 interface UsePanelStateProps<T> {
   existingItems?: T[];
@@ -34,6 +34,13 @@ export const usePanelState = <T extends { id: string }>({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsAnimatingPanel(true);
   }, [showPanel]);
+
+  useEffect(() => {
+    if (!showPanel && !isAnimatingPanel) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEditId(null);
+    }
+  }, [showPanel, isAnimatingPanel]);
 
   const onClose = useCallback(() => {
     setShowPanel(false);
