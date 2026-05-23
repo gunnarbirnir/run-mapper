@@ -57,7 +57,7 @@ export const usePointsOfInterest = ({
 
   // React to active point of interest change
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
       return;
     }
 
@@ -68,28 +68,23 @@ export const usePointsOfInterest = ({
     );
 
     if (!activePointOfInterest || !activePointOfInterestDetails) {
-      map.resize();
       return;
     }
 
-    if (panelIsOpen) {
-      map.flyTo({
-        center: [
-          activePointOfInterestDetails.coordinates.lng,
-          activePointOfInterestDetails.coordinates.lat,
-        ],
-        zoom: WAYPOINT_ZOOM,
-        duration: FLY_TO_WAYPOINT_DURATION,
-      });
-    }
-
-    map.resize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    map.flyTo({
+      center: [
+        activePointOfInterestDetails.coordinates.lng,
+        activePointOfInterestDetails.coordinates.lat,
+      ],
+      zoom: WAYPOINT_ZOOM,
+      duration: FLY_TO_WAYPOINT_DURATION,
+    });
   }, [
     activePointOfInterest,
+    panelIsOpen,
     isAnimatingPanel,
     isMapLoaded,
-    panelIsOpen,
     mapRef,
+    pointsOfInterest,
   ]);
 };

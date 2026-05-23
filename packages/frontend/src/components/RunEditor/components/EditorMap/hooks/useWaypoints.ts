@@ -13,9 +13,8 @@ interface UseWaypointsProps {
   coordinates: Coordinates[];
   waypoints: Waypoint[];
   activeWaypoint: string | null;
-  routePanelIsOpen: boolean;
-  waypointPanelIsOpen: boolean;
-  waypointPanelIsAnimating: boolean;
+  panelIsOpen: boolean;
+  isAnimatingPanel: boolean;
   mapRef: RefObject<Map>;
 }
 
@@ -24,16 +23,15 @@ export const useWaypoints = ({
   coordinates,
   waypoints,
   activeWaypoint,
-  routePanelIsOpen,
-  waypointPanelIsOpen,
-  waypointPanelIsAnimating,
+  panelIsOpen,
+  isAnimatingPanel,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
 
   // Draw waypoints
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !routePanelIsOpen) {
+    if (!isMapLoaded || !mapRef.current) {
       return;
     }
 
@@ -73,19 +71,11 @@ export const useWaypoints = ({
     return () => {
       waypointMarkers.forEach((marker) => marker.remove());
     };
-  }, [
-    isMapLoaded,
-    coordinates,
-    waypoints,
-    activeWaypoint,
-    routePanelIsOpen,
-    addMarker,
-    mapRef,
-  ]);
+  }, [isMapLoaded, coordinates, waypoints, activeWaypoint, addMarker, mapRef]);
 
   // React to active waypoint change
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || waypointPanelIsAnimating) {
+    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
       return;
     }
 
@@ -98,22 +88,20 @@ export const useWaypoints = ({
       return;
     }
 
-    if (waypointPanelIsOpen) {
-      map.flyTo({
-        center: [
-          activeWaypointDetails.coordinates.lng,
-          activeWaypointDetails.coordinates.lat,
-        ],
-        zoom: WAYPOINT_ZOOM,
-        duration: FLY_TO_WAYPOINT_DURATION,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    map.flyTo({
+      center: [
+        activeWaypointDetails.coordinates.lng,
+        activeWaypointDetails.coordinates.lat,
+      ],
+      zoom: WAYPOINT_ZOOM,
+      duration: FLY_TO_WAYPOINT_DURATION,
+    });
   }, [
     activeWaypoint,
-    waypointPanelIsAnimating,
     isMapLoaded,
-    waypointPanelIsOpen,
+    waypoints,
+    isAnimatingPanel,
+    panelIsOpen,
     mapRef,
   ]);
 };

@@ -7,7 +7,7 @@ import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
-  routePanelIsOpen: boolean;
+  panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
@@ -15,7 +15,7 @@ interface UseMapRouteProps {
 
 export const useDrawRoute = ({
   activeRoute,
-  routePanelIsOpen,
+  panelIsOpen,
   isAnimatingPanel,
   isMapLoaded,
   mapRef,
@@ -27,10 +27,7 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const coordinates =
-      activeRoute?.coordinates && routePanelIsOpen
-        ? activeRoute.coordinates
-        : [];
+    const coordinates = activeRoute?.coordinates ?? [];
     const routeLayer = getRouteLayer();
 
     const clearRoute = () => {
@@ -65,18 +62,17 @@ export const useDrawRoute = ({
       clearRoute();
       map.off('style.load', onStyleLoad);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapLoaded, activeRoute?.id, routePanelIsOpen, mapRef]);
+  }, [isMapLoaded, activeRoute?.coordinates, mapRef]);
 
   // Fit to bounds
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
       return;
     }
 
     const map = mapRef.current;
     const bounds = activeRoute?.boundingBox
-      ? formatBounds(activeRoute?.boundingBox)
+      ? formatBounds(activeRoute.boundingBox)
       : null;
 
     if (bounds) {
@@ -85,8 +81,11 @@ export const useDrawRoute = ({
         duration: FIT_INITIAL_BOUNDS_DURATION,
       });
     }
-
-    map.resize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapLoaded, activeRoute?.id, isAnimatingPanel, mapRef]);
+  }, [
+    isMapLoaded,
+    activeRoute?.boundingBox,
+    panelIsOpen,
+    isAnimatingPanel,
+    mapRef,
+  ]);
 };

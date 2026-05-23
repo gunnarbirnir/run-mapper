@@ -66,6 +66,8 @@ export const EditorMap = ({
 
   useResizeMap({
     rootPanelIsAnimating,
+    routePanelIsAnimating,
+    pointOfInterestPanelIsAnimating,
     waypointPanelIsAnimating,
     isMapLoaded,
     mapRef,
@@ -73,7 +75,7 @@ export const EditorMap = ({
 
   useDrawRoute({
     activeRoute,
-    routePanelIsOpen,
+    panelIsOpen: routePanelIsOpen,
     isAnimatingPanel: routePanelIsAnimating,
     isMapLoaded,
     mapRef,
@@ -93,9 +95,8 @@ export const EditorMap = ({
     coordinates: activeRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,
-    routePanelIsOpen,
-    waypointPanelIsOpen,
-    waypointPanelIsAnimating,
+    panelIsOpen: waypointPanelIsOpen,
+    isAnimatingPanel: waypointPanelIsAnimating,
     mapRef,
   });
 
