@@ -36,6 +36,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   });
 
   const mapState = useMapState();
+  const { isEditingPoiCoordinates, setIsEditingPoiCoordinates } = mapState;
   const activeRoute = useMemo(
     () =>
       routePanelState.currentItems.find(
@@ -53,6 +54,8 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
+          isEditingPoiCoordinates={isEditingPoiCoordinates}
+          setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
         />
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap

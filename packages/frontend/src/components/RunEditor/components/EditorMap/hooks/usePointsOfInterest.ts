@@ -13,6 +13,7 @@ interface UsePointsOfInterestProps {
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   hasMadeAnyChanges: boolean;
+  isEditingCoordinates: string | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
   mapRef: RefObject<Map>;
 }
@@ -24,6 +25,7 @@ export const usePointsOfInterest = ({
   panelIsOpen,
   isAnimatingPanel,
   hasMadeAnyChanges,
+  isEditingCoordinates,
   onEditPointOfInterest,
   mapRef,
 }: UsePointsOfInterestProps) => {
@@ -46,6 +48,7 @@ export const usePointsOfInterest = ({
               ? undefined
               : () => onEditPointOfInterest(pointOfInterest.id),
             pointOfInterest.id === activePointOfInterest,
+            pointOfInterest.id === isEditingCoordinates,
           ),
           pointOfInterest.coordinates,
         ),
@@ -64,6 +67,7 @@ export const usePointsOfInterest = ({
     activePointOfInterest,
     pointsOfInterest,
     hasMadeAnyChanges,
+    isEditingCoordinates,
     addMarker,
     onEditPointOfInterest,
     mapRef,

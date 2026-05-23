@@ -1,6 +1,6 @@
 import { cn } from '~/utils';
 
-export type ButtonColor = 'black' | 'white' | 'gray' | 'error';
+export type ButtonColor = 'black' | 'white' | 'gray' | 'error' | 'secondary';
 
 const BUTTON_COLORS: Record<
   ButtonColor,
@@ -13,6 +13,13 @@ const BUTTON_COLORS: Record<
     borderColor?: string;
   }
 > = {
+  secondary: {
+    bg: 'bg-secondary-500',
+    text: 'text-white',
+    hover: 'hover:bg-secondary-600',
+    disabled: 'bg-secondary-300',
+    disabledText: 'text-secondary-100',
+  },
   black: {
     bg: 'bg-gray-800',
     text: 'text-white',

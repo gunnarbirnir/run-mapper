@@ -35,6 +35,10 @@ export const useDrawRoute = ({
     const routeLayer = getRouteLayer();
 
     const clearRoute = () => {
+      if (!map.isStyleLoaded() || !map.getStyle()) {
+        return;
+      }
+
       if (map.getLayer(routeLayer.id)) {
         map.removeLayer(routeLayer.id);
       }

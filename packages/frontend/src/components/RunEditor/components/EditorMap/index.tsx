@@ -1,11 +1,14 @@
 import { useRef, useMemo } from 'react';
+import { AnimatePresence } from 'motion/react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { PublicRoute, BoundingBox, PointOfInterest, Waypoint } from '~/types';
+import { Text } from '~/primitives';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { RouteStats } from './components/RouteStats';
+import { ToolbarContainer } from './components/ToolbarContainer';
 import { useDrawRoute } from './hooks/useDrawRoute';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useMapState, type MapState } from './hooks/useMapState';
@@ -25,6 +28,7 @@ interface EditorMapProps extends MapState {
   pointOfInterestPanelIsOpen: boolean;
   pointOfInterestPanelIsAnimating: boolean;
   hasMadePointOfInterestChanges: boolean;
+  isEditingPoiCoordinates: string | null;
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
   waypointPanelIsOpen: boolean;
@@ -46,6 +50,7 @@ export const EditorMap = ({
   pointOfInterestPanelIsOpen,
   pointOfInterestPanelIsAnimating,
   hasMadePointOfInterestChanges,
+  isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
   waypointPanelIsOpen,
@@ -117,6 +122,7 @@ export const EditorMap = ({
     panelIsOpen: pointOfInterestPanelIsOpen,
     isAnimatingPanel: pointOfInterestPanelIsAnimating,
     hasMadeAnyChanges,
+    isEditingCoordinates: isEditingPoiCoordinates,
     onEditPointOfInterest,
     mapRef,
   });
@@ -139,6 +145,15 @@ export const EditorMap = ({
       {/* TODO: Use real numbers */}
       <RouteStats distance={42.2} elevationGain={250} />
       <ActionButtonsContainer />
+      <AnimatePresence>
+        {Boolean(isEditingPoiCoordinates) && (
+          <ToolbarContainer>
+            <Text className="px-4 py-2 text-center text-sm" variant="subtle">
+              Click on the map to update coordinates
+            </Text>
+          </ToolbarContainer>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

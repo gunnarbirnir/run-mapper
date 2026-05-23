@@ -107,20 +107,24 @@ export const getPointOfInterestMarkerElement = (
   type: PointOfInterestType,
   onClick?: () => void,
   isFocused = false,
+  isEditing = false,
 ): HTMLElement => {
   const marker = document.createElement('div');
+  const isClickable = onClick && !isEditing;
+
   marker.className = cn(
     `w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center text-white`,
     {
-      'cursor-pointer hover:brightness-110': onClick,
+      'cursor-pointer hover:brightness-110': isClickable,
       'outline outline-2': isFocused,
+      'brightness-70': isEditing,
     },
   );
   marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
   marker.innerHTML = getWaypointPoiIcon(type);
   const iconSize = getWaypointPoiIconSize(type);
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
-  if (onClick) {
+  if (isClickable) {
     marker.addEventListener('click', onClick);
   }
 
