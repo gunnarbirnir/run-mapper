@@ -4,16 +4,18 @@ import { SidePanel } from '~/primitives';
 import type {
   EditorRun,
   PointOfInterest,
+  PointOfInterestType,
   PublicRoute,
   Waypoint,
 } from '~/types';
 
+import { type PanelState } from '../../hooks/usePanelState';
+import { type RootPanelState } from '../../hooks/useRootPanelState';
+import type { MapState } from '../EditorMap/hooks/useMapState';
 import { PointOfInterestPanel } from '../PointOfInterestPanel';
 import { RootPanel } from '../RootPanel';
 import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
-import { type RootPanelState } from '../../hooks/useRootPanelState';
-import { type PanelState } from '../../hooks/usePanelState';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
@@ -23,6 +25,8 @@ interface SidePanelContainerProps {
   waypointPanelState: PanelState<Waypoint>;
   isEditingPoiCoordinates: string | null;
   setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
+  onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
 export const SidePanelContainer = ({
@@ -32,7 +36,9 @@ export const SidePanelContainer = ({
   pointOfInterestPanelState,
   waypointPanelState,
   isEditingPoiCoordinates,
+  setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
+  onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
   const {
     showRootPanel,
@@ -98,7 +104,9 @@ export const SidePanelContainer = ({
             <PointOfInterestPanel
               {...pointOfInterestPanelState}
               isEditingPoiCoordinates={isEditingPoiCoordinates}
+              setEditPointOfInterestType={setEditPointOfInterestType}
               setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
+              onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
             />
           ),
         },

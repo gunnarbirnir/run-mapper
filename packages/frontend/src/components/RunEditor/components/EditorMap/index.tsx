@@ -1,21 +1,20 @@
-import { useRef, useMemo } from 'react';
-import { AnimatePresence } from 'motion/react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useMemo, useRef } from 'react';
 
-import { PublicRoute, BoundingBox, PointOfInterest, Waypoint } from '~/types';
-import { Text } from '~/primitives';
+import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
+import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
 import { RouteStats } from './components/RouteStats';
-import { ToolbarContainer } from './components/ToolbarContainer';
 import { useDrawRoute } from './hooks/useDrawRoute';
-import { useResizeMap } from './hooks/useResizeMap';
-import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
+import { useMapCursor } from './hooks/useMapCursor';
+import { useMapState, type MapState } from './hooks/useMapState';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
-import { useWaypoints } from './hooks/useWaypoints';
 import { useResetBounds } from './hooks/useResetBounds';
+import { useResizeMap } from './hooks/useResizeMap';
+import { useWaypoints } from './hooks/useWaypoints';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
@@ -50,6 +49,7 @@ export const EditorMap = ({
   pointOfInterestPanelIsOpen,
   pointOfInterestPanelIsAnimating,
   hasMadePointOfInterestChanges,
+  editPointOfInterestType,
   isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
@@ -61,6 +61,9 @@ export const EditorMap = ({
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
+  setIsEditingPoiCoordinates,
+  setEditPointOfInterestType,
+  onUpdatePoiCoordinates,
   mapRef,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +108,12 @@ export const EditorMap = ({
     mapRef,
   });
 
+  useMapCursor({
+    isMapLoaded,
+    isEditingPoiCoordinates,
+    mapRef,
+  });
+
   useDrawRoute({
     activeRoute,
     panelIsOpen: routePanelIsOpen,
@@ -123,7 +132,10 @@ export const EditorMap = ({
     isAnimatingPanel: pointOfInterestPanelIsAnimating,
     hasMadeAnyChanges,
     isEditingCoordinates: isEditingPoiCoordinates,
+    editPointOfInterestType,
     onEditPointOfInterest,
+    onUpdatePoiCoordinates,
+    setEditPointOfInterestType,
     mapRef,
   });
 
@@ -145,15 +157,10 @@ export const EditorMap = ({
       {/* TODO: Use real numbers */}
       <RouteStats distance={42.2} elevationGain={250} />
       <ActionButtonsContainer />
-      <AnimatePresence>
-        {Boolean(isEditingPoiCoordinates) && (
-          <ToolbarContainer>
-            <Text className="px-4 py-2 text-center text-sm" variant="subtle">
-              Click on the map to update coordinates
-            </Text>
-          </ToolbarContainer>
-        )}
-      </AnimatePresence>
+      <PoiCoordinatesToolbar
+        isVisible={Boolean(isEditingPoiCoordinates)}
+        onClose={() => setIsEditingPoiCoordinates(null)}
+      />
     </div>
   );
 };

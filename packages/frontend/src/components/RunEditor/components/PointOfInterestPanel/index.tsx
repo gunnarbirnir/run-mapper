@@ -1,19 +1,26 @@
-import { useForm, useStore } from '@tanstack/react-form';
-import { useCallback, useMemo } from 'react';
+import { useField, useForm, useStore } from '@tanstack/react-form';
+import { useCallback, useEffect, useMemo } from 'react';
 import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
-import type { PointOfInterest, PointOfInterestType } from '~/types';
+import type {
+  Coordinates,
+  PointOfInterest,
+  PointOfInterestType,
+} from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
+import type { MapState } from '../EditorMap/hooks/useMapState';
 
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
   isEditingPoiCoordinates: string | null;
   setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
+  onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
 const pointOfInterestFormSchema = z.object({
@@ -47,6 +54,8 @@ export const PointOfInterestPanel = ({
   onHasMadeChanges,
   onClose,
   setIsEditingPoiCoordinates,
+  setEditPointOfInterestType,
+  onUpdatePoiCoordinatesRef,
 }: PointOfInterestPanelProps) => {
   const nameId = useId('poi-name');
   const typeId = useId('poi-type');
@@ -91,6 +100,14 @@ export const PointOfInterestPanel = ({
   const isDefaultValue =
     useStore(poiForm.store, (state) => state.isDefaultValue) &&
     !isEditingPoiCoordinates;
+  const { handleChange: onLatChange } = useField({
+    form: poiForm,
+    name: 'lat',
+  });
+  const { handleChange: onLngChange } = useField({
+    form: poiForm,
+    name: 'lng',
+  });
 
   const submitForm = useCallback(() => {
     poiForm.handleSubmit();
@@ -104,6 +121,19 @@ export const PointOfInterestPanel = ({
     onClose();
     setIsEditingPoiCoordinates(null);
   }, [onClose, setIsEditingPoiCoordinates]);
+
+  useEffect(() => {
+    onUpdatePoiCoordinatesRef.current = (coordinates: Coordinates) => {
+      onLatChange(coordinates.lat);
+      onLngChange(coordinates.lng);
+      setIsEditingPoiCoordinates(null);
+    };
+  }, [
+    onLatChange,
+    onLngChange,
+    setIsEditingPoiCoordinates,
+    onUpdatePoiCoordinatesRef,
+  ]);
 
   const {
     isEditing,
@@ -165,7 +195,10 @@ export const PointOfInterestPanel = ({
                     ? field.state.meta.errors[0]?.message
                     : undefined
                 }
-                onChange={field.handleChange}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  setEditPointOfInterestType(value as PointOfInterestType);
+                }}
                 onBlur={field.handleBlur}
               />
             )}
