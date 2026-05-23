@@ -12,6 +12,8 @@ interface UsePointsOfInterestProps {
   activePointOfInterest: string | null;
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
+  hasMadeAnyChanges: boolean;
+  onEditPointOfInterest: (pointOfInterestId: string) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -21,6 +23,8 @@ export const usePointsOfInterest = ({
   activePointOfInterest,
   panelIsOpen,
   isAnimatingPanel,
+  hasMadeAnyChanges,
+  onEditPointOfInterest,
   mapRef,
 }: UsePointsOfInterestProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
@@ -38,7 +42,9 @@ export const usePointsOfInterest = ({
         addMarker(
           getPointOfInterestMarkerElement(
             pointOfInterest.type,
-            undefined,
+            hasMadeAnyChanges
+              ? undefined
+              : () => onEditPointOfInterest(pointOfInterest.id),
             pointOfInterest.id === activePointOfInterest,
           ),
           pointOfInterest.coordinates,
@@ -53,7 +59,15 @@ export const usePointsOfInterest = ({
     return () => {
       pointsOfInterestMarkers.forEach((marker) => marker.remove());
     };
-  }, [isMapLoaded, activePointOfInterest, pointsOfInterest, addMarker, mapRef]);
+  }, [
+    isMapLoaded,
+    activePointOfInterest,
+    pointsOfInterest,
+    hasMadeAnyChanges,
+    addMarker,
+    onEditPointOfInterest,
+    mapRef,
+  ]);
 
   // Zoom into active point of interest
   useEffect(() => {

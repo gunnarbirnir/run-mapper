@@ -62,16 +62,23 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
             routePanelIsOpen={routePanelState.showPanel}
             routePanelIsAnimating={routePanelState.isAnimatingPanel}
+            hasMadeRouteChanges={routePanelState.hasMadeChanges}
             currentPointsOfInterest={pointOfInterestPanelState.currentItems}
             activePointOfInterest={pointOfInterestPanelState.editId}
             pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
             pointOfInterestPanelIsAnimating={
               pointOfInterestPanelState.isAnimatingPanel
             }
+            hasMadePointOfInterestChanges={
+              pointOfInterestPanelState.hasMadeChanges
+            }
             currentWaypoints={waypointPanelState.currentItems}
             activeWaypoint={waypointPanelState.editId}
             waypointPanelIsOpen={waypointPanelState.showPanel}
             waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
+            hasMadeWaypointChanges={waypointPanelState.hasMadeChanges}
+            onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
+            onEditWaypoint={rootPanelState.onEditWaypoint}
           />
           <EditorFooter />
         </div>

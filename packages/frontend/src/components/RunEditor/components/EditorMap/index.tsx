@@ -19,15 +19,20 @@ interface EditorMapProps extends MapState {
   activeRoute: PublicRoute | undefined;
   routePanelIsOpen: boolean;
   routePanelIsAnimating: boolean;
+  hasMadeRouteChanges: boolean;
   currentPointsOfInterest: PointOfInterest[];
   activePointOfInterest: string | null;
   pointOfInterestPanelIsOpen: boolean;
   pointOfInterestPanelIsAnimating: boolean;
+  hasMadePointOfInterestChanges: boolean;
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
   waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
+  hasMadeWaypointChanges: boolean;
   initialBoundingBox?: BoundingBox;
+  onEditPointOfInterest: (pointOfInterestId: string) => void;
+  onEditWaypoint: (waypointId: string) => void;
 }
 
 export const EditorMap = ({
@@ -35,16 +40,21 @@ export const EditorMap = ({
   activeRoute,
   routePanelIsOpen,
   routePanelIsAnimating,
+  hasMadeRouteChanges,
   currentPointsOfInterest,
   activePointOfInterest,
   pointOfInterestPanelIsOpen,
   pointOfInterestPanelIsAnimating,
+  hasMadePointOfInterestChanges,
   currentWaypoints,
   activeWaypoint,
   waypointPanelIsOpen,
   waypointPanelIsAnimating,
+  hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
+  onEditPointOfInterest,
+  onEditWaypoint,
   setIsMapLoaded,
   mapRef,
 }: EditorMapProps) => {
@@ -62,6 +72,10 @@ export const EditorMap = ({
     routePanelIsAnimating ||
     pointOfInterestPanelIsAnimating ||
     waypointPanelIsAnimating;
+  const hasMadeAnyChanges =
+    hasMadeRouteChanges ||
+    hasMadePointOfInterestChanges ||
+    hasMadeWaypointChanges;
 
   useLoadMap({
     initialBounds,
@@ -102,6 +116,8 @@ export const EditorMap = ({
     activePointOfInterest,
     panelIsOpen: pointOfInterestPanelIsOpen,
     isAnimatingPanel: pointOfInterestPanelIsAnimating,
+    hasMadeAnyChanges,
+    onEditPointOfInterest,
     mapRef,
   });
 
@@ -112,6 +128,8 @@ export const EditorMap = ({
     activeWaypoint,
     panelIsOpen: waypointPanelIsOpen,
     isAnimatingPanel: waypointPanelIsAnimating,
+    hasMadeChanges: hasMadeWaypointChanges,
+    onEditWaypoint,
     mapRef,
   });
 

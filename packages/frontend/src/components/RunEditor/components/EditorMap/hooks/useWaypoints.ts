@@ -15,6 +15,8 @@ interface UseWaypointsProps {
   activeWaypoint: string | null;
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
+  hasMadeChanges: boolean;
+  onEditWaypoint: (waypointId: string) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -25,6 +27,8 @@ export const useWaypoints = ({
   activeWaypoint,
   panelIsOpen,
   isAnimatingPanel,
+  hasMadeChanges,
+  onEditWaypoint,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
@@ -40,7 +44,11 @@ export const useWaypoints = ({
     const startWaypoint = getStartWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement('--color-success-500', '--color-success-600'),
+        getMarkerElement(
+          '--color-success-500',
+          '--color-success-600',
+          hasMadeChanges ? undefined : () => onEditWaypoint(startWaypoint.id),
+        ),
         startWaypoint.coordinates,
       ),
     );
@@ -48,7 +56,11 @@ export const useWaypoints = ({
     const endWaypoint = getEndWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement('--color-error-500', '--color-error-600'),
+        getMarkerElement(
+          '--color-error-500',
+          '--color-error-600',
+          hasMadeChanges ? undefined : () => onEditWaypoint(endWaypoint.id),
+        ),
         endWaypoint.coordinates,
       ),
     );
@@ -58,7 +70,7 @@ export const useWaypoints = ({
         addMarker(
           getWaypointMarkerElement(
             waypoint.type,
-            undefined,
+            hasMadeChanges ? undefined : () => onEditWaypoint(waypoint.id),
             waypoint.id === activeWaypoint,
           ),
           waypoint.coordinates,
@@ -71,7 +83,16 @@ export const useWaypoints = ({
     return () => {
       waypointMarkers.forEach((marker) => marker.remove());
     };
-  }, [isMapLoaded, activeWaypoint, coordinates, waypoints, addMarker, mapRef]);
+  }, [
+    isMapLoaded,
+    activeWaypoint,
+    coordinates,
+    waypoints,
+    hasMadeChanges,
+    addMarker,
+    onEditWaypoint,
+    mapRef,
+  ]);
 
   // Zoom into active waypoint
   useEffect(() => {
