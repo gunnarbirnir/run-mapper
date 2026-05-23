@@ -12,6 +12,7 @@ import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useWaypoints } from './hooks/useWaypoints';
+import { useResetBounds } from './hooks/useResetBounds';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
@@ -56,6 +57,11 @@ export const EditorMap = ({
     () => activeRoute?.coordinates || [],
     [activeRoute],
   );
+  const isAnyPanelAnimating =
+    rootPanelIsAnimating ||
+    routePanelIsAnimating ||
+    pointOfInterestPanelIsAnimating ||
+    waypointPanelIsAnimating;
 
   useLoadMap({
     initialBounds,
@@ -65,10 +71,17 @@ export const EditorMap = ({
   });
 
   useResizeMap({
-    rootPanelIsAnimating,
-    routePanelIsAnimating,
-    pointOfInterestPanelIsAnimating,
-    waypointPanelIsAnimating,
+    isAnyPanelAnimating,
+    isMapLoaded,
+    mapRef,
+  });
+
+  useResetBounds({
+    initialBounds,
+    isAnyPanelAnimating,
+    routePanelIsOpen,
+    pointOfInterestPanelIsOpen,
+    waypointPanelIsOpen,
     isMapLoaded,
     mapRef,
   });
@@ -77,6 +90,8 @@ export const EditorMap = ({
     activeRoute,
     panelIsOpen: routePanelIsOpen,
     isAnimatingPanel: routePanelIsAnimating,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     isMapLoaded,
     mapRef,
   });

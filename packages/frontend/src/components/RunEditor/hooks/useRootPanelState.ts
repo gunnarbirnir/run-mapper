@@ -1,4 +1,4 @@
-import { useCallback, useState, useLayoutEffect } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { PointOfInterest, PublicRoute, Waypoint } from '~/types';
 
@@ -24,13 +24,18 @@ export const useRootPanelState = ({
     setEditId: setEditWaypointId,
   },
 }: UseRootPanelStateProps) => {
-  const [showRootPanel, setShowRootPanel] = useState(true);
+  const [showRootPanel, setShowRootPanelState] = useState(true);
   const [isAnimatingRootPanel, setIsAnimatingRootPanel] = useState(false);
 
-  useLayoutEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsAnimatingRootPanel(true);
-  }, [showRootPanel]);
+  const setShowRootPanel = useCallback((show: boolean) => {
+    setShowRootPanelState((prev) => {
+      if (prev !== show) {
+        setIsAnimatingRootPanel(true);
+        return show;
+      }
+      return prev;
+    });
+  }, []);
 
   const onOpen = useCallback(() => {
     setShowRootPanel(true);

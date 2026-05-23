@@ -9,6 +9,8 @@ interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
+  waypointPanelIsOpen: boolean;
+  waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
 }
@@ -17,6 +19,8 @@ export const useDrawRoute = ({
   activeRoute,
   panelIsOpen,
   isAnimatingPanel,
+  waypointPanelIsOpen,
+  waypointPanelIsAnimating,
   isMapLoaded,
   mapRef,
 }: UseMapRouteProps) => {
@@ -66,7 +70,12 @@ export const useDrawRoute = ({
 
   // Fit to bounds
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (
+      !isMapLoaded ||
+      !mapRef.current ||
+      isAnimatingPanel ||
+      waypointPanelIsAnimating
+    ) {
       return;
     }
 
@@ -75,7 +84,7 @@ export const useDrawRoute = ({
       ? formatBounds(activeRoute.boundingBox)
       : null;
 
-    if (!bounds || !panelIsOpen) {
+    if (!bounds || !panelIsOpen || waypointPanelIsOpen) {
       return;
     }
 
@@ -85,10 +94,11 @@ export const useDrawRoute = ({
     });
   }, [
     isMapLoaded,
-    activeRoute?.id,
     activeRoute?.boundingBox,
     panelIsOpen,
     isAnimatingPanel,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     mapRef,
   ]);
 };

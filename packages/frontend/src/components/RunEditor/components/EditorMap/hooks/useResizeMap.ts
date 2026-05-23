@@ -2,31 +2,18 @@ import type { Map } from 'mapbox-gl';
 import { RefObject, useEffect } from 'react';
 
 interface UseResizeMapProps {
-  rootPanelIsAnimating: boolean;
-  routePanelIsAnimating: boolean;
-  pointOfInterestPanelIsAnimating: boolean;
-  waypointPanelIsAnimating: boolean;
+  isAnyPanelAnimating: boolean;
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
 }
 
 export const useResizeMap = ({
-  rootPanelIsAnimating,
-  routePanelIsAnimating,
-  pointOfInterestPanelIsAnimating,
-  waypointPanelIsAnimating,
+  isAnyPanelAnimating,
   isMapLoaded,
   mapRef,
 }: UseResizeMapProps) => {
-  const isAnimating = [
-    rootPanelIsAnimating,
-    routePanelIsAnimating,
-    pointOfInterestPanelIsAnimating,
-    waypointPanelIsAnimating,
-  ].some(Boolean);
-
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !isAnimating) {
+    if (!isMapLoaded || !mapRef.current || !isAnyPanelAnimating) {
       return;
     }
 
@@ -42,5 +29,5 @@ export const useResizeMap = ({
     return () => {
       cancelAnimationFrame(frameId);
     };
-  }, [isMapLoaded, isAnimating, mapRef]);
+  }, [isMapLoaded, isAnyPanelAnimating, mapRef]);
 };
