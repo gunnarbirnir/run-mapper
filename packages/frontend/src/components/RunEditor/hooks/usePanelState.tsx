@@ -25,13 +25,15 @@ export const usePanelState = <T extends { id: string }>({
   const currentItems = props.currentItems ?? currentItemsState;
   const setCurrentItems = props.setCurrentItems ?? setCurrentItemsState;
 
-  const setShowPanel = useCallback(
-    (show: boolean) => {
-      setShowPanelState(show);
-      setIsAnimatingPanel(true);
-    },
-    [setShowPanelState, setIsAnimatingPanel],
-  );
+  const setShowPanel = useCallback((show: boolean) => {
+    setShowPanelState((prev) => {
+      if (prev !== show) {
+        setIsAnimatingPanel(true);
+        return show;
+      }
+      return prev;
+    });
+  }, []);
 
   useLayoutEffect(() => {
     if (!parentPanelVisible) {
