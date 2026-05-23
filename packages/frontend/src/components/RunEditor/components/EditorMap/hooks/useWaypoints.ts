@@ -71,11 +71,11 @@ export const useWaypoints = ({
     return () => {
       waypointMarkers.forEach((marker) => marker.remove());
     };
-  }, [isMapLoaded, coordinates, waypoints, activeWaypoint, addMarker, mapRef]);
+  }, [isMapLoaded, activeWaypoint, coordinates, waypoints, addMarker, mapRef]);
 
-  // React to active waypoint change
+  // Zoom into active waypoint
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
       return;
     }
 
@@ -84,7 +84,7 @@ export const useWaypoints = ({
       (waypoint: Waypoint) => waypoint.id === activeWaypoint,
     );
 
-    if (!activeWaypoint || !activeWaypointDetails) {
+    if (!activeWaypoint || !activeWaypointDetails || !panelIsOpen) {
       return;
     }
 
@@ -97,11 +97,11 @@ export const useWaypoints = ({
       duration: FLY_TO_WAYPOINT_DURATION,
     });
   }, [
-    activeWaypoint,
     isMapLoaded,
+    activeWaypoint,
     waypoints,
-    isAnimatingPanel,
     panelIsOpen,
+    isAnimatingPanel,
     mapRef,
   ]);
 };

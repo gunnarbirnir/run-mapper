@@ -53,11 +53,11 @@ export const usePointsOfInterest = ({
     return () => {
       pointsOfInterestMarkers.forEach((marker) => marker.remove());
     };
-  }, [isMapLoaded, pointsOfInterest, activePointOfInterest, addMarker, mapRef]);
+  }, [isMapLoaded, activePointOfInterest, pointsOfInterest, addMarker, mapRef]);
 
-  // React to active point of interest change
+  // Zoom into active point of interest
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
       return;
     }
 
@@ -67,7 +67,11 @@ export const usePointsOfInterest = ({
         pointOfInterest.id === activePointOfInterest,
     );
 
-    if (!activePointOfInterest || !activePointOfInterestDetails) {
+    if (
+      !activePointOfInterest ||
+      !activePointOfInterestDetails ||
+      !panelIsOpen
+    ) {
       return;
     }
 
@@ -80,11 +84,11 @@ export const usePointsOfInterest = ({
       duration: FLY_TO_WAYPOINT_DURATION,
     });
   }, [
+    isMapLoaded,
     activePointOfInterest,
+    pointsOfInterest,
     panelIsOpen,
     isAnimatingPanel,
-    isMapLoaded,
     mapRef,
-    pointsOfInterest,
   ]);
 };

@@ -66,7 +66,7 @@ export const useDrawRoute = ({
 
   // Fit to bounds
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !panelIsOpen || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
       return;
     }
 
@@ -75,14 +75,17 @@ export const useDrawRoute = ({
       ? formatBounds(activeRoute.boundingBox)
       : null;
 
-    if (bounds) {
-      map.fitBounds(bounds, {
-        padding: BOUNDS_PADDING,
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-      });
+    if (!bounds || !panelIsOpen) {
+      return;
     }
+
+    map.fitBounds(bounds, {
+      padding: BOUNDS_PADDING,
+      duration: FIT_INITIAL_BOUNDS_DURATION,
+    });
   }, [
     isMapLoaded,
+    activeRoute?.id,
     activeRoute?.boundingBox,
     panelIsOpen,
     isAnimatingPanel,

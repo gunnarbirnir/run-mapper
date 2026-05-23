@@ -18,18 +18,29 @@ export const useResizeMap = ({
   isMapLoaded,
   mapRef,
 }: UseResizeMapProps) => {
-  useEffect(() => {
-    if (!isMapLoaded || !mapRef.current) {
-      return;
-    }
-
-    mapRef.current.resize();
-  }, [
+  const isAnimating = [
     rootPanelIsAnimating,
     routePanelIsAnimating,
     pointOfInterestPanelIsAnimating,
     waypointPanelIsAnimating,
-    isMapLoaded,
-    mapRef,
-  ]);
+  ].some(Boolean);
+
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || !isAnimating) {
+      return;
+    }
+
+    let frameId: number;
+
+    const resizeLoop = () => {
+      mapRef.current?.resize();
+      frameId = requestAnimationFrame(resizeLoop);
+    };
+
+    frameId = requestAnimationFrame(resizeLoop);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+    };
+  }, [isMapLoaded, isAnimating, mapRef]);
 };
