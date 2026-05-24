@@ -100,7 +100,7 @@ export const PointOfInterestPanel = ({
   const isDefaultValue =
     useStore(poiForm.store, (state) => state.isDefaultValue) &&
     !isEditingPoiCoordinates;
-  const { handleChange: onLatChange } = useField({
+  const { handleChange: onLatChange, handleBlur: onLatBlur } = useField({
     form: poiForm,
     name: 'lat',
   });
@@ -126,11 +126,13 @@ export const PointOfInterestPanel = ({
     onUpdatePoiCoordinatesRef.current = (coordinates: Coordinates) => {
       onLatChange(coordinates.lat);
       onLngChange(coordinates.lng);
+      onLatBlur();
       setIsEditingPoiCoordinates(null);
     };
   }, [
     onLatChange,
     onLngChange,
+    onLatBlur,
     setIsEditingPoiCoordinates,
     onUpdatePoiCoordinatesRef,
   ]);
