@@ -24,7 +24,18 @@ export const useRootPanelState = ({
     setEditId: setEditWaypointId,
   },
 }: UseRootPanelStateProps) => {
-  const [showRootPanel, setShowRootPanel] = useState(true);
+  const [showRootPanel, setShowRootPanelState] = useState(true);
+  const [isAnimatingRootPanel, setIsAnimatingRootPanel] = useState(false);
+
+  const setShowRootPanel = useCallback((show: boolean) => {
+    setShowRootPanelState((prev) => {
+      if (prev !== show) {
+        setIsAnimatingRootPanel(true);
+        return show;
+      }
+      return prev;
+    });
+  }, []);
 
   const onOpen = useCallback(() => {
     setShowRootPanel(true);
@@ -97,8 +108,13 @@ export const useRootPanelState = ({
     [setEditWaypointId, setShowWaypointPanel],
   );
 
+  const onAnimationComplete = useCallback(() => {
+    setIsAnimatingRootPanel(false);
+  }, [setIsAnimatingRootPanel]);
+
   return {
     showRootPanel,
+    isAnimatingRootPanel,
     onOpen,
     onClose,
     onAddRoute,
@@ -107,5 +123,8 @@ export const useRootPanelState = ({
     onEditPointOfInterest,
     onAddWaypoint,
     onEditWaypoint,
+    onAnimationComplete,
   };
 };
+
+export type RootPanelState = ReturnType<typeof useRootPanelState>;

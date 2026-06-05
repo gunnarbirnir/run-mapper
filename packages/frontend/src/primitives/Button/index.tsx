@@ -54,13 +54,15 @@ export const Button = ({
 
   if (linkTo) {
     return (
-      <BaseUiButton
-        {...props}
-        disabled={isDisabled}
-        className={combinedClassName}
-      >
-        <Link to={linkTo}>{buttonContent}</Link>
-      </BaseUiButton>
+      <Link to={linkTo} className="inline-block rounded-full">
+        <BaseUiButton
+          {...props}
+          disabled={isDisabled}
+          className={combinedClassName}
+        >
+          {buttonContent}
+        </BaseUiButton>
+      </Link>
     );
   }
 

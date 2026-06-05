@@ -27,6 +27,8 @@ interface SidePanelItem {
   isVisible?: boolean;
   disabled?: boolean;
   position?: number;
+  onAnimationStart?: () => void;
+  onAnimationComplete?: () => void;
 }
 
 interface SidePanelProps {
@@ -96,7 +98,14 @@ const SidePanel = ({
         transition={{ duration: SLIDE_IN_DURATION, ease: DEFAULT_EASING }}
       >
         {panels.map(
-          ({ isVisible = true, position, disabled = false, ...panel }) => {
+          ({
+            isVisible = true,
+            position,
+            disabled = false,
+            onAnimationStart,
+            onAnimationComplete,
+            ...panel
+          }) => {
             const leftOffset = isLargeScreen
               ? isVisible
                 ? 0
@@ -134,6 +143,7 @@ const SidePanel = ({
                     ...prevIsAnimating,
                     [panel.id]: true,
                   }));
+                  onAnimationStart?.();
                   onItemAnimationStart?.(itemId);
                 }}
                 onAnimationComplete={() => {
@@ -141,6 +151,7 @@ const SidePanel = ({
                     ...prevIsAnimating,
                     [panel.id]: false,
                   }));
+                  onAnimationComplete?.();
                   onItemAnimationComplete?.(itemId);
                 }}
               >
@@ -199,4 +210,4 @@ const SidePanel = ({
 
 SidePanel.Content = SidePanelContent;
 
-export { SidePanel, useSidePanelItemContext };
+export { SidePanel, useSidePanelItemContext, SLIDE_IN_DURATION };

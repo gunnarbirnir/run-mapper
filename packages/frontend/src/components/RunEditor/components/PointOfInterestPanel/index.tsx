@@ -1,15 +1,27 @@
-import { useForm, useStore } from '@tanstack/react-form';
-import { useCallback, useMemo } from 'react';
+import { useField, useForm, useStore } from '@tanstack/react-form';
+import { useCallback, useEffect, useMemo } from 'react';
 import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel, Text } from '~/primitives';
-import type { PointOfInterest, PointOfInterestType } from '~/types';
+import type {
+  Coordinates,
+  PointOfInterest,
+  PointOfInterestType,
+} from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
+import type { MapState } from '../EditorMap/hooks/useMapState';
+
+interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
+  isEditingPoiCoordinates: string | null;
+  setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
+  onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
+}
 
 const pointOfInterestFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -35,12 +47,16 @@ const pointOfInterestTypeOptions = POINT_OF_INTEREST_VALUES.map((type) => ({
 export const PointOfInterestPanel = ({
   editId,
   currentItems,
+  isEditingPoiCoordinates,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
   onHasMadeChanges,
   onClose,
-}: PanelState<PointOfInterest>) => {
+  setIsEditingPoiCoordinates,
+  setEditPointOfInterestType,
+  onUpdatePoiCoordinatesRef,
+}: PointOfInterestPanelProps) => {
   const nameId = useId('poi-name');
   const typeId = useId('poi-type');
   const descriptionId = useId('poi-description');
@@ -81,10 +97,17 @@ export const PointOfInterestPanel = ({
     },
   });
 
-  const isDefaultValue = useStore(
-    poiForm.store,
-    (state) => state.isDefaultValue,
-  );
+  const isDefaultValue =
+    useStore(poiForm.store, (state) => state.isDefaultValue) &&
+    !isEditingPoiCoordinates;
+  const { handleChange: onLatChange, handleBlur: onLatBlur } = useField({
+    form: poiForm,
+    name: 'lat',
+  });
+  const { handleChange: onLngChange } = useField({
+    form: poiForm,
+    name: 'lng',
+  });
 
   const submitForm = useCallback(() => {
     poiForm.handleSubmit();
@@ -93,6 +116,26 @@ export const PointOfInterestPanel = ({
   const resetForm = useCallback(() => {
     poiForm.reset(formDefaultValues);
   }, [formDefaultValues, poiForm]);
+
+  const closePanel = useCallback(() => {
+    onClose();
+    setIsEditingPoiCoordinates(null);
+  }, [onClose, setIsEditingPoiCoordinates]);
+
+  useEffect(() => {
+    onUpdatePoiCoordinatesRef.current = (coordinates: Coordinates) => {
+      onLatChange(coordinates.lat);
+      onLngChange(coordinates.lng);
+      onLatBlur();
+      setIsEditingPoiCoordinates(null);
+    };
+  }, [
+    onLatChange,
+    onLngChange,
+    onLatBlur,
+    setIsEditingPoiCoordinates,
+    onUpdatePoiCoordinatesRef,
+  ]);
 
   const {
     isEditing,
@@ -108,7 +151,7 @@ export const PointOfInterestPanel = ({
   } = usePanelForm({
     editId,
     isDefaultValue,
-    onClose,
+    onClose: closePanel,
     resetForm,
     submitForm,
     onHasMadeChanges,
@@ -154,7 +197,10 @@ export const PointOfInterestPanel = ({
                     ? field.state.meta.errors[0]?.message
                     : undefined
                 }
-                onChange={field.handleChange}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  setEditPointOfInterestType(value as PointOfInterestType);
+                }}
                 onBlur={field.handleBlur}
               />
             )}
@@ -198,6 +244,18 @@ export const PointOfInterestPanel = ({
                 </Text>
               )}
             </poiForm.Field>
+            <Button
+              color="secondary"
+              size="small"
+              className="mt-3"
+              onClick={() =>
+                setIsEditingPoiCoordinates(
+                  isEditingPoiCoordinates ? null : (editId ?? 'new-poi'),
+                )
+              }
+            >
+              {isEditingPoiCoordinates ? 'Stop editing' : 'Edit coordinates'}
+            </Button>
             <poiForm.Subscribe
               selector={(state) => [
                 state.submissionAttempts > 0,
@@ -209,12 +267,7 @@ export const PointOfInterestPanel = ({
                   <Text className="text-error-600 mt-2 text-xs">
                     {latError ? latError.message : lngError?.message}
                   </Text>
-                ) : (
-                  <Text variant="subtle" className="mt-3 text-xs">
-                    Click on the map to update the coordinates of the point of
-                    interest.
-                  </Text>
-                )
+                ) : null
               }
             />
           </div>

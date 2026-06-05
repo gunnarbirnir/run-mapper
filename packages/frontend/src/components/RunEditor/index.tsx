@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { IdProvider } from '~/context/IdContext';
 import type {
@@ -8,10 +8,11 @@ import type {
   Waypoint,
 } from '~/types';
 
+import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
 import { SidePanelContainer } from './components/SidePanelContainer';
-import { EditorFooter } from './components/EditorFooter';
 import { usePanelState } from './hooks/usePanelState';
+import { useRootPanelState } from './hooks/useRootPanelState';
 import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 
 interface RunEditorProps {
@@ -19,7 +20,6 @@ interface RunEditorProps {
 }
 
 export const RunEditor = ({ existingRun }: RunEditorProps) => {
-  const [isAnimatingPanel, setIsAnimatingPanel] = useState(false);
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
   });
@@ -29,7 +29,19 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
   const waypointPanelState = usePanelState<Waypoint>({
     ...useWaypointCurrentItems({ routePanelState }),
   });
+  const rootPanelState = useRootPanelState({
+    routePanelState,
+    pointOfInterestPanelState,
+    waypointPanelState,
+  });
+
   const mapState = useMapState();
+  const {
+    isEditingPoiCoordinates,
+    setIsEditingPoiCoordinates,
+    setEditPointOfInterestType,
+    onUpdatePoiCoordinatesRef,
+  } = mapState;
   const activeRoute = useMemo(
     () =>
       routePanelState.currentItems.find(
@@ -43,19 +55,40 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
       <div className="relative isolate flex flex-1">
         <SidePanelContainer
           existingRun={existingRun}
+          rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
-          setIsAnimatingPanel={setIsAnimatingPanel}
+          isEditingPoiCoordinates={isEditingPoiCoordinates}
+          setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
+          setEditPointOfInterestType={setEditPointOfInterestType}
+          onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            activeRoute={activeRoute}
-            isAnimatingPanel={isAnimatingPanel}
-            routePanelIsOpen={routePanelState.showPanel}
-            currentPointsOfInterest={pointOfInterestPanelState.currentItems}
             initialBoundingBox={existingRun?.routes[0].boundingBox}
+            activeRoute={activeRoute}
+            rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
+            routePanelIsOpen={routePanelState.showPanel}
+            routePanelIsAnimating={routePanelState.isAnimatingPanel}
+            hasMadeRouteChanges={routePanelState.hasMadeChanges}
+            currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+            activePointOfInterest={pointOfInterestPanelState.editId}
+            pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
+            pointOfInterestPanelIsAnimating={
+              pointOfInterestPanelState.isAnimatingPanel
+            }
+            hasMadePointOfInterestChanges={
+              pointOfInterestPanelState.hasMadeChanges
+            }
+            currentWaypoints={waypointPanelState.currentItems}
+            activeWaypoint={waypointPanelState.editId}
+            waypointPanelIsOpen={waypointPanelState.showPanel}
+            waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
+            hasMadeWaypointChanges={waypointPanelState.hasMadeChanges}
+            onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
+            onEditWaypoint={rootPanelState.onEditWaypoint}
           />
           <EditorFooter />
         </div>

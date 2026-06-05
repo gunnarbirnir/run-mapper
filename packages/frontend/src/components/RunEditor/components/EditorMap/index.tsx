@@ -1,33 +1,69 @@
-import { useRef, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useMemo, useRef } from 'react';
 
-import { PublicRoute, BoundingBox, PointOfInterest } from '~/types';
+import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
+import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
-import { useMapState, type MapState } from './hooks/useMapState';
 import { useLoadMap } from './hooks/useLoadMap';
+import { useMapCursor } from './hooks/useMapCursor';
+import { useMapState, type MapState } from './hooks/useMapState';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
+import { useResetBounds } from './hooks/useResetBounds';
+import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
 
 interface EditorMapProps extends MapState {
+  rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
   routePanelIsOpen: boolean;
-  isAnimatingPanel: boolean;
-  initialBoundingBox?: BoundingBox;
+  routePanelIsAnimating: boolean;
+  hasMadeRouteChanges: boolean;
   currentPointsOfInterest: PointOfInterest[];
+  activePointOfInterest: string | null;
+  pointOfInterestPanelIsOpen: boolean;
+  pointOfInterestPanelIsAnimating: boolean;
+  hasMadePointOfInterestChanges: boolean;
+  isEditingPoiCoordinates: string | null;
+  currentWaypoints: Waypoint[];
+  activeWaypoint: string | null;
+  waypointPanelIsOpen: boolean;
+  waypointPanelIsAnimating: boolean;
+  hasMadeWaypointChanges: boolean;
+  initialBoundingBox?: BoundingBox;
+  onEditPointOfInterest: (pointOfInterestId: string) => void;
+  onEditWaypoint: (waypointId: string) => void;
 }
 
 export const EditorMap = ({
+  rootPanelIsAnimating,
   activeRoute,
   routePanelIsOpen,
-  isAnimatingPanel,
-  initialBoundingBox,
+  routePanelIsAnimating,
+  hasMadeRouteChanges,
   currentPointsOfInterest,
+  activePointOfInterest,
+  pointOfInterestPanelIsOpen,
+  pointOfInterestPanelIsAnimating,
+  hasMadePointOfInterestChanges,
+  editPointOfInterestType,
+  isEditingPoiCoordinates,
+  currentWaypoints,
+  activeWaypoint,
+  waypointPanelIsOpen,
+  waypointPanelIsAnimating,
+  hasMadeWaypointChanges,
+  initialBoundingBox,
   isMapLoaded,
+  onEditPointOfInterest,
+  onEditWaypoint,
   setIsMapLoaded,
+  setIsEditingPoiCoordinates,
+  setEditPointOfInterestType,
+  onUpdatePoiCoordinates,
   mapRef,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -39,10 +75,15 @@ export const EditorMap = ({
     () => activeRoute?.coordinates || [],
     [activeRoute],
   );
-  const activeRouteWaypoints = useMemo(
-    () => activeRoute?.waypoints || [],
-    [activeRoute],
-  );
+  const isAnyPanelAnimating =
+    rootPanelIsAnimating ||
+    routePanelIsAnimating ||
+    pointOfInterestPanelIsAnimating ||
+    waypointPanelIsAnimating;
+  const hasMadeAnyChanges =
+    hasMadeRouteChanges ||
+    hasMadePointOfInterestChanges ||
+    hasMadeWaypointChanges;
 
   useLoadMap({
     initialBounds,
@@ -51,10 +92,34 @@ export const EditorMap = ({
     mapContainerRef,
   });
 
+  useResizeMap({
+    isAnyPanelAnimating,
+    isMapLoaded,
+    mapRef,
+  });
+
+  useResetBounds({
+    initialBounds,
+    isAnyPanelAnimating,
+    routePanelIsOpen,
+    pointOfInterestPanelIsOpen,
+    waypointPanelIsOpen,
+    isMapLoaded,
+    mapRef,
+  });
+
+  useMapCursor({
+    isMapLoaded,
+    isEditingPoiCoordinates,
+    mapRef,
+  });
+
   useDrawRoute({
     activeRoute,
-    routePanelIsOpen,
-    isAnimatingPanel,
+    panelIsOpen: routePanelIsOpen,
+    isAnimatingPanel: routePanelIsAnimating,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     isMapLoaded,
     mapRef,
   });
@@ -62,14 +127,27 @@ export const EditorMap = ({
   usePointsOfInterest({
     isMapLoaded,
     pointsOfInterest: currentPointsOfInterest,
+    activePointOfInterest,
+    panelIsOpen: pointOfInterestPanelIsOpen,
+    isAnimatingPanel: pointOfInterestPanelIsAnimating,
+    hasMadeAnyChanges,
+    isEditingCoordinates: isEditingPoiCoordinates,
+    editPointOfInterestType,
+    onEditPointOfInterest,
+    onUpdatePoiCoordinates,
+    setEditPointOfInterestType,
     mapRef,
   });
 
   useWaypoints({
     isMapLoaded,
     coordinates: activeRouteCoordinates,
-    waypoints: activeRouteWaypoints,
-    routePanelIsOpen,
+    waypoints: currentWaypoints,
+    activeWaypoint,
+    panelIsOpen: waypointPanelIsOpen,
+    isAnimatingPanel: waypointPanelIsAnimating,
+    hasMadeChanges: hasMadeWaypointChanges,
+    onEditWaypoint,
     mapRef,
   });
 
@@ -79,6 +157,10 @@ export const EditorMap = ({
       {/* TODO: Use real numbers */}
       <RouteStats distance={42.2} elevationGain={250} />
       <ActionButtonsContainer />
+      <PoiCoordinatesToolbar
+        isVisible={Boolean(isEditingPoiCoordinates)}
+        onClose={() => setIsEditingPoiCoordinates(null)}
+      />
     </div>
   );
 };

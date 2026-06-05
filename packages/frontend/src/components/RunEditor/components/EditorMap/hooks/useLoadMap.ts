@@ -1,7 +1,7 @@
 import { RefObject, useEffect, MutableRefObject } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 
-import { MAP_STYLES } from '~/constants/map';
+import { MAP_STYLES, BOUNDS_PADDING } from '~/constants/map';
 import type { Bounds } from '~/types';
 
 import { DEFAULT_EDITOR_BOUNDS } from '../constants';
@@ -25,8 +25,7 @@ export const useLoadMap = ({
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       bounds: initialBounds ?? DEFAULT_EDITOR_BOUNDS,
-      // Commented out for small animation effect
-      // fitBoundsOptions: initialBounds ? { padding: BOUNDS_PADDING } : undefined,
+      fitBoundsOptions: initialBounds ? { padding: BOUNDS_PADDING } : undefined,
       style: MAP_STYLES.standard,
       attributionControl: false,
       logoPosition: 'bottom-right',

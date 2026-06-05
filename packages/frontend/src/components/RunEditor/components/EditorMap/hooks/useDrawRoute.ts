@@ -1,5 +1,5 @@
 import type { Map } from 'mapbox-gl';
-import { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useEffect } from 'react';
 
 import type { PublicRoute } from '~/types';
 import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
@@ -7,58 +7,43 @@ import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
-  routePanelIsOpen: boolean;
+  panelIsOpen: boolean;
   isAnimatingPanel: boolean;
+  waypointPanelIsOpen: boolean;
+  waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
 }
 
 export const useDrawRoute = ({
   activeRoute,
-  routePanelIsOpen,
+  panelIsOpen,
   isAnimatingPanel,
+  waypointPanelIsOpen,
+  waypointPanelIsAnimating,
   isMapLoaded,
   mapRef,
 }: UseMapRouteProps) => {
-  const prevRouteIdRef = useRef(activeRoute?.id);
-  const prevRoutePanelIsOpenRef = useRef(routePanelIsOpen);
-
+  // Draw route
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current) {
       return;
     }
 
-    const routeIdChanged = prevRouteIdRef.current !== activeRoute?.id;
-    prevRouteIdRef.current = activeRoute?.id;
-    const routePanelOpenStateChanged =
-      prevRoutePanelIsOpenRef.current !== routePanelIsOpen;
-    prevRoutePanelIsOpenRef.current = routePanelIsOpen;
-
     const map = mapRef.current;
-    const coordinates =
-      activeRoute?.coordinates && routePanelIsOpen
-        ? activeRoute.coordinates
-        : [];
+    const coordinates = activeRoute?.coordinates ?? [];
     const routeLayer = getRouteLayer();
-    const bounds = activeRoute?.boundingBox
-      ? formatBounds(activeRoute?.boundingBox)
-      : null;
 
     const clearRoute = () => {
+      if (!map.isStyleLoaded() || !map.getStyle()) {
+        return;
+      }
+
       if (map.getLayer(routeLayer.id)) {
         map.removeLayer(routeLayer.id);
       }
       if (map.getSource(routeLayer.source)) {
         map.removeSource(routeLayer.source);
-      }
-    };
-
-    const fitBounds = () => {
-      if (bounds) {
-        map.fitBounds(bounds, {
-          padding: BOUNDS_PADDING,
-          duration: FIT_INITIAL_BOUNDS_DURATION,
-        });
       }
     };
 
@@ -75,32 +60,49 @@ export const useDrawRoute = ({
     const onStyleLoad = () => {
       if (!map.getSource(routeLayer.source)) {
         drawRoute();
-        fitBounds();
       }
     };
 
-    if (routeIdChanged || routePanelOpenStateChanged) {
-      clearRoute();
-      if (routePanelIsOpen) {
-        drawRoute();
-        fitBounds();
-      }
-    }
-
+    drawRoute();
     map.on('style.load', onStyleLoad);
-    map.on('resize', fitBounds);
-    map.resize();
 
     return () => {
+      clearRoute();
       map.off('style.load', onStyleLoad);
-      map.off('resize', fitBounds);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMapLoaded, activeRoute?.coordinates, mapRef]);
+
+  // Fit to bounds
+  useEffect(() => {
+    if (
+      !isMapLoaded ||
+      !mapRef.current ||
+      isAnimatingPanel ||
+      waypointPanelIsAnimating
+    ) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const bounds = activeRoute?.boundingBox
+      ? formatBounds(activeRoute.boundingBox)
+      : null;
+
+    if (!bounds || !panelIsOpen || waypointPanelIsOpen) {
+      return;
+    }
+
+    map.fitBounds(bounds, {
+      padding: BOUNDS_PADDING,
+      duration: FIT_INITIAL_BOUNDS_DURATION,
+    });
   }, [
     isMapLoaded,
-    activeRoute?.id,
-    routePanelIsOpen,
+    activeRoute?.boundingBox,
+    panelIsOpen,
     isAnimatingPanel,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     mapRef,
   ]);
 };
