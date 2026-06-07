@@ -162,7 +162,20 @@ export const WaypointPanel = ({
               />
             )}
           </waypointForm.Field>
-          <waypointForm.Field name="type">
+          <waypointForm.Field
+            name="type"
+            listeners={{
+              onChange: ({ value }) => {
+                const amenities = waypointForm.getFieldValue('amenities');
+                if (amenities.includes(value)) {
+                  waypointForm.setFieldValue(
+                    'amenities',
+                    amenities.filter((a) => a !== value),
+                  );
+                }
+              },
+            }}
+          >
             {(field) => (
               <Form.Dropdown
                 id={typeId}
