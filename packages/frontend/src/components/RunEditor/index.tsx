@@ -7,6 +7,7 @@ import type {
   PublicRoute,
   Waypoint,
 } from '~/types';
+import { processRunRoute, calculateDistance } from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
@@ -40,6 +41,8 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
     isEditingPoiCoordinates,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
+    setEditWaypointType,
+    setEditWaypointCoordinates,
     onUpdatePoiCoordinatesRef,
   } = mapState;
   const activeRoute = useMemo(
@@ -49,12 +52,26 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
       ),
     [routePanelState.currentItems, routePanelState.editId],
   );
+  const {
+    coordinates: activeRouteCoordinates,
+    elevations: activeRouteElevations,
+  } = useMemo(
+    () => processRunRoute(activeRoute?.coordinates || []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeRoute?.id],
+  );
+  const routeDistance = useMemo(
+    () => calculateDistance(activeRouteCoordinates),
+    [activeRouteCoordinates],
+  );
 
   return (
     <IdProvider baseId="run-editor">
       <div className="relative isolate flex flex-1">
         <SidePanelContainer
           existingRun={existingRun}
+          routeDistance={routeDistance}
+          routeCoordinates={activeRouteCoordinates}
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
@@ -62,6 +79,8 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
           isEditingPoiCoordinates={isEditingPoiCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
+          setEditWaypointType={setEditWaypointType}
+          setEditWaypointCoordinates={setEditWaypointCoordinates}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
@@ -69,6 +88,9 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
             {...mapState}
             initialBoundingBox={existingRun?.routes[0].boundingBox}
             activeRoute={activeRoute}
+            activeRouteCoordinates={activeRouteCoordinates}
+            activeRouteElevations={activeRouteElevations}
+            routeDistance={routeDistance}
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
             routePanelIsOpen={routePanelState.showPanel}
             routePanelIsAnimating={routePanelState.isAnimatingPanel}

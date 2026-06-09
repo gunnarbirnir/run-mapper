@@ -1,7 +1,7 @@
 import type { Map, Marker } from 'mapbox-gl';
 import { useEffect, type RefObject } from 'react';
 
-import type { Coordinates, Waypoint } from '~/types';
+import type { Coordinates, Waypoint, WaypointType } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
@@ -16,7 +16,11 @@ interface UseWaypointsProps {
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   hasMadeChanges: boolean;
+  editWaypointType: WaypointType | null;
+  editWaypointCoordinates: Coordinates | null;
   onEditWaypoint: (waypointId: string) => void;
+  setEditWaypointType: (type: WaypointType | null) => void;
+  setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -28,10 +32,20 @@ export const useWaypoints = ({
   panelIsOpen,
   isAnimatingPanel,
   hasMadeChanges,
+  editWaypointType,
+  editWaypointCoordinates,
   onEditWaypoint,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
+
+  // Reset edit waypoint type when active waypoint changes
+  useEffect(() => {
+    setEditWaypointType(null);
+    setEditWaypointCoordinates(null);
+  }, [activeWaypoint, setEditWaypointType, setEditWaypointCoordinates]);
 
   // Draw waypoints
   useEffect(() => {
@@ -66,14 +80,31 @@ export const useWaypoints = ({
     );
 
     for (const waypoint of waypoints) {
+      const isActive = waypoint.id === activeWaypoint;
       waypointMarkers.push(
         addMarker(
           getWaypointMarkerElement(
-            waypoint.type,
+            isActive && editWaypointType ? editWaypointType : waypoint.type,
             hasMadeChanges ? undefined : () => onEditWaypoint(waypoint.id),
             waypoint.id === activeWaypoint,
           ),
-          waypoint.coordinates,
+          isActive && editWaypointCoordinates
+            ? editWaypointCoordinates
+            : waypoint.coordinates,
+        ),
+      );
+    }
+
+    // New waypoint
+    if (editWaypointCoordinates && !activeWaypoint && panelIsOpen) {
+      waypointMarkers.push(
+        addMarker(
+          getWaypointMarkerElement(
+            editWaypointType || 'hydration',
+            undefined,
+            true,
+          ),
+          editWaypointCoordinates,
         ),
       );
     }
@@ -89,6 +120,9 @@ export const useWaypoints = ({
     coordinates,
     waypoints,
     hasMadeChanges,
+    panelIsOpen,
+    editWaypointType,
+    editWaypointCoordinates,
     addMarker,
     onEditWaypoint,
     mapRef,

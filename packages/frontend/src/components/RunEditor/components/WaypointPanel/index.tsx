@@ -5,7 +5,12 @@ import z from 'zod';
 import { INNER_WAYPOINT_VALUES, WAYPOINT_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import type { Waypoint, WaypointType, InnerWaypointType } from '~/types';
+import type {
+  Waypoint,
+  WaypointType,
+  InnerWaypointType,
+  Coordinates,
+} from '~/types';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -13,6 +18,9 @@ import { PanelState } from '../../hooks/usePanelState';
 
 interface WaypointPanelProps extends PanelState<Waypoint> {
   routeDistance: number | undefined;
+  routeCoordinates: Coordinates[];
+  setEditWaypointType: (type: WaypointType | null) => void;
+  setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
 }
 
 const waypointFormSchema = z.object({
@@ -41,6 +49,8 @@ export const WaypointPanel = ({
   onDeleteItem,
   onHasMadeChanges,
   onClose,
+  setEditWaypointType,
+  // setEditWaypointCoordinates,
 }: WaypointPanelProps) => {
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
@@ -80,7 +90,7 @@ export const WaypointPanel = ({
         description: value.description,
         position: value.position,
         amenities: value.amenities as InnerWaypointType[],
-        coordinates: { lat: 0, lng: 0 },
+        coordinates: { lat: 0, lng: 0 }, // TODO: Look up coords from position
       };
 
       if (editId) {
@@ -191,7 +201,10 @@ export const WaypointPanel = ({
                     ? field.state.meta.errors[0]?.message
                     : undefined
                 }
-                onChange={field.handleChange}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  setEditWaypointType(value as WaypointType);
+                }}
                 onBlur={field.handleBlur}
               />
             )}
@@ -231,7 +244,11 @@ export const WaypointPanel = ({
                     ? `Position cannot be greater than route distance (${positionMax} km)`
                     : undefined
                 }
-                onChange={field.handleChange}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  // TODO: Look up coords from position
+                  // setEditWaypointCoordinates({ lat: 0, lng: 0 });
+                }}
                 onBlur={field.handleBlur}
               />
             )}

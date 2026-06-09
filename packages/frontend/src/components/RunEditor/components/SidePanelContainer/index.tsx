@@ -7,6 +7,8 @@ import type {
   PointOfInterestType,
   PublicRoute,
   Waypoint,
+  WaypointType,
+  Coordinates,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -19,6 +21,8 @@ import { WaypointPanel } from '../WaypointPanel';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
+  routeDistance: number;
+  routeCoordinates: Coordinates[];
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
@@ -26,11 +30,15 @@ interface SidePanelContainerProps {
   isEditingPoiCoordinates: string | null;
   setIsEditingPoiCoordinates: (poiId: string | null) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
+  setEditWaypointType: (type: WaypointType | null) => void;
+  setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
 export const SidePanelContainer = ({
   existingRun,
+  routeDistance,
+  routeCoordinates,
   rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
@@ -38,6 +46,8 @@ export const SidePanelContainer = ({
   isEditingPoiCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
   const {
@@ -52,10 +62,6 @@ export const SidePanelContainer = ({
     onEditWaypoint,
     onAnimationComplete,
   } = rootPanelState;
-  const routeDistance = routePanelState.currentItems.find(
-    (route) => route.id === routePanelState.editId,
-    // TODO: Replace with actual distance
-  )?.displayDistance;
 
   useHotkey('P', () => {
     if (showRootPanel) {
@@ -135,6 +141,9 @@ export const SidePanelContainer = ({
             <WaypointPanel
               {...waypointPanelState}
               routeDistance={routeDistance}
+              routeCoordinates={routeCoordinates}
+              setEditWaypointType={setEditWaypointType}
+              setEditWaypointCoordinates={setEditWaypointCoordinates}
             />
           ),
         },

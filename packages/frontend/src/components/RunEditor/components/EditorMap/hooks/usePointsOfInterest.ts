@@ -79,6 +79,7 @@ export const usePointsOfInterest = ({
       );
     }
 
+    // New point of interest
     if (editCoordinates && !activePointOfInterest && panelIsOpen) {
       pointsOfInterestMarkers.push(
         addMarker(

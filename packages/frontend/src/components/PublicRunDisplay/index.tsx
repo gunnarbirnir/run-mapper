@@ -6,13 +6,13 @@ import {
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
+import { processRunRoute } from '~/utils/route';
 import { IdProvider } from '~/context/IdContext';
 
 import { useRoute } from './hooks/useRoute';
 import { useRunDisplayState } from './hooks/useRunDisplayState';
 import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
-import { processRunRoute } from './utils';
 import { RouteOverlay } from './components/RouteOverlay';
 import { ElevationGraph } from '../ElevationGraph';
 

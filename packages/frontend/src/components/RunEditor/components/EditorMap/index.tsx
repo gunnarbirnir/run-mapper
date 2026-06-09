@@ -1,8 +1,17 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef } from 'react';
+import { AnimatePresence } from 'motion/react';
 
-import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
+import {
+  BoundingBox,
+  Coordinates,
+  Elevation,
+  PointOfInterest,
+  PublicRoute,
+  Waypoint,
+} from '~/types';
 import { formatBounds } from '~/utils/map';
+import { calculateElevationGain } from '~/utils/route';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
@@ -19,6 +28,9 @@ import { useWaypoints } from './hooks/useWaypoints';
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
+  activeRouteCoordinates: Coordinates[];
+  activeRouteElevations: Elevation[];
+  routeDistance: number;
   routePanelIsOpen: boolean;
   routePanelIsAnimating: boolean;
   hasMadeRouteChanges: boolean;
@@ -41,6 +53,9 @@ interface EditorMapProps extends MapState {
 export const EditorMap = ({
   rootPanelIsAnimating,
   activeRoute,
+  activeRouteCoordinates,
+  activeRouteElevations,
+  routeDistance,
   routePanelIsOpen,
   routePanelIsAnimating,
   hasMadeRouteChanges,
@@ -50,6 +65,8 @@ export const EditorMap = ({
   pointOfInterestPanelIsAnimating,
   hasMadePointOfInterestChanges,
   editPointOfInterestType,
+  editWaypointType,
+  editWaypointCoordinates,
   isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
@@ -63,6 +80,8 @@ export const EditorMap = ({
   setIsMapLoaded,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
   onUpdatePoiCoordinates,
   mapRef,
 }: EditorMapProps) => {
@@ -70,11 +89,10 @@ export const EditorMap = ({
   const initialBounds = initialBoundingBox
     ? formatBounds(initialBoundingBox)
     : undefined;
+  const elevationGain = useMemo(() => {
+    return calculateElevationGain(activeRouteElevations);
+  }, [activeRouteElevations]);
 
-  const activeRouteCoordinates = useMemo(
-    () => activeRoute?.coordinates || [],
-    [activeRoute],
-  );
   const isAnyPanelAnimating =
     rootPanelIsAnimating ||
     routePanelIsAnimating ||
@@ -147,15 +165,22 @@ export const EditorMap = ({
     panelIsOpen: waypointPanelIsOpen,
     isAnimatingPanel: waypointPanelIsAnimating,
     hasMadeChanges: hasMadeWaypointChanges,
+    editWaypointType,
+    editWaypointCoordinates,
     onEditWaypoint,
+    setEditWaypointType,
+    setEditWaypointCoordinates,
     mapRef,
   });
 
   return (
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
-      {/* TODO: Use real numbers */}
-      <RouteStats distance={42.2} elevationGain={250} />
+      <AnimatePresence>
+        {activeRoute ? (
+          <RouteStats distance={routeDistance} elevationGain={elevationGain} />
+        ) : null}
+      </AnimatePresence>
       <ActionButtonsContainer />
       <PoiCoordinatesToolbar
         isVisible={Boolean(isEditingPoiCoordinates)}

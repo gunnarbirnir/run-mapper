@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { Coordinates, PointOfInterestType } from '~/types';
+import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
@@ -16,6 +16,11 @@ export const useMapState = () => {
   >(null);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
+  const [editWaypointType, setEditWaypointType] = useState<WaypointType | null>(
+    null,
+  );
+  const [editWaypointCoordinates, setEditWaypointCoordinates] =
+    useState<Coordinates | null>(null);
 
   const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
     onUpdatePoiCoordinatesRef.current?.(coordinates);
@@ -25,9 +30,13 @@ export const useMapState = () => {
     isMapLoaded,
     isEditingPoiCoordinates,
     editPointOfInterestType,
+    editWaypointType,
+    editWaypointCoordinates,
     setIsMapLoaded,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
+    setEditWaypointType,
+    setEditWaypointCoordinates,
     onUpdatePoiCoordinates,
     mapRef,
     onUpdatePoiCoordinatesRef,
