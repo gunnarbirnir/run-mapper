@@ -132,6 +132,30 @@ export const calculateMinElevation = (
   return { value: minValue, index: minIndex };
 };
 
+export const getCoordinatesFromPosition = (
+  position: number,
+  coordinates: Coordinates[],
+): Coordinates | null => {
+  if (coordinates.length === 0) {
+    return null;
+  }
+
+  let cumulativeDistance = 0;
+  let closestCoordinate = coordinates[0];
+  let closestDelta = Math.abs(position - cumulativeDistance);
+
+  for (let i = 1; i < coordinates.length; i++) {
+    cumulativeDistance += haversineDistance(coordinates[i - 1], coordinates[i]);
+    const delta = Math.abs(position - cumulativeDistance);
+    if (delta < closestDelta) {
+      closestDelta = delta;
+      closestCoordinate = coordinates[i];
+    }
+  }
+
+  return closestCoordinate;
+};
+
 export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
   const firstCoordinate = coordinates[0] ?? { lat: 0, lng: 0 };
   return {

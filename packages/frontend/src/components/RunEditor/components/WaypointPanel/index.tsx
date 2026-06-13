@@ -11,13 +11,14 @@ import type {
   InnerWaypointType,
   Coordinates,
 } from '~/types';
-import { getWaypointPoiLabel } from '~/utils/route';
+import { getWaypointPoiLabel, getCoordinatesFromPosition } from '~/utils/route';
+import { formatNumber } from '~/utils';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import { PanelState } from '../../hooks/usePanelState';
 
 interface WaypointPanelProps extends PanelState<Waypoint> {
-  routeDistance: number | undefined;
+  routeDistance: number;
   routeCoordinates: Coordinates[];
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
@@ -44,20 +45,21 @@ export const WaypointPanel = ({
   editId,
   currentItems,
   routeDistance,
+  routeCoordinates,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
   onHasMadeChanges,
   onClose,
   setEditWaypointType,
-  // setEditWaypointCoordinates,
+  setEditWaypointCoordinates,
 }: WaypointPanelProps) => {
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
   const descriptionId = useId('waypoint-description');
   const positionId = useId('waypoint-position');
   const amenitiesId = useId('waypoint-amenities');
-  const positionMax = routeDistance ?? 100;
+  const positionMax = formatNumber(routeDistance, 2, true);
 
   const formDefaultValues = useMemo(() => {
     const editWaypoint = currentItems.find(
@@ -71,11 +73,11 @@ export const WaypointPanel = ({
         editWaypoint?.type === 'start'
           ? 0
           : editWaypoint?.type === 'end'
-            ? positionMax
+            ? routeDistance
             : editWaypoint?.position || 0,
       amenities: (editWaypoint?.amenities || []) as string[],
     };
-  }, [editId, currentItems, positionMax]);
+  }, [editId, currentItems, routeDistance]);
 
   const waypointForm = useForm({
     defaultValues: formDefaultValues,
@@ -90,7 +92,10 @@ export const WaypointPanel = ({
         description: value.description,
         position: value.position,
         amenities: value.amenities as InnerWaypointType[],
-        coordinates: { lat: 0, lng: 0 }, // TODO: Look up coords from position
+        coordinates: getCoordinatesFromPosition(
+          value.position,
+          routeCoordinates,
+        ) ?? { lat: 0, lng: 0 },
       };
 
       if (editId) {
@@ -246,8 +251,11 @@ export const WaypointPanel = ({
                 }
                 onChange={(value) => {
                   field.handleChange(value);
-                  // TODO: Look up coords from position
-                  // setEditWaypointCoordinates({ lat: 0, lng: 0 });
+                  const coordinates = getCoordinatesFromPosition(
+                    value,
+                    routeCoordinates,
+                  );
+                  setEditWaypointCoordinates(coordinates);
                 }}
                 onBlur={field.handleBlur}
               />
@@ -282,18 +290,22 @@ export const WaypointPanel = ({
               state.canSubmit,
               state.isSubmitting,
               state.isDefaultValue,
+              state.values.name.length === 0,
               state.values.position > positionMax,
             ]}
             children={([
               canSubmit,
               isSubmitting,
               isDefaultValue,
+              invalidName,
               invalidPosition,
             ]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || isDefaultValue || invalidPosition}
+                disabled={
+                  !canSubmit || isDefaultValue || invalidName || invalidPosition
+                }
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update waypoint' : 'Add waypoint'}

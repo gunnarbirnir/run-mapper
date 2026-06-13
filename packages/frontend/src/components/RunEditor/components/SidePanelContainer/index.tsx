@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { SidePanel } from '~/primitives';
@@ -63,6 +64,13 @@ export const SidePanelContainer = ({
     onAnimationComplete,
   } = rootPanelState;
 
+  const handleAddWaypoint = useCallback(() => {
+    onAddWaypoint();
+    if (routeCoordinates.length > 0) {
+      setEditWaypointCoordinates(routeCoordinates[0]);
+    }
+  }, [onAddWaypoint, setEditWaypointCoordinates, routeCoordinates]);
+
   useHotkey('P', () => {
     if (showRootPanel) {
       onClose();
@@ -127,7 +135,7 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
-              onAddWaypoint={onAddWaypoint}
+              onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
             />
           ),

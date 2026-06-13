@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 import { Icon, Text } from '~/primitives';
 import { SLIDE_IN_DURATION } from '~/primitives/SidePanel';
+import { formatNumber } from '~/utils';
 
 interface RouteStatsProps {
   distance: number;
@@ -12,7 +13,7 @@ interface RouteStatsProps {
 const FADE_IN_DISTANCE = 10;
 
 export const RouteStats = ({ distance, elevationGain }: RouteStatsProps) => {
-  const formattedDistance = `${distance.toFixed(1)} km`;
+  const formattedDistance = `${formatNumber(distance, 1)} km`;
   const formattedElevation = `${Math.round(elevationGain)} m`;
 
   return (

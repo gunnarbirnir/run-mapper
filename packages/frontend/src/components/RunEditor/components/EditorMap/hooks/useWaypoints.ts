@@ -1,5 +1,5 @@
 import type { Map, Marker } from 'mapbox-gl';
-import { useEffect, type RefObject } from 'react';
+import { useEffect, type RefObject, useRef } from 'react';
 
 import type { Coordinates, Waypoint, WaypointType } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
@@ -40,12 +40,21 @@ export const useWaypoints = ({
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
+  const panelIsOpenRef = useRef(panelIsOpen);
 
   // Reset edit waypoint type when active waypoint changes
   useEffect(() => {
     setEditWaypointType(null);
     setEditWaypointCoordinates(null);
   }, [activeWaypoint, setEditWaypointType, setEditWaypointCoordinates]);
+
+  // Reset edit waypoint type when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      setEditWaypointType(null);
+      setEditWaypointCoordinates(null);
+    }
+  }, [panelIsOpen, setEditWaypointType, setEditWaypointCoordinates]);
 
   // Draw waypoints
   useEffect(() => {
@@ -158,5 +167,34 @@ export const useWaypoints = ({
     panelIsOpen,
     isAnimatingPanel,
     mapRef,
+  ]);
+
+  // Move to edit coordinates
+  useEffect(() => {
+    const panelJustOpened = !panelIsOpenRef.current && panelIsOpen;
+    panelIsOpenRef.current = panelIsOpen;
+
+    if (!isMapLoaded || !mapRef.current || !editWaypointCoordinates) {
+      return;
+    }
+
+    if (panelJustOpened) {
+      mapRef.current.flyTo({
+        center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
+        zoom: WAYPOINT_ZOOM,
+        duration: FLY_TO_WAYPOINT_DURATION,
+      });
+    } else {
+      mapRef.current.jumpTo({
+        center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
+        zoom: WAYPOINT_ZOOM,
+      });
+    }
+  }, [
+    isMapLoaded,
+    mapRef,
+    editWaypointCoordinates,
+    panelIsOpen,
+    panelIsOpenRef,
   ]);
 };

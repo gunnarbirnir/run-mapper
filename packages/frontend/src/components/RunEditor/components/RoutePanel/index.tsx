@@ -15,7 +15,7 @@ import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
-  routeDistance?: number;
+  routeDistance: number;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
 }
@@ -32,7 +32,7 @@ export const RoutePanel = ({
   editId,
   currentItems,
   currentWaypoints,
-  routeDistance = 100,
+  routeDistance,
   onClose,
   onUpdateItem,
   onAddItem,
