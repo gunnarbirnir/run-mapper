@@ -6,6 +6,7 @@ import z from 'zod';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import { BoundingBox, PublicRoute, Waypoint } from '~/types';
+import { formatNumber } from '~/utils';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -166,10 +167,19 @@ export const RoutePanel = ({
           </routeForm.Field>
         </section>
         <ItemsSection
-          title="Route"
+          title="Coordinates"
           /* TODO: Check if route is empty */
-          emptyText="The route itself is created in the map. Click on the map to start drawing the route."
-        />
+          emptyText={
+            routeDistance
+              ? `Route distance: ${formatNumber(routeDistance, 2)} km`
+              : 'The route itself is created in the map. Click the button below to start editing the route.'
+          }
+          showEmptyText
+        >
+          <Button color="secondary" size="small" onClick={() => {}}>
+            Edit coordinates
+          </Button>
+        </ItemsSection>
         <ItemsSection
           title="Waypoints"
           emptyText="Waypoints are notable locations along the route. Start and End are default."

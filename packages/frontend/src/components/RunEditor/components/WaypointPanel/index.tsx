@@ -59,7 +59,8 @@ export const WaypointPanel = ({
   const descriptionId = useId('waypoint-description');
   const positionId = useId('waypoint-position');
   const amenitiesId = useId('waypoint-amenities');
-  const positionMax = formatNumber(routeDistance, 2, true);
+  const positionMaxValue = routeDistance || 100;
+  const positionMax = formatNumber(positionMaxValue, 2, true);
 
   const formDefaultValues = useMemo(() => {
     const editWaypoint = currentItems.find(
