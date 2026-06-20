@@ -38,7 +38,9 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
 
   const mapState = useMapState();
   const {
+    isEditingRouteCoordinates,
     isEditingPoiCoordinates,
+    setIsEditingRouteCoordinates,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,
@@ -76,10 +78,12 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
+          isEditingRouteCoordinates={isEditingRouteCoordinates}
           isEditingPoiCoordinates={isEditingPoiCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}
+          setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />

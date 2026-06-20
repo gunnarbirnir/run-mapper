@@ -28,7 +28,9 @@ interface SidePanelContainerProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
+  isEditingRouteCoordinates: string | null;
   isEditingPoiCoordinates: string | null;
+  setIsEditingRouteCoordinates: (routeId: string | null) => void;
   setIsEditingPoiCoordinates: (poiId: string | null) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
@@ -44,7 +46,9 @@ export const SidePanelContainer = ({
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
+  isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
   setEditWaypointType,
@@ -135,8 +139,10 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
+              isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
+              setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
             />
           ),
         },

@@ -18,6 +18,7 @@ interface UsePointsOfInterestProps {
   isAnimatingPanel: boolean;
   hasMadeAnyChanges: boolean;
   isEditingCoordinates: string | null;
+  isEditingRouteCoordinates: string | null;
   editPointOfInterestType: PointOfInterestType | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
   onUpdatePoiCoordinates: (coordinates: Coordinates) => void;
@@ -32,6 +33,7 @@ export const usePointsOfInterest = ({
   panelIsOpen,
   isAnimatingPanel,
   hasMadeAnyChanges,
+  isEditingRouteCoordinates,
   isEditingCoordinates,
   editPointOfInterestType,
   onEditPointOfInterest,
@@ -42,6 +44,9 @@ export const usePointsOfInterest = ({
   const { addMarker } = useMapHandlers({ mapRef });
   const [editCoordinates, setEditCoordinates] = useState<Coordinates | null>(
     null,
+  );
+  const isEditingInMap = Boolean(
+    isEditingRouteCoordinates || isEditingCoordinates,
   );
 
   // Reset edit point of interest when active point of interest changes
@@ -63,15 +68,18 @@ export const usePointsOfInterest = ({
       const isActive = pointOfInterest.id === activePointOfInterest;
       pointsOfInterestMarkers.push(
         addMarker(
-          getPointOfInterestMarkerElement(
-            isActive && editPointOfInterestType
-              ? editPointOfInterestType
-              : pointOfInterest.type,
-            hasMadeAnyChanges
-              ? undefined
-              : () => onEditPointOfInterest(pointOfInterest.id),
-            isActive,
-          ),
+          getPointOfInterestMarkerElement({
+            type:
+              isActive && editPointOfInterestType
+                ? editPointOfInterestType
+                : pointOfInterest.type,
+            onClick:
+              hasMadeAnyChanges || isEditingInMap
+                ? undefined
+                : () => onEditPointOfInterest(pointOfInterest.id),
+            isFocused: isActive,
+            isEditingInMap,
+          }),
           isActive && editCoordinates
             ? editCoordinates
             : pointOfInterest.coordinates,
@@ -83,11 +91,11 @@ export const usePointsOfInterest = ({
     if (editCoordinates && !activePointOfInterest && panelIsOpen) {
       pointsOfInterestMarkers.push(
         addMarker(
-          getPointOfInterestMarkerElement(
-            editPointOfInterestType || 'expo',
-            undefined,
-            true,
-          ),
+          getPointOfInterestMarkerElement({
+            type: editPointOfInterestType || 'expo',
+            isFocused: true,
+            isEditingInMap,
+          }),
           editCoordinates,
         ),
       );
@@ -108,6 +116,7 @@ export const usePointsOfInterest = ({
     editPointOfInterestType,
     panelIsOpen,
     editCoordinates,
+    isEditingInMap,
     addMarker,
     onEditPointOfInterest,
     mapRef,

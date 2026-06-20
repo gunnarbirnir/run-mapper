@@ -2,7 +2,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { AnimatePresence } from 'motion/react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
-import { Icon, RoundButton, Text } from '~/primitives';
+import { Icon, RoundButton, Text, Tooltip } from '~/primitives';
 
 import { ToolbarContainer } from './ToolbarContainer';
 
@@ -27,9 +27,11 @@ export const PoiCoordinatesToolbar = ({
           <Text className="pl-2 text-center text-sm" variant="subtle">
             Editing coordinates
           </Text>
-          <RoundButton onClick={onClose}>
-            <Icon name="close" className="size-5.5" />
-          </RoundButton>
+          <Tooltip label="Close">
+            <RoundButton onClick={onClose}>
+              <Icon name="close" className="size-5.5" />
+            </RoundButton>
+          </Tooltip>
         </ToolbarContainer>
       )}
     </AnimatePresence>

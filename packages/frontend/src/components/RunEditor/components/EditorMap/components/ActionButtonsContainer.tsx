@@ -23,22 +23,6 @@ export const ActionButtonsContainer = () => {
       >
         <Icon name="userLocation" className="size-5" />
       </MapActionButton>
-      <MapActionButton
-        index={mapActionButtonIndex++}
-        tooltipLabel="Undo"
-        // TODO: Implement undo functionality
-        onClick={() => console.log('Undo')}
-      >
-        <Icon name="undo" className="size-5" />
-      </MapActionButton>
-      <MapActionButton
-        index={mapActionButtonIndex++}
-        tooltipLabel="Redo"
-        // TODO: Implement redo functionality
-        onClick={() => console.log('Redo')}
-      >
-        <Icon name="undo" className="size-5 rotate-y-180" />
-      </MapActionButton>
     </Tooltip.Provider>
   );
 };

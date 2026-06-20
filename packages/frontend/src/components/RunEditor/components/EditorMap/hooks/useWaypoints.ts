@@ -18,6 +18,8 @@ interface UseWaypointsProps {
   hasMadeChanges: boolean;
   editWaypointType: WaypointType | null;
   editWaypointCoordinates: Coordinates | null;
+  isEditingRouteCoordinates: string | null;
+  isEditingPoiCoordinates: string | null;
   onEditWaypoint: (waypointId: string) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
@@ -34,6 +36,8 @@ export const useWaypoints = ({
   hasMadeChanges,
   editWaypointType,
   editWaypointCoordinates,
+  isEditingRouteCoordinates,
+  isEditingPoiCoordinates,
   onEditWaypoint,
   setEditWaypointType,
   setEditWaypointCoordinates,
@@ -41,6 +45,9 @@ export const useWaypoints = ({
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
   const panelIsOpenRef = useRef(panelIsOpen);
+  const isEditingInMap = Boolean(
+    isEditingRouteCoordinates || isEditingPoiCoordinates,
+  );
 
   // Reset edit waypoint type when active waypoint changes
   useEffect(() => {
@@ -63,15 +70,19 @@ export const useWaypoints = ({
     }
 
     let waypointMarkers = [];
+    const isClickable = !hasMadeChanges && !isEditingInMap;
 
     const startWaypoint = getStartWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-success-500',
-          '--color-success-600',
-          hasMadeChanges ? undefined : () => onEditWaypoint(startWaypoint.id),
-        ),
+        getMarkerElement({
+          color: '--color-success-500',
+          hoverColor: '--color-success-600',
+          onClick: isClickable
+            ? () => onEditWaypoint(startWaypoint.id)
+            : undefined,
+          isEditingInMap,
+        }),
         startWaypoint.coordinates,
       ),
     );
@@ -79,11 +90,14 @@ export const useWaypoints = ({
     const endWaypoint = getEndWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-error-500',
-          '--color-error-600',
-          hasMadeChanges ? undefined : () => onEditWaypoint(endWaypoint.id),
-        ),
+        getMarkerElement({
+          color: '--color-error-500',
+          hoverColor: '--color-error-600',
+          onClick: isClickable
+            ? () => onEditWaypoint(endWaypoint.id)
+            : undefined,
+          isEditingInMap,
+        }),
         endWaypoint.coordinates,
       ),
     );
@@ -92,11 +106,15 @@ export const useWaypoints = ({
       const isActive = waypoint.id === activeWaypoint;
       waypointMarkers.push(
         addMarker(
-          getWaypointMarkerElement(
-            isActive && editWaypointType ? editWaypointType : waypoint.type,
-            hasMadeChanges ? undefined : () => onEditWaypoint(waypoint.id),
-            waypoint.id === activeWaypoint,
-          ),
+          getWaypointMarkerElement({
+            type:
+              isActive && editWaypointType ? editWaypointType : waypoint.type,
+            onClick: isClickable
+              ? () => onEditWaypoint(waypoint.id)
+              : undefined,
+            isFocused: waypoint.id === activeWaypoint,
+            isEditingInMap,
+          }),
           isActive && editWaypointCoordinates
             ? editWaypointCoordinates
             : waypoint.coordinates,
@@ -108,11 +126,11 @@ export const useWaypoints = ({
     if (editWaypointCoordinates && !activeWaypoint && panelIsOpen) {
       waypointMarkers.push(
         addMarker(
-          getWaypointMarkerElement(
-            editWaypointType || 'hydration',
-            undefined,
-            true,
-          ),
+          getWaypointMarkerElement({
+            type: editWaypointType || 'hydration',
+            isFocused: true,
+            isEditingInMap,
+          }),
           editWaypointCoordinates,
         ),
       );
@@ -132,6 +150,7 @@ export const useWaypoints = ({
     panelIsOpen,
     editWaypointType,
     editWaypointCoordinates,
+    isEditingInMap,
     addMarker,
     onEditWaypoint,
     mapRef,

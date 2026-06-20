@@ -15,6 +15,7 @@ import { calculateElevationGain } from '~/utils/route';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
+import { RouteCoordinatesToolbar } from './components/RouteCoordinatesToolbar';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
 import { useLoadMap } from './hooks/useLoadMap';
@@ -39,7 +40,6 @@ interface EditorMapProps extends MapState {
   pointOfInterestPanelIsOpen: boolean;
   pointOfInterestPanelIsAnimating: boolean;
   hasMadePointOfInterestChanges: boolean;
-  isEditingPoiCoordinates: string | null;
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
   waypointPanelIsOpen: boolean;
@@ -67,6 +67,7 @@ export const EditorMap = ({
   editPointOfInterestType,
   editWaypointType,
   editWaypointCoordinates,
+  isEditingRouteCoordinates,
   isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
@@ -78,6 +79,7 @@ export const EditorMap = ({
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
+  setIsEditingRouteCoordinates,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
   setEditWaypointType,
@@ -128,6 +130,7 @@ export const EditorMap = ({
 
   useMapCursor({
     isMapLoaded,
+    isEditingRouteCoordinates,
     isEditingPoiCoordinates,
     mapRef,
   });
@@ -150,6 +153,7 @@ export const EditorMap = ({
     isAnimatingPanel: pointOfInterestPanelIsAnimating,
     hasMadeAnyChanges,
     isEditingCoordinates: isEditingPoiCoordinates,
+    isEditingRouteCoordinates,
     editPointOfInterestType,
     onEditPointOfInterest,
     onUpdatePoiCoordinates,
@@ -167,6 +171,8 @@ export const EditorMap = ({
     hasMadeChanges: hasMadeWaypointChanges,
     editWaypointType,
     editWaypointCoordinates,
+    isEditingRouteCoordinates,
+    isEditingPoiCoordinates,
     onEditWaypoint,
     setEditWaypointType,
     setEditWaypointCoordinates,
@@ -182,6 +188,10 @@ export const EditorMap = ({
         ) : null}
       </AnimatePresence>
       <ActionButtonsContainer />
+      <RouteCoordinatesToolbar
+        isVisible={Boolean(isEditingRouteCoordinates)}
+        onClose={() => setIsEditingRouteCoordinates(null)}
+      />
       <PoiCoordinatesToolbar
         isVisible={Boolean(isEditingPoiCoordinates)}
         onClose={() => setIsEditingPoiCoordinates(null)}

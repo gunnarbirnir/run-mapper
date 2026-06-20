@@ -17,8 +17,10 @@ import { WaypointItem } from './WaypointItem';
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
+  isEditingRouteCoordinates: string | null;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
+  setIsEditingRouteCoordinates: (routeId: string | null) => void;
 }
 
 const routeFormSchema = z.object({
@@ -34,6 +36,7 @@ export const RoutePanel = ({
   currentItems,
   currentWaypoints,
   routeDistance,
+  isEditingRouteCoordinates,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -41,6 +44,7 @@ export const RoutePanel = ({
   onDeleteItem,
   onAddWaypoint,
   onEditWaypoint,
+  setIsEditingRouteCoordinates,
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
@@ -88,7 +92,8 @@ export const RoutePanel = ({
   const hasMadeWaypointChanges = !editId && !hasDefaultWaypoints;
   const isDefaultValue =
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
-    !hasMadeWaypointChanges;
+    !hasMadeWaypointChanges &&
+    !isEditingRouteCoordinates;
 
   const submitForm = useCallback(() => {
     routeForm.handleSubmit();
@@ -97,6 +102,11 @@ export const RoutePanel = ({
   const resetForm = useCallback(() => {
     routeForm.reset(formDefaultValues);
   }, [formDefaultValues, routeForm]);
+
+  const closePanel = useCallback(() => {
+    onClose();
+    setIsEditingRouteCoordinates(null);
+  }, [onClose, setIsEditingRouteCoordinates]);
 
   const {
     isEditing,
@@ -112,7 +122,7 @@ export const RoutePanel = ({
   } = usePanelForm({
     editId,
     isDefaultValue,
-    onClose,
+    onClose: closePanel,
     resetForm,
     submitForm,
     onHasMadeChanges,
@@ -168,7 +178,6 @@ export const RoutePanel = ({
         </section>
         <ItemsSection
           title="Coordinates"
-          /* TODO: Check if route is empty */
           emptyText={
             routeDistance
               ? `Route distance: ${formatNumber(routeDistance, 2)} km`
@@ -176,8 +185,16 @@ export const RoutePanel = ({
           }
           showEmptyText
         >
-          <Button color="secondary" size="small" onClick={() => {}}>
-            Edit coordinates
+          <Button
+            color="secondary"
+            size="small"
+            onClick={() =>
+              setIsEditingRouteCoordinates(
+                isEditingRouteCoordinates ? null : (editId ?? 'new-route'),
+              )
+            }
+          >
+            {isEditingRouteCoordinates ? 'Stop editing' : 'Edit coordinates'}
           </Button>
         </ItemsSection>
         <ItemsSection

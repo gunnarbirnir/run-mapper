@@ -11,6 +11,9 @@ export const useMapState = () => {
   >(null);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] = useState<
+    string | null
+  >(null);
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState<
     string | null
   >(null);
@@ -28,11 +31,13 @@ export const useMapState = () => {
 
   return {
     isMapLoaded,
+    isEditingRouteCoordinates,
     isEditingPoiCoordinates,
     editPointOfInterestType,
     editWaypointType,
     editWaypointCoordinates,
     setIsMapLoaded,
+    setIsEditingRouteCoordinates,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,
