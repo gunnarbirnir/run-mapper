@@ -3,8 +3,8 @@ import { MutableRefObject, useEffect } from 'react';
 
 interface UseMapCursorProps {
   isMapLoaded: boolean;
-  isEditingRouteCoordinates: string | null;
-  isEditingPoiCoordinates: string | null;
+  isEditingRouteCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
   mapRef: MutableRefObject<Map | null>;
 }
 

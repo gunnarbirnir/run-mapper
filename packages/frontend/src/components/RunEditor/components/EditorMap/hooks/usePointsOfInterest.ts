@@ -17,8 +17,8 @@ interface UsePointsOfInterestProps {
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   hasMadeAnyChanges: boolean;
-  isEditingCoordinates: string | null;
-  isEditingRouteCoordinates: string | null;
+  isEditingCoordinates: boolean;
+  isEditingRouteCoordinates: boolean;
   editPointOfInterestType: PointOfInterestType | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
   onUpdatePoiCoordinates: (coordinates: Coordinates) => void;
@@ -45,9 +45,7 @@ export const usePointsOfInterest = ({
   const [editCoordinates, setEditCoordinates] = useState<Coordinates | null>(
     null,
   );
-  const isEditingInMap = Boolean(
-    isEditingRouteCoordinates || isEditingCoordinates,
-  );
+  const isEditingInMap = isEditingRouteCoordinates || isEditingCoordinates;
 
   // Reset edit point of interest when active point of interest changes
   useEffect(() => {

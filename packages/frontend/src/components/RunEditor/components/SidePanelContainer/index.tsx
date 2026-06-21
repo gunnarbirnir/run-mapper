@@ -28,10 +28,10 @@ interface SidePanelContainerProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
-  isEditingRouteCoordinates: string | null;
-  isEditingPoiCoordinates: string | null;
-  setIsEditingRouteCoordinates: (routeId: string | null) => void;
-  setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  isEditingRouteCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
+  setIsEditingRouteCoordinates: (isEditing: boolean) => void;
+  setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;

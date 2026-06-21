@@ -17,8 +17,8 @@ import type { PanelState } from '../../hooks/usePanelState';
 import type { MapState } from '../EditorMap/hooks/useMapState';
 
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
-  isEditingPoiCoordinates: string | null;
-  setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  isEditingPoiCoordinates: boolean;
+  setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -119,7 +119,7 @@ export const PointOfInterestPanel = ({
 
   const closePanel = useCallback(() => {
     onClose();
-    setIsEditingPoiCoordinates(null);
+    setIsEditingPoiCoordinates(false);
   }, [onClose, setIsEditingPoiCoordinates]);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export const PointOfInterestPanel = ({
       onLatChange(coordinates.lat);
       onLngChange(coordinates.lng);
       onLatBlur();
-      setIsEditingPoiCoordinates(null);
+      setIsEditingPoiCoordinates(false);
     };
   }, [
     onLatChange,
@@ -249,9 +249,7 @@ export const PointOfInterestPanel = ({
               size="small"
               className="mt-3"
               onClick={() =>
-                setIsEditingPoiCoordinates(
-                  isEditingPoiCoordinates ? null : (editId ?? 'new-poi'),
-                )
+                setIsEditingPoiCoordinates(!isEditingPoiCoordinates)
               }
             >
               {isEditingPoiCoordinates ? 'Stop editing' : 'Edit coordinates'}

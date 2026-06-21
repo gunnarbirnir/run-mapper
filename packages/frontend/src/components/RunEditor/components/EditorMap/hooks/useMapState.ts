@@ -11,12 +11,9 @@ export const useMapState = () => {
   >(null);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] = useState<
-    string | null
-  >(null);
-  const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState<
-    string | null
-  >(null);
+  const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
+    useState(false);
+  const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
   const [editWaypointType, setEditWaypointType] = useState<WaypointType | null>(

@@ -18,8 +18,8 @@ interface UseWaypointsProps {
   hasMadeChanges: boolean;
   editWaypointType: WaypointType | null;
   editWaypointCoordinates: Coordinates | null;
-  isEditingRouteCoordinates: string | null;
-  isEditingPoiCoordinates: string | null;
+  isEditingRouteCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
   onEditWaypoint: (waypointId: string) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
@@ -45,9 +45,7 @@ export const useWaypoints = ({
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
   const panelIsOpenRef = useRef(panelIsOpen);
-  const isEditingInMap = Boolean(
-    isEditingRouteCoordinates || isEditingPoiCoordinates,
-  );
+  const isEditingInMap = isEditingRouteCoordinates || isEditingPoiCoordinates;
 
   // Reset edit waypoint type when active waypoint changes
   useEffect(() => {

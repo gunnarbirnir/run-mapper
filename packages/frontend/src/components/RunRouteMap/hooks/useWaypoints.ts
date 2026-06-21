@@ -62,11 +62,13 @@ export const useWaypoints = ({
     popups[startWaypoint.id] = getWaypointTooltip(startWaypoint);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-success-500',
-          '--color-success-600',
-          showWaypoints ? () => onWaypointClick(startWaypoint.id) : undefined,
-        ),
+        getMarkerElement({
+          color: '--color-success-500',
+          hoverColor: '--color-success-600',
+          onClick: showWaypoints
+            ? () => onWaypointClick(startWaypoint.id)
+            : undefined,
+        }),
         startWaypoint.coordinates,
       ),
     );
@@ -75,11 +77,13 @@ export const useWaypoints = ({
     popups[endWaypoint.id] = getWaypointTooltip(endWaypoint);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-error-500',
-          '--color-error-600',
-          showWaypoints ? () => onWaypointClick(endWaypoint.id) : undefined,
-        ),
+        getMarkerElement({
+          color: '--color-error-500',
+          hoverColor: '--color-error-600',
+          onClick: showWaypoints
+            ? () => onWaypointClick(endWaypoint.id)
+            : undefined,
+        }),
         endWaypoint.coordinates,
       ),
     );
@@ -89,9 +93,10 @@ export const useWaypoints = ({
         popups[waypoint.id] = getWaypointTooltip(waypoint);
         waypointMarkers.push(
           addMarker(
-            getWaypointMarkerElement(waypoint.type, () =>
-              onWaypointClick(waypoint.id),
-            ),
+            getWaypointMarkerElement({
+              type: waypoint.type,
+              onClick: () => onWaypointClick(waypoint.id),
+            }),
             waypoint.coordinates,
           ),
         );

@@ -17,10 +17,10 @@ import { WaypointItem } from './WaypointItem';
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
-  isEditingRouteCoordinates: string | null;
+  isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
-  setIsEditingRouteCoordinates: (routeId: string | null) => void;
+  setIsEditingRouteCoordinates: (isEditing: boolean) => void;
 }
 
 const routeFormSchema = z.object({
@@ -105,7 +105,7 @@ export const RoutePanel = ({
 
   const closePanel = useCallback(() => {
     onClose();
-    setIsEditingRouteCoordinates(null);
+    setIsEditingRouteCoordinates(false);
   }, [onClose, setIsEditingRouteCoordinates]);
 
   const {
@@ -189,9 +189,7 @@ export const RoutePanel = ({
             color="secondary"
             size="small"
             onClick={() =>
-              setIsEditingRouteCoordinates(
-                isEditingRouteCoordinates ? null : (editId ?? 'new-route'),
-              )
+              setIsEditingRouteCoordinates(!isEditingRouteCoordinates)
             }
           >
             {isEditingRouteCoordinates ? 'Stop editing' : 'Edit coordinates'}

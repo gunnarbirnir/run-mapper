@@ -189,12 +189,12 @@ export const EditorMap = ({
       </AnimatePresence>
       <ActionButtonsContainer />
       <RouteCoordinatesToolbar
-        isVisible={Boolean(isEditingRouteCoordinates)}
-        onClose={() => setIsEditingRouteCoordinates(null)}
+        isVisible={isEditingRouteCoordinates}
+        onClose={() => setIsEditingRouteCoordinates(false)}
       />
       <PoiCoordinatesToolbar
-        isVisible={Boolean(isEditingPoiCoordinates)}
-        onClose={() => setIsEditingPoiCoordinates(null)}
+        isVisible={isEditingPoiCoordinates}
+        onClose={() => setIsEditingPoiCoordinates(false)}
       />
     </div>
   );
