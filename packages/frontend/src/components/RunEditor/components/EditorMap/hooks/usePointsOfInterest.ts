@@ -54,6 +54,15 @@ export const usePointsOfInterest = ({
     setEditPointOfInterestType(null);
   }, [activePointOfInterest, setEditCoordinates, setEditPointOfInterestType]);
 
+  // Reset edit point of interest when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEditCoordinates(null);
+      setEditPointOfInterestType(null);
+    }
+  }, [panelIsOpen, setEditCoordinates, setEditPointOfInterestType]);
+
   // Draw points of interest
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
