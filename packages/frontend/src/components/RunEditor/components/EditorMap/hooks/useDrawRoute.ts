@@ -1,7 +1,7 @@
-import type { Map } from 'mapbox-gl';
-import { RefObject, useEffect } from 'react';
+import type { Map, MapMouseEvent } from 'mapbox-gl';
+import { RefObject, useEffect, useState, useRef } from 'react';
 
-import type { PublicRoute } from '~/types';
+import type { Coordinates, PublicRoute } from '~/types';
 import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 
@@ -12,6 +12,8 @@ interface UseMapRouteProps {
   waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
+  isEditingCoordinates: boolean;
+  onUpdateRouteCoordinates: (coordinates: Coordinates, index?: number) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -22,8 +24,31 @@ export const useDrawRoute = ({
   waypointPanelIsOpen,
   waypointPanelIsAnimating,
   isMapLoaded,
+  isEditingCoordinates,
+  onUpdateRouteCoordinates,
   mapRef,
 }: UseMapRouteProps) => {
+  const [editCoordinates, setEditCoordinates] = useState<
+    Record<number, Coordinates>
+  >({});
+  const coordinatesIndexRef = useRef(activeRoute?.coordinates.length ?? 0);
+
+  // Reset edit coordinates when active route changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setEditCoordinates({});
+    coordinatesIndexRef.current = activeRoute?.coordinates.length ?? 0;
+  }, [activeRoute, setEditCoordinates]);
+
+  // Reset edit coordinates when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEditCoordinates({});
+      coordinatesIndexRef.current = 0;
+    }
+  }, [panelIsOpen, setEditCoordinates]);
+
   // Draw route
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
@@ -31,7 +56,18 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const coordinates = activeRoute?.coordinates ?? [];
+    const coordinates: Coordinates[] = [];
+
+    for (let i = 0; i < coordinatesIndexRef.current; i++) {
+      const coordinate = editCoordinates[i] ?? activeRoute?.coordinates[i];
+      if (coordinate) {
+        coordinates.push(coordinate);
+      }
+    }
+
+    (activeRoute?.coordinates ?? []).map(
+      (coordinates, index) => editCoordinates[index] ?? coordinates,
+    );
     const routeLayer = getRouteLayer();
 
     const clearRoute = () => {
@@ -70,7 +106,13 @@ export const useDrawRoute = ({
       clearRoute();
       map.off('style.load', onStyleLoad);
     };
-  }, [isMapLoaded, activeRoute?.coordinates, mapRef]);
+  }, [
+    isMapLoaded,
+    activeRoute?.coordinates,
+    isEditingCoordinates,
+    editCoordinates,
+    mapRef,
+  ]);
 
   // Fit to bounds
   useEffect(() => {
@@ -105,4 +147,30 @@ export const useDrawRoute = ({
     waypointPanelIsAnimating,
     mapRef,
   ]);
+
+  // Handle update coordinates click
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || !isEditingCoordinates) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const handleClick = (e: MapMouseEvent) => {
+      const newCoordinates = {
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat,
+      };
+      setEditCoordinates((prevCoordinates) => ({
+        ...prevCoordinates,
+        [coordinatesIndexRef.current++]: newCoordinates,
+      }));
+      onUpdateRouteCoordinates(newCoordinates);
+    };
+
+    map.on('click', handleClick);
+
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [isMapLoaded, isEditingCoordinates, onUpdateRouteCoordinates, mapRef]);
 };

@@ -1,17 +1,18 @@
-import { useForm, useStore } from '@tanstack/react-form';
+import { useField, useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import { BoundingBox, PublicRoute, Waypoint } from '~/types';
+import { BoundingBox, Coordinates, PublicRoute, Waypoint } from '~/types';
 import { formatNumber } from '~/utils';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
 import { isUnchangedDefaultWaypoints, sortWaypoints } from '../../utils';
 import { ItemsSection } from '../ItemsSection';
+import type { MapState } from '../EditorMap/hooks/useMapState';
 import { WaypointItem } from './WaypointItem';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
@@ -21,6 +22,7 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
+  onUpdateRouteCoordinatesRef: MapState['onUpdateRouteCoordinatesRef'];
 }
 
 const routeFormSchema = z.object({
@@ -29,6 +31,14 @@ const routeFormSchema = z.object({
     .string()
     .regex(/^[0-9]+(\.[0-9]{1,2})?$/, 'Incorrect format')
     .or(z.literal('')),
+  coordinates: z
+    .array(
+      z.object({
+        lat: z.number(),
+        lng: z.number(),
+      }),
+    )
+    .min(2, 'At least 2 coordinates are required'),
 });
 
 export const RoutePanel = ({
@@ -45,6 +55,7 @@ export const RoutePanel = ({
   onAddWaypoint,
   onEditWaypoint,
   setIsEditingRouteCoordinates,
+  onUpdateRouteCoordinatesRef,
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
@@ -54,6 +65,11 @@ export const RoutePanel = ({
     return {
       name: editRoute?.name || '',
       displayDistance: editRoute?.displayDistance?.toString() || '',
+      coordinates:
+        editRoute?.coordinates.map((coordinate) => ({
+          lat: coordinate.lat,
+          lng: coordinate.lng,
+        })) || [],
     };
   }, [editId, currentItems]);
 
@@ -77,7 +93,11 @@ export const RoutePanel = ({
           { lat: 0, lng: 0 },
           { lat: 0, lng: 0 },
         ] as BoundingBox,
-        coordinates: [],
+        coordinates: value.coordinates.map((coordinate) => ({
+          ...coordinate,
+          // TODO: Get elevation from API
+          elevation: 0,
+        })),
       };
 
       if (editId) {
@@ -94,6 +114,12 @@ export const RoutePanel = ({
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
     !hasMadeWaypointChanges &&
     !isEditingRouteCoordinates;
+
+  const { handleChange: onCoordinatesChange, handleBlur: onCoordinatesBlur } =
+    useField({
+      form: routeForm,
+      name: 'coordinates',
+    });
 
   const submitForm = useCallback(() => {
     routeForm.handleSubmit();
@@ -128,6 +154,16 @@ export const RoutePanel = ({
     onHasMadeChanges,
     onDeleteItem,
   });
+
+  useEffect(() => {
+    onUpdateRouteCoordinatesRef.current = (coordinates: Coordinates) => {
+      onCoordinatesChange((prevCoordinates) => [
+        ...prevCoordinates,
+        coordinates,
+      ]);
+      onCoordinatesBlur();
+    };
+  }, [onCoordinatesChange, onCoordinatesBlur, onUpdateRouteCoordinatesRef]);
 
   return (
     <SidePanel.Content

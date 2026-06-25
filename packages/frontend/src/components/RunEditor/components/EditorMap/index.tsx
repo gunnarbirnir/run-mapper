@@ -84,6 +84,7 @@ export const EditorMap = ({
   setEditPointOfInterestType,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  onUpdateRouteCoordinates,
   onUpdatePoiCoordinates,
   mapRef,
 }: EditorMapProps) => {
@@ -141,6 +142,8 @@ export const EditorMap = ({
     isAnimatingPanel: routePanelIsAnimating,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
+    isEditingCoordinates: isEditingRouteCoordinates,
+    onUpdateRouteCoordinates,
     isMapLoaded,
     mapRef,
   });

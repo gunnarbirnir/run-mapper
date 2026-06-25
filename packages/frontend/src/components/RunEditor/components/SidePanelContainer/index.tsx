@@ -35,6 +35,7 @@ interface SidePanelContainerProps {
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  onUpdateRouteCoordinatesRef: MapState['onUpdateRouteCoordinatesRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
@@ -53,6 +54,7 @@ export const SidePanelContainer = ({
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  onUpdateRouteCoordinatesRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
   const {
@@ -143,6 +145,7 @@ export const SidePanelContainer = ({
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
+              onUpdateRouteCoordinatesRef={onUpdateRouteCoordinatesRef}
             />
           ),
         },

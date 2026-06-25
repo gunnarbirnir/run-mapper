@@ -45,6 +45,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
+    onUpdateRouteCoordinatesRef,
     onUpdatePoiCoordinatesRef,
   } = mapState;
   const activeRoute = useMemo(
@@ -85,6 +86,7 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
           setEditWaypointType={setEditWaypointType}
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
+          onUpdateRouteCoordinatesRef={onUpdateRouteCoordinatesRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
