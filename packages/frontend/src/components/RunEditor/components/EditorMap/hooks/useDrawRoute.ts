@@ -84,10 +84,19 @@ export const useDrawRoute = ({
     };
 
     const drawRoute = () => {
-      if (map.isStyleLoaded() && coordinates.length !== 0) {
+      if (!map.isStyleLoaded() || coordinates.length === 0) {
+        return;
+      }
+
+      const source = map.getSource(routeLayer.source);
+      const routeLineFeature = getLineFeature(coordinates);
+
+      if (source) {
+        (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
+      } else {
         map.addSource(routeLayer.source, {
           type: 'geojson',
-          data: getLineFeature(coordinates),
+          data: routeLineFeature,
         });
         map.addLayer(routeLayer);
       }
@@ -103,7 +112,9 @@ export const useDrawRoute = ({
     map.on('style.load', onStyleLoad);
 
     return () => {
-      clearRoute();
+      if (!isEditingCoordinates) {
+        clearRoute();
+      }
       map.off('style.load', onStyleLoad);
     };
   }, [
