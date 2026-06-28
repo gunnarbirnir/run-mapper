@@ -1,21 +1,41 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { AnimatePresence } from 'motion/react';
 import { useHotkey } from '@tanstack/react-hotkeys';
+import { useCallback } from 'react';
 
 import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
 
+import type { MapState } from '../hooks/useMapState';
 import { ToolbarContainer } from './ToolbarContainer';
 
 interface RouteCoordinatesToolbarProps {
   isVisible: boolean;
-  onClose: () => void;
+  setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
+  editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
   isVisible,
-  onClose,
+  setEditRouteCoordinates,
+  editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
-  useHotkey('Escape', onClose, {
+  const onSave = useCallback(() => {
+    editRouteActionsRef.current.onSave();
+  }, [editRouteActionsRef]);
+
+  const onCancel = useCallback(() => {
+    editRouteActionsRef.current.onCancel();
+  }, [editRouteActionsRef]);
+
+  const onClear = useCallback(() => {
+    setEditRouteCoordinates([]);
+  }, [setEditRouteCoordinates]);
+
+  useHotkey('Enter', onSave, {
+    conflictBehavior: 'replace',
+    enabled: isVisible,
+  });
+  useHotkey('Escape', onCancel, {
     conflictBehavior: 'replace',
     enabled: isVisible,
   });
@@ -36,15 +56,22 @@ export const RouteCoordinatesToolbar = ({
                   <Icon name="undo" className="size-5 rotate-y-180" />
                 </RoundButton>
               </Tooltip>
-              <Button color="gray" size="small">
+              <Button color="gray" size="small" onClick={onClear}>
                 Clear
               </Button>
             </div>
-            <Tooltip label="Close">
-              <RoundButton onClick={onClose}>
-                <Icon name="close" className="size-5.5" />
-              </RoundButton>
-            </Tooltip>
+            <div className="flex items-center gap-2">
+              <Tooltip label="Save">
+                <RoundButton onClick={onSave} color="success">
+                  <Icon name="checkmark" className="size-5.5" />
+                </RoundButton>
+              </Tooltip>
+              <Tooltip label="Close">
+                <RoundButton onClick={onCancel}>
+                  <Icon name="close" className="size-5.5" />
+                </RoundButton>
+              </Tooltip>
+            </div>
           </ToolbarContainer>
         </Tooltip.Provider>
       )}

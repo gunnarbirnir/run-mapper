@@ -1,5 +1,10 @@
 import type { Map, MapMouseEvent } from 'mapbox-gl';
-import { RefObject, useEffect, useState, useRef } from 'react';
+import {
+  RefObject,
+  useEffect,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 import type { Coordinates, PublicRoute } from '~/types';
 import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
@@ -13,7 +18,8 @@ interface UseMapRouteProps {
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
   isEditingCoordinates: boolean;
-  onUpdateRouteCoordinates: (coordinates: Coordinates, index?: number) => void;
+  editCoordinates: Coordinates[];
+  setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
   mapRef: RefObject<Map>;
 }
 
@@ -25,27 +31,19 @@ export const useDrawRoute = ({
   waypointPanelIsAnimating,
   isMapLoaded,
   isEditingCoordinates,
-  onUpdateRouteCoordinates,
+  editCoordinates,
+  setEditCoordinates,
   mapRef,
 }: UseMapRouteProps) => {
-  const [editCoordinates, setEditCoordinates] = useState<
-    Record<number, Coordinates>
-  >({});
-  const coordinatesIndexRef = useRef(activeRoute?.coordinates.length ?? 0);
-
   // Reset edit coordinates when active route changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEditCoordinates({});
-    coordinatesIndexRef.current = activeRoute?.coordinates.length ?? 0;
+    setEditCoordinates(activeRoute?.coordinates ?? []);
   }, [activeRoute, setEditCoordinates]);
 
   // Reset edit coordinates when panel closes
   useEffect(() => {
     if (!panelIsOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setEditCoordinates({});
-      coordinatesIndexRef.current = 0;
+      setEditCoordinates([]);
     }
   }, [panelIsOpen, setEditCoordinates]);
 
@@ -56,19 +54,11 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const coordinates: Coordinates[] = [];
-
-    for (let i = 0; i < coordinatesIndexRef.current; i++) {
-      const coordinate = editCoordinates[i] ?? activeRoute?.coordinates[i];
-      if (coordinate) {
-        coordinates.push(coordinate);
-      }
-    }
-
-    (activeRoute?.coordinates ?? []).map(
-      (coordinates, index) => editCoordinates[index] ?? coordinates,
-    );
     const routeLayer = getRouteLayer();
+    const coordinates =
+      editCoordinates.length > 0
+        ? editCoordinates
+        : (activeRoute?.coordinates ?? []);
 
     const clearRoute = () => {
       if (!map.isStyleLoaded() || !map.getStyle()) {
@@ -108,13 +98,14 @@ export const useDrawRoute = ({
       }
     };
 
-    drawRoute();
+    if (coordinates.length === 0) {
+      clearRoute();
+    } else {
+      drawRoute();
+    }
     map.on('style.load', onStyleLoad);
 
     return () => {
-      if (!isEditingCoordinates) {
-        clearRoute();
-      }
       map.off('style.load', onStyleLoad);
     };
   }, [
@@ -171,11 +162,10 @@ export const useDrawRoute = ({
         lng: e.lngLat.lng,
         lat: e.lngLat.lat,
       };
-      setEditCoordinates((prevCoordinates) => ({
+      setEditCoordinates((prevCoordinates) => [
         ...prevCoordinates,
-        [coordinatesIndexRef.current++]: newCoordinates,
-      }));
-      onUpdateRouteCoordinates(newCoordinates);
+        newCoordinates,
+      ]);
     };
 
     map.on('click', handleClick);
@@ -183,5 +173,5 @@ export const useDrawRoute = ({
     return () => {
       map.off('click', handleClick);
     };
-  }, [isMapLoaded, isEditingCoordinates, onUpdateRouteCoordinates, mapRef]);
+  }, [isMapLoaded, isEditingCoordinates, setEditCoordinates, mapRef]);
 };

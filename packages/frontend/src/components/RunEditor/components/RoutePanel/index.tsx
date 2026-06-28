@@ -1,28 +1,31 @@
 import { useField, useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import { BoundingBox, Coordinates, PublicRoute, Waypoint } from '~/types';
 import { formatNumber } from '~/utils';
+import { isSameRoute } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
 import { isUnchangedDefaultWaypoints, sortWaypoints } from '../../utils';
 import { ItemsSection } from '../ItemsSection';
-import type { MapState } from '../EditorMap/hooks/useMapState';
 import { WaypointItem } from './WaypointItem';
+import { MapState } from '../EditorMap/hooks/useMapState';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
+  editRouteCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
+  setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
-  onUpdateRouteCoordinatesRef: MapState['onUpdateRouteCoordinatesRef'];
+  editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 const routeFormSchema = z.object({
@@ -46,6 +49,7 @@ export const RoutePanel = ({
   currentItems,
   currentWaypoints,
   routeDistance,
+  editRouteCoordinates,
   isEditingRouteCoordinates,
   onClose,
   onUpdateItem,
@@ -54,11 +58,13 @@ export const RoutePanel = ({
   onDeleteItem,
   onAddWaypoint,
   onEditWaypoint,
+  setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
-  onUpdateRouteCoordinatesRef,
+  editRouteActionsRef,
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
+  const [coordinatesDialogOpen, setCoordinatesDialogOpen] = useState(false);
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -115,11 +121,14 @@ export const RoutePanel = ({
     !hasMadeWaypointChanges &&
     !isEditingRouteCoordinates;
 
-  const { handleChange: onCoordinatesChange, handleBlur: onCoordinatesBlur } =
-    useField({
-      form: routeForm,
-      name: 'coordinates',
-    });
+  const {
+    state: { value: coordinatesValue },
+    handleChange: onCoordinatesChange,
+    handleBlur: onCoordinatesBlur,
+  } = useField({
+    form: routeForm,
+    name: 'coordinates',
+  });
 
   const submitForm = useCallback(() => {
     routeForm.handleSubmit();
@@ -133,6 +142,39 @@ export const RoutePanel = ({
     onClose();
     setIsEditingRouteCoordinates(false);
   }, [onClose, setIsEditingRouteCoordinates]);
+
+  const saveRouteCoordinates = useCallback(() => {
+    onCoordinatesChange(editRouteCoordinates);
+    onCoordinatesBlur();
+    setIsEditingRouteCoordinates(false);
+  }, [
+    editRouteCoordinates,
+    onCoordinatesChange,
+    onCoordinatesBlur,
+    setIsEditingRouteCoordinates,
+  ]);
+
+  const cancelEditRouteCoordinates = useCallback(() => {
+    setEditRouteCoordinates(coordinatesValue);
+    setIsEditingRouteCoordinates(false);
+  }, [coordinatesValue, setEditRouteCoordinates, setIsEditingRouteCoordinates]);
+
+  const handleCancelEditRouteCoordinates = useCallback(() => {
+    if (isSameRoute(coordinatesValue, editRouteCoordinates)) {
+      cancelEditRouteCoordinates();
+    } else {
+      setCoordinatesDialogOpen(true);
+    }
+  }, [coordinatesValue, editRouteCoordinates, cancelEditRouteCoordinates]);
+
+  useEffect(() => {
+    editRouteActionsRef.current.onSave = saveRouteCoordinates;
+    editRouteActionsRef.current.onCancel = handleCancelEditRouteCoordinates;
+  }, [
+    saveRouteCoordinates,
+    handleCancelEditRouteCoordinates,
+    editRouteActionsRef,
+  ]);
 
   const {
     isEditing,
@@ -154,16 +196,6 @@ export const RoutePanel = ({
     onHasMadeChanges,
     onDeleteItem,
   });
-
-  useEffect(() => {
-    onUpdateRouteCoordinatesRef.current = (coordinates: Coordinates) => {
-      onCoordinatesChange((prevCoordinates) => [
-        ...prevCoordinates,
-        coordinates,
-      ]);
-      onCoordinatesBlur();
-    };
-  }, [onCoordinatesChange, onCoordinatesBlur, onUpdateRouteCoordinatesRef]);
 
   return (
     <SidePanel.Content
@@ -221,15 +253,32 @@ export const RoutePanel = ({
           }
           showEmptyText
         >
-          <Button
-            color="secondary"
-            size="small"
-            onClick={() =>
-              setIsEditingRouteCoordinates(!isEditingRouteCoordinates)
-            }
-          >
-            {isEditingRouteCoordinates ? 'Stop editing' : 'Edit coordinates'}
-          </Button>
+          {isEditingRouteCoordinates ? (
+            <div className="flex items-center gap-2">
+              <Button
+                color="success"
+                size="small"
+                onClick={saveRouteCoordinates}
+              >
+                Save
+              </Button>
+              <Button
+                color="gray"
+                size="small"
+                onClick={handleCancelEditRouteCoordinates}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button
+              color="secondary"
+              size="small"
+              onClick={() => setIsEditingRouteCoordinates(true)}
+            >
+              Edit coordinates
+            </Button>
+          )}
         </ItemsSection>
         <ItemsSection
           title="Waypoints"
@@ -317,6 +366,29 @@ export const RoutePanel = ({
             },
           ]}
           onClose={handleCloseDeleteDialog}
+        />
+        <Dialog
+          title="Save changes"
+          description="Are you sure you want to stop editing without saving your changes?"
+          isOpen={coordinatesDialogOpen}
+          buttons={[
+            {
+              label: 'Save',
+              onClick: () => {
+                saveRouteCoordinates();
+                setCoordinatesDialogOpen(false);
+              },
+            },
+            {
+              label: 'Discard',
+              color: 'error',
+              onClick: () => {
+                cancelEditRouteCoordinates();
+                setCoordinatesDialogOpen(false);
+              },
+            },
+          ]}
+          onClose={() => setCoordinatesDialogOpen(false)}
         />
       </Form>
     </SidePanel.Content>

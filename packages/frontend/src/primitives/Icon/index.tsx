@@ -22,6 +22,7 @@ import { Info } from './Info';
 import { Plus } from './Plus';
 import { Undo } from './Undo';
 import { UserLocation } from './UserLocation';
+import { Checkmark } from './Checkmark';
 
 import { cn } from '~/utils';
 
@@ -47,7 +48,8 @@ export type IconName =
   | 'info'
   | 'plus'
   | 'undo'
-  | 'userLocation';
+  | 'userLocation'
+  | 'checkmark';
 
 interface IconProps {
   name: IconName;
@@ -101,6 +103,8 @@ const IconContent = ({ name }: { name: IconName }) => {
       return <Undo />;
     case 'userLocation':
       return <UserLocation />;
+    case 'checkmark':
+      return <Checkmark />;
     default:
       return null;
   }

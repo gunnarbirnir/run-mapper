@@ -280,3 +280,23 @@ export const getWaypointPoiLabel = (
       return type;
   }
 };
+
+export const isSameRoute = (
+  coordinates1: Coordinates[],
+  coordinates2: Coordinates[],
+): boolean => {
+  if (coordinates1.length !== coordinates2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < coordinates1.length; i++) {
+    if (
+      coordinates1[i].lat !== coordinates2[i].lat ||
+      coordinates1[i].lng !== coordinates2[i].lng
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};

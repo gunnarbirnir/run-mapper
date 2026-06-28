@@ -10,6 +10,7 @@ import type {
   PointOfInterest,
   PointOfInterestType,
 } from '~/types';
+import { formatNumber } from '~/utils';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -232,7 +233,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
-                  {field.state.value ?? '-'}
+                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -240,7 +241,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
-                  {field.state.value ?? '-'}
+                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
                 </Text>
               )}
             </poiForm.Field>

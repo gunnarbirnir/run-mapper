@@ -6,14 +6,21 @@ import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
-  const onUpdateRouteCoordinatesRef = useRef<
-    ((coordinates: Coordinates, index?: number) => void) | null
-  >(null);
   const onUpdatePoiCoordinatesRef = useRef<
     ((coordinates: Coordinates) => void) | null
   >(null);
+  const editRouteActionsRef = useRef<{
+    onSave: () => void;
+    onCancel: () => void;
+  }>({
+    onSave: () => {},
+    onCancel: () => {},
+  });
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [editRouteCoordinates, setEditRouteCoordinates] = useState<
+    Coordinates[]
+  >([]);
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
@@ -25,34 +32,29 @@ export const useMapState = () => {
   const [editWaypointCoordinates, setEditWaypointCoordinates] =
     useState<Coordinates | null>(null);
 
-  const onUpdateRouteCoordinates = useCallback(
-    (coordinates: Coordinates, index?: number) => {
-      onUpdateRouteCoordinatesRef.current?.(coordinates, index);
-    },
-    [],
-  );
   const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
     onUpdatePoiCoordinatesRef.current?.(coordinates);
   }, []);
 
   return {
     isMapLoaded,
+    editRouteCoordinates,
     isEditingRouteCoordinates,
     isEditingPoiCoordinates,
     editPointOfInterestType,
     editWaypointType,
     editWaypointCoordinates,
     setIsMapLoaded,
+    setEditRouteCoordinates,
     setIsEditingRouteCoordinates,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
-    onUpdateRouteCoordinates,
     onUpdatePoiCoordinates,
     mapRef,
-    onUpdateRouteCoordinatesRef,
     onUpdatePoiCoordinatesRef,
+    editRouteActionsRef,
   };
 };
 

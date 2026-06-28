@@ -76,17 +76,18 @@ export const EditorMap = ({
   hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
+  editRouteCoordinates,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
-  setIsEditingRouteCoordinates,
+  setEditRouteCoordinates,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
   setEditWaypointType,
   setEditWaypointCoordinates,
-  onUpdateRouteCoordinates,
   onUpdatePoiCoordinates,
   mapRef,
+  editRouteActionsRef,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const initialBounds = initialBoundingBox
@@ -143,8 +144,9 @@ export const EditorMap = ({
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     isEditingCoordinates: isEditingRouteCoordinates,
-    onUpdateRouteCoordinates,
     isMapLoaded,
+    editCoordinates: editRouteCoordinates,
+    setEditCoordinates: setEditRouteCoordinates,
     mapRef,
   });
 
@@ -193,7 +195,8 @@ export const EditorMap = ({
       <ActionButtonsContainer />
       <RouteCoordinatesToolbar
         isVisible={isEditingRouteCoordinates}
-        onClose={() => setIsEditingRouteCoordinates(false)}
+        setEditRouteCoordinates={setEditRouteCoordinates}
+        editRouteActionsRef={editRouteActionsRef}
       />
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}

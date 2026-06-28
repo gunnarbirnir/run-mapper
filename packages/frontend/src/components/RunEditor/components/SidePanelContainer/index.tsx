@@ -28,14 +28,16 @@ interface SidePanelContainerProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
+  editRouteCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
+  setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
-  onUpdateRouteCoordinatesRef: MapState['onUpdateRouteCoordinatesRef'];
+  editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
@@ -47,14 +49,16 @@ export const SidePanelContainer = ({
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
+  editRouteCoordinates,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
-  onUpdateRouteCoordinatesRef,
+  editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
   const {
@@ -141,11 +145,13 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
+              editRouteCoordinates={editRouteCoordinates}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
+              setEditRouteCoordinates={setEditRouteCoordinates}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
-              onUpdateRouteCoordinatesRef={onUpdateRouteCoordinatesRef}
+              editRouteActionsRef={editRouteActionsRef}
             />
           ),
         },
