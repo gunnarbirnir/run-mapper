@@ -161,7 +161,7 @@ export const getRoutePointElement = ({
 }): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
-    'w-3 h-3 rounded-full border-2 border-gray-600 cursor-crosshair bg-primary-500',
+    'w-3 h-3 rounded-full border-2 border-white cursor-crosshair bg-primary-500 shadow-md',
     {
       'cursor-pointer hover:h-4 hover:w-4': onClick && !isSelected,
       'h-4 w-4 outline outline-2': isSelected,
