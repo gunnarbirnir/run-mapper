@@ -195,6 +195,7 @@ export const EditorMap = ({
       <ActionButtonsContainer />
       <RouteCoordinatesToolbar
         isVisible={isEditingRouteCoordinates}
+        editRouteCoordinates={editRouteCoordinates}
         setEditRouteCoordinates={setEditRouteCoordinates}
         editRouteActionsRef={editRouteActionsRef}
       />

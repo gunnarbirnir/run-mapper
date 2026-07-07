@@ -4,21 +4,32 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { useCallback } from 'react';
 
 import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
+import type { Coordinates } from '~/types';
 
 import type { MapState } from '../hooks/useMapState';
+import { useRouteUndoRedo } from '../hooks/useRouteUndoRedo';
 import { ToolbarContainer } from './ToolbarContainer';
 
 interface RouteCoordinatesToolbarProps {
   isVisible: boolean;
+  editRouteCoordinates: Coordinates[];
   setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
   isVisible,
+  editRouteCoordinates,
   setEditRouteCoordinates,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
+  const { handleUndo, handleRedo, isUndoDisabled, isRedoDisabled } =
+    useRouteUndoRedo({
+      initialize: isVisible,
+      editRouteCoordinates,
+      setEditRouteCoordinates,
+    });
+
   const onSave = useCallback(() => {
     editRouteActionsRef.current.onSave();
   }, [editRouteActionsRef]);
@@ -39,6 +50,26 @@ export const RouteCoordinatesToolbar = ({
     conflictBehavior: 'replace',
     enabled: isVisible,
   });
+  useHotkey(
+    {
+      key: 'Mod+Z',
+    },
+    handleUndo,
+    {
+      conflictBehavior: 'replace',
+      enabled: isVisible && !isUndoDisabled,
+    },
+  );
+  useHotkey(
+    {
+      key: 'Mod+Shift+Z',
+    },
+    handleRedo,
+    {
+      conflictBehavior: 'replace',
+      enabled: isVisible && !isRedoDisabled,
+    },
+  );
 
   return (
     <AnimatePresence>
@@ -47,12 +78,20 @@ export const RouteCoordinatesToolbar = ({
           <ToolbarContainer className="flex items-center gap-3 p-1.5">
             <div className="flex items-center gap-2">
               <Tooltip label="Undo">
-                <RoundButton color="gray">
+                <RoundButton
+                  color="gray"
+                  disabled={isUndoDisabled}
+                  onClick={handleUndo}
+                >
                   <Icon name="undo" className="size-5" />
                 </RoundButton>
               </Tooltip>
               <Tooltip label="Redo">
-                <RoundButton color="gray" disabled>
+                <RoundButton
+                  color="gray"
+                  disabled={isRedoDisabled}
+                  onClick={handleRedo}
+                >
                   <Icon name="undo" className="size-5 rotate-y-180" />
                 </RoundButton>
               </Tooltip>
