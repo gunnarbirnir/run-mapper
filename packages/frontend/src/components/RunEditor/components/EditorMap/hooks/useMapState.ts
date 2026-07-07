@@ -23,6 +23,10 @@ export const useMapState = () => {
   >([]);
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
+  const [selectedRoutePoint, setSelectedRoutePoint] =
+    // Index of the selected route point
+    // TODO: Use id instead
+    useState<number | null>(null);
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
@@ -40,6 +44,7 @@ export const useMapState = () => {
     isMapLoaded,
     editRouteCoordinates,
     isEditingRouteCoordinates,
+    selectedRoutePoint,
     isEditingPoiCoordinates,
     editPointOfInterestType,
     editWaypointType,
@@ -47,6 +52,7 @@ export const useMapState = () => {
     setIsMapLoaded,
     setEditRouteCoordinates,
     setIsEditingRouteCoordinates,
+    setSelectedRoutePoint,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,

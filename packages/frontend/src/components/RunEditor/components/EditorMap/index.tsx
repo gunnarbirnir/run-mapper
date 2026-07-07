@@ -15,6 +15,7 @@ import { calculateElevationGain } from '~/utils/route';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
+import { SelectedRoutePointToolbar } from './components/SelectedRoutePointToolbar';
 import { RouteCoordinatesToolbar } from './components/RouteCoordinatesToolbar';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
@@ -68,6 +69,7 @@ export const EditorMap = ({
   editWaypointType,
   editWaypointCoordinates,
   isEditingRouteCoordinates,
+  selectedRoutePoint,
   isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
@@ -81,6 +83,7 @@ export const EditorMap = ({
   onEditWaypoint,
   setIsMapLoaded,
   setEditRouteCoordinates,
+  setSelectedRoutePoint,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
   setEditWaypointType,
@@ -146,7 +149,9 @@ export const EditorMap = ({
     isEditingCoordinates: isEditingRouteCoordinates,
     isMapLoaded,
     editCoordinates: editRouteCoordinates,
+    selectedRoutePoint,
     setEditCoordinates: setEditRouteCoordinates,
+    setSelectedRoutePoint,
     mapRef,
   });
 
@@ -194,10 +199,16 @@ export const EditorMap = ({
       </AnimatePresence>
       <ActionButtonsContainer />
       <RouteCoordinatesToolbar
-        isVisible={isEditingRouteCoordinates}
+        isEditingRouteCoordinates={isEditingRouteCoordinates}
         editRouteCoordinates={editRouteCoordinates}
+        selectedRoutePoint={selectedRoutePoint}
         setEditRouteCoordinates={setEditRouteCoordinates}
         editRouteActionsRef={editRouteActionsRef}
+      />
+      <SelectedRoutePointToolbar
+        selectedRoutePoint={selectedRoutePoint}
+        setSelectedRoutePoint={setSelectedRoutePoint}
+        setEditRouteCoordinates={setEditRouteCoordinates}
       />
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}

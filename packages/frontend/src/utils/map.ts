@@ -149,21 +149,33 @@ export const getPointOfInterestMarkerElement = ({
 };
 
 export const getRoutePointElement = ({
+  isSelected,
   onClick,
+  onEnter,
+  onLeave,
 }: {
-  onClick?: () => void;
   isSelected?: boolean;
+  onClick?: () => void;
+  onEnter?: () => void;
+  onLeave?: () => void;
 }): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
     'w-3 h-3 rounded-full border-2 border-gray-600 cursor-crosshair bg-primary-500',
     {
-      'cursor-pointer hover:bg-gray-600': onClick,
+      'cursor-pointer hover:h-4 hover:w-4': onClick && !isSelected,
+      'h-4 w-4 outline outline-2': isSelected,
     },
   );
 
   if (onClick) {
     marker.addEventListener('click', onClick);
+    if (onEnter) {
+      marker.addEventListener('mouseenter', onEnter);
+    }
+    if (onLeave) {
+      marker.addEventListener('mouseleave', onLeave);
+    }
   }
 
   return marker;

@@ -11,21 +11,25 @@ import { useRouteUndoRedo } from '../hooks/useRouteUndoRedo';
 import { ToolbarContainer } from './ToolbarContainer';
 
 interface RouteCoordinatesToolbarProps {
-  isVisible: boolean;
+  isEditingRouteCoordinates: boolean;
+  selectedRoutePoint: number | null;
   editRouteCoordinates: Coordinates[];
   setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
-  isVisible,
+  isEditingRouteCoordinates,
+  selectedRoutePoint,
   editRouteCoordinates,
   setEditRouteCoordinates,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
+  const isVisible = isEditingRouteCoordinates && selectedRoutePoint === null;
+
   const { handleUndo, handleRedo, isUndoDisabled, isRedoDisabled } =
     useRouteUndoRedo({
-      initialize: isVisible,
+      initialize: isEditingRouteCoordinates,
       editRouteCoordinates,
       setEditRouteCoordinates,
     });

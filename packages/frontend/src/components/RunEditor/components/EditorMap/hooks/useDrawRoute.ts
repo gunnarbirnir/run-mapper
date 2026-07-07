@@ -2,6 +2,7 @@ import type { Map, MapMouseEvent, Marker } from 'mapbox-gl';
 import {
   RefObject,
   useEffect,
+  useRef,
   type Dispatch,
   type SetStateAction,
 } from 'react';
@@ -25,7 +26,9 @@ interface UseMapRouteProps {
   isMapLoaded: boolean;
   isEditingCoordinates: boolean;
   editCoordinates: Coordinates[];
+  selectedRoutePoint: number | null;
   setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
+  setSelectedRoutePoint: Dispatch<SetStateAction<number | null>>;
   mapRef: RefObject<Map>;
 }
 
@@ -38,10 +41,13 @@ export const useDrawRoute = ({
   isMapLoaded,
   isEditingCoordinates,
   editCoordinates,
+  selectedRoutePoint,
   setEditCoordinates,
+  setSelectedRoutePoint,
   mapRef,
 }: UseMapRouteProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
+  const disableMapClickRef = useRef(false);
 
   // Reset edit coordinates when active route changes
   useEffect(() => {
@@ -103,11 +109,19 @@ export const useDrawRoute = ({
 
     const drawRoutePoints = () => {
       // TODO: Only route points
-      routePointMarkers = coordinates.map((coordinate) =>
-        addMarker(getRoutePointElement({}), {
-          lng: coordinate.lng,
-          lat: coordinate.lat,
-        }),
+      routePointMarkers = coordinates.map((coordinate, index) =>
+        addMarker(
+          getRoutePointElement({
+            isSelected: selectedRoutePoint === index,
+            onClick: () => setSelectedRoutePoint(index),
+            onEnter: () => (disableMapClickRef.current = true),
+            onLeave: () => (disableMapClickRef.current = false),
+          }),
+          {
+            lng: coordinate.lng,
+            lat: coordinate.lat,
+          },
+        ),
       );
     };
 
@@ -137,7 +151,9 @@ export const useDrawRoute = ({
     activeRoute?.coordinates,
     isEditingCoordinates,
     editCoordinates,
+    selectedRoutePoint,
     addMarker,
+    setSelectedRoutePoint,
     mapRef,
   ]);
 
@@ -183,14 +199,28 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const handleClick = (e: MapMouseEvent) => {
+      if (disableMapClickRef.current) {
+        return;
+      }
+
       const newCoordinates = {
         lng: e.lngLat.lng,
         lat: e.lngLat.lat,
       };
-      setEditCoordinates((prevCoordinates) => [
-        ...prevCoordinates,
-        newCoordinates,
-      ]);
+
+      if (selectedRoutePoint === null) {
+        setEditCoordinates((prevCoordinates) => [
+          ...prevCoordinates,
+          newCoordinates,
+        ]);
+      } else {
+        setEditCoordinates((prevCoordinates) => {
+          const updatedCoordinates = [...prevCoordinates];
+          updatedCoordinates[selectedRoutePoint] = newCoordinates;
+          return updatedCoordinates;
+        });
+        setSelectedRoutePoint(null);
+      }
     };
 
     map.on('click', handleClick);
@@ -198,5 +228,13 @@ export const useDrawRoute = ({
     return () => {
       map.off('click', handleClick);
     };
-  }, [isMapLoaded, isEditingCoordinates, setEditCoordinates, mapRef]);
+  }, [
+    isMapLoaded,
+    isEditingCoordinates,
+    selectedRoutePoint,
+    setEditCoordinates,
+    setSelectedRoutePoint,
+    mapRef,
+    disableMapClickRef,
+  ]);
 };
