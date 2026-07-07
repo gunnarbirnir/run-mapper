@@ -1,4 +1,4 @@
-import type { Map, MapMouseEvent } from 'mapbox-gl';
+import type { Map, MapMouseEvent, Marker } from 'mapbox-gl';
 import {
   RefObject,
   useEffect,
@@ -7,8 +7,14 @@ import {
 } from 'react';
 
 import type { Coordinates, PublicRoute } from '~/types';
-import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
+import {
+  getLineFeature,
+  getRouteLayer,
+  formatBounds,
+  getRoutePointElement,
+} from '~/utils/map';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import { useMapHandlers } from '~/hooks/useMapHandlers';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -35,6 +41,8 @@ export const useDrawRoute = ({
   setEditCoordinates,
   mapRef,
 }: UseMapRouteProps) => {
+  const { addMarker } = useMapHandlers({ mapRef });
+
   // Reset edit coordinates when active route changes
   useEffect(() => {
     setEditCoordinates(activeRoute?.coordinates ?? []);
@@ -59,19 +67,7 @@ export const useDrawRoute = ({
       editCoordinates.length > 0
         ? editCoordinates
         : (activeRoute?.coordinates ?? []);
-
-    const clearRoute = () => {
-      if (!map.isStyleLoaded() || !map.getStyle()) {
-        return;
-      }
-
-      if (map.getLayer(routeLayer.id)) {
-        map.removeLayer(routeLayer.id);
-      }
-      if (map.getSource(routeLayer.source)) {
-        map.removeSource(routeLayer.source);
-      }
-    };
+    let routePointMarkers: (Marker | undefined)[] = [];
 
     const drawRoute = () => {
       if (!map.isStyleLoaded() || coordinates.length === 0) {
@@ -92,6 +88,29 @@ export const useDrawRoute = ({
       }
     };
 
+    const clearRoute = () => {
+      if (!map.isStyleLoaded() || !map.getStyle()) {
+        return;
+      }
+
+      if (map.getLayer(routeLayer.id)) {
+        map.removeLayer(routeLayer.id);
+      }
+      if (map.getSource(routeLayer.source)) {
+        map.removeSource(routeLayer.source);
+      }
+    };
+
+    const drawRoutePoints = () => {
+      // TODO: Only route points
+      routePointMarkers = coordinates.map((coordinate) =>
+        addMarker(getRoutePointElement({}), {
+          lng: coordinate.lng,
+          lat: coordinate.lat,
+        }),
+      );
+    };
+
     const onStyleLoad = () => {
       if (!map.getSource(routeLayer.source)) {
         drawRoute();
@@ -102,17 +121,23 @@ export const useDrawRoute = ({
       clearRoute();
     } else {
       drawRoute();
+      if (isEditingCoordinates) {
+        drawRoutePoints();
+      }
     }
+
     map.on('style.load', onStyleLoad);
 
     return () => {
       map.off('style.load', onStyleLoad);
+      routePointMarkers.forEach((marker) => marker?.remove());
     };
   }, [
     isMapLoaded,
     activeRoute?.coordinates,
     isEditingCoordinates,
     editCoordinates,
+    addMarker,
     mapRef,
   ]);
 

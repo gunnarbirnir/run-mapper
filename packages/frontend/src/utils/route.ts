@@ -1,13 +1,13 @@
+import { MAP_ICONS } from '~/constants/mapIcons';
 import type {
   Coordinates,
   Elevation,
+  InnerWaypointType,
+  PointOfInterestType,
+  RouteCoordinates,
   Waypoint,
   WaypointType,
-  PointOfInterestType,
-  InnerWaypointType,
-  RouteCoordinates,
 } from '~/types';
-import { MAP_ICONS } from '~/constants/mapIcons';
 
 export const processRunRoute = (
   routeCoordinates: RouteCoordinates[] = [],

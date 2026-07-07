@@ -147,3 +147,24 @@ export const getPointOfInterestMarkerElement = ({
 
   return marker;
 };
+
+export const getRoutePointElement = ({
+  onClick,
+}: {
+  onClick?: () => void;
+  isSelected?: boolean;
+}): HTMLElement => {
+  const marker = document.createElement('div');
+  marker.className = cn(
+    'w-3 h-3 rounded-full border-2 border-gray-600 cursor-crosshair bg-primary-500',
+    {
+      'cursor-pointer hover:bg-gray-600': onClick,
+    },
+  );
+
+  if (onClick) {
+    marker.addEventListener('click', onClick);
+  }
+
+  return marker;
+};
