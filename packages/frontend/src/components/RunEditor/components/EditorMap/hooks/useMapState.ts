@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
 import { Map } from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
 

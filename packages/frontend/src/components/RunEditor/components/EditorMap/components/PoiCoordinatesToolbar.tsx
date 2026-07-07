@@ -1,4 +1,3 @@
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { AnimatePresence } from 'motion/react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
