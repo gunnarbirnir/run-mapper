@@ -328,7 +328,11 @@ export const RoutePanel = ({
             Cancel
           </Button>
           {isEditing && (
-            <Button color="error" className="w-full" onClick={handleOnDelete}>
+            <Button
+              color="errorOutline"
+              className="w-full"
+              onClick={handleOnDelete}
+            >
               Delete
             </Button>
           )}
@@ -344,7 +348,7 @@ export const RoutePanel = ({
             },
             {
               label: 'Discard',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDiscardChanges,
             },
           ]}
@@ -357,7 +361,7 @@ export const RoutePanel = ({
           buttons={[
             {
               label: 'Delete',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDeleteItem,
             },
             {
@@ -381,7 +385,7 @@ export const RoutePanel = ({
             },
             {
               label: 'Discard',
-              color: 'error',
+              color: 'errorOutline',
               onClick: () => {
                 cancelEditRouteCoordinates();
                 setCoordinatesDialogOpen(false);

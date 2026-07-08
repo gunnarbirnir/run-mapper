@@ -52,14 +52,16 @@ export const useDrawRoute = ({
   // Reset edit coordinates when active route changes
   useEffect(() => {
     setEditCoordinates(activeRoute?.coordinates ?? []);
-  }, [activeRoute, setEditCoordinates]);
+    setSelectedRoutePoint(null);
+  }, [activeRoute, setEditCoordinates, setSelectedRoutePoint]);
 
   // Reset edit coordinates when panel closes
   useEffect(() => {
     if (!panelIsOpen) {
       setEditCoordinates([]);
+      setSelectedRoutePoint(null);
     }
-  }, [panelIsOpen, setEditCoordinates]);
+  }, [panelIsOpen, setEditCoordinates, setSelectedRoutePoint]);
 
   // Draw route
   useEffect(() => {

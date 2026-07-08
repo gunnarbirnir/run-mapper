@@ -317,7 +317,11 @@ export const WaypointPanel = ({
             Cancel
           </Button>
           {isEditing && !isStartOrEnd && (
-            <Button color="error" className="w-full" onClick={handleOnDelete}>
+            <Button
+              color="errorOutline"
+              className="w-full"
+              onClick={handleOnDelete}
+            >
               Delete
             </Button>
           )}
@@ -333,7 +337,7 @@ export const WaypointPanel = ({
             },
             {
               label: 'Discard',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDiscardChanges,
             },
           ]}
@@ -346,7 +350,7 @@ export const WaypointPanel = ({
           buttons={[
             {
               label: 'Delete',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDeleteItem,
             },
             {
