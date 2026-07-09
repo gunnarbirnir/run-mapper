@@ -121,20 +121,14 @@ export const RootPanel = ({
           ) : null}
         </ItemsSection>
         <section className="flex flex-col gap-3">
-          {isSmallScreen && (
-            <Button
-              className="w-full"
-              // TODO: Save run
-              onClick={() => console.log('Save run')}
-            >
-              Save run
-            </Button>
-          )}
           <Button
             className="w-full"
-            linkTo="/runs"
-            color={isSmallScreen ? 'gray' : 'black'}
+            // TODO: Save run
+            onClick={() => console.log('Save run')}
           >
+            {isEditing ? 'Save run' : 'Create run'}
+          </Button>
+          <Button className="w-full" linkTo="/runs" color="gray">
             Back to runs
           </Button>
           {isEditing && (

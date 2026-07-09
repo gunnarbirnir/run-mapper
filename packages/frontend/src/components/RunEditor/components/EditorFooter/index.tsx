@@ -25,12 +25,12 @@ export const EditorFooter = () => {
           </Button>
         </div>
       )}
-      {/* TODO: Save run */}
+      {/* TODO: Publish/unpublish run */}
       <Button
-        onClick={() => console.log('Save run')}
+        onClick={() => console.log('Publish run')}
         className={cn({ 'w-full': isSmallScreen })}
       >
-        Save run
+        Publish run
       </Button>
     </div>
   );
