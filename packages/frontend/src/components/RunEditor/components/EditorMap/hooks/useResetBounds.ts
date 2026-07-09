@@ -1,8 +1,8 @@
-import { RefObject, useEffect } from 'react';
 import { Map } from 'mapbox-gl';
+import { RefObject, useEffect } from 'react';
 
-import { Bounds } from '~/types';
 import { BOUNDS_PADDING, FIT_INITIAL_BOUNDS_DURATION } from '~/constants/map';
+import { Bounds } from '~/types';
 
 interface UseResetBoundsProps {
   initialBounds?: Bounds;

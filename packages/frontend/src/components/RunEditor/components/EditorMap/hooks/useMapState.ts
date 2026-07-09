@@ -15,6 +15,7 @@ export const useMapState = () => {
     onSave: () => {},
     onCancel: () => {},
   });
+  const isResettingBoundsRef = useRef(false);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [editRouteCoordinates, setEditRouteCoordinates] = useState<
@@ -34,10 +35,16 @@ export const useMapState = () => {
   );
   const [editWaypointCoordinates, setEditWaypointCoordinates] =
     useState<Coordinates | null>(null);
+  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
+  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
 
   const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
     onUpdatePoiCoordinatesRef.current?.(coordinates);
   }, []);
+
+  const fitToInitialBounds = useCallback(() => {
+    fitToInitialBoundsRef.current?.();
+  }, [fitToInitialBoundsRef]);
 
   return {
     isMapLoaded,
@@ -48,6 +55,7 @@ export const useMapState = () => {
     editPointOfInterestType,
     editWaypointType,
     editWaypointCoordinates,
+    isAtInitialBounds,
     setIsMapLoaded,
     setEditRouteCoordinates,
     setIsEditingRouteCoordinates,
@@ -56,10 +64,14 @@ export const useMapState = () => {
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
+    setIsAtInitialBounds,
     onUpdatePoiCoordinates,
+    fitToInitialBounds,
     mapRef,
     onUpdatePoiCoordinatesRef,
     editRouteActionsRef,
+    fitToInitialBoundsRef,
+    isResettingBoundsRef,
   };
 };
 

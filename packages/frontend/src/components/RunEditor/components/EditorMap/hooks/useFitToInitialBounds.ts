@@ -6,9 +6,9 @@ import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;
-  bounds: Bounds;
-  mapRef: RefObject<Map>;
+  bounds?: Bounds;
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
+  mapRef: RefObject<Map>;
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
   isResettingBoundsRef: MutableRefObject<boolean>;
 }
@@ -40,6 +40,9 @@ export const useFitToInitialBounds = ({
     map.on('moveend', handleMoveEnd);
 
     fitToInitialBoundsRef.current = () => {
+      if (!bounds) {
+        return;
+      }
       mapRef.current?.fitBounds(bounds, {
         padding: BOUNDS_PADDING,
         duration: FIT_INITIAL_BOUNDS_DURATION,

@@ -2,11 +2,10 @@ import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCallback, useMemo, useRef } from 'react';
 
-import { Icon, Tooltip } from '~/primitives';
 import { formatBounds } from '~/utils/map';
 
-import { MapActionButton } from './components/MapActionButton';
 import { PoweredByLabel } from './components/PoweredByLabel';
+import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { useActiveMarker } from './hooks/useActiveMarker';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { useLoadMap } from './hooks/useLoadMap';
@@ -51,7 +50,6 @@ export const RunRouteMap = ({
   const bounds = useMemo(() => formatBounds(boundingBox), [boundingBox]);
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  let mapActionButtonIndex = 0;
 
   useLoadMap({
     bounds,
@@ -148,33 +146,14 @@ export const RunRouteMap = ({
   return (
     <div className="relative h-full w-full">
       <div ref={mapContainerRef} className="h-full w-full" />
-      <Tooltip.Provider>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Play"
-          disabled={routeIsAnimating}
-          onClick={playRoute}
-        >
-          <Icon name="play" className="size-5" />
-        </MapActionButton>
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Reset"
-          disabled={isAtInitialBounds}
-          onClick={resetRoute}
-        >
-          <Icon name="reset" className="size-4.5" />
-        </MapActionButton>
-        {!isFullscreen && (
-          <MapActionButton
-            index={mapActionButtonIndex++}
-            tooltipLabel="Fullscreen"
-            onClick={openFullscreen}
-          >
-            <Icon name="externalLink" className="size-5" />
-          </MapActionButton>
-        )}
-      </Tooltip.Provider>
+      <ActionButtonsContainer
+        isMapLoaded={isMapLoaded}
+        isAtInitialBounds={isAtInitialBounds}
+        isFullscreen={isFullscreen}
+        resetRoute={resetRoute}
+        openFullscreen={openFullscreen}
+        mapRef={mapRef}
+      />
       <PoweredByLabel />
     </div>
   );

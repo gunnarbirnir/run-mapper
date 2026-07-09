@@ -26,6 +26,7 @@ import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
+import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
@@ -79,6 +80,7 @@ export const EditorMap = ({
   initialBoundingBox,
   isMapLoaded,
   editRouteCoordinates,
+  isAtInitialBounds,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
@@ -88,9 +90,13 @@ export const EditorMap = ({
   setEditPointOfInterestType,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  setIsAtInitialBounds,
   onUpdatePoiCoordinates,
+  fitToInitialBoundsRef,
   mapRef,
   editRouteActionsRef,
+  isResettingBoundsRef,
+  fitToInitialBounds,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const initialBounds = initialBoundingBox
@@ -133,6 +139,15 @@ export const EditorMap = ({
     mapRef,
   });
 
+  useFitToInitialBounds({
+    isMapLoaded,
+    bounds: initialBounds,
+    mapRef,
+    setIsAtInitialBounds,
+    fitToInitialBoundsRef,
+    isResettingBoundsRef,
+  });
+
   useMapCursor({
     isMapLoaded,
     isEditingRouteCoordinates,
@@ -153,6 +168,7 @@ export const EditorMap = ({
     setEditCoordinates: setEditRouteCoordinates,
     setSelectedRoutePoint,
     mapRef,
+    isResettingBoundsRef,
   });
 
   usePointsOfInterest({
@@ -197,7 +213,14 @@ export const EditorMap = ({
           <RouteStats distance={routeDistance} elevationGain={elevationGain} />
         ) : null}
       </AnimatePresence>
-      <ActionButtonsContainer />
+      <ActionButtonsContainer
+        isMapLoaded={isMapLoaded}
+        mapRef={mapRef}
+        isAtInitialBounds={isAtInitialBounds}
+        initialBounds={initialBounds}
+        hasActiveRoute={Boolean(activeRoute)}
+        resetRoute={fitToInitialBounds}
+      />
       <RouteCoordinatesToolbar
         isEditingRouteCoordinates={isEditingRouteCoordinates}
         editRouteCoordinates={editRouteCoordinates}

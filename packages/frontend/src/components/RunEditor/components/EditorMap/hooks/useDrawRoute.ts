@@ -5,6 +5,7 @@ import {
   useRef,
   type Dispatch,
   type SetStateAction,
+  type MutableRefObject,
 } from 'react';
 
 import type { Coordinates, PublicRoute } from '~/types';
@@ -30,6 +31,7 @@ interface UseMapRouteProps {
   setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
   setSelectedRoutePoint: Dispatch<SetStateAction<number | null>>;
   mapRef: RefObject<Map>;
+  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useDrawRoute = ({
@@ -45,6 +47,7 @@ export const useDrawRoute = ({
   setEditCoordinates,
   setSelectedRoutePoint,
   mapRef,
+  isResettingBoundsRef,
 }: UseMapRouteProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
   const disableMapClickRef = useRef(false);
@@ -183,6 +186,7 @@ export const useDrawRoute = ({
       padding: BOUNDS_PADDING,
       duration: FIT_INITIAL_BOUNDS_DURATION,
     });
+    isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
     activeRoute?.boundingBox,
@@ -191,6 +195,7 @@ export const useDrawRoute = ({
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,
+    isResettingBoundsRef,
   ]);
 
   // Handle update coordinates click

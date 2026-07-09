@@ -164,7 +164,7 @@ export const getRoutePointElement = ({
     'w-3 h-3 rounded-full border-2 border-white cursor-crosshair bg-primary-500 shadow-md',
     {
       'cursor-pointer hover:h-4 hover:w-4': onClick && !isSelected,
-      'h-4 w-4 outline outline-2': isSelected,
+      'h-5 w-5 outline outline-2': isSelected,
     },
   );
 
