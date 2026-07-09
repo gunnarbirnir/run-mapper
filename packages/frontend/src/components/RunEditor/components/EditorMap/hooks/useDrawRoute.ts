@@ -75,7 +75,7 @@ export const useDrawRoute = ({
     const map = mapRef.current;
     const routeLayer = getRouteLayer();
     const coordinates =
-      editCoordinates.length > 0
+      isEditingCoordinates && editCoordinates.length > 0
         ? editCoordinates
         : (activeRoute?.coordinates ?? []);
     let routePointMarkers: (Marker | undefined)[] = [];

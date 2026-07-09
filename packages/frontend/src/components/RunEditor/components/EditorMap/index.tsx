@@ -99,9 +99,10 @@ export const EditorMap = ({
   fitToInitialBounds,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const initialBounds = initialBoundingBox
-    ? formatBounds(initialBoundingBox)
-    : undefined;
+  const initialBounds = useMemo(
+    () => (initialBoundingBox ? formatBounds(initialBoundingBox) : undefined),
+    [initialBoundingBox],
+  );
   const elevationGain = useMemo(() => {
     return calculateElevationGain(activeRouteElevations);
   }, [activeRouteElevations]);
