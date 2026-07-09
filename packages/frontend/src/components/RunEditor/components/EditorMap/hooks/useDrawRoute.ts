@@ -75,16 +75,12 @@ export const useDrawRoute = ({
     const map = mapRef.current;
     const routeLayer = getRouteLayer();
     const coordinates =
-      isEditingCoordinates && editCoordinates.length > 0
+      editCoordinates.length > 0
         ? editCoordinates
         : (activeRoute?.coordinates ?? []);
     let routePointMarkers: (Marker | undefined)[] = [];
 
     const drawRoute = () => {
-      if (!map.isStyleLoaded() || coordinates.length === 0) {
-        return;
-      }
-
       const source = map.getSource(routeLayer.source);
       const routeLineFeature = getLineFeature(coordinates);
 
@@ -100,10 +96,6 @@ export const useDrawRoute = ({
     };
 
     const clearRoute = () => {
-      if (!map.isStyleLoaded() || !map.getStyle()) {
-        return;
-      }
-
       if (map.getLayer(routeLayer.id)) {
         map.removeLayer(routeLayer.id);
       }
