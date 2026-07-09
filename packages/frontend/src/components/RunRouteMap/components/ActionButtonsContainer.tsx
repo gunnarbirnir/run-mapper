@@ -1,29 +1,28 @@
 import type { Map } from 'mapbox-gl';
+import type { RefObject } from 'react';
 
 import { Icon, Tooltip } from '~/primitives';
-import { useMapZoom } from '~/hooks/useMapZoom';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Bounds } from '~/types';
+import { useMapZoom } from '~/hooks/useMapZoom';
 
-import { MapActionButton } from './MapActionButton';
-import { RefObject } from 'react';
+import { MapActionButton } from '../components/MapActionButton';
 
 interface ActionButtonsContainerProps {
   isMapLoaded: boolean;
-  mapRef: RefObject<Map>;
   isAtInitialBounds: boolean;
-  hasActiveRoute: boolean;
-  initialBounds?: Bounds;
+  isFullscreen: boolean;
   resetRoute: () => void;
+  openFullscreen: () => void;
+  mapRef: RefObject<Map>;
 }
 
 export const ActionButtonsContainer = ({
   isMapLoaded,
-  mapRef,
   isAtInitialBounds,
-  hasActiveRoute,
-  initialBounds,
+  isFullscreen,
   resetRoute,
+  openFullscreen,
+  mapRef,
 }: ActionButtonsContainerProps) => {
   const { isSmallScreen } = useMediaQuery();
   const { zoomIn, zoomOut, canZoomIn, canZoomOut } = useMapZoom({
@@ -34,16 +33,22 @@ export const ActionButtonsContainer = ({
 
   return (
     <Tooltip.Provider>
-      {Boolean(initialBounds) && hasActiveRoute && (
-        <MapActionButton
+      {/* <MapActionButton
           index={mapActionButtonIndex++}
-          tooltipLabel="Reset"
-          disabled={isAtInitialBounds}
-          onClick={resetRoute}
+          tooltipLabel="Play"
+          disabled={routeIsAnimating}
+          onClick={playRoute}
         >
-          <Icon name="reset" className="size-4.5" />
-        </MapActionButton>
-      )}
+          <Icon name="play" className="size-5" />
+        </MapActionButton> */}
+      <MapActionButton
+        index={mapActionButtonIndex++}
+        tooltipLabel="Reset"
+        disabled={isAtInitialBounds}
+        onClick={resetRoute}
+      >
+        <Icon name="reset" className="size-4.5" />
+      </MapActionButton>
       {!isSmallScreen && (
         <>
           <MapActionButton
@@ -63,6 +68,15 @@ export const ActionButtonsContainer = ({
             <Icon name="minus" className="size-4.5" />
           </MapActionButton>
         </>
+      )}
+      {!isFullscreen && (
+        <MapActionButton
+          index={mapActionButtonIndex++}
+          tooltipLabel="Fullscreen"
+          onClick={openFullscreen}
+        >
+          <Icon name="externalLink" className="size-5" />
+        </MapActionButton>
       )}
     </Tooltip.Provider>
   );

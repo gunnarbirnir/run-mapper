@@ -10,16 +10,16 @@ interface UseMapHotKeysProps {
 }
 
 export const useMapHotKeys = ({
-  routeIsAnimating,
+  // routeIsAnimating,
   isAtInitialBounds,
   isFullscreen,
-  playRoute,
+  // playRoute,
   resetRoute,
   openFullscreen,
 }: UseMapHotKeysProps) => {
-  useHotkey('P', playRoute, {
+  /* useHotkey('P', playRoute, {
     enabled: !routeIsAnimating,
-  });
+  }); */
   useHotkey('R', resetRoute, {
     enabled: !isAtInitialBounds,
   });

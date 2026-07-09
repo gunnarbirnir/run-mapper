@@ -1,11 +1,22 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef } from 'react';
+import { AnimatePresence } from 'motion/react';
 
-import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
+import {
+  BoundingBox,
+  Coordinates,
+  Elevation,
+  PointOfInterest,
+  PublicRoute,
+  Waypoint,
+} from '~/types';
 import { formatBounds } from '~/utils/map';
+import { calculateElevationGain } from '~/utils/route';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
+import { SelectedRoutePointToolbar } from './components/SelectedRoutePointToolbar';
+import { RouteCoordinatesToolbar } from './components/RouteCoordinatesToolbar';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
 import { useLoadMap } from './hooks/useLoadMap';
@@ -15,10 +26,14 @@ import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
+import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
+  activeRouteCoordinates: Coordinates[];
+  activeRouteElevations: Elevation[];
+  routeDistance: number;
   routePanelIsOpen: boolean;
   routePanelIsAnimating: boolean;
   hasMadeRouteChanges: boolean;
@@ -27,7 +42,6 @@ interface EditorMapProps extends MapState {
   pointOfInterestPanelIsOpen: boolean;
   pointOfInterestPanelIsAnimating: boolean;
   hasMadePointOfInterestChanges: boolean;
-  isEditingPoiCoordinates: string | null;
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
   waypointPanelIsOpen: boolean;
@@ -41,6 +55,9 @@ interface EditorMapProps extends MapState {
 export const EditorMap = ({
   rootPanelIsAnimating,
   activeRoute,
+  activeRouteCoordinates,
+  activeRouteElevations,
+  routeDistance,
   routePanelIsOpen,
   routePanelIsAnimating,
   hasMadeRouteChanges,
@@ -50,6 +67,10 @@ export const EditorMap = ({
   pointOfInterestPanelIsAnimating,
   hasMadePointOfInterestChanges,
   editPointOfInterestType,
+  editWaypointType,
+  editWaypointCoordinates,
+  isEditingRouteCoordinates,
+  selectedRoutePoint,
   isEditingPoiCoordinates,
   currentWaypoints,
   activeWaypoint,
@@ -58,23 +79,33 @@ export const EditorMap = ({
   hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
+  editRouteCoordinates,
+  isAtInitialBounds,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
+  setEditRouteCoordinates,
+  setSelectedRoutePoint,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
+  setIsAtInitialBounds,
   onUpdatePoiCoordinates,
+  fitToInitialBoundsRef,
   mapRef,
+  editRouteActionsRef,
+  isResettingBoundsRef,
+  fitToInitialBounds,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const initialBounds = initialBoundingBox
     ? formatBounds(initialBoundingBox)
     : undefined;
+  const elevationGain = useMemo(() => {
+    return calculateElevationGain(activeRouteElevations);
+  }, [activeRouteElevations]);
 
-  const activeRouteCoordinates = useMemo(
-    () => activeRoute?.coordinates || [],
-    [activeRoute],
-  );
   const isAnyPanelAnimating =
     rootPanelIsAnimating ||
     routePanelIsAnimating ||
@@ -108,8 +139,18 @@ export const EditorMap = ({
     mapRef,
   });
 
+  useFitToInitialBounds({
+    isMapLoaded,
+    bounds: initialBounds,
+    mapRef,
+    setIsAtInitialBounds,
+    fitToInitialBoundsRef,
+    isResettingBoundsRef,
+  });
+
   useMapCursor({
     isMapLoaded,
+    isEditingRouteCoordinates,
     isEditingPoiCoordinates,
     mapRef,
   });
@@ -120,8 +161,14 @@ export const EditorMap = ({
     isAnimatingPanel: routePanelIsAnimating,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
+    isEditingCoordinates: isEditingRouteCoordinates,
     isMapLoaded,
+    editCoordinates: editRouteCoordinates,
+    selectedRoutePoint,
+    setEditCoordinates: setEditRouteCoordinates,
+    setSelectedRoutePoint,
     mapRef,
+    isResettingBoundsRef,
   });
 
   usePointsOfInterest({
@@ -132,6 +179,7 @@ export const EditorMap = ({
     isAnimatingPanel: pointOfInterestPanelIsAnimating,
     hasMadeAnyChanges,
     isEditingCoordinates: isEditingPoiCoordinates,
+    isEditingRouteCoordinates,
     editPointOfInterestType,
     onEditPointOfInterest,
     onUpdatePoiCoordinates,
@@ -147,19 +195,47 @@ export const EditorMap = ({
     panelIsOpen: waypointPanelIsOpen,
     isAnimatingPanel: waypointPanelIsAnimating,
     hasMadeChanges: hasMadeWaypointChanges,
+    editWaypointType,
+    editWaypointCoordinates,
+    isEditingRouteCoordinates,
+    isEditingPoiCoordinates,
     onEditWaypoint,
+    setEditWaypointType,
+    setEditWaypointCoordinates,
     mapRef,
   });
 
   return (
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
-      {/* TODO: Use real numbers */}
-      <RouteStats distance={42.2} elevationGain={250} />
-      <ActionButtonsContainer />
+      <AnimatePresence>
+        {activeRoute ? (
+          <RouteStats distance={routeDistance} elevationGain={elevationGain} />
+        ) : null}
+      </AnimatePresence>
+      <ActionButtonsContainer
+        isMapLoaded={isMapLoaded}
+        mapRef={mapRef}
+        isAtInitialBounds={isAtInitialBounds}
+        initialBounds={initialBounds}
+        hasActiveRoute={Boolean(activeRoute)}
+        resetRoute={fitToInitialBounds}
+      />
+      <RouteCoordinatesToolbar
+        isEditingRouteCoordinates={isEditingRouteCoordinates}
+        editRouteCoordinates={editRouteCoordinates}
+        selectedRoutePoint={selectedRoutePoint}
+        setEditRouteCoordinates={setEditRouteCoordinates}
+        editRouteActionsRef={editRouteActionsRef}
+      />
+      <SelectedRoutePointToolbar
+        selectedRoutePoint={selectedRoutePoint}
+        setSelectedRoutePoint={setSelectedRoutePoint}
+        setEditRouteCoordinates={setEditRouteCoordinates}
+      />
       <PoiCoordinatesToolbar
-        isVisible={Boolean(isEditingPoiCoordinates)}
-        onClose={() => setIsEditingPoiCoordinates(null)}
+        isVisible={isEditingPoiCoordinates}
+        onClose={() => setIsEditingPoiCoordinates(false)}
       />
     </div>
   );

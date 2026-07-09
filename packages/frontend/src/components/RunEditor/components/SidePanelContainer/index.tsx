@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { SidePanel } from '~/primitives';
@@ -7,6 +8,8 @@ import type {
   PointOfInterestType,
   PublicRoute,
   Waypoint,
+  WaypointType,
+  Coordinates,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -19,25 +22,43 @@ import { WaypointPanel } from '../WaypointPanel';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
+  routeDistance: number;
+  routeCoordinates: Coordinates[];
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
-  isEditingPoiCoordinates: string | null;
-  setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  editRouteCoordinates: Coordinates[];
+  isEditingRouteCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
+  setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
+  setIsEditingRouteCoordinates: (isEditing: boolean) => void;
+  setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
+  setEditWaypointType: (type: WaypointType | null) => void;
+  setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
 export const SidePanelContainer = ({
   existingRun,
+  routeDistance,
+  routeCoordinates,
   rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
+  editRouteCoordinates,
+  isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  setEditRouteCoordinates,
+  setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
+  editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
   const {
@@ -52,10 +73,13 @@ export const SidePanelContainer = ({
     onEditWaypoint,
     onAnimationComplete,
   } = rootPanelState;
-  const routeDistance = routePanelState.currentItems.find(
-    (route) => route.id === routePanelState.editId,
-    // TODO: Replace with actual distance
-  )?.displayDistance;
+
+  const handleAddWaypoint = useCallback(() => {
+    onAddWaypoint();
+    if (routeCoordinates.length > 0) {
+      setEditWaypointCoordinates(routeCoordinates[0]);
+    }
+  }, [onAddWaypoint, setEditWaypointCoordinates, routeCoordinates]);
 
   useHotkey('P', () => {
     if (showRootPanel) {
@@ -121,8 +145,13 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
-              onAddWaypoint={onAddWaypoint}
+              editRouteCoordinates={editRouteCoordinates}
+              isEditingRouteCoordinates={isEditingRouteCoordinates}
+              onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
+              setEditRouteCoordinates={setEditRouteCoordinates}
+              setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
+              editRouteActionsRef={editRouteActionsRef}
             />
           ),
         },
@@ -135,6 +164,9 @@ export const SidePanelContainer = ({
             <WaypointPanel
               {...waypointPanelState}
               routeDistance={routeDistance}
+              routeCoordinates={routeCoordinates}
+              setEditWaypointType={setEditWaypointType}
+              setEditWaypointCoordinates={setEditWaypointCoordinates}
             />
           ),
         },

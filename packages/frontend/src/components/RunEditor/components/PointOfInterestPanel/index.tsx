@@ -10,6 +10,7 @@ import type {
   PointOfInterest,
   PointOfInterestType,
 } from '~/types';
+import { formatNumber } from '~/utils';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -17,8 +18,8 @@ import type { PanelState } from '../../hooks/usePanelState';
 import type { MapState } from '../EditorMap/hooks/useMapState';
 
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
-  isEditingPoiCoordinates: string | null;
-  setIsEditingPoiCoordinates: (poiId: string | null) => void;
+  isEditingPoiCoordinates: boolean;
+  setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -119,7 +120,7 @@ export const PointOfInterestPanel = ({
 
   const closePanel = useCallback(() => {
     onClose();
-    setIsEditingPoiCoordinates(null);
+    setIsEditingPoiCoordinates(false);
   }, [onClose, setIsEditingPoiCoordinates]);
 
   useEffect(() => {
@@ -127,7 +128,7 @@ export const PointOfInterestPanel = ({
       onLatChange(coordinates.lat);
       onLngChange(coordinates.lng);
       onLatBlur();
-      setIsEditingPoiCoordinates(null);
+      setIsEditingPoiCoordinates(false);
     };
   }, [
     onLatChange,
@@ -232,7 +233,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
-                  {field.state.value ?? '-'}
+                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -240,7 +241,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
-                  {field.state.value ?? '-'}
+                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -249,9 +250,7 @@ export const PointOfInterestPanel = ({
               size="small"
               className="mt-3"
               onClick={() =>
-                setIsEditingPoiCoordinates(
-                  isEditingPoiCoordinates ? null : (editId ?? 'new-poi'),
-                )
+                setIsEditingPoiCoordinates(!isEditingPoiCoordinates)
               }
             >
               {isEditingPoiCoordinates ? 'Stop editing' : 'Edit coordinates'}
@@ -294,7 +293,11 @@ export const PointOfInterestPanel = ({
             Cancel
           </Button>
           {isEditing && (
-            <Button color="error" className="w-full" onClick={handleOnDelete}>
+            <Button
+              color="errorOutline"
+              className="w-full"
+              onClick={handleOnDelete}
+            >
               Delete
             </Button>
           )}
@@ -310,7 +313,7 @@ export const PointOfInterestPanel = ({
             },
             {
               label: 'Discard',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDiscardChanges,
             },
           ]}
@@ -323,7 +326,7 @@ export const PointOfInterestPanel = ({
           buttons={[
             {
               label: 'Delete',
-              color: 'error',
+              color: 'errorOutline',
               onClick: handleDeleteItem,
             },
             {

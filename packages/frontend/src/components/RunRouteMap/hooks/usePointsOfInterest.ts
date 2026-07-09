@@ -57,9 +57,10 @@ export const usePointsOfInterest = ({
         );
         pointsOfInterestMarkers.push(
           addMarker(
-            getPointOfInterestMarkerElement(pointOfInterest.type, () =>
-              onPointOfInterestClick(pointOfInterest.id),
-            ),
+            getPointOfInterestMarkerElement({
+              type: pointOfInterest.type,
+              onClick: () => onPointOfInterestClick(pointOfInterest.id),
+            }),
             pointOfInterest.coordinates,
           ),
         );

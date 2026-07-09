@@ -55,15 +55,21 @@ export const getRouteLayer = () => {
   } as const;
 };
 
-export const getMarkerElement = (
-  color: string,
-  hoverColor: string,
-  onClick?: () => void,
-): HTMLElement => {
+export const getMarkerElement = ({
+  color,
+  hoverColor,
+  onClick,
+  isEditingInMap,
+}: {
+  color: string;
+  hoverColor: string;
+  onClick?: () => void;
+  isEditingInMap?: boolean;
+}): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
     'w-6 h-6 rounded-full border-4 border-white shadow-md/30',
-    { 'cursor-pointer': onClick },
+    { 'cursor-pointer': onClick, 'cursor-crosshair': isEditingInMap },
   );
   marker.style.backgroundColor = getCssVariableValue(color);
 
@@ -80,17 +86,24 @@ export const getMarkerElement = (
   return marker;
 };
 
-export const getWaypointMarkerElement = (
-  type: WaypointType,
-  onClick?: () => void,
-  isFocused = false,
-): HTMLElement => {
+export const getWaypointMarkerElement = ({
+  type,
+  onClick,
+  isFocused,
+  isEditingInMap,
+}: {
+  type: WaypointType;
+  onClick?: () => void;
+  isFocused?: boolean;
+  isEditingInMap?: boolean;
+}): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
     'w-6.5 h-6.5 rounded-full border-3 border-white shadow-md/30 flex items-center justify-center bg-secondary-500 text-white',
     {
       'cursor-pointer hover:brightness-110': onClick,
       'outline outline-2': isFocused,
+      'cursor-crosshair': isEditingInMap,
     },
   );
   marker.innerHTML = getWaypointPoiIcon(type);
@@ -103,11 +116,17 @@ export const getWaypointMarkerElement = (
   return marker;
 };
 
-export const getPointOfInterestMarkerElement = (
-  type: PointOfInterestType,
-  onClick?: () => void,
-  isFocused = false,
-): HTMLElement => {
+export const getPointOfInterestMarkerElement = ({
+  type,
+  onClick,
+  isFocused,
+  isEditingInMap,
+}: {
+  type: PointOfInterestType;
+  onClick?: () => void;
+  isFocused?: boolean;
+  isEditingInMap?: boolean;
+}): HTMLElement => {
   const marker = document.createElement('div');
 
   marker.className = cn(
@@ -115,6 +134,7 @@ export const getPointOfInterestMarkerElement = (
     {
       'cursor-pointer hover:brightness-110': onClick,
       'outline outline-2': isFocused,
+      'cursor-crosshair': isEditingInMap,
     },
   );
   marker.style.backgroundColor = getCssVariableValue(getPoiIconColor(type));
@@ -123,6 +143,39 @@ export const getPointOfInterestMarkerElement = (
   marker.querySelector('svg')?.classList.add(iconSize.width, iconSize.height);
   if (onClick) {
     marker.addEventListener('click', onClick);
+  }
+
+  return marker;
+};
+
+export const getRoutePointElement = ({
+  isSelected,
+  onClick,
+  onEnter,
+  onLeave,
+}: {
+  isSelected?: boolean;
+  onClick?: () => void;
+  onEnter?: () => void;
+  onLeave?: () => void;
+}): HTMLElement => {
+  const marker = document.createElement('div');
+  marker.className = cn(
+    'w-3 h-3 rounded-full border-2 border-white cursor-crosshair bg-primary-500 shadow-md',
+    {
+      'cursor-pointer hover:h-4 hover:w-4': onClick && !isSelected,
+      'h-5 w-5 outline outline-2': isSelected,
+    },
+  );
+
+  if (onClick) {
+    marker.addEventListener('click', onClick);
+    if (onEnter) {
+      marker.addEventListener('mouseenter', onEnter);
+    }
+    if (onLeave) {
+      marker.addEventListener('mouseleave', onLeave);
+    }
   }
 
   return marker;

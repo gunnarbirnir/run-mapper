@@ -17,7 +17,8 @@ interface UsePointsOfInterestProps {
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   hasMadeAnyChanges: boolean;
-  isEditingCoordinates: string | null;
+  isEditingCoordinates: boolean;
+  isEditingRouteCoordinates: boolean;
   editPointOfInterestType: PointOfInterestType | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
   onUpdatePoiCoordinates: (coordinates: Coordinates) => void;
@@ -32,6 +33,7 @@ export const usePointsOfInterest = ({
   panelIsOpen,
   isAnimatingPanel,
   hasMadeAnyChanges,
+  isEditingRouteCoordinates,
   isEditingCoordinates,
   editPointOfInterestType,
   onEditPointOfInterest,
@@ -43,6 +45,7 @@ export const usePointsOfInterest = ({
   const [editCoordinates, setEditCoordinates] = useState<Coordinates | null>(
     null,
   );
+  const isEditingInMap = isEditingRouteCoordinates || isEditingCoordinates;
 
   // Reset edit point of interest when active point of interest changes
   useEffect(() => {
@@ -50,6 +53,15 @@ export const usePointsOfInterest = ({
     setEditCoordinates(null);
     setEditPointOfInterestType(null);
   }, [activePointOfInterest, setEditCoordinates, setEditPointOfInterestType]);
+
+  // Reset edit point of interest when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEditCoordinates(null);
+      setEditPointOfInterestType(null);
+    }
+  }, [panelIsOpen, setEditCoordinates, setEditPointOfInterestType]);
 
   // Draw points of interest
   useEffect(() => {
@@ -63,15 +75,18 @@ export const usePointsOfInterest = ({
       const isActive = pointOfInterest.id === activePointOfInterest;
       pointsOfInterestMarkers.push(
         addMarker(
-          getPointOfInterestMarkerElement(
-            isActive && editPointOfInterestType
-              ? editPointOfInterestType
-              : pointOfInterest.type,
-            hasMadeAnyChanges
-              ? undefined
-              : () => onEditPointOfInterest(pointOfInterest.id),
-            isActive,
-          ),
+          getPointOfInterestMarkerElement({
+            type:
+              isActive && editPointOfInterestType
+                ? editPointOfInterestType
+                : pointOfInterest.type,
+            onClick:
+              hasMadeAnyChanges || isEditingInMap
+                ? undefined
+                : () => onEditPointOfInterest(pointOfInterest.id),
+            isFocused: isActive,
+            isEditingInMap,
+          }),
           isActive && editCoordinates
             ? editCoordinates
             : pointOfInterest.coordinates,
@@ -79,14 +94,15 @@ export const usePointsOfInterest = ({
       );
     }
 
+    // New point of interest
     if (editCoordinates && !activePointOfInterest && panelIsOpen) {
       pointsOfInterestMarkers.push(
         addMarker(
-          getPointOfInterestMarkerElement(
-            editPointOfInterestType || 'expo',
-            undefined,
-            true,
-          ),
+          getPointOfInterestMarkerElement({
+            type: editPointOfInterestType || 'expo',
+            isFocused: true,
+            isEditingInMap,
+          }),
           editCoordinates,
         ),
       );
@@ -107,6 +123,7 @@ export const usePointsOfInterest = ({
     editPointOfInterestType,
     panelIsOpen,
     editCoordinates,
+    isEditingInMap,
     addMarker,
     onEditPointOfInterest,
     mapRef,

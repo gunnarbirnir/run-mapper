@@ -1,12 +1,37 @@
+import { MAP_ICONS } from '~/constants/mapIcons';
 import type {
   Coordinates,
   Elevation,
+  InnerWaypointType,
+  PointOfInterestType,
+  RouteCoordinates,
   Waypoint,
   WaypointType,
-  PointOfInterestType,
-  InnerWaypointType,
 } from '~/types';
-import { MAP_ICONS } from '~/constants/mapIcons';
+
+export const processRunRoute = (
+  routeCoordinates: RouteCoordinates[] = [],
+): { coordinates: Coordinates[]; elevations: Elevation[] } => {
+  const coordinates: Coordinates[] = [];
+  const elevations: Elevation[] = [];
+  let distance = 0;
+  let prevCoord: Coordinates | null = null;
+
+  routeCoordinates.forEach((routeCoordinate) => {
+    const currentCoord: Coordinates = {
+      lng: routeCoordinate.lng,
+      lat: routeCoordinate.lat,
+    };
+    if (prevCoord) {
+      distance += haversineDistance(prevCoord, currentCoord);
+    }
+    coordinates.push(currentCoord);
+    prevCoord = currentCoord;
+    elevations.push({ value: routeCoordinate.elevation, distance });
+  });
+
+  return { coordinates, elevations };
+};
 
 export const haversineDistance = (
   coord1: Coordinates,
@@ -105,6 +130,30 @@ export const calculateMinElevation = (
   }
 
   return { value: minValue, index: minIndex };
+};
+
+export const getCoordinatesFromPosition = (
+  position: number,
+  coordinates: Coordinates[],
+): Coordinates | null => {
+  if (coordinates.length === 0) {
+    return null;
+  }
+
+  let cumulativeDistance = 0;
+  let closestCoordinate = coordinates[0];
+  let closestDelta = Math.abs(position - cumulativeDistance);
+
+  for (let i = 1; i < coordinates.length; i++) {
+    cumulativeDistance += haversineDistance(coordinates[i - 1], coordinates[i]);
+    const delta = Math.abs(position - cumulativeDistance);
+    if (delta < closestDelta) {
+      closestDelta = delta;
+      closestCoordinate = coordinates[i];
+    }
+  }
+
+  return closestCoordinate;
 };
 
 export const getStartWaypoint = (coordinates: Coordinates[]): Waypoint => {
@@ -230,4 +279,24 @@ export const getWaypointPoiLabel = (
     default:
       return type;
   }
+};
+
+export const isSameRoute = (
+  coordinates1: Coordinates[],
+  coordinates2: Coordinates[],
+): boolean => {
+  if (coordinates1.length !== coordinates2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < coordinates1.length; i++) {
+    if (
+      coordinates1[i].lat !== coordinates2[i].lat ||
+      coordinates1[i].lng !== coordinates2[i].lng
+    ) {
+      return false;
+    }
+  }
+
+  return true;
 };

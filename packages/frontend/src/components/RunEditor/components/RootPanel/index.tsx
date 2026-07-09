@@ -139,7 +139,7 @@ export const RootPanel = ({
           </Button>
           {isEditing && (
             <Button
-              color="error"
+              color="errorOutline"
               className="w-full"
               // TODO: Delete run
               onClick={() => console.log('Delete run')}

@@ -1,9 +1,22 @@
-import type { Map } from 'mapbox-gl';
-import { RefObject, useEffect } from 'react';
+import type { Map, MapMouseEvent, Marker } from 'mapbox-gl';
+import {
+  RefObject,
+  useEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+  type MutableRefObject,
+} from 'react';
 
-import type { PublicRoute } from '~/types';
-import { getLineFeature, getRouteLayer, formatBounds } from '~/utils/map';
+import type { Coordinates, PublicRoute } from '~/types';
+import {
+  getLineFeature,
+  getRouteLayer,
+  formatBounds,
+  getRoutePointElement,
+} from '~/utils/map';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import { useMapHandlers } from '~/hooks/useMapHandlers';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -12,7 +25,13 @@ interface UseMapRouteProps {
   waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
+  isEditingCoordinates: boolean;
+  editCoordinates: Coordinates[];
+  selectedRoutePoint: number | null;
+  setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
+  setSelectedRoutePoint: Dispatch<SetStateAction<number | null>>;
   mapRef: RefObject<Map>;
+  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useDrawRoute = ({
@@ -22,8 +41,31 @@ export const useDrawRoute = ({
   waypointPanelIsOpen,
   waypointPanelIsAnimating,
   isMapLoaded,
+  isEditingCoordinates,
+  editCoordinates,
+  selectedRoutePoint,
+  setEditCoordinates,
+  setSelectedRoutePoint,
   mapRef,
+  isResettingBoundsRef,
 }: UseMapRouteProps) => {
+  const { addMarker } = useMapHandlers({ mapRef });
+  const disableMapClickRef = useRef(false);
+
+  // Reset edit coordinates when active route changes
+  useEffect(() => {
+    setEditCoordinates(activeRoute?.coordinates ?? []);
+    setSelectedRoutePoint(null);
+  }, [activeRoute, setEditCoordinates, setSelectedRoutePoint]);
+
+  // Reset edit coordinates when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      setEditCoordinates([]);
+      setSelectedRoutePoint(null);
+    }
+  }, [panelIsOpen, setEditCoordinates, setSelectedRoutePoint]);
+
   // Draw route
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) {
@@ -31,8 +73,31 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const coordinates = activeRoute?.coordinates ?? [];
     const routeLayer = getRouteLayer();
+    const coordinates =
+      editCoordinates.length > 0
+        ? editCoordinates
+        : (activeRoute?.coordinates ?? []);
+    let routePointMarkers: (Marker | undefined)[] = [];
+
+    const drawRoute = () => {
+      if (!map.isStyleLoaded() || coordinates.length === 0) {
+        return;
+      }
+
+      const source = map.getSource(routeLayer.source);
+      const routeLineFeature = getLineFeature(coordinates);
+
+      if (source) {
+        (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
+      } else {
+        map.addSource(routeLayer.source, {
+          type: 'geojson',
+          data: routeLineFeature,
+        });
+        map.addLayer(routeLayer);
+      }
+    };
 
     const clearRoute = () => {
       if (!map.isStyleLoaded() || !map.getStyle()) {
@@ -47,14 +112,22 @@ export const useDrawRoute = ({
       }
     };
 
-    const drawRoute = () => {
-      if (map.isStyleLoaded() && coordinates.length !== 0) {
-        map.addSource(routeLayer.source, {
-          type: 'geojson',
-          data: getLineFeature(coordinates),
-        });
-        map.addLayer(routeLayer);
-      }
+    const drawRoutePoints = () => {
+      // TODO: Only route points
+      routePointMarkers = coordinates.map((coordinate, index) =>
+        addMarker(
+          getRoutePointElement({
+            isSelected: selectedRoutePoint === index,
+            onClick: () => setSelectedRoutePoint(index),
+            onEnter: () => (disableMapClickRef.current = true),
+            onLeave: () => (disableMapClickRef.current = false),
+          }),
+          {
+            lng: coordinate.lng,
+            lat: coordinate.lat,
+          },
+        ),
+      );
     };
 
     const onStyleLoad = () => {
@@ -63,14 +136,31 @@ export const useDrawRoute = ({
       }
     };
 
-    drawRoute();
+    if (coordinates.length === 0) {
+      clearRoute();
+    } else {
+      drawRoute();
+      if (isEditingCoordinates) {
+        drawRoutePoints();
+      }
+    }
+
     map.on('style.load', onStyleLoad);
 
     return () => {
-      clearRoute();
       map.off('style.load', onStyleLoad);
+      routePointMarkers.forEach((marker) => marker?.remove());
     };
-  }, [isMapLoaded, activeRoute?.coordinates, mapRef]);
+  }, [
+    isMapLoaded,
+    activeRoute?.coordinates,
+    isEditingCoordinates,
+    editCoordinates,
+    selectedRoutePoint,
+    addMarker,
+    setSelectedRoutePoint,
+    mapRef,
+  ]);
 
   // Fit to bounds
   useEffect(() => {
@@ -96,6 +186,7 @@ export const useDrawRoute = ({
       padding: BOUNDS_PADDING,
       duration: FIT_INITIAL_BOUNDS_DURATION,
     });
+    isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
     activeRoute?.boundingBox,
@@ -104,5 +195,53 @@ export const useDrawRoute = ({
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,
+    isResettingBoundsRef,
+  ]);
+
+  // Handle update coordinates click
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || !isEditingCoordinates) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const handleClick = (e: MapMouseEvent) => {
+      if (disableMapClickRef.current) {
+        return;
+      }
+
+      const newCoordinates = {
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat,
+      };
+
+      if (selectedRoutePoint === null) {
+        setEditCoordinates((prevCoordinates) => [
+          ...prevCoordinates,
+          newCoordinates,
+        ]);
+      } else {
+        setEditCoordinates((prevCoordinates) => {
+          const updatedCoordinates = [...prevCoordinates];
+          updatedCoordinates[selectedRoutePoint] = newCoordinates;
+          return updatedCoordinates;
+        });
+        setSelectedRoutePoint(null);
+      }
+    };
+
+    map.on('click', handleClick);
+
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [
+    isMapLoaded,
+    isEditingCoordinates,
+    selectedRoutePoint,
+    setEditCoordinates,
+    setSelectedRoutePoint,
+    mapRef,
+    disableMapClickRef,
   ]);
 };

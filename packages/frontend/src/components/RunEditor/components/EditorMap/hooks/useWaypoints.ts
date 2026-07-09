@@ -1,7 +1,7 @@
 import type { Map, Marker } from 'mapbox-gl';
-import { useEffect, type RefObject } from 'react';
+import { useEffect, type RefObject, useRef } from 'react';
 
-import type { Coordinates, Waypoint } from '~/types';
+import type { Coordinates, Waypoint, WaypointType } from '~/types';
 import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
@@ -16,7 +16,13 @@ interface UseWaypointsProps {
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   hasMadeChanges: boolean;
+  editWaypointType: WaypointType | null;
+  editWaypointCoordinates: Coordinates | null;
+  isEditingRouteCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
   onEditWaypoint: (waypointId: string) => void;
+  setEditWaypointType: (type: WaypointType | null) => void;
+  setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -28,10 +34,32 @@ export const useWaypoints = ({
   panelIsOpen,
   isAnimatingPanel,
   hasMadeChanges,
+  editWaypointType,
+  editWaypointCoordinates,
+  isEditingRouteCoordinates,
+  isEditingPoiCoordinates,
   onEditWaypoint,
+  setEditWaypointType,
+  setEditWaypointCoordinates,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
+  const panelIsOpenRef = useRef(panelIsOpen);
+  const isEditingInMap = isEditingRouteCoordinates || isEditingPoiCoordinates;
+
+  // Reset edit waypoint type when active waypoint changes
+  useEffect(() => {
+    setEditWaypointType(null);
+    setEditWaypointCoordinates(null);
+  }, [activeWaypoint, setEditWaypointType, setEditWaypointCoordinates]);
+
+  // Reset edit waypoint type when panel closes
+  useEffect(() => {
+    if (!panelIsOpen) {
+      setEditWaypointType(null);
+      setEditWaypointCoordinates(null);
+    }
+  }, [panelIsOpen, setEditWaypointType, setEditWaypointCoordinates]);
 
   // Draw waypoints
   useEffect(() => {
@@ -40,15 +68,19 @@ export const useWaypoints = ({
     }
 
     let waypointMarkers = [];
+    const isClickable = !hasMadeChanges && !isEditingInMap;
 
     const startWaypoint = getStartWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-success-500',
-          '--color-success-600',
-          hasMadeChanges ? undefined : () => onEditWaypoint(startWaypoint.id),
-        ),
+        getMarkerElement({
+          color: '--color-success-500',
+          hoverColor: '--color-success-600',
+          onClick: isClickable
+            ? () => onEditWaypoint(startWaypoint.id)
+            : undefined,
+          isEditingInMap,
+        }),
         startWaypoint.coordinates,
       ),
     );
@@ -56,24 +88,48 @@ export const useWaypoints = ({
     const endWaypoint = getEndWaypoint(coordinates);
     waypointMarkers.push(
       addMarker(
-        getMarkerElement(
-          '--color-error-500',
-          '--color-error-600',
-          hasMadeChanges ? undefined : () => onEditWaypoint(endWaypoint.id),
-        ),
+        getMarkerElement({
+          color: '--color-error-500',
+          hoverColor: '--color-error-600',
+          onClick: isClickable
+            ? () => onEditWaypoint(endWaypoint.id)
+            : undefined,
+          isEditingInMap,
+        }),
         endWaypoint.coordinates,
       ),
     );
 
     for (const waypoint of waypoints) {
+      const isActive = waypoint.id === activeWaypoint;
       waypointMarkers.push(
         addMarker(
-          getWaypointMarkerElement(
-            waypoint.type,
-            hasMadeChanges ? undefined : () => onEditWaypoint(waypoint.id),
-            waypoint.id === activeWaypoint,
-          ),
-          waypoint.coordinates,
+          getWaypointMarkerElement({
+            type:
+              isActive && editWaypointType ? editWaypointType : waypoint.type,
+            onClick: isClickable
+              ? () => onEditWaypoint(waypoint.id)
+              : undefined,
+            isFocused: waypoint.id === activeWaypoint,
+            isEditingInMap,
+          }),
+          isActive && editWaypointCoordinates
+            ? editWaypointCoordinates
+            : waypoint.coordinates,
+        ),
+      );
+    }
+
+    // New waypoint
+    if (editWaypointCoordinates && !activeWaypoint && panelIsOpen) {
+      waypointMarkers.push(
+        addMarker(
+          getWaypointMarkerElement({
+            type: editWaypointType || 'hydration',
+            isFocused: true,
+            isEditingInMap,
+          }),
+          editWaypointCoordinates,
         ),
       );
     }
@@ -89,6 +145,10 @@ export const useWaypoints = ({
     coordinates,
     waypoints,
     hasMadeChanges,
+    panelIsOpen,
+    editWaypointType,
+    editWaypointCoordinates,
+    isEditingInMap,
     addMarker,
     onEditWaypoint,
     mapRef,
@@ -124,5 +184,34 @@ export const useWaypoints = ({
     panelIsOpen,
     isAnimatingPanel,
     mapRef,
+  ]);
+
+  // Move to edit coordinates
+  useEffect(() => {
+    const panelJustOpened = !panelIsOpenRef.current && panelIsOpen;
+    panelIsOpenRef.current = panelIsOpen;
+
+    if (!isMapLoaded || !mapRef.current || !editWaypointCoordinates) {
+      return;
+    }
+
+    if (panelJustOpened) {
+      mapRef.current.flyTo({
+        center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
+        zoom: WAYPOINT_ZOOM,
+        duration: FLY_TO_WAYPOINT_DURATION,
+      });
+    } else {
+      mapRef.current.jumpTo({
+        center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
+        zoom: WAYPOINT_ZOOM,
+      });
+    }
+  }, [
+    isMapLoaded,
+    mapRef,
+    editWaypointCoordinates,
+    panelIsOpen,
+    panelIsOpenRef,
   ]);
 };
