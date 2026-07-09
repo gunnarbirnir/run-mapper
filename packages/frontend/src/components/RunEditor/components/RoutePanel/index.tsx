@@ -6,7 +6,7 @@ import z from 'zod';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import { BoundingBox, Coordinates, PublicRoute, Waypoint } from '~/types';
-import { formatNumber } from '~/utils';
+import { formatNumber, getFieldError } from '~/utils';
 import { isSameRoute } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -213,11 +213,7 @@ export const RoutePanel = ({
                 label="Name"
                 placeholder="Route name"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -233,11 +229,7 @@ export const RoutePanel = ({
                 placeholder="12.34 km"
                 value={field.state.value}
                 pattern="[0-9]+(\.[0-9]{0,2})?"
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />

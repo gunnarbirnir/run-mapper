@@ -27,6 +27,7 @@ export const EditorFooter = () => {
       )}
       {/* TODO: Publish/unpublish run */}
       <Button
+        color="successOutline"
         onClick={() => console.log('Publish run')}
         className={cn({ 'w-full': isSmallScreen })}
       >

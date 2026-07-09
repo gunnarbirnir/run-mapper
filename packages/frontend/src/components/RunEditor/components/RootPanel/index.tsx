@@ -1,11 +1,13 @@
 import { useForm } from '@tanstack/react-form';
 import { motion } from 'motion/react';
+import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { Form, SidePanel, Button } from '~/primitives';
 import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
+import { getFieldError } from '~/utils';
 
 import { ItemsSection } from '../ItemsSection';
 import { PointOfInterestItem } from './PointOfInterestItem';
@@ -21,6 +23,11 @@ interface RootPanelProps {
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
 }
+
+const rootFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
+});
 
 export const RootPanel = ({
   existingRun,
@@ -39,7 +46,20 @@ export const RootPanel = ({
       name: existingRun?.name || '',
       publicSlug: existingRun?.publicSlug || '',
     },
-    // onSubmit: ({ value }) => {}
+    validators: {
+      onBlur: rootFormSchema,
+      onSubmit: rootFormSchema,
+    },
+    onSubmit: ({ value }) => {
+      const updatedRun = {
+        name: value.name,
+        publicSlug: value.publicSlug,
+        routes: currentRoutes,
+        pointsOfInterest: currentPointsOfInterest,
+      };
+
+      console.log('updatedRun', updatedRun);
+    },
   });
   const { isSmallScreen } = useMediaQuery();
   const isEditing = Boolean(existingRun);
@@ -60,7 +80,9 @@ export const RootPanel = ({
                 label="Name"
                 placeholder="Run name"
                 value={field.state.value}
+                error={getFieldError(field)}
                 onChange={field.handleChange}
+                onBlur={field.handleBlur}
               />
             )}
           </rootForm.Field>
@@ -73,7 +95,9 @@ export const RootPanel = ({
                 placeholder="example-slug"
                 infoText="Will be used in the URL for the run"
                 value={field.state.value}
+                error={getFieldError(field)}
                 onChange={field.handleChange}
+                onBlur={field.handleBlur}
               />
             )}
           </rootForm.Field>
@@ -121,13 +145,23 @@ export const RootPanel = ({
           ) : null}
         </ItemsSection>
         <section className="flex flex-col gap-3">
-          <Button
-            className="w-full"
-            // TODO: Save run
-            onClick={() => console.log('Save run')}
-          >
-            {isEditing ? 'Save run' : 'Create run'}
-          </Button>
+          <rootForm.Subscribe
+            selector={(state) => [
+              state.canSubmit,
+              state.isSubmitting,
+              state.isDefaultValue,
+            ]}
+            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={!canSubmit || isDefaultValue}
+                isLoading={isSubmitting}
+              >
+                {isEditing ? 'Save run' : 'Create run'}
+              </Button>
+            )}
+          />
           <Button className="w-full" linkTo="/runs" color="gray">
             Back to runs
           </Button>
