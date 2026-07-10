@@ -1,11 +1,17 @@
-import {
-  runRepository,
-  type RunWithId,
-} from '../repositories/run-repository.js';
+import { runRepository } from '../repositories/run-repository.js';
 import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { PublicRun, ListRun } from '../types/index.js';
+import type {
+  PublicRun,
+  ListRun,
+  RunRecordWithId,
+  EditorRun,
+} from '../types/index.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
-import { sanitizeListRun, sanitizePublicRun } from '../utils/sanitize.js';
+import {
+  sanitizeListRun,
+  sanitizePublicRun,
+  sanitizeEditorRun,
+} from '../utils/sanitize.js';
 
 /**
  * Service layer - handles business logic
@@ -26,8 +32,12 @@ export class RunService {
   async getRunForUser(
     runId: string,
     userId: string,
-  ): Promise<RunWithId | null> {
-    return runRepository.findByIdAndUserId(runId, userId);
+  ): Promise<EditorRun | null> {
+    const runData = await runRepository.findByIdAndUserId(runId, userId);
+    if (!runData) {
+      return null;
+    }
+    return sanitizeEditorRun(runData);
   }
 
   /**
@@ -72,7 +82,7 @@ export class RunService {
     userId: string;
     isPublic: boolean;
     publicSlug?: string;
-  }): Promise<RunWithId> {
+  }): Promise<RunRecordWithId> {
     const { runId, userId, isPublic, publicSlug } = params;
 
     // Verify ownership

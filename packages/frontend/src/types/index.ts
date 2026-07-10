@@ -52,11 +52,10 @@ export interface PublicRun {
   pointsOfInterest: PointOfInterest[];
 }
 
-export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
+export interface EditorRun extends PublicRun {
   createdAt: string;
   updatedAt?: string;
-  isPublic?: boolean;
-  publicSlug?: string;
+  isPublic: boolean;
 }
 
 export interface ListRun {

@@ -4,6 +4,8 @@ import type {
   PublicRun,
   PointOfInterest,
   Waypoint,
+  Coordinates,
+  EditorRun,
 } from '../types/index.js';
 import {
   isValidBoundingBox,
@@ -13,9 +15,11 @@ import {
 import type { ListRun, PublicRoute } from '../types/index.js';
 import { getImageSeed } from './index.js';
 
-const defaultBoundingBox: BoundingBox = [
-  { lat: 0, lng: 0 },
-  { lat: 0, lng: 0 },
+const DEFAULT_COORDINATES: Coordinates = { lat: 0, lng: 0 };
+
+const DEFAULT_BOUNDING_BOX: BoundingBox = [
+  DEFAULT_COORDINATES,
+  DEFAULT_COORDINATES,
 ];
 
 export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
@@ -39,7 +43,7 @@ const sanitizePointsOfInterest = (
     description: pointOfInterest.description,
     coordinates: isValidCoordinates(pointOfInterest.coordinates)
       ? pointOfInterest.coordinates
-      : { lat: 0, lng: 0 },
+      : DEFAULT_COORDINATES,
     type: pointOfInterest.type ?? 'expo',
   };
 };
@@ -51,7 +55,7 @@ const sanitizeWaypoint = (waypoint: Waypoint): Waypoint => {
     description: waypoint.description,
     coordinates: isValidCoordinates(waypoint.coordinates)
       ? waypoint.coordinates
-      : { lat: 0, lng: 0 },
+      : DEFAULT_COORDINATES,
     type: waypoint.type ?? 'energy',
     position: waypoint.position ?? 0,
     amenities: waypoint.amenities ?? [],
@@ -61,12 +65,13 @@ const sanitizeWaypoint = (waypoint: Waypoint): Waypoint => {
 const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
   return {
     id: route.id,
-    name: route.name,
+    name: route.name || 'Untitled Route',
     boundingBox: isValidBoundingBox(route.boundingBox)
       ? ([route.boundingBox[0], route.boundingBox[1]] as BoundingBox)
-      : defaultBoundingBox,
+      : DEFAULT_BOUNDING_BOX,
     coordinates: route.coordinates.filter(isValidRouteCoordinates),
     waypoints: route.waypoints.map(sanitizeWaypoint),
+    displayDistance: route.displayDistance,
   };
 };
 
@@ -81,5 +86,15 @@ export const sanitizePublicRun = (runData: RunRecordWithId): PublicRun => {
     publicSlug: runData.publicSlug ?? '',
     pointsOfInterest: runData.pointsOfInterest.map(sanitizePointsOfInterest),
     routes: runData.routes.map(sanitizePublicRoute),
+  };
+};
+
+export const sanitizeEditorRun = (runData: RunRecordWithId): EditorRun => {
+  return {
+    ...sanitizePublicRun(runData),
+    isPublic: runData.isPublic ?? false,
+    createdAt: runData.createdAt,
+    updatedAt: runData.updatedAt,
+    imageSeed: runData.imageSeed ?? getImageSeed(),
   };
 };

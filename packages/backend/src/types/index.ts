@@ -17,17 +17,17 @@ export type WayPointType =
 
 export type PointOfInterestType =
   | 'expo'
-  | 'food-and-drink'
-  | 'entertainment'
-  | 'aid-station'
-  | 'parking'
-  | 'restrooms'
-  | 'information'
   | 'bag-drop-off'
-  | 'shower-and-changing-rooms'
-  | 'award-ceremony'
   | 'warm-up-area'
-  | 'spectator-area';
+  | 'food-and-drinks'
+  | 'entertainment'
+  | 'spectator-area'
+  | 'aid-station'
+  | 'showers-and-changing-rooms'
+  | 'award-ceremony'
+  | 'information'
+  | 'restrooms'
+  | 'parking';
 
 export type Waypoint = {
   id: string;
@@ -53,6 +53,7 @@ export interface PublicRoute {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
+  displayDistance?: number;
 }
 
 export interface PublicRun {
@@ -74,12 +75,7 @@ export interface RunRecordWithId extends PublicRun {
 
 export type RunRecord = Omit<RunRecordWithId, 'id'>;
 
-export interface EditorRun extends Omit<
-  RunRecordWithId,
-  'publicSlug' | 'userId'
-> {
-  publicSlug?: string;
-}
+export type EditorRun = Omit<RunRecordWithId, 'userId'>;
 
 export interface ListRun {
   id: string;
