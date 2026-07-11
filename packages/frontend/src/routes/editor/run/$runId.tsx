@@ -30,7 +30,7 @@ function ExistingRunEditor() {
 
   return (
     <PageLayout isFullWidth footerHasShadow isLoading={isLoading}>
-      <RunEditor existingRun={data?.data} />
+      <RunEditor existingRun={data?.data} onSubmit={console.log} />
     </PageLayout>
   );
 }

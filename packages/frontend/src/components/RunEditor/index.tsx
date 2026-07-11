@@ -6,6 +6,7 @@ import type {
   PointOfInterest,
   PublicRoute,
   Waypoint,
+  RunUpdate,
 } from '~/types';
 import { processRunRoute, calculateDistance } from '~/utils/route';
 
@@ -18,9 +19,11 @@ import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 
 interface RunEditorProps {
   existingRun?: EditorRun;
+  error?: Error | null;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
 }
 
-export const RunEditor = ({ existingRun }: RunEditorProps) => {
+export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
   });
@@ -69,6 +72,13 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
     () => calculateDistance(activeRouteCoordinates),
     [activeRouteCoordinates],
   );
+  const initialBoundingBox = useMemo(
+    () =>
+      existingRun?.routes.length
+        ? existingRun?.routes[0].boundingBox
+        : undefined,
+    [existingRun?.routes],
+  );
 
   return (
     <IdProvider baseId="run-editor">
@@ -84,19 +94,21 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
           editRouteCoordinates={editRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           isEditingPoiCoordinates={isEditingPoiCoordinates}
+          error={error}
           setEditRouteCoordinates={setEditRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
+          onSubmit={onSubmit}
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            initialBoundingBox={existingRun?.routes[0].boundingBox}
+            initialBoundingBox={initialBoundingBox}
             activeRoute={activeRoute}
             activeRouteCoordinates={activeRouteCoordinates}
             activeRouteElevations={activeRouteElevations}

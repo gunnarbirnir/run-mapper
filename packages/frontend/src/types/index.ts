@@ -5,6 +5,7 @@ export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
 export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
+export type NoId<T> = Omit<T, 'id'>;
 
 export type RouteCoordinates = Coordinates & {
   elevation: number;
@@ -57,6 +58,8 @@ export interface EditorRun extends PublicRun {
   updatedAt?: string;
   isPublic: boolean;
 }
+
+export type RunUpdate = Omit<EditorRun, 'id' | 'createdAt' | 'updatedAt'>;
 
 export interface ListRun {
   id: string;

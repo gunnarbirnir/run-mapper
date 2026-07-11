@@ -1,4 +1,4 @@
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
 import z from 'zod';
 
@@ -6,7 +6,12 @@ import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { Form, SidePanel, Button } from '~/primitives';
-import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
+import type {
+  EditorRun,
+  PointOfInterest,
+  PublicRoute,
+  RunUpdate,
+} from '~/types';
 import { getFieldError } from '~/utils';
 
 import { ItemsSection } from '../ItemsSection';
@@ -17,11 +22,13 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
+  error?: Error | null;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
 }
 
 const rootFormSchema = z.object({
@@ -33,11 +40,13 @@ export const RootPanel = ({
   existingRun,
   currentRoutes,
   currentPointsOfInterest,
+  // error,
   onClose,
   onAddRoute,
   onEditRoute,
   onAddPointOfInterest,
   onEditPointOfInterest,
+  onSubmit,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
@@ -50,19 +59,27 @@ export const RootPanel = ({
       onBlur: rootFormSchema,
       onSubmit: rootFormSchema,
     },
-    onSubmit: ({ value }) => {
+    onSubmit: async ({ value }) => {
       const updatedRun = {
         name: value.name,
+        isPublic: true,
         publicSlug: value.publicSlug,
         routes: currentRoutes,
         pointsOfInterest: currentPointsOfInterest,
       };
 
-      console.log('updatedRun', updatedRun);
+      await onSubmit(updatedRun);
     },
   });
   const { isSmallScreen } = useMediaQuery();
   const isEditing = Boolean(existingRun);
+
+  const isDefaultValue = useStore(
+    rootForm.store,
+    (state) => state.isDefaultValue,
+  );
+  const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
+  const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
 
   return (
     <SidePanel.Content
@@ -145,24 +162,20 @@ export const RootPanel = ({
           ) : null}
         </ItemsSection>
         <section className="flex flex-col gap-3">
-          <rootForm.Subscribe
-            selector={(state) => [
-              state.canSubmit,
-              state.isSubmitting,
-              state.isDefaultValue,
-            ]}
-            children={([canSubmit, isSubmitting, isDefaultValue]) => (
-              <Button
-                className="w-full"
-                type="submit"
-                disabled={!canSubmit || isDefaultValue}
-                isLoading={isSubmitting}
-              >
-                {isEditing ? 'Save run' : 'Create run'}
-              </Button>
-            )}
-          />
-          <Button className="w-full" linkTo="/runs" color="gray">
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={!canSubmit || isDefaultValue}
+            isLoading={isSubmitting}
+          >
+            {isEditing ? 'Save run' : 'Create run'}
+          </Button>
+          <Button
+            className="w-full"
+            linkTo="/runs"
+            color="gray"
+            disabled={isSubmitting}
+          >
             Back to runs
           </Button>
           {isEditing && (
@@ -171,6 +184,7 @@ export const RootPanel = ({
               className="w-full"
               // TODO: Delete run
               onClick={() => console.log('Delete run')}
+              disabled={isSubmitting}
             >
               {isSmallScreen ? 'Delete' : 'Delete run'}
             </Button>

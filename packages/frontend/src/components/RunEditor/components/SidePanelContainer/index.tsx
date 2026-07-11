@@ -10,6 +10,7 @@ import type {
   Waypoint,
   WaypointType,
   Coordinates,
+  RunUpdate,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -31,12 +32,14 @@ interface SidePanelContainerProps {
   editRouteCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
+  error?: Error | null;
   setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -52,12 +55,14 @@ export const SidePanelContainer = ({
   editRouteCoordinates,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  error,
   setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  onSubmit,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -111,11 +116,13 @@ export const SidePanelContainer = ({
               existingRun={existingRun}
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+              error={error}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
               onAddPointOfInterest={onAddPointOfInterest}
               onEditPointOfInterest={onEditPointOfInterest}
+              onSubmit={onSubmit}
             />
           ),
         },
