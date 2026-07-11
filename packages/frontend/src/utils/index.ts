@@ -88,3 +88,7 @@ export const getFieldError = (field: {
     ? field.state.meta.errors[0]?.message
     : undefined;
 };
+
+export const generateId = (): string => {
+  return crypto.randomUUID();
+};

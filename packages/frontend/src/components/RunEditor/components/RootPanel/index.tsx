@@ -5,7 +5,7 @@ import z from 'zod';
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Form, SidePanel, Button } from '~/primitives';
+import { Form, SidePanel, Button, Text } from '~/primitives';
 import type {
   EditorRun,
   PointOfInterest,
@@ -22,6 +22,7 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
+  hasMadeNestedChanges: boolean;
   error?: Error | null;
   onClose: () => void;
   onAddRoute: () => void;
@@ -40,7 +41,8 @@ export const RootPanel = ({
   existingRun,
   currentRoutes,
   currentPointsOfInterest,
-  // error,
+  hasMadeNestedChanges,
+  error,
   onClose,
   onAddRoute,
   onEditRoute,
@@ -50,6 +52,9 @@ export const RootPanel = ({
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
+  const { isSmallScreen } = useMediaQuery();
+  const isEditing = Boolean(existingRun);
+
   const rootForm = useForm({
     defaultValues: {
       name: existingRun?.name || '',
@@ -71,13 +76,10 @@ export const RootPanel = ({
       await onSubmit(updatedRun);
     },
   });
-  const { isSmallScreen } = useMediaQuery();
-  const isEditing = Boolean(existingRun);
 
-  const isDefaultValue = useStore(
-    rootForm.store,
-    (state) => state.isDefaultValue,
-  );
+  const isDefaultValue =
+    useStore(rootForm.store, (state) => state.isDefaultValue) &&
+    !hasMadeNestedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
 
@@ -161,34 +163,39 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
-        <section className="flex flex-col gap-3">
-          <Button
-            className="w-full"
-            type="submit"
-            disabled={!canSubmit || isDefaultValue}
-            isLoading={isSubmitting}
-          >
-            {isEditing ? 'Save run' : 'Create run'}
-          </Button>
-          <Button
-            className="w-full"
-            linkTo="/runs"
-            color="gray"
-            disabled={isSubmitting}
-          >
-            Back to runs
-          </Button>
-          {isEditing && (
+        <section className="flex flex-col">
+          {error && (
+            <Text className="text-error-600 mb-5 text-xs">{error.message}</Text>
+          )}
+          <div className="flex flex-col gap-3">
             <Button
-              color="errorOutline"
               className="w-full"
-              // TODO: Delete run
-              onClick={() => console.log('Delete run')}
+              type="submit"
+              disabled={!canSubmit || isDefaultValue}
+              isLoading={isSubmitting}
+            >
+              {isEditing ? 'Save run' : 'Create run'}
+            </Button>
+            <Button
+              className="w-full"
+              linkTo="/runs"
+              color="gray"
               disabled={isSubmitting}
             >
-              {isSmallScreen ? 'Delete' : 'Delete run'}
+              Back to runs
             </Button>
-          )}
+            {isEditing && (
+              <Button
+                color="errorOutline"
+                className="w-full"
+                // TODO: Delete run
+                onClick={() => console.log('Delete run')}
+                disabled={isSubmitting}
+              >
+                {isSmallScreen ? 'Delete' : 'Delete run'}
+              </Button>
+            )}
+          </div>
         </section>
       </Form>
     </SidePanel.Content>

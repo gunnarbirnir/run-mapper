@@ -1,6 +1,7 @@
 import { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
 import { SLIDE_IN_DURATION } from '~/primitives/SidePanel';
+import { generateId } from '~/utils';
 
 interface UsePanelStateProps<T> {
   existingItems?: T[];
@@ -69,10 +70,7 @@ export const usePanelState = <T extends { id: string }>({
 
   const onAddItem = useCallback(
     (item: Omit<T, 'id'> & { id?: string }) => {
-      setCurrentItems([
-        ...currentItems,
-        { id: `new-item-${Date.now()}`, ...item } as T,
-      ]);
+      setCurrentItems([...currentItems, { id: generateId(), ...item } as T]);
       setShowPanel(false);
     },
     [currentItems, setCurrentItems, setShowPanel],
