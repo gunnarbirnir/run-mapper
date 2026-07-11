@@ -1,11 +1,9 @@
 import type { Context } from 'hono';
 
-import { MAX_ROUTE_DATA_BYTES } from '../config/constants.js';
+import { MAX_RUN_DATA_BYTES } from '../config/constants.js';
 import { runService } from '../services/run-service.js';
-import {
-  validateCreateRunBody,
-  validateUpdatePublicBody,
-} from '../utils/runValidation.js';
+import { validateUpdatePublicBody } from '../utils/runValidation.js';
+import { validateCreateRunBody } from '../utils/validation.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
 import type { AuthContext } from '../middleware/auth.js';
 
@@ -85,12 +83,12 @@ export class RunController {
     try {
       // Check content length
       const contentLength = c.req.header('content-length');
-      if (contentLength && Number(contentLength) > MAX_ROUTE_DATA_BYTES) {
+      if (contentLength && Number(contentLength) > MAX_RUN_DATA_BYTES) {
         return c.json(
           {
             success: false,
             error: 'Payload too large',
-            message: `Payload exceeds ${MAX_ROUTE_DATA_BYTES} bytes`,
+            message: `Payload exceeds ${MAX_RUN_DATA_BYTES} bytes`,
           },
           413,
         );
@@ -107,26 +105,20 @@ export class RunController {
             error: err.error,
             message: err.message,
           },
-          err.status as 400 | 409 | 413,
+          err.status as 400,
         );
       }
-
-      const { name, normalizedRouteData, isPublic, publicSlug } =
-        validation.value;
 
       // Create run (service handles slug uniqueness check)
       const created = await runService.createRun({
         userId: c.user.uid,
-        name,
-        routeData: normalizedRouteData,
-        isPublic,
-        publicSlug,
+        runData: validation.value,
       });
 
       return c.json(
         {
           success: true,
-          data: { id: created.id },
+          data: created,
         },
         201,
       );

@@ -1,40 +1,548 @@
-import type {
-  Coordinates,
+import {
+  MAX_RUN_NAME_LENGTH,
+  MAX_RUN_POINTS_OF_INTEREST,
+  MAX_RUN_ROUTES,
+  MAX_ROUTE_COORDINATES,
+  MAX_ROUTE_WAYPOINTS,
+} from '../config/constants.js';
+import {
   RouteCoordinates,
-  BoundingBox,
+  WaypointType,
+  PointOfInterest,
+  Waypoint,
+  PublicRoute,
 } from '../types/index.js';
+import type {
+  ValidationResult,
+  ErrResult,
+  NoId,
+  CreateRunBody,
+} from '../types/validation.js';
+import {
+  normalizePublicSlug,
+  isValidPublicSlug,
+  isValidCoordinates,
+  isValidRouteCoordinates,
+  isValidPointOfInterestType,
+  isValidBoundingBox,
+  isValidWaypointType,
+  isFiniteNumber,
+  generateImageSeed,
+  generateId,
+} from './index.js';
 
-export const isFiniteNumber = (value: unknown): value is number => {
-  return typeof value === 'number' && Number.isFinite(value);
+export const validatePointsOfInterestBody = (
+  rawBody: unknown,
+): ValidationResult<PointOfInterest> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'pointsOfInterest must be an array of objects',
+      },
+    };
+  }
+
+  const body = rawBody as NoId<PointOfInterest>;
+  const { name, description, coordinates, type } = body;
+
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'pointsOfInterest.name must be a string',
+      },
+    };
+  }
+
+  const normalizedName = name.trim();
+
+  if (normalizedName.length > MAX_RUN_NAME_LENGTH) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `pointsOfInterest.name must be at most ${MAX_RUN_NAME_LENGTH} characters`,
+      },
+    };
+  }
+
+  if (description !== undefined && typeof description !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'pointsOfInterest.description must be a string',
+      },
+    };
+  }
+
+  if (!isValidCoordinates(coordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message:
+          'pointsOfInterest.coordinates must be a valid coordinates object',
+      },
+    };
+  }
+
+  if (type !== undefined && !isValidPointOfInterestType(type)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'pointsOfInterest.type must be a valid point of interest type',
+      },
+    };
+  }
+
+  const normalizedType = type ?? 'expo';
+
+  return {
+    ok: true,
+    value: {
+      id: generateId(),
+      name: normalizedName,
+      type: normalizedType,
+      description,
+      coordinates,
+    },
+  };
 };
 
-export const isValidCoordinates = (value: unknown): value is Coordinates => {
-  if (!value || typeof value !== 'object') {
-    return false;
+export const validateWaypointBody = (
+  rawBody: unknown,
+): ValidationResult<Waypoint> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints must be an array of objects',
+      },
+    };
   }
-  const coordinate = value as Coordinates;
-  return (
-    isFiniteNumber(coordinate.lat) &&
-    isFiniteNumber(coordinate.lng) &&
-    coordinate.lat >= -90 &&
-    coordinate.lat <= 90 &&
-    coordinate.lng >= -180 &&
-    coordinate.lng <= 180
-  );
+
+  const body = rawBody as NoId<Waypoint>;
+  const { name, description, coordinates, type, position, amenities } = body;
+
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.name must be a string',
+      },
+    };
+  }
+
+  const normalizedName = name.trim();
+
+  if (normalizedName.length > MAX_RUN_NAME_LENGTH) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `waypoints.name must be at most ${MAX_RUN_NAME_LENGTH} characters`,
+      },
+    };
+  }
+
+  if (description !== undefined && typeof description !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.description must be a string',
+      },
+    };
+  }
+
+  if (!isValidCoordinates(coordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.coordinates must be a valid coordinates object',
+      },
+    };
+  }
+
+  if (type !== undefined && !isValidWaypointType(type)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.type must be a valid waypoint type',
+      },
+    };
+  }
+
+  const normalizedType = type ?? 'energy';
+
+  if (!isFiniteNumber(position) || position < 0) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.position must be a positive number',
+      },
+    };
+  }
+
+  if (amenities !== undefined && !Array.isArray(amenities)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.amenities must be an array',
+      },
+    };
+  }
+
+  const normalizedAmenities: WaypointType[] = amenities ?? [];
+  if (!normalizedAmenities.every(isValidWaypointType)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'waypoints.amenities must be an array of valid waypoint types',
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      id: generateId(),
+      name: normalizedName,
+      type: normalizedType,
+      description,
+      coordinates,
+      position,
+      amenities: normalizedAmenities,
+    },
+  };
 };
 
-export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
-  if (!Array.isArray(value) || value.length !== 2) {
-    return false;
+export const validateRouteBody = (
+  rawBody: unknown,
+): ValidationResult<PublicRoute> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes must be an array of objects',
+      },
+    };
   }
-  return isValidCoordinates(value[0]) && isValidCoordinates(value[1]);
+
+  const body = rawBody as NoId<PublicRoute>;
+  const { name, displayDistance, boundingBox, coordinates, waypoints } = body;
+
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.name must be a string',
+      },
+    };
+  }
+
+  const normalizedName = name.trim();
+
+  if (normalizedName.length > MAX_RUN_NAME_LENGTH) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes.name must be at most ${MAX_RUN_NAME_LENGTH} characters`,
+      },
+    };
+  }
+
+  if (displayDistance !== undefined && typeof displayDistance !== 'number') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.displayDistance must be a number',
+      },
+    };
+  }
+
+  if (!isValidBoundingBox(boundingBox)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.boundingBox must be a valid bounding box',
+      },
+    };
+  }
+
+  if (coordinates !== undefined && !Array.isArray(coordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.coordinates must be an array',
+      },
+    };
+  }
+
+  const normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
+
+  if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes.coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
+      },
+    };
+  }
+
+  if (!normalizedCoordinates.every(isValidRouteCoordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message:
+          'routes.coordinates must be an array of valid route coordinates',
+      },
+    };
+  }
+
+  if (waypoints !== undefined && !Array.isArray(waypoints)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.waypoints must be an array',
+      },
+    };
+  }
+
+  const normalizedWaypoints: Waypoint[] = waypoints ?? [];
+  for (const waypoint of waypoints) {
+    const validation = validateWaypointBody(waypoint);
+    if (!validation.ok) {
+      return validation as ErrResult;
+    }
+    normalizedWaypoints.push(validation.value);
+  }
+
+  if (normalizedWaypoints.length > MAX_ROUTE_WAYPOINTS) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes.waypoints must be at most ${MAX_ROUTE_WAYPOINTS} items`,
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      id: generateId(),
+      name: normalizedName,
+      displayDistance,
+      boundingBox,
+      coordinates: normalizedCoordinates,
+      waypoints: normalizedWaypoints,
+    },
+  };
 };
 
-export const isValidRouteCoordinates = (
-  value: unknown,
-): value is RouteCoordinates => {
-  if (!isValidCoordinates(value)) {
-    return false;
+export const validateCreateRunBody = (
+  rawBody: unknown,
+): ValidationResult<CreateRunBody> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'Request body must be a JSON object',
+      },
+    };
   }
-  return isFiniteNumber((value as RouteCoordinates).elevation);
+
+  const body = rawBody as CreateRunBody;
+  const {
+    name,
+    // defaultRouteId,
+    isPublic,
+    publicSlug,
+    pointsOfInterest,
+    routes,
+  } = body;
+
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'name must be a string',
+      },
+    };
+  }
+
+  const normalizedName = name.trim();
+
+  if (normalizedName.length > MAX_RUN_NAME_LENGTH) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `name must be at most ${MAX_RUN_NAME_LENGTH} characters`,
+      },
+    };
+  }
+
+  if (isPublic !== undefined && typeof isPublic !== 'boolean') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'isPublic must be a boolean',
+      },
+    };
+  }
+
+  if (typeof publicSlug !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'publicSlug must be a string',
+      },
+    };
+  }
+
+  const normalizedPublicSlug = normalizePublicSlug(publicSlug);
+  const normalizedIsPublic = isPublic === true;
+
+  if (!isValidPublicSlug(normalizedPublicSlug)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message:
+          'publicSlug must contain only lowercase letters, numbers, or hyphens and be 3-64 characters long',
+      },
+    };
+  }
+
+  if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'pointsOfInterest must be an array',
+      },
+    };
+  }
+
+  const normalizedPointsOfInterest: PointOfInterest[] = [];
+  for (const pointOfInterest of pointsOfInterest) {
+    const validation = validatePointsOfInterestBody(pointOfInterest);
+    if (!validation.ok) {
+      return validation as ErrResult;
+    }
+    normalizedPointsOfInterest.push(validation.value);
+  }
+
+  if (normalizedPointsOfInterest.length > MAX_RUN_POINTS_OF_INTEREST) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `pointsOfInterest must be at most ${MAX_RUN_POINTS_OF_INTEREST} items`,
+      },
+    };
+  }
+
+  if (routes !== undefined && !Array.isArray(routes)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes must be an array',
+      },
+    };
+  }
+
+  const normalizedRoutes: PublicRoute[] = [];
+  for (const route of routes) {
+    const validation = validateRouteBody(route);
+    if (!validation.ok) {
+      return validation as ErrResult;
+    }
+    normalizedRoutes.push(validation.value);
+  }
+
+  if (normalizedRoutes.length > MAX_RUN_ROUTES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes must be at most ${MAX_RUN_ROUTES} items`,
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      name: normalizedName,
+      isPublic: normalizedIsPublic,
+      publicSlug: normalizedPublicSlug,
+      pointsOfInterest: normalizedPointsOfInterest,
+      routes: normalizedRoutes,
+      imageSeed: generateImageSeed(),
+    },
+  };
 };

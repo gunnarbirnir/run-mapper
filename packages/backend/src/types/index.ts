@@ -1,3 +1,8 @@
+import {
+  WAYPOINT_VALUES,
+  POINT_OF_INTEREST_VALUES,
+} from '../config/constants.js';
+
 export type Coordinates = { lat: number; lng: number };
 export type BoundingBox = [Coordinates, Coordinates];
 export type Elevation = { value: number; distance: number };
@@ -6,38 +11,19 @@ export type RouteCoordinates = Coordinates & {
   elevation: number;
 };
 
-export type WayPointType =
-  | 'energy'
-  | 'hydration'
-  | 'entertainment'
-  | 'timing'
-  | 'restrooms'
-  | 'start'
-  | 'end';
-
-export type PointOfInterestType =
-  | 'expo'
-  | 'bag-drop-off'
-  | 'warm-up-area'
-  | 'food-and-drinks'
-  | 'entertainment'
-  | 'spectator-area'
-  | 'aid-station'
-  | 'showers-and-changing-rooms'
-  | 'award-ceremony'
-  | 'information'
-  | 'restrooms'
-  | 'parking';
+export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
 export type Waypoint = {
   id: string;
   name: string;
   description?: string;
   coordinates: Coordinates;
-  type: WayPointType;
+  type: WaypointType;
   position: number;
-  amenities?: WayPointType[];
+  amenities?: WaypointType[];
 };
+
+export type PointOfInterestType = (typeof POINT_OF_INTEREST_VALUES)[number];
 
 export type PointOfInterest = {
   id: string;

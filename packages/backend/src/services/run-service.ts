@@ -1,12 +1,16 @@
 import { runRepository } from '../repositories/run-repository.js';
-import type { NormalizedRouteData } from '../utils/runValidation.js';
+import type { CreateRunBody } from '../types/validation.js';
 import type {
   PublicRun,
   ListRun,
   RunRecordWithId,
   EditorRun,
 } from '../types/index.js';
-import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
+import {
+  getCurrentTimestamp,
+  isValidPublicSlug,
+  normalizePublicSlug,
+} from '../utils/index.js';
 import {
   sanitizeListRun,
   sanitizePublicRun,
@@ -45,33 +49,26 @@ export class RunService {
    */
   async createRun(params: {
     userId: string;
-    name: string;
-    routeData: NormalizedRouteData;
-    isPublic: boolean;
-    publicSlug?: string;
-  }): Promise<{ id: string }> {
-    const { /* userId, name, routeData, isPublic, */ publicSlug } = params;
+    runData: CreateRunBody;
+  }): Promise<EditorRun> {
+    const { userId, runData } = params;
 
     // Check if slug is already in use
-    if (publicSlug) {
-      const slugExists = await runRepository.slugExists(publicSlug);
+    if (runData.publicSlug) {
+      const slugExists = await runRepository.slugExists(runData.publicSlug);
       if (slugExists) {
         throw new Error('Slug already exists');
       }
     }
 
-    throw new Error('Not implemented yet');
-
-    /* const runToCreate: RunRecord = {
-      userId,
-      name,
-      createdAt: new Date().toISOString(),
-      isPublic,
-      ...(isPublic && publicSlug ? { publicSlug } : {}),
-      ...routeData,
+    const runToCreate = {
+      ...runData,
+      createdAt: getCurrentTimestamp(),
     };
 
-    return runRepository.create(runToCreate); */
+    const { id } = await runRepository.create({ userId, ...runToCreate });
+
+    return { id, ...runToCreate };
   }
 
   /**

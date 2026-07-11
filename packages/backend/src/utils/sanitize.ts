@@ -7,16 +7,15 @@ import type {
   Coordinates,
   EditorRun,
 } from '../types/index.js';
+import type { ListRun, PublicRoute } from '../types/index.js';
 import {
+  generateImageSeed,
   isValidBoundingBox,
   isValidRouteCoordinates,
   isValidCoordinates,
-} from './validation.js';
-import type { ListRun, PublicRoute } from '../types/index.js';
-import { getImageSeed } from './index.js';
+} from './index.js';
 
 const DEFAULT_COORDINATES: Coordinates = { lat: 0, lng: 0 };
-
 const DEFAULT_BOUNDING_BOX: BoundingBox = [
   DEFAULT_COORDINATES,
   DEFAULT_COORDINATES,
@@ -30,7 +29,7 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
     publicSlug: runData.publicSlug ?? '',
     createdAt: runData.createdAt,
     updatedAt: runData.updatedAt,
-    imageSeed: runData.imageSeed ?? getImageSeed(),
+    imageSeed: runData.imageSeed ?? generateImageSeed(),
   };
 };
 
@@ -95,6 +94,6 @@ export const sanitizeEditorRun = (runData: RunRecordWithId): EditorRun => {
     isPublic: runData.isPublic ?? false,
     createdAt: runData.createdAt,
     updatedAt: runData.updatedAt,
-    imageSeed: runData.imageSeed ?? getImageSeed(),
+    imageSeed: runData.imageSeed ?? generateImageSeed(),
   };
 };
