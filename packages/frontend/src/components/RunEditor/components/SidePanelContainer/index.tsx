@@ -116,11 +116,6 @@ export const SidePanelContainer = ({
               existingRun={existingRun}
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
-              hasMadeNestedChanges={
-                routePanelState.hasMadeChanges ||
-                pointOfInterestPanelState.hasMadeChanges ||
-                waypointPanelState.hasMadeChanges
-              }
               error={error}
               onClose={onClose}
               onAddRoute={onAddRoute}

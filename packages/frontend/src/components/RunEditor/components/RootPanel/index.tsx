@@ -22,7 +22,6 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
-  hasMadeNestedChanges: boolean;
   error?: Error | null;
   onClose: () => void;
   onAddRoute: () => void;
@@ -41,7 +40,6 @@ export const RootPanel = ({
   existingRun,
   currentRoutes,
   currentPointsOfInterest,
-  hasMadeNestedChanges,
   error,
   onClose,
   onAddRoute,
@@ -77,9 +75,10 @@ export const RootPanel = ({
     },
   });
 
-  const isDefaultValue =
-    useStore(rootForm.store, (state) => state.isDefaultValue) &&
-    !hasMadeNestedChanges;
+  const isDefaultValue = useStore(
+    rootForm.store,
+    (state) => state.isDefaultValue,
+  );
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
 

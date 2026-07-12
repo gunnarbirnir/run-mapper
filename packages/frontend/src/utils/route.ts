@@ -7,6 +7,7 @@ import type {
   RouteCoordinates,
   Waypoint,
   WaypointType,
+  BoundingBox,
 } from '~/types';
 
 export const processRunRoute = (
@@ -130,6 +131,18 @@ export const calculateMinElevation = (
   }
 
   return { value: minValue, index: minIndex };
+};
+
+export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
+  const minLat = Math.min(...coordinates.map((c) => c.lat));
+  const maxLat = Math.max(...coordinates.map((c) => c.lat));
+  const minLng = Math.min(...coordinates.map((c) => c.lng));
+  const maxLng = Math.max(...coordinates.map((c) => c.lng));
+
+  return [
+    { lat: minLat, lng: minLng },
+    { lat: maxLat, lng: maxLng },
+  ];
 };
 
 export const getCoordinatesFromPosition = (

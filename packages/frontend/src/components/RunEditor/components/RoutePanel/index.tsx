@@ -5,9 +5,9 @@ import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import { BoundingBox, Coordinates, PublicRoute, Waypoint } from '~/types';
+import { Coordinates, PublicRoute, Waypoint } from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
-import { isSameRoute } from '~/utils/route';
+import { getBoundingBox, isSameRoute } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -95,10 +95,7 @@ export const RoutePanel = ({
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
           : undefined,
-        boundingBox: [
-          { lat: 0, lng: 0 },
-          { lat: 0, lng: 0 },
-        ] as BoundingBox,
+        boundingBox: getBoundingBox(value.coordinates),
         coordinates: value.coordinates.map((coordinate) => ({
           ...coordinate,
           // TODO: Get elevation from API

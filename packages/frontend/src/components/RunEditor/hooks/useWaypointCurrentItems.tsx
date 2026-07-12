@@ -27,26 +27,18 @@ export const useWaypointCurrentItems = ({
 
   // useLayoutEffect instead of useEffect to prevent flicker
   useLayoutEffect(() => {
-    const newId = `new-route-${Date.now()}`;
-
     if (routePanelVisible && !routeEditId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setNewRouteWaypoints(getWaypointsWithStartAndEnd([], newId));
+      setNewRouteWaypoints(getWaypointsWithStartAndEnd([]));
     } else {
       setNewRouteWaypoints(null);
     }
   }, [routePanelVisible, routeEditId]);
 
   const routeItemMap = useMemo(() => {
-    // TODO: Most of this can be removed when no longer working with test data
     return routeCurrentItems.reduce(
       (acc, route) => {
-        const routeWaypoints = route.waypoints.map((wp) => ({
-          ...wp,
-          id: `${route.id}-${wp.id}`,
-        }));
-
-        acc[route.id] = getWaypointsWithStartAndEnd(routeWaypoints, route.id);
+        acc[route.id] = getWaypointsWithStartAndEnd(route.waypoints);
         return acc;
       },
       {} as Record<string, Waypoint[]>,
