@@ -24,6 +24,15 @@ export const formatBounds = (boundingBox: BoundingBox): Bounds => {
   ];
 };
 
+export const isSameBounds = (bounds1: Bounds, bounds2: Bounds): boolean => {
+  return (
+    bounds1[0][0] === bounds2[0][0] &&
+    bounds1[0][1] === bounds2[0][1] &&
+    bounds1[1][0] === bounds2[1][0] &&
+    bounds1[1][1] === bounds2[1][1]
+  );
+};
+
 export const getLineFeature = (coordinates: Coordinates[]): LineFeature => {
   return {
     type: 'Feature',

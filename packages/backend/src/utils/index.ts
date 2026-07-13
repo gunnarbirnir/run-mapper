@@ -71,3 +71,7 @@ export const isValidPointOfInterestType = (
 export const getCurrentTimestamp = (): string => {
   return new Date().toISOString();
 };
+
+export const generateId = (): string => {
+  return crypto.randomUUID();
+};

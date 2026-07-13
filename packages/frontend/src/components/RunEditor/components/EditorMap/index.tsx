@@ -27,6 +27,7 @@ import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
+import { DEFAULT_EDITOR_BOUNDS } from './constants';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
@@ -100,7 +101,10 @@ export const EditorMap = ({
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const initialBounds = useMemo(
-    () => (initialBoundingBox ? formatBounds(initialBoundingBox) : undefined),
+    () =>
+      initialBoundingBox
+        ? formatBounds(initialBoundingBox)
+        : DEFAULT_EDITOR_BOUNDS,
     [initialBoundingBox],
   );
   const elevationGain = useMemo(() => {
@@ -122,6 +126,7 @@ export const EditorMap = ({
     setIsMapLoaded,
     mapRef,
     mapContainerRef,
+    isResettingBoundsRef,
   });
 
   useResizeMap({
@@ -138,13 +143,15 @@ export const EditorMap = ({
     waypointPanelIsOpen,
     isMapLoaded,
     mapRef,
+    isResettingBoundsRef,
   });
 
   useFitToInitialBounds({
     isMapLoaded,
-    bounds: initialBounds,
-    mapRef,
+    initialBounds,
+    editRouteCoordinates,
     setIsAtInitialBounds,
+    mapRef,
     fitToInitialBoundsRef,
     isResettingBoundsRef,
   });
@@ -218,8 +225,6 @@ export const EditorMap = ({
         isMapLoaded={isMapLoaded}
         mapRef={mapRef}
         isAtInitialBounds={isAtInitialBounds}
-        initialBounds={initialBounds}
-        hasActiveRoute={Boolean(activeRoute)}
         resetRoute={fitToInitialBounds}
       />
       <RouteCoordinatesToolbar

@@ -8,7 +8,11 @@ import type {
   Waypoint,
   RunUpdate,
 } from '~/types';
-import { processRunRoute, calculateDistance } from '~/utils/route';
+import {
+  processRunRoute,
+  calculateDistance,
+  getBoundingBox,
+} from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
@@ -74,10 +78,14 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
   );
   const initialBoundingBox = useMemo(
     () =>
-      existingRun?.routes.length
-        ? existingRun?.routes[0].boundingBox
-        : undefined,
-    [existingRun?.routes],
+      existingRun?.pointsOfInterest.length
+        ? getBoundingBox(
+            existingRun?.pointsOfInterest.map((poi) => poi.coordinates) || [],
+          )
+        : existingRun?.routes.length
+          ? existingRun?.routes[0].boundingBox
+          : undefined,
+    [existingRun?.pointsOfInterest, existingRun?.routes],
   );
 
   return (

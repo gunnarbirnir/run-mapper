@@ -175,8 +175,8 @@ export const useDrawRoute = ({
     }
 
     map.fitBounds(bounds, {
-      padding: BOUNDS_PADDING,
       duration: FIT_INITIAL_BOUNDS_DURATION,
+      padding: BOUNDS_PADDING,
     });
     isResettingBoundsRef.current = true;
   }, [

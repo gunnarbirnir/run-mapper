@@ -27,6 +27,7 @@ import {
   isValidWaypointType,
   isFiniteNumber,
   generateImageSeed,
+  generateId,
 } from './index.js';
 
 export const validatePointsOfInterestBody = (
@@ -44,7 +45,7 @@ export const validatePointsOfInterestBody = (
   }
 
   const body = rawBody as PointOfInterest;
-  const { id, name, description, coordinates, type } = body;
+  const { name, description, coordinates, type } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -109,7 +110,7 @@ export const validatePointsOfInterestBody = (
   return {
     ok: true,
     value: {
-      id,
+      id: generateId(),
       name: normalizedName,
       type: normalizedType,
       description,
@@ -133,8 +134,7 @@ export const validateWaypointBody = (
   }
 
   const body = rawBody as Waypoint;
-  const { id, name, description, coordinates, type, position, amenities } =
-    body;
+  const { name, description, coordinates, type, position, amenities } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -232,7 +232,7 @@ export const validateWaypointBody = (
   return {
     ok: true,
     value: {
-      id,
+      id: generateId(),
       name: normalizedName,
       type: normalizedType,
       description,
@@ -258,8 +258,7 @@ export const validateRouteBody = (
   }
 
   const body = rawBody as PublicRoute;
-  const { id, name, displayDistance, boundingBox, coordinates, waypoints } =
-    body;
+  const { name, displayDistance, boundingBox, coordinates, waypoints } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -377,7 +376,7 @@ export const validateRouteBody = (
   return {
     ok: true,
     value: {
-      id,
+      id: generateId(),
       name: normalizedName,
       displayDistance,
       boundingBox,
