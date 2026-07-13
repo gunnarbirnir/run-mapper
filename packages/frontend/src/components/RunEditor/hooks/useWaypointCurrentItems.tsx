@@ -29,7 +29,7 @@ export const useWaypointCurrentItems = ({
   useLayoutEffect(() => {
     if (routePanelVisible && !routeEditId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setNewRouteWaypoints(getWaypointsWithStartAndEnd([]));
+      setNewRouteWaypoints(getWaypointsWithStartAndEnd());
     } else {
       setNewRouteWaypoints(null);
     }
@@ -38,7 +38,7 @@ export const useWaypointCurrentItems = ({
   const routeItemMap = useMemo(() => {
     return routeCurrentItems.reduce(
       (acc, route) => {
-        acc[route.id] = getWaypointsWithStartAndEnd(route.waypoints);
+        acc[route.id] = route.waypoints;
         return acc;
       },
       {} as Record<string, Waypoint[]>,

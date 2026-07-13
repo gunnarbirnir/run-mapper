@@ -4,7 +4,6 @@ import { AnimatePresence } from 'motion/react';
 
 import {
   BoundingBox,
-  Coordinates,
   Elevation,
   PointOfInterest,
   PublicRoute,
@@ -32,7 +31,6 @@ import { DEFAULT_EDITOR_BOUNDS } from './constants';
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
-  activeRouteCoordinates: Coordinates[];
   activeRouteElevations: Elevation[];
   routeDistance: number;
   routePanelIsOpen: boolean;
@@ -56,7 +54,6 @@ interface EditorMapProps extends MapState {
 export const EditorMap = ({
   rootPanelIsAnimating,
   activeRoute,
-  activeRouteCoordinates,
   activeRouteElevations,
   routeDistance,
   routePanelIsOpen,
@@ -197,7 +194,7 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    coordinates: activeRouteCoordinates,
+    coordinates: editRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,
     panelIsOpen: waypointPanelIsOpen,
@@ -206,7 +203,6 @@ export const EditorMap = ({
     editWaypointType,
     editWaypointCoordinates,
     isEditingRouteCoordinates,
-    isEditingPoiCoordinates,
     onEditWaypoint,
     setEditWaypointType,
     setEditWaypointCoordinates,
@@ -217,7 +213,7 @@ export const EditorMap = ({
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
-        {activeRoute ? (
+        {routeDistance > 0 ? (
           <RouteStats distance={routeDistance} elevationGain={elevationGain} />
         ) : null}
       </AnimatePresence>

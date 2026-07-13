@@ -64,17 +64,14 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
       ),
     [routePanelState.currentItems, routePanelState.editId],
   );
-  const {
-    coordinates: activeRouteCoordinates,
-    elevations: activeRouteElevations,
-  } = useMemo(
+  const { elevations: activeRouteElevations } = useMemo(
     () => processRunRoute(activeRoute?.coordinates || []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeRoute?.id],
   );
   const routeDistance = useMemo(
-    () => calculateDistance(activeRouteCoordinates),
-    [activeRouteCoordinates],
+    () => calculateDistance(editRouteCoordinates),
+    [editRouteCoordinates],
   );
   const initialBoundingBox = useMemo(
     () =>
@@ -94,7 +91,7 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
         <SidePanelContainer
           existingRun={existingRun}
           routeDistance={routeDistance}
-          routeCoordinates={activeRouteCoordinates}
+          routeCoordinates={editRouteCoordinates}
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
@@ -116,9 +113,8 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            initialBoundingBox={initialBoundingBox}
             activeRoute={activeRoute}
-            activeRouteCoordinates={activeRouteCoordinates}
+            initialBoundingBox={initialBoundingBox}
             activeRouteElevations={activeRouteElevations}
             routeDistance={routeDistance}
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}

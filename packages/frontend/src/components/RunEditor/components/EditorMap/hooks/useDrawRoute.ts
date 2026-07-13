@@ -17,6 +17,7 @@ import {
 } from '~/utils/map';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
+import { getBoundingBox } from '~/utils/route';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -74,10 +75,7 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const routeLayer = getRouteLayer();
-    const coordinates =
-      editCoordinates.length > 0
-        ? editCoordinates
-        : (activeRoute?.coordinates ?? []);
+    const coordinates = editCoordinates;
     let routePointMarkers: (Marker | undefined)[] = [];
 
     const drawRoute = () => {
@@ -145,7 +143,6 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    activeRoute?.coordinates,
     isEditingCoordinates,
     editCoordinates,
     selectedRoutePoint,
@@ -166,11 +163,17 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const bounds = activeRoute?.boundingBox
-      ? formatBounds(activeRoute.boundingBox)
-      : null;
+    const bounds =
+      editCoordinates.length > 0
+        ? formatBounds(getBoundingBox(editCoordinates))
+        : null;
 
-    if (!bounds || !panelIsOpen || waypointPanelIsOpen) {
+    if (
+      !bounds ||
+      !panelIsOpen ||
+      waypointPanelIsOpen ||
+      isEditingCoordinates
+    ) {
       return;
     }
 
@@ -181,9 +184,10 @@ export const useDrawRoute = ({
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
-    activeRoute?.boundingBox,
     panelIsOpen,
     isAnimatingPanel,
+    isEditingCoordinates,
+    editCoordinates,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,

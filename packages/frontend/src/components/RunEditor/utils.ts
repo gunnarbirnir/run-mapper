@@ -1,7 +1,7 @@
 import type { Waypoint } from '~/types';
 import { generateId } from '~/utils';
 
-export const getWaypointsWithStartAndEnd = (waypoints: Waypoint[]) => {
+export const getWaypointsWithStartAndEnd = (waypoints: Waypoint[] = []) => {
   const updatedWaypoints = [...waypoints];
   const waypointTypes = waypoints.reduce((types, wp) => {
     types.add(wp.type);
