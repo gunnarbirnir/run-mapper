@@ -29,6 +29,7 @@ import {
   generateImageSeed,
   generateId,
 } from './index.js';
+import { calculateDistance, getBoundingBox } from './route.js';
 
 export const validatePointsOfInterestBody = (
   rawBody: unknown,
@@ -258,7 +259,7 @@ export const validateRouteBody = (
   }
 
   const body = rawBody as PublicRoute;
-  const { name, displayDistance, boundingBox, coordinates, waypoints } = body;
+  const { name, displayDistance, coordinates, waypoints } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -295,13 +296,15 @@ export const validateRouteBody = (
     };
   }
 
-  if (!isValidBoundingBox(boundingBox)) {
+  const calculatedBoundingBox = getBoundingBox(coordinates);
+
+  if (!isValidBoundingBox(calculatedBoundingBox)) {
     return {
       ok: false,
       error: {
         status: 400,
         error: 'Invalid payload',
-        message: 'routes.boundingBox must be a valid bounding box',
+        message: 'routes.coordinates does not form a valid bounding box',
       },
     };
   }
@@ -378,8 +381,9 @@ export const validateRouteBody = (
     value: {
       id: generateId(),
       name: normalizedName,
+      distance: calculateDistance(normalizedCoordinates),
       displayDistance,
-      boundingBox,
+      boundingBox: calculatedBoundingBox,
       coordinates: normalizedCoordinates,
       waypoints: normalizedWaypoints,
     },

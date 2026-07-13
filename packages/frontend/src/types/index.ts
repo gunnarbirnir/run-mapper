@@ -41,6 +41,7 @@ export interface PublicRoute {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
+  distance: number;
   displayDistance?: number;
 }
 
