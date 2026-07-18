@@ -75,14 +75,16 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
   );
   const initialBoundingBox = useMemo(
     () =>
-      existingRun?.pointsOfInterest.length
+      pointOfInterestPanelState.currentItems.length > 1
         ? getBoundingBox(
-            existingRun?.pointsOfInterest.map((poi) => poi.coordinates) || [],
+            pointOfInterestPanelState.currentItems.map(
+              (poi) => poi.coordinates,
+            ),
           )
-        : existingRun?.routes.length
-          ? existingRun?.routes[0].boundingBox
+        : routePanelState.currentItems.length > 0
+          ? routePanelState.currentItems[0].boundingBox
           : undefined,
-    [existingRun?.pointsOfInterest, existingRun?.routes],
+    [pointOfInterestPanelState.currentItems, routePanelState.currentItems],
   );
 
   return (
