@@ -18,7 +18,13 @@ export class RunController {
   async getRunsList(c: AuthContext) {
     try {
       if (!c.user?.uid) {
-        throw new Error('User ID missing in auth context');
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
       }
 
       const runsList = await runService.getUserRuns(c.user.uid);
@@ -46,6 +52,10 @@ export class RunController {
    */
   async getUserRun(c: AuthContext) {
     try {
+      if (!c.user?.uid) {
+        throw new Error('User ID missing in auth context');
+      }
+
       const runId = c.req.param('id');
       const run = await runService.getRunForUser(runId, c.user.uid);
 
@@ -109,6 +119,10 @@ export class RunController {
         );
       }
 
+      if (!c.user?.uid) {
+        throw new Error('User ID missing in auth context');
+      }
+
       // Create run (service handles slug uniqueness check)
       const created = await runService.createRun({
         userId: c.user.uid,
@@ -154,6 +168,10 @@ export class RunController {
   async updateRunPublicStatus(c: AuthContext) {
     try {
       const runId = c.req.param('id');
+
+      if (!c.user?.uid) {
+        throw new Error('User ID missing in auth context');
+      }
 
       // Get existing run to check ownership and get current values
       const existingRun = await runService.getRunForUser(runId, c.user.uid);
@@ -242,6 +260,10 @@ export class RunController {
    */
   async deleteRun(c: AuthContext) {
     try {
+      if (!c.user?.uid) {
+        throw new Error('User ID missing in auth context');
+      }
+
       const runId = c.req.param('id');
       const deleted = await runService.deleteRun(runId, c.user.uid);
 
