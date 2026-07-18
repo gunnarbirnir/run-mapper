@@ -146,7 +146,7 @@ export const EditorMap = ({
   useFitToInitialBounds({
     isMapLoaded,
     initialBounds,
-    editRouteCoordinates,
+    routeCoordinates: editRouteCoordinates,
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,
@@ -194,7 +194,7 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    coordinates: editRouteCoordinates,
+    routeCoordinates: editRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,
     panelIsOpen: waypointPanelIsOpen,

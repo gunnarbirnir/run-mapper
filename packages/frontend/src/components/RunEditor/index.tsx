@@ -65,6 +65,7 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
     [routePanelState.currentItems, routePanelState.editId],
   );
   const { elevations: activeRouteElevations } = useMemo(
+    // TODO: use edit route
     () => processRunRoute(activeRoute?.coordinates || []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeRoute?.id],
@@ -75,13 +76,13 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
   );
   const initialBoundingBox = useMemo(
     () =>
-      pointOfInterestPanelState.currentItems.length > 1
+      pointOfInterestPanelState.currentItems.length
         ? getBoundingBox(
             pointOfInterestPanelState.currentItems.map(
               (poi) => poi.coordinates,
             ),
           )
-        : routePanelState.currentItems.length > 0
+        : routePanelState.currentItems.length
           ? routePanelState.currentItems[0].boundingBox
           : undefined,
     [pointOfInterestPanelState.currentItems, routePanelState.currentItems],
@@ -98,7 +99,6 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
-          editRouteCoordinates={editRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           isEditingPoiCoordinates={isEditingPoiCoordinates}
           error={error}

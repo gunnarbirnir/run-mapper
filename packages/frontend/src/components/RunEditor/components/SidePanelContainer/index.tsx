@@ -29,7 +29,6 @@ interface SidePanelContainerProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
-  editRouteCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
   error?: Error | null;
@@ -52,7 +51,6 @@ export const SidePanelContainer = ({
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
-  editRouteCoordinates,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
   error,
@@ -152,7 +150,7 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
-              editRouteCoordinates={editRouteCoordinates}
+              routeCoordinates={routeCoordinates}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}

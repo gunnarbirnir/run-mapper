@@ -70,6 +70,7 @@ const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
       : DEFAULT_BOUNDING_BOX,
     coordinates: route.coordinates.filter(isValidRouteCoordinates),
     waypoints: route.waypoints.map(sanitizeWaypoint),
+    distance: route.distance ?? 0,
     displayDistance: route.displayDistance,
   };
 };

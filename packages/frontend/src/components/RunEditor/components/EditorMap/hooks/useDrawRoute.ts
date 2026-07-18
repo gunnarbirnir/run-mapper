@@ -75,12 +75,11 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const routeLayer = getRouteLayer();
-    const coordinates = editCoordinates;
     let routePointMarkers: (Marker | undefined)[] = [];
 
     const drawRoute = () => {
       const source = map.getSource(routeLayer.source);
-      const routeLineFeature = getLineFeature(coordinates);
+      const routeLineFeature = getLineFeature(editCoordinates);
 
       if (source) {
         (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
@@ -104,7 +103,7 @@ export const useDrawRoute = ({
 
     const drawRoutePoints = () => {
       // TODO: Only route points
-      routePointMarkers = coordinates.map((coordinate, index) =>
+      routePointMarkers = editCoordinates.map((coordinate, index) =>
         addMarker(
           getRoutePointElement({
             isSelected: selectedRoutePoint === index,
@@ -126,7 +125,7 @@ export const useDrawRoute = ({
       }
     };
 
-    if (coordinates.length === 0) {
+    if (editCoordinates.length === 0) {
       clearRoute();
     } else {
       drawRoute();

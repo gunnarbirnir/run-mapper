@@ -10,7 +10,7 @@ import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;
-  coordinates: Coordinates[];
+  routeCoordinates: Coordinates[];
   waypoints: Waypoint[];
   activeWaypoint: string | null;
   panelIsOpen: boolean;
@@ -43,7 +43,7 @@ const getPositionCoordinates = (
 
 export const useWaypoints = ({
   isMapLoaded,
-  coordinates,
+  routeCoordinates,
   waypoints,
   activeWaypoint,
   panelIsOpen,
@@ -87,7 +87,10 @@ export const useWaypoints = ({
       const isStart = waypoint.type === 'start';
       const isEnd = waypoint.type === 'end';
       const isActive = waypoint.id === activeWaypoint;
-      const positionCoordinates = getPositionCoordinates(waypoint, coordinates);
+      const positionCoordinates = getPositionCoordinates(
+        waypoint,
+        routeCoordinates,
+      );
 
       if (!positionCoordinates) {
         continue;
@@ -159,7 +162,7 @@ export const useWaypoints = ({
   }, [
     isMapLoaded,
     activeWaypoint,
-    coordinates,
+    routeCoordinates,
     waypoints,
     hasMadeChanges,
     panelIsOpen,
@@ -188,7 +191,7 @@ export const useWaypoints = ({
 
     const positionCoordinates = getPositionCoordinates(
       activeWaypointDetails,
-      coordinates,
+      routeCoordinates,
     );
 
     if (positionCoordinates) {
@@ -201,7 +204,7 @@ export const useWaypoints = ({
   }, [
     isMapLoaded,
     activeWaypoint,
-    coordinates,
+    routeCoordinates,
     waypoints,
     panelIsOpen,
     isAnimatingPanel,

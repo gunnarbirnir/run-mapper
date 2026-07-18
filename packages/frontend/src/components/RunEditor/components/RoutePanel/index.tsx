@@ -7,7 +7,7 @@ import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import { Coordinates, PublicRoute, Waypoint } from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
-import { getBoundingBox, isSameRoute } from '~/utils/route';
+import { getBoundingBox, isSameRoute, calculateDistance } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -19,7 +19,7 @@ import { MapState } from '../EditorMap/hooks/useMapState';
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
-  editRouteCoordinates: Coordinates[];
+  routeCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
@@ -49,7 +49,7 @@ export const RoutePanel = ({
   currentItems,
   currentWaypoints,
   routeDistance,
-  editRouteCoordinates,
+  routeCoordinates,
   isEditingRouteCoordinates,
   onClose,
   onUpdateItem,
@@ -96,6 +96,7 @@ export const RoutePanel = ({
           ? Number(value.displayDistance)
           : undefined,
         boundingBox: getBoundingBox(value.coordinates),
+        distance: calculateDistance(value.coordinates),
         coordinates: value.coordinates.map((coordinate) => ({
           ...coordinate,
           // TODO: Get elevation from API
@@ -141,11 +142,11 @@ export const RoutePanel = ({
   }, [onClose, setIsEditingRouteCoordinates]);
 
   const saveRouteCoordinates = useCallback(() => {
-    onCoordinatesChange(editRouteCoordinates);
+    onCoordinatesChange(routeCoordinates);
     onCoordinatesBlur();
     setIsEditingRouteCoordinates(false);
   }, [
-    editRouteCoordinates,
+    routeCoordinates,
     onCoordinatesChange,
     onCoordinatesBlur,
     setIsEditingRouteCoordinates,
@@ -157,12 +158,12 @@ export const RoutePanel = ({
   }, [coordinatesValue, setEditRouteCoordinates, setIsEditingRouteCoordinates]);
 
   const handleCancelEditRouteCoordinates = useCallback(() => {
-    if (isSameRoute(coordinatesValue, editRouteCoordinates)) {
+    if (isSameRoute(coordinatesValue, routeCoordinates)) {
       cancelEditRouteCoordinates();
     } else {
       setCoordinatesDialogOpen(true);
     }
-  }, [coordinatesValue, editRouteCoordinates, cancelEditRouteCoordinates]);
+  }, [coordinatesValue, routeCoordinates, cancelEditRouteCoordinates]);
 
   useEffect(() => {
     editRouteActionsRef.current.onSave = saveRouteCoordinates;

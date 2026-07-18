@@ -14,7 +14,7 @@ import { formatBounds, isSameBounds } from '~/utils/map';
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;
   initialBounds: Bounds;
-  editRouteCoordinates: Coordinates[];
+  routeCoordinates: Coordinates[];
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   mapRef: RefObject<Map>;
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
@@ -24,7 +24,7 @@ interface UseFitToInitialBoundsProps {
 export const useFitToInitialBounds = ({
   isMapLoaded,
   initialBounds,
-  editRouteCoordinates,
+  routeCoordinates,
   mapRef,
   setIsAtInitialBounds,
   fitToInitialBoundsRef,
@@ -51,8 +51,8 @@ export const useFitToInitialBounds = ({
     map.on('moveend', handleMoveEnd);
 
     const activeBounds =
-      editRouteCoordinates.length > 0
-        ? formatBounds(getBoundingBox(editRouteCoordinates))
+      routeCoordinates.length > 0
+        ? formatBounds(getBoundingBox(routeCoordinates))
         : initialBounds;
 
     if (
@@ -77,7 +77,7 @@ export const useFitToInitialBounds = ({
   }, [
     isMapLoaded,
     initialBounds,
-    editRouteCoordinates,
+    routeCoordinates,
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,
