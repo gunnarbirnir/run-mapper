@@ -376,7 +376,7 @@ export const validateRouteBody = (
     };
   }
 
-  const normalizedWaypoints: Waypoint[] = waypoints ?? [];
+  const normalizedWaypoints: Waypoint[] = [];
   for (const waypoint of waypoints) {
     const validation = validateWaypointBody(waypoint, normalizedCoordinates);
     if (!validation.ok) {
