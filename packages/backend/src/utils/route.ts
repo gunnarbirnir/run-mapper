@@ -1,4 +1,4 @@
-import type { Coordinates, BoundingBox } from '../types/index.js';
+import type { BoundingBox, Coordinates } from '../types/index.js';
 
 export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
   const minLat = Math.min(...coordinates.map((c) => c.lat));
@@ -45,4 +45,28 @@ export const calculateDistance = (coordinates: Coordinates[]): number => {
   }
 
   return totalDistance;
+};
+
+export const getCoordinatesFromPosition = (
+  position: number,
+  coordinates: Coordinates[],
+): Coordinates | null => {
+  if (coordinates.length === 0) {
+    return null;
+  }
+
+  let cumulativeDistance = 0;
+  let closestCoordinate = coordinates[0];
+  let closestDelta = Math.abs(position - cumulativeDistance);
+
+  for (let i = 1; i < coordinates.length; i++) {
+    cumulativeDistance += haversineDistance(coordinates[i - 1], coordinates[i]);
+    const delta = Math.abs(position - cumulativeDistance);
+    if (delta < closestDelta) {
+      closestDelta = delta;
+      closestCoordinate = coordinates[i];
+    }
+  }
+
+  return closestCoordinate;
 };

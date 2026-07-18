@@ -11,6 +11,7 @@ import {
   PointOfInterest,
   Waypoint,
   PublicRoute,
+  Coordinates,
 } from '../types/index.js';
 import type {
   ValidationResult,
@@ -29,7 +30,11 @@ import {
   generateImageSeed,
   generateId,
 } from './index.js';
-import { calculateDistance, getBoundingBox } from './route.js';
+import {
+  calculateDistance,
+  getBoundingBox,
+  getCoordinatesFromPosition,
+} from './route.js';
 
 export const validatePointsOfInterestBody = (
   rawBody: unknown,
@@ -122,6 +127,7 @@ export const validatePointsOfInterestBody = (
 
 export const validateWaypointBody = (
   rawBody: unknown,
+  coordinates: Coordinates[],
 ): ValidationResult<Waypoint> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -135,7 +141,7 @@ export const validateWaypointBody = (
   }
 
   const body = rawBody as Waypoint;
-  const { name, description, coordinates, type, position, amenities } = body;
+  const { name, description, type, position, amenities } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -172,18 +178,9 @@ export const validateWaypointBody = (
     };
   }
 
-  if (!isValidCoordinates(coordinates)) {
-    return {
-      ok: false,
-      error: {
-        status: 400,
-        error: 'Invalid payload',
-        message: 'waypoints.coordinates must be a valid coordinates object',
-      },
-    };
-  }
+  const normalizedType = type ?? 'energy';
 
-  if (type !== undefined && !isValidWaypointType(type)) {
+  if (!isValidWaypointType(normalizedType)) {
     return {
       ok: false,
       error: {
@@ -194,15 +191,37 @@ export const validateWaypointBody = (
     };
   }
 
-  const normalizedType = type ?? 'energy';
+  const normalizedPosition =
+    type === 'start'
+      ? 0
+      : type === 'end'
+        ? calculateDistance(coordinates)
+        : position;
 
-  if (!isFiniteNumber(position) || position < 0) {
+  if (!isFiniteNumber(normalizedPosition) || normalizedPosition < 0) {
     return {
       ok: false,
       error: {
         status: 400,
         error: 'Invalid payload',
         message: 'waypoints.position must be a positive number',
+      },
+    };
+  }
+
+  const normalizedCoordinates = getCoordinatesFromPosition(
+    normalizedPosition,
+    coordinates,
+  );
+
+  if (!isValidCoordinates(normalizedCoordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message:
+          'waypoints.position does not correspond to a valid coordinates object',
       },
     };
   }
@@ -219,6 +238,7 @@ export const validateWaypointBody = (
   }
 
   const normalizedAmenities: WaypointType[] = amenities ?? [];
+
   if (!normalizedAmenities.every(isValidWaypointType)) {
     return {
       ok: false,
@@ -237,8 +257,8 @@ export const validateWaypointBody = (
       name: normalizedName,
       type: normalizedType,
       description,
-      coordinates,
-      position,
+      coordinates: normalizedCoordinates,
+      position: normalizedPosition,
       amenities: normalizedAmenities,
     },
   };
@@ -358,7 +378,7 @@ export const validateRouteBody = (
 
   const normalizedWaypoints: Waypoint[] = waypoints ?? [];
   for (const waypoint of waypoints) {
-    const validation = validateWaypointBody(waypoint);
+    const validation = validateWaypointBody(waypoint, normalizedCoordinates);
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -372,6 +392,35 @@ export const validateRouteBody = (
         status: 400,
         error: 'Invalid payload',
         message: `routes.waypoints must be at most ${MAX_ROUTE_WAYPOINTS} items`,
+      },
+    };
+  }
+
+  const startCount = normalizedWaypoints.filter(
+    (waypoint) => waypoint.type === 'start',
+  ).length;
+  const endCount = normalizedWaypoints.filter(
+    (waypoint) => waypoint.type === 'end',
+  ).length;
+
+  if (startCount !== 1) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.waypoints must contain exactly one "start" waypoint',
+      },
+    };
+  }
+
+  if (endCount > 1) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'routes.waypoints must contain exactly one "end" waypoint',
       },
     };
   }
