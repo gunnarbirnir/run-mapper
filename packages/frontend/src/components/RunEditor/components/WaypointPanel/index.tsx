@@ -74,11 +74,11 @@ export const WaypointPanel = ({
         editWaypoint?.type === 'start'
           ? 0
           : editWaypoint?.type === 'end'
-            ? routeDistance
+            ? positionMax
             : editWaypoint?.position || 0,
       amenities: (editWaypoint?.amenities || []) as string[],
     };
-  }, [editId, currentItems, routeDistance]);
+  }, [editId, currentItems, positionMax]);
 
   const waypointForm = useForm({
     defaultValues: formDefaultValues,
