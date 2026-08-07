@@ -23,3 +23,5 @@ export type ValidationResult<T> = OkResult<T> | ErrResult;
 export type NoId<T> = Omit<T, 'id'>;
 
 export type CreateRunBody = Omit<EditorRun, 'id' | 'createdAt'>;
+
+export type UpdateRunBody = Omit<EditorRun, 'id'>;

@@ -24,12 +24,12 @@ export const NotVisibleWarning = ({
       animate={{ opacity: 1 }}
       transition={{ duration: DEFAULT_FADE_IN_DURATION, ease: DEFAULT_EASING }}
       className={cn(
-        'bg-warning-200 flex flex-col gap-2 rounded-xl p-2',
+        'bg-warning-100 flex flex-col gap-2 rounded-xl px-3 py-2',
         className,
       )}
     >
-      <Text className="text-sm">{children}</Text>
-      <Button onClick={onShowClick} size="small" tabIndex={tabIndex}>
+      <Text className="text-sm text-gray-700">{children}</Text>
+      <Button size="small" tabIndex={tabIndex} onClick={onShowClick}>
         Show
       </Button>
     </motion.div>

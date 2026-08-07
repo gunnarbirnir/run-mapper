@@ -24,6 +24,7 @@ import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 interface RunEditorProps {
   existingRun?: EditorRun;
   error?: Error | null;
+  successMessage?: string | null;
   isDeleting?: boolean;
   onSubmit: (run: RunUpdate) => void | Promise<unknown>;
   onDeleteRun?: () => void;
@@ -32,6 +33,7 @@ interface RunEditorProps {
 export const RunEditor = ({
   existingRun,
   error,
+  successMessage,
   isDeleting = false,
   onSubmit,
   onDeleteRun,
@@ -111,6 +113,7 @@ export const RunEditor = ({
           isEditingPoiCoordinates={isEditingPoiCoordinates}
           isDeleting={isDeleting}
           error={error}
+          successMessage={successMessage}
           setEditRouteCoordinates={setEditRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}

@@ -61,22 +61,9 @@ export class RunRepository {
   /**
    * Update a run's public status and slug
    */
-  async updatePublicStatus(
-    runId: string,
-    updates: { isPublic: boolean; publicSlug?: string | null },
-  ): Promise<RunRecordWithId> {
+  async update(runId: string, runData: RunRecord): Promise<RunRecordWithId> {
     const runRef = db.collection('runs').doc(runId);
-    const updatePayload: Record<string, unknown> = {
-      isPublic: updates.isPublic,
-    };
-
-    if (updates.isPublic && updates.publicSlug) {
-      updatePayload.publicSlug = updates.publicSlug;
-    } else {
-      updatePayload.publicSlug = null;
-    }
-
-    await runRef.update(updatePayload);
+    await runRef.update(runData);
     const updatedRunDoc = await runRef.get();
 
     return {

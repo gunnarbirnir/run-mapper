@@ -1,5 +1,5 @@
 import { runRepository } from '../repositories/run-repository.js';
-import type { CreateRunBody } from '../types/validation.js';
+import type { CreateRunBody, UpdateRunBody } from '../types/validation.js';
 import type {
   PublicRun,
   ListRun,
@@ -74,32 +74,20 @@ export class RunService {
   /**
    * Update a run's public status with validation
    */
-  async updateRunPublicStatus(params: {
+  async updateRun(params: {
     runId: string;
     userId: string;
-    isPublic: boolean;
-    publicSlug?: string;
+    runData: UpdateRunBody;
   }): Promise<RunRecordWithId> {
-    const { runId, userId, isPublic, publicSlug } = params;
+    const { runId, userId, runData } = params;
 
-    // Verify ownership
-    const existingRun = await runRepository.findByIdAndUserId(runId, userId);
-    if (!existingRun) {
-      throw new Error('Run not found');
-    }
+    const runToUpdate = {
+      ...runData,
+      userId,
+      updatedAt: getCurrentTimestamp(),
+    };
 
-    // Check if slug is already in use by another run
-    if (isPublic && publicSlug) {
-      const slugExists = await runRepository.slugExists(publicSlug, runId);
-      if (slugExists) {
-        throw new Error('Slug already exists');
-      }
-    }
-
-    return runRepository.updatePublicStatus(runId, {
-      isPublic,
-      publicSlug: publicSlug || null,
-    });
+    return runRepository.update(runId, runToUpdate);
   }
 
   /**

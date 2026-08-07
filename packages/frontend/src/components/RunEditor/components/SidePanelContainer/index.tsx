@@ -33,6 +33,7 @@ interface SidePanelContainerProps {
   isEditingPoiCoordinates: boolean;
   isDeleting: boolean;
   error?: Error | null;
+  successMessage?: string | null;
   setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
@@ -57,6 +58,7 @@ export const SidePanelContainer = ({
   isEditingPoiCoordinates,
   isDeleting,
   error,
+  successMessage,
   setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
@@ -119,6 +121,7 @@ export const SidePanelContainer = ({
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               error={error}
+              successMessage={successMessage}
               isDeleting={isDeleting}
               onClose={onClose}
               onAddRoute={onAddRoute}

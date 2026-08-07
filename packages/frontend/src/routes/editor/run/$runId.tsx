@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useState, useCallback } from 'react';
 
-import type { ApiResponse, EditorRun } from '~/types';
+import type { ApiResponse, EditorRun, RunUpdate } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
 import { RunEditor } from '~/components/RunEditor';
 import { api } from '~/service';
@@ -12,12 +13,29 @@ export const Route = createFileRoute('/editor/run/$runId')({
 
 function ExistingRunEditor() {
   const { runId } = Route.useParams();
+  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const encodedRunId = encodeURIComponent(runId);
-  const { data, isLoading, error } = useQuery<ApiResponse<EditorRun>>({
+
+  const {
+    data: existingRun,
+    isLoading,
+    error,
+  } = useQuery<ApiResponse<EditorRun>>({
     queryKey: ['editor-run', runId],
     queryFn: () => api.get(`/runs/editor/${encodedRunId}`),
   });
-  const navigate = useNavigate();
+  const {
+    data: updatedRun,
+    mutateAsync: updateRun,
+    error: updateError,
+  } = useMutation<ApiResponse<EditorRun>, Error, RunUpdate>({
+    mutationFn: (newRun: RunUpdate) =>
+      api.put(`/runs/editor/${encodedRunId}`, newRun),
+    onSuccess: () => {
+      setSuccessMessage('Run updated successfully');
+    },
+  });
   const {
     mutateAsync: deleteRun,
     isPending: isDeleting,
@@ -28,6 +46,18 @@ function ExistingRunEditor() {
       navigate({ to: '/runs' });
     },
   });
+
+  const onSubmit = useCallback(
+    (newRun: RunUpdate) => {
+      setSuccessMessage(null);
+      return updateRun(newRun);
+    },
+    [updateRun],
+  );
+  const onDeleteRun = useCallback(() => {
+    setSuccessMessage(null);
+    return deleteRun();
+  }, [deleteRun]);
 
   if (error) {
     return (
@@ -43,11 +73,12 @@ function ExistingRunEditor() {
   return (
     <PageLayout isFullWidth footerHasShadow isLoading={isLoading}>
       <RunEditor
-        existingRun={data?.data}
-        error={deleteError}
+        existingRun={(updatedRun || existingRun)?.data}
+        error={updateError || deleteError}
+        successMessage={successMessage}
         isDeleting={isDeleting}
-        onSubmit={console.log}
-        onDeleteRun={deleteRun}
+        onSubmit={onSubmit}
+        onDeleteRun={onDeleteRun}
       />
     </PageLayout>
   );

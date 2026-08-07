@@ -6,7 +6,7 @@ import z from 'zod';
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Form, SidePanel, Button, Text, Dialog } from '~/primitives';
+import { Form, SidePanel, Button, Dialog, StatusMessage } from '~/primitives';
 import type {
   EditorRun,
   PointOfInterest,
@@ -24,6 +24,7 @@ interface RootPanelProps {
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
   error?: Error | null;
+  successMessage?: string | null;
   isDeleting: boolean;
   onClose: () => void;
   onAddRoute: () => void;
@@ -44,6 +45,7 @@ export const RootPanel = ({
   currentRoutes,
   currentPointsOfInterest,
   error,
+  successMessage,
   isDeleting,
   onClose,
   onAddRoute,
@@ -120,6 +122,7 @@ export const RootPanel = ({
                 infoText="Will be used in the URL for the run"
                 value={field.state.value}
                 error={getFieldError(field)}
+                disabled={isEditing}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -168,9 +171,16 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
-        <section className="flex flex-col">
+        <section className="mb-5 flex flex-col gap-3">
+          {successMessage && (
+            <StatusMessage autoClear status="success">
+              {successMessage}
+            </StatusMessage>
+          )}
           {error && (
-            <Text className="text-error-600 mb-5 text-xs">{error.message}</Text>
+            <StatusMessage autoClear status="error">
+              {error.message}
+            </StatusMessage>
           )}
           <div className="flex flex-col gap-3">
             <Button
