@@ -1,11 +1,12 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Form, SidePanel, Button, Text } from '~/primitives';
+import { Form, SidePanel, Button, Text, Dialog } from '~/primitives';
 import type {
   EditorRun,
   PointOfInterest,
@@ -23,12 +24,14 @@ interface RootPanelProps {
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
   error?: Error | null;
+  isDeleting: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
   onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
 }
 
 const rootFormSchema = z.object({
@@ -41,16 +44,19 @@ export const RootPanel = ({
   currentRoutes,
   currentPointsOfInterest,
   error,
+  isDeleting,
   onClose,
   onAddRoute,
   onEditRoute,
   onAddPointOfInterest,
   onEditPointOfInterest,
   onSubmit,
+  onDeleteRun,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
   const { isSmallScreen } = useMediaQuery();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isEditing = Boolean(existingRun);
 
   const rootForm = useForm({
@@ -187,8 +193,7 @@ export const RootPanel = ({
               <Button
                 color="errorOutline"
                 className="w-full"
-                // TODO: Delete run
-                onClick={() => console.log('Delete run')}
+                onClick={() => setIsDeleteDialogOpen(true)}
                 disabled={isSubmitting}
               >
                 {isSmallScreen ? 'Delete' : 'Delete run'}
@@ -196,6 +201,32 @@ export const RootPanel = ({
             )}
           </div>
         </section>
+        {onDeleteRun && (
+          <Dialog
+            title="Delete run"
+            description="Are you sure you want to delete the run? This action cannot be undone."
+            isOpen={isDeleteDialogOpen}
+            buttons={[
+              {
+                label: 'Delete',
+                color: 'errorOutline',
+                isLoading: isDeleting,
+                onClick: () => {
+                  onDeleteRun();
+                  setIsDeleteDialogOpen(false);
+                },
+              },
+              {
+                label: 'Cancel',
+                disabled: isDeleting,
+                onClick: () => {
+                  setIsDeleteDialogOpen(false);
+                },
+              },
+            ]}
+            onClose={() => (isDeleting ? null : setIsDeleteDialogOpen(false))}
+          />
+        )}
       </Form>
     </SidePanel.Content>
   );

@@ -31,6 +31,7 @@ interface SidePanelContainerProps {
   waypointPanelState: PanelState<Waypoint>;
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
+  isDeleting: boolean;
   error?: Error | null;
   setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
@@ -39,6 +40,7 @@ interface SidePanelContainerProps {
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -53,6 +55,7 @@ export const SidePanelContainer = ({
   waypointPanelState,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  isDeleting,
   error,
   setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
@@ -61,6 +64,7 @@ export const SidePanelContainer = ({
   setEditWaypointType,
   setEditWaypointCoordinates,
   onSubmit,
+  onDeleteRun,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -115,12 +119,14 @@ export const SidePanelContainer = ({
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               error={error}
+              isDeleting={isDeleting}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
               onAddPointOfInterest={onAddPointOfInterest}
               onEditPointOfInterest={onEditPointOfInterest}
               onSubmit={onSubmit}
+              onDeleteRun={onDeleteRun}
             />
           ),
         },

@@ -9,6 +9,8 @@ import { Icon } from '../Icon';
 
 interface DialogButton {
   label: string;
+  isLoading?: boolean;
+  disabled?: boolean;
   color?: ButtonProps['color'];
   onClick?: () => void;
 }
@@ -34,7 +36,12 @@ export const Dialog = ({
       buttons?.[0]?.onClick?.();
     },
     {
-      enabled: isOpen && buttons && buttons.length > 0,
+      enabled:
+        isOpen &&
+        buttons &&
+        buttons.length > 0 &&
+        !buttons[0]?.isLoading &&
+        !buttons[0]?.disabled,
       conflictBehavior: 'replace',
     },
   );
@@ -64,15 +71,19 @@ export const Dialog = ({
             {description}
           </Text>
           <div className="flex justify-end gap-2">
-            {buttons?.map(({ label, color, onClick }, index) => (
-              <Button
-                key={label}
-                color={color ?? (index === 0 ? 'black' : 'gray')}
-                onClick={onClick}
-              >
-                {label}
-              </Button>
-            ))}
+            {buttons?.map(
+              ({ label, isLoading, disabled, color, onClick }, index) => (
+                <Button
+                  key={label}
+                  isLoading={isLoading}
+                  disabled={disabled}
+                  color={color ?? (index === 0 ? 'black' : 'gray')}
+                  onClick={onClick}
+                >
+                  {label}
+                </Button>
+              ),
+            )}
           </div>
         </BaseUiDialog.Popup>
       </BaseUiDialog.Portal>

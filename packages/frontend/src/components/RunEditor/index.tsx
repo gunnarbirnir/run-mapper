@@ -24,10 +24,18 @@ import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 interface RunEditorProps {
   existingRun?: EditorRun;
   error?: Error | null;
+  isDeleting?: boolean;
   onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
 }
 
-export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
+export const RunEditor = ({
+  existingRun,
+  error,
+  isDeleting = false,
+  onSubmit,
+  onDeleteRun,
+}: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
   });
@@ -101,6 +109,7 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
           waypointPanelState={waypointPanelState}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           isEditingPoiCoordinates={isEditingPoiCoordinates}
+          isDeleting={isDeleting}
           error={error}
           setEditRouteCoordinates={setEditRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
@@ -109,6 +118,7 @@ export const RunEditor = ({ existingRun, error, onSubmit }: RunEditorProps) => {
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
           onSubmit={onSubmit}
+          onDeleteRun={onDeleteRun}
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
