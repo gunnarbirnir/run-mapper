@@ -90,6 +90,16 @@ export const SidePanelContainer = ({
     }
   }, [onAddWaypoint, setEditWaypointCoordinates, routeCoordinates]);
 
+  const handleSubmit = useCallback(
+    (run: RunUpdate) => {
+      onSubmit(run);
+      routePanelState.onHasSubmittedChanges(false);
+      pointOfInterestPanelState.onHasSubmittedChanges(false);
+      waypointPanelState.onHasSubmittedChanges(false);
+    },
+    [onSubmit, routePanelState, pointOfInterestPanelState, waypointPanelState],
+  );
+
   useHotkey('P', () => {
     if (showRootPanel) {
       onClose();
@@ -120,6 +130,11 @@ export const SidePanelContainer = ({
               existingRun={existingRun}
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+              hasSubmittedChanges={
+                routePanelState.hasSubmittedChanges ||
+                pointOfInterestPanelState.hasSubmittedChanges ||
+                waypointPanelState.hasSubmittedChanges
+              }
               error={error}
               successMessage={successMessage}
               isDeleting={isDeleting}
@@ -128,7 +143,7 @@ export const SidePanelContainer = ({
               onEditRoute={onEditRoute}
               onAddPointOfInterest={onAddPointOfInterest}
               onEditPointOfInterest={onEditPointOfInterest}
-              onSubmit={onSubmit}
+              onSubmit={handleSubmit}
               onDeleteRun={onDeleteRun}
             />
           ),

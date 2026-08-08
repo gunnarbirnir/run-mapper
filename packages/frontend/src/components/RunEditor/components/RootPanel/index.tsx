@@ -16,6 +16,7 @@ import type {
 import { getFieldError } from '~/utils';
 
 import { ItemsSection } from '../ItemsSection';
+import { LeavePageDialog } from '../LeavePageDialog';
 import { PointOfInterestItem } from './PointOfInterestItem';
 import { RouteItem } from './RouteItem';
 
@@ -23,6 +24,7 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
+  hasSubmittedChanges: boolean;
   error?: Error | null;
   successMessage?: string | null;
   isDeleting: boolean;
@@ -44,6 +46,7 @@ export const RootPanel = ({
   existingRun,
   currentRoutes,
   currentPointsOfInterest,
+  hasSubmittedChanges,
   error,
   successMessage,
   isDeleting,
@@ -83,10 +86,9 @@ export const RootPanel = ({
     },
   });
 
-  const isDefaultValue = useStore(
-    rootForm.store,
-    (state) => state.isDefaultValue,
-  );
+  const isDefaultValue =
+    useStore(rootForm.store, (state) => state.isDefaultValue) &&
+    !hasSubmittedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
 
@@ -243,6 +245,7 @@ export const RootPanel = ({
             onClose={() => (isDeleting ? null : setIsDeleteDialogOpen(false))}
           />
         )}
+        <LeavePageDialog isDirty={!isDefaultValue} />
       </Form>
     </SidePanel.Content>
   );
