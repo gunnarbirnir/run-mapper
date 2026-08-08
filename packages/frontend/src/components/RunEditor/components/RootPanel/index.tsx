@@ -137,13 +137,19 @@ export const RootPanel = ({
         >
           {currentRoutes.length > 0 ? (
             <motion.div layout className="space-y-3">
-              {currentRoutes.map((route) => (
-                <RouteItem
-                  key={route.id}
-                  route={route}
-                  onEditRoute={onEditRoute}
-                />
-              ))}
+              {currentRoutes
+                .sort(
+                  (a, b) =>
+                    (a.displayDistance ?? a.distance) -
+                    (b.displayDistance ?? b.distance),
+                )
+                .map((route) => (
+                  <RouteItem
+                    key={route.id}
+                    route={route}
+                    onEditRoute={onEditRoute}
+                  />
+                ))}
             </motion.div>
           ) : null}
         </ItemsSection>
