@@ -20,7 +20,7 @@ export const MAX_RUN_DATA_BYTES = 1024 * 1024;
 export const MAX_RUN_NAME_LENGTH = 120;
 export const MAX_RUN_POINTS_OF_INTEREST = 1000;
 export const MAX_RUN_ROUTES = 100;
-export const MAX_ROUTE_COORDINATES = 100_000;
+export const MAX_ROUTE_COORDINATES = 10_000;
 export const MAX_ROUTE_WAYPOINTS = 1000;
 export const PUBLIC_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
 

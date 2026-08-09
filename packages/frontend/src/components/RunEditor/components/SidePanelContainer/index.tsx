@@ -40,7 +40,7 @@ interface SidePanelContainerProps {
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
-  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onSubmit: (run: RunUpdate) => void;
   onDeleteRun?: () => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];

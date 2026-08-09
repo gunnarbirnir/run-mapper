@@ -33,7 +33,7 @@ interface RootPanelProps {
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
-  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onSubmit: (run: RunUpdate) => void;
   onDeleteRun?: () => void;
 }
 

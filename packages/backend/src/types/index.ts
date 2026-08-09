@@ -5,11 +5,21 @@ import {
 
 export type Coordinates = { lat: number; lng: number };
 export type BoundingBox = [Coordinates, Coordinates];
-export type Elevation = { value: number; distance: number };
+export type Elevation = { value: number };
 
 export type RouteCoordinates = Coordinates & {
+  id: string;
+  isRoutePoint: boolean;
   elevation: number;
 };
+
+export interface ElevationStats {
+  elevationGain: number;
+  elevationLoss: number;
+  netElevation: number;
+  maxElevation: number;
+  minElevation: number;
+}
 
 export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
@@ -41,6 +51,7 @@ export interface PublicRoute {
   waypoints: Waypoint[];
   distance: number;
   displayDistance?: number;
+  elevationStats: ElevationStats;
 }
 
 export interface PublicRun {
@@ -72,4 +83,19 @@ export interface ListRun {
   createdAt: string;
   updatedAt?: string;
   imageSeed: number;
+}
+
+export interface RouteBetweenPoints {
+  distance: number;
+  elevationStats: ElevationStats;
+  coordinates: RouteCoordinates[];
+}
+
+export interface DirectionsResponse {
+  routes: {
+    geometry: {
+      coordinates: number[][];
+    };
+    distance: number;
+  }[];
 }

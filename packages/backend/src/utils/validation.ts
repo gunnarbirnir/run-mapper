@@ -36,10 +36,14 @@ import {
   calculateDistance,
   getBoundingBox,
   getCoordinatesFromPosition,
+  getElevationStats,
 } from './route.js';
+
+// Validate incoming data in controller layer
 
 export const validatePointsOfInterestBody = (
   rawBody: unknown,
+  isUpdate = false,
 ): ValidationResult<PointOfInterest> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -53,7 +57,7 @@ export const validatePointsOfInterestBody = (
   }
 
   const body = rawBody as PointOfInterest;
-  const { name, description, coordinates, type } = body;
+  const { id, name, description, coordinates, type } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -118,7 +122,7 @@ export const validatePointsOfInterestBody = (
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
       description,
@@ -130,6 +134,7 @@ export const validatePointsOfInterestBody = (
 export const validateWaypointBody = (
   rawBody: unknown,
   coordinates: Coordinates[],
+  isUpdate = false,
 ): ValidationResult<Waypoint> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -143,7 +148,7 @@ export const validateWaypointBody = (
   }
 
   const body = rawBody as Waypoint;
-  const { name, description, type, position, amenities } = body;
+  const { id, name, description, type, position, amenities } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -255,7 +260,7 @@ export const validateWaypointBody = (
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
       description,
@@ -268,6 +273,7 @@ export const validateWaypointBody = (
 
 export const validateRouteBody = (
   rawBody: unknown,
+  isUpdate = false,
 ): ValidationResult<PublicRoute> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -281,7 +287,7 @@ export const validateRouteBody = (
   }
 
   const body = rawBody as PublicRoute;
-  const { name, displayDistance, coordinates, waypoints } = body;
+  const { id, name, displayDistance, coordinates, waypoints } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -380,7 +386,11 @@ export const validateRouteBody = (
 
   const normalizedWaypoints: Waypoint[] = [];
   for (const waypoint of waypoints) {
-    const validation = validateWaypointBody(waypoint, normalizedCoordinates);
+    const validation = validateWaypointBody(
+      waypoint,
+      normalizedCoordinates,
+      isUpdate,
+    );
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -430,13 +440,14 @@ export const validateRouteBody = (
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate ? id : generateId(),
       name: normalizedName,
       distance: calculateDistance(normalizedCoordinates),
       displayDistance,
       boundingBox: calculatedBoundingBox,
       coordinates: normalizedCoordinates,
       waypoints: normalizedWaypoints,
+      elevationStats: getElevationStats(normalizedCoordinates),
     },
   };
 };
@@ -616,7 +627,7 @@ export const validateUpdateRunBody = (
     };
   }
 
-  const body = rawBody as CreateRunBody;
+  const body = rawBody as UpdateRunBody;
   const {
     name,
     // defaultRouteId,
@@ -661,7 +672,7 @@ export const validateUpdateRunBody = (
 
   const normalizedPointsOfInterest: PointOfInterest[] = [];
   for (const pointOfInterest of pointsOfInterest) {
-    const validation = validatePointsOfInterestBody(pointOfInterest);
+    const validation = validatePointsOfInterestBody(pointOfInterest, true);
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -692,7 +703,7 @@ export const validateUpdateRunBody = (
 
   const normalizedRoutes: PublicRoute[] = [];
   for (const route of routes) {
-    const validation = validateRouteBody(route);
+    const validation = validateRouteBody(route, true);
     if (!validation.ok) {
       return validation as ErrResult;
     }

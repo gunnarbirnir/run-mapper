@@ -30,8 +30,8 @@ function ExistingRunEditor() {
     mutateAsync: updateRun,
     error: updateError,
   } = useMutation<ApiResponse<EditorRun>, Error, RunUpdate>({
-    mutationFn: (newRun: RunUpdate) =>
-      api.put(`/runs/editor/${encodedRunId}`, newRun),
+    mutationFn: (updatedRun: RunUpdate) =>
+      api.put(`/runs/editor/${encodedRunId}`, updatedRun),
     onSuccess: () => {
       setSuccessMessage('Run updated successfully');
     },
@@ -48,9 +48,9 @@ function ExistingRunEditor() {
   });
 
   const onSubmit = useCallback(
-    (newRun: RunUpdate) => {
+    (updatedRun: RunUpdate) => {
       setSuccessMessage(null);
-      return updateRun(newRun);
+      return updateRun(updatedRun);
     },
     [updateRun],
   );

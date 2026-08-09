@@ -1,4 +1,8 @@
-import type { BoundingBox, Coordinates } from '../types/index.js';
+import type {
+  BoundingBox,
+  Coordinates,
+  ElevationStats,
+} from '../types/index.js';
 
 export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
   const minLat = Math.min(...coordinates.map((c) => c.lat));
@@ -69,4 +73,87 @@ export const getCoordinatesFromPosition = (
   }
 
   return closestCoordinate;
+};
+
+export const calculateElevationGain = (elevations: number[]): number => {
+  if (elevations.length < 2) {
+    return 0;
+  }
+
+  let totalGain = 0;
+  for (let i = 0; i < elevations.length - 1; i++) {
+    const diff = elevations[i + 1] - elevations[i];
+    if (diff > 0) {
+      totalGain += diff;
+    }
+  }
+
+  return totalGain;
+};
+
+export const calculateElevationLoss = (elevations: number[]): number => {
+  if (elevations.length < 2) {
+    return 0;
+  }
+
+  let totalLoss = 0;
+  for (let i = 0; i < elevations.length - 1; i++) {
+    const diff = elevations[i] - elevations[i + 1];
+    if (diff > 0) {
+      totalLoss += diff;
+    }
+  }
+
+  return totalLoss;
+};
+
+export const calculateMaxElevation = (
+  elevations: number[],
+): { value: number; index: number } => {
+  let maxValue = 0;
+  let maxIndex = 0;
+
+  for (let i = 0; i < elevations.length; i++) {
+    if (elevations[i] > maxValue) {
+      maxValue = elevations[i];
+      maxIndex = i;
+    }
+  }
+
+  return { value: maxValue, index: maxIndex };
+};
+
+export const calculateMinElevation = (
+  elevations: number[],
+): { value: number; index: number } => {
+  let minValue = Infinity;
+  let minIndex = 0;
+
+  for (let i = 0; i < elevations.length; i++) {
+    if (elevations[i] < minValue) {
+      minValue = elevations[i];
+      minIndex = i;
+    }
+  }
+
+  return { value: minValue, index: minIndex };
+};
+
+export const getElevationStats = (
+  coordinates: { elevation: number }[],
+): ElevationStats => {
+  const elevations = coordinates.map((c) => c.elevation);
+  const elevationGain = calculateElevationGain(elevations);
+  const elevationLoss = calculateElevationLoss(elevations);
+  const netElevation = elevationGain - elevationLoss;
+  const maxElevation = calculateMaxElevation(elevations).value;
+  const minElevation = calculateMinElevation(elevations).value;
+
+  return {
+    elevationGain,
+    elevationLoss,
+    netElevation,
+    maxElevation,
+    minElevation,
+  };
 };

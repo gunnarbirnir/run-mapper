@@ -26,7 +26,7 @@ interface RunEditorProps {
   error?: Error | null;
   successMessage?: string | null;
   isDeleting?: boolean;
-  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onSubmit: (run: RunUpdate) => void;
   onDeleteRun?: () => void;
 }
 

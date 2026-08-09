@@ -52,7 +52,11 @@ export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
 export const isValidRouteCoordinates = (
   value: unknown,
 ): value is RouteCoordinates => {
-  if (!isValidCoordinates(value)) {
+  if (
+    !isValidCoordinates(value) ||
+    !('id' in value) ||
+    !('isRoutePoint' in value)
+  ) {
     return false;
   }
   return isFiniteNumber((value as RouteCoordinates).elevation);

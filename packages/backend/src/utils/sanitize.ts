@@ -6,14 +6,20 @@ import type {
   Waypoint,
   Coordinates,
   EditorRun,
+  RouteBetweenPoints,
+  DirectionsResponse,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
 import {
+  generateId,
   generateImageSeed,
   isValidBoundingBox,
   isValidRouteCoordinates,
   isValidCoordinates,
 } from './index.js';
+import { getElevationStats } from './route.js';
+
+// Sanitize fetched data in service layer
 
 const DEFAULT_COORDINATES: Coordinates = { lat: 0, lng: 0 };
 const DEFAULT_BOUNDING_BOX: BoundingBox = [
@@ -72,6 +78,7 @@ const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
     waypoints: route.waypoints.map(sanitizeWaypoint),
     distance: route.distance ?? 0,
     displayDistance: route.displayDistance,
+    elevationStats: route.elevationStats,
   };
 };
 
@@ -96,5 +103,48 @@ export const sanitizeEditorRun = (runData: RunRecordWithId): EditorRun => {
     createdAt: runData.createdAt,
     updatedAt: runData.updatedAt,
     imageSeed: runData.imageSeed ?? generateImageSeed(),
+  };
+};
+
+export const sanitizeDirectionsResponse = (
+  directionsResponse: DirectionsResponse,
+): { distance: number; coordinates: Coordinates[] } => {
+  if (directionsResponse.routes.length === 0) {
+    return {
+      distance: 0,
+      coordinates: [],
+    };
+  }
+
+  const routeResponse = directionsResponse.routes[0];
+
+  return {
+    distance: directionsResponse.routes[0].distance ?? 0,
+    coordinates: routeResponse.geometry.coordinates
+      .map((coordinate) => ({
+        lng: coordinate[0],
+        lat: coordinate[1],
+      }))
+      .filter(isValidCoordinates),
+  };
+};
+
+export const sanitizeRouteBetweenPoints = (routeBetweenPoints: {
+  distance: number;
+  coordinates: (Coordinates & { elevation: number })[];
+}): RouteBetweenPoints => {
+  return {
+    distance: routeBetweenPoints.distance ?? 0,
+    elevationStats: getElevationStats(routeBetweenPoints.coordinates),
+    coordinates: routeBetweenPoints.coordinates
+      .map((coordinate, index) => ({
+        id: generateId(),
+        isRoutePoint:
+          index === 0 || index === routeBetweenPoints.coordinates.length - 1,
+        lng: coordinate.lng,
+        lat: coordinate.lat,
+        elevation: coordinate.elevation,
+      }))
+      .filter(isValidRouteCoordinates),
   };
 };
