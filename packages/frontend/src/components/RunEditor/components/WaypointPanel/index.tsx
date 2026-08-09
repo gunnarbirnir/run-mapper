@@ -12,7 +12,7 @@ import type {
   Coordinates,
 } from '~/types';
 import { getWaypointPoiLabel, getCoordinatesFromPosition } from '~/utils/route';
-import { formatNumber } from '~/utils';
+import { formatNumber, getFieldError } from '~/utils';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import { PanelState } from '../../hooks/usePanelState';
@@ -74,11 +74,11 @@ export const WaypointPanel = ({
         editWaypoint?.type === 'start'
           ? 0
           : editWaypoint?.type === 'end'
-            ? routeDistance
+            ? positionMax
             : editWaypoint?.position || 0,
       amenities: (editWaypoint?.amenities || []) as string[],
     };
-  }, [editId, currentItems, routeDistance]);
+  }, [editId, currentItems, positionMax]);
 
   const waypointForm = useForm({
     defaultValues: formDefaultValues,
@@ -168,11 +168,7 @@ export const WaypointPanel = ({
                 label="Name"
                 placeholder="Waypoint name"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -202,11 +198,7 @@ export const WaypointPanel = ({
                 }
                 value={field.state.value}
                 disabled={isStartOrEnd}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={(value) => {
                   field.handleChange(value);
                   setEditWaypointType(value as WaypointType);
@@ -224,11 +216,7 @@ export const WaypointPanel = ({
                 placeholder="Waypoint description"
                 className="h-40 max-h-60 min-h-20"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -274,11 +262,7 @@ export const WaypointPanel = ({
                 )}
                 values={field.state.value}
                 disabled={!waypointType}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onValuesChange={field.handleChange}
                 onBlur={field.handleBlur}
               />

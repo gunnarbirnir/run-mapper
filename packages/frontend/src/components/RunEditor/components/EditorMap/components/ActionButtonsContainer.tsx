@@ -3,7 +3,6 @@ import type { Map } from 'mapbox-gl';
 import { Icon, Tooltip } from '~/primitives';
 import { useMapZoom } from '~/hooks/useMapZoom';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Bounds } from '~/types';
 
 import { MapActionButton } from './MapActionButton';
 import { RefObject } from 'react';
@@ -12,8 +11,6 @@ interface ActionButtonsContainerProps {
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
   isAtInitialBounds: boolean;
-  hasActiveRoute: boolean;
-  initialBounds?: Bounds;
   resetRoute: () => void;
 }
 
@@ -21,8 +18,6 @@ export const ActionButtonsContainer = ({
   isMapLoaded,
   mapRef,
   isAtInitialBounds,
-  hasActiveRoute,
-  initialBounds,
   resetRoute,
 }: ActionButtonsContainerProps) => {
   const { isSmallScreen } = useMediaQuery();
@@ -34,16 +29,14 @@ export const ActionButtonsContainer = ({
 
   return (
     <Tooltip.Provider>
-      {Boolean(initialBounds) && hasActiveRoute && (
-        <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Reset"
-          disabled={isAtInitialBounds}
-          onClick={resetRoute}
-        >
-          <Icon name="reset" className="size-4.5" />
-        </MapActionButton>
-      )}
+      <MapActionButton
+        index={mapActionButtonIndex++}
+        tooltipLabel="Reset"
+        disabled={isAtInitialBounds}
+        onClick={resetRoute}
+      >
+        <Icon name="reset" className="size-4.5" />
+      </MapActionButton>
       {!isSmallScreen && (
         <>
           <MapActionButton

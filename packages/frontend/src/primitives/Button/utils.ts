@@ -57,7 +57,7 @@ const BUTTON_COLORS: Record<
     disabledText: 'text-gray-100',
   },
   successOutline: {
-    bg: 'bg-white',
+    bg: 'bg-transparent',
     text: 'text-success-600',
     hover: 'hover:bg-success-600 hover:text-white',
     disabled: 'border-error-300',
@@ -72,7 +72,7 @@ const BUTTON_COLORS: Record<
     disabledText: 'text-gray-100',
   },
   errorOutline: {
-    bg: 'bg-white',
+    bg: 'bg-transparent',
     text: 'text-error-600',
     hover: 'hover:bg-error-600 hover:text-white',
     disabled: 'border-error-300',

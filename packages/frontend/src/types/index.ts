@@ -5,6 +5,7 @@ export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
 export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
+export type NoId<T> = Omit<T, 'id'>;
 
 export type RouteCoordinates = Coordinates & {
   elevation: number;
@@ -40,6 +41,7 @@ export interface PublicRoute {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
+  distance: number;
   displayDistance?: number;
 }
 
@@ -52,12 +54,13 @@ export interface PublicRun {
   pointsOfInterest: PointOfInterest[];
 }
 
-export interface EditorRun extends Omit<PublicRun, 'publicSlug'> {
+export interface EditorRun extends PublicRun {
   createdAt: string;
   updatedAt?: string;
-  isPublic?: boolean;
-  publicSlug?: string;
+  isPublic: boolean;
 }
+
+export type RunUpdate = Omit<EditorRun, 'id' | 'createdAt' | 'updatedAt'>;
 
 export interface ListRun {
   id: string;

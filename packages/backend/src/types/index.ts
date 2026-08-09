@@ -1,3 +1,8 @@
+import {
+  WAYPOINT_VALUES,
+  POINT_OF_INTEREST_VALUES,
+} from '../config/constants.js';
+
 export type Coordinates = { lat: number; lng: number };
 export type BoundingBox = [Coordinates, Coordinates];
 export type Elevation = { value: number; distance: number };
@@ -6,38 +11,19 @@ export type RouteCoordinates = Coordinates & {
   elevation: number;
 };
 
-export type WayPointType =
-  | 'energy'
-  | 'hydration'
-  | 'entertainment'
-  | 'timing'
-  | 'restrooms'
-  | 'start'
-  | 'end';
-
-export type PointOfInterestType =
-  | 'expo'
-  | 'food-and-drink'
-  | 'entertainment'
-  | 'aid-station'
-  | 'parking'
-  | 'restrooms'
-  | 'information'
-  | 'bag-drop-off'
-  | 'shower-and-changing-rooms'
-  | 'award-ceremony'
-  | 'warm-up-area'
-  | 'spectator-area';
+export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
 export type Waypoint = {
   id: string;
   name: string;
   description?: string;
   coordinates: Coordinates;
-  type: WayPointType;
+  type: WaypointType;
   position: number;
-  amenities?: WayPointType[];
+  amenities?: WaypointType[];
 };
+
+export type PointOfInterestType = (typeof POINT_OF_INTEREST_VALUES)[number];
 
 export type PointOfInterest = {
   id: string;
@@ -53,6 +39,8 @@ export interface PublicRoute {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   waypoints: Waypoint[];
+  distance: number;
+  displayDistance?: number;
 }
 
 export interface PublicRun {
@@ -74,12 +62,7 @@ export interface RunRecordWithId extends PublicRun {
 
 export type RunRecord = Omit<RunRecordWithId, 'id'>;
 
-export interface EditorRun extends Omit<
-  RunRecordWithId,
-  'publicSlug' | 'userId'
-> {
-  publicSlug?: string;
-}
+export type EditorRun = Omit<RunRecordWithId, 'userId'>;
 
 export interface ListRun {
   id: string;

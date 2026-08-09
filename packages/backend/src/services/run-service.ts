@@ -1,11 +1,21 @@
+import { runRepository } from '../repositories/run-repository.js';
+import type { CreateRunBody, UpdateRunBody } from '../types/validation.js';
+import type {
+  PublicRun,
+  ListRun,
+  RunRecordWithId,
+  EditorRun,
+} from '../types/index.js';
 import {
-  runRepository,
-  type RunWithId,
-} from '../repositories/run-repository.js';
-import type { NormalizedRouteData } from '../utils/runValidation.js';
-import type { PublicRun, ListRun } from '../types/index.js';
-import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
-import { sanitizeListRun, sanitizePublicRun } from '../utils/sanitize.js';
+  getCurrentTimestamp,
+  isValidPublicSlug,
+  normalizePublicSlug,
+} from '../utils/index.js';
+import {
+  sanitizeListRun,
+  sanitizePublicRun,
+  sanitizeEditorRun,
+} from '../utils/sanitize.js';
 
 /**
  * Service layer - handles business logic
@@ -26,8 +36,12 @@ export class RunService {
   async getRunForUser(
     runId: string,
     userId: string,
-  ): Promise<RunWithId | null> {
-    return runRepository.findByIdAndUserId(runId, userId);
+  ): Promise<EditorRun | null> {
+    const runData = await runRepository.findByIdAndUserId(runId, userId);
+    if (!runData) {
+      return null;
+    }
+    return sanitizeEditorRun(runData);
   }
 
   /**
@@ -35,64 +49,45 @@ export class RunService {
    */
   async createRun(params: {
     userId: string;
-    name: string;
-    routeData: NormalizedRouteData;
-    isPublic: boolean;
-    publicSlug?: string;
-  }): Promise<{ id: string }> {
-    const { /* userId, name, routeData, isPublic, */ publicSlug } = params;
+    runData: CreateRunBody;
+  }): Promise<EditorRun> {
+    const { userId, runData } = params;
 
     // Check if slug is already in use
-    if (publicSlug) {
-      const slugExists = await runRepository.slugExists(publicSlug);
+    if (runData.publicSlug) {
+      const slugExists = await runRepository.slugExists(runData.publicSlug);
       if (slugExists) {
         throw new Error('Slug already exists');
       }
     }
 
-    throw new Error('Not implemented yet');
-
-    /* const runToCreate: RunRecord = {
-      userId,
-      name,
-      createdAt: new Date().toISOString(),
-      isPublic,
-      ...(isPublic && publicSlug ? { publicSlug } : {}),
-      ...routeData,
+    const runToCreate = {
+      ...runData,
+      createdAt: getCurrentTimestamp(),
     };
 
-    return runRepository.create(runToCreate); */
+    const { id } = await runRepository.create({ userId, ...runToCreate });
+
+    return { id, ...runToCreate };
   }
 
   /**
    * Update a run's public status with validation
    */
-  async updateRunPublicStatus(params: {
+  async updateRun(params: {
     runId: string;
     userId: string;
-    isPublic: boolean;
-    publicSlug?: string;
-  }): Promise<RunWithId> {
-    const { runId, userId, isPublic, publicSlug } = params;
+    runData: UpdateRunBody;
+  }): Promise<RunRecordWithId> {
+    const { runId, userId, runData } = params;
 
-    // Verify ownership
-    const existingRun = await runRepository.findByIdAndUserId(runId, userId);
-    if (!existingRun) {
-      throw new Error('Run not found');
-    }
+    const runToUpdate = {
+      ...runData,
+      userId,
+      updatedAt: getCurrentTimestamp(),
+    };
 
-    // Check if slug is already in use by another run
-    if (isPublic && publicSlug) {
-      const slugExists = await runRepository.slugExists(publicSlug, runId);
-      if (slugExists) {
-        throw new Error('Slug already exists');
-      }
-    }
-
-    return runRepository.updatePublicStatus(runId, {
-      isPublic,
-      publicSlug: publicSlug || null,
-    });
+    return runRepository.update(runId, runToUpdate);
   }
 
   /**

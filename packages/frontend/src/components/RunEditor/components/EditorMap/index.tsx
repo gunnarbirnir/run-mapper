@@ -4,7 +4,6 @@ import { AnimatePresence } from 'motion/react';
 
 import {
   BoundingBox,
-  Coordinates,
   Elevation,
   PointOfInterest,
   PublicRoute,
@@ -27,11 +26,11 @@ import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
+import { DEFAULT_EDITOR_BOUNDS } from './constants';
 
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
-  activeRouteCoordinates: Coordinates[];
   activeRouteElevations: Elevation[];
   routeDistance: number;
   routePanelIsOpen: boolean;
@@ -55,7 +54,6 @@ interface EditorMapProps extends MapState {
 export const EditorMap = ({
   rootPanelIsAnimating,
   activeRoute,
-  activeRouteCoordinates,
   activeRouteElevations,
   routeDistance,
   routePanelIsOpen,
@@ -99,9 +97,13 @@ export const EditorMap = ({
   fitToInitialBounds,
 }: EditorMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const initialBounds = initialBoundingBox
-    ? formatBounds(initialBoundingBox)
-    : undefined;
+  const initialBounds = useMemo(
+    () =>
+      initialBoundingBox
+        ? formatBounds(initialBoundingBox)
+        : DEFAULT_EDITOR_BOUNDS,
+    [initialBoundingBox],
+  );
   const elevationGain = useMemo(() => {
     return calculateElevationGain(activeRouteElevations);
   }, [activeRouteElevations]);
@@ -121,6 +123,7 @@ export const EditorMap = ({
     setIsMapLoaded,
     mapRef,
     mapContainerRef,
+    isResettingBoundsRef,
   });
 
   useResizeMap({
@@ -137,13 +140,15 @@ export const EditorMap = ({
     waypointPanelIsOpen,
     isMapLoaded,
     mapRef,
+    isResettingBoundsRef,
   });
 
   useFitToInitialBounds({
     isMapLoaded,
-    bounds: initialBounds,
-    mapRef,
+    initialBounds,
+    routeCoordinates: editRouteCoordinates,
     setIsAtInitialBounds,
+    mapRef,
     fitToInitialBoundsRef,
     isResettingBoundsRef,
   });
@@ -189,7 +194,7 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    coordinates: activeRouteCoordinates,
+    routeCoordinates: editRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,
     panelIsOpen: waypointPanelIsOpen,
@@ -198,7 +203,6 @@ export const EditorMap = ({
     editWaypointType,
     editWaypointCoordinates,
     isEditingRouteCoordinates,
-    isEditingPoiCoordinates,
     onEditWaypoint,
     setEditWaypointType,
     setEditWaypointCoordinates,
@@ -209,7 +213,7 @@ export const EditorMap = ({
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
-        {activeRoute ? (
+        {routeDistance > 0 ? (
           <RouteStats distance={routeDistance} elevationGain={elevationGain} />
         ) : null}
       </AnimatePresence>
@@ -217,8 +221,6 @@ export const EditorMap = ({
         isMapLoaded={isMapLoaded}
         mapRef={mapRef}
         isAtInitialBounds={isAtInitialBounds}
-        initialBounds={initialBounds}
-        hasActiveRoute={Boolean(activeRoute)}
         resetRoute={fitToInitialBounds}
       />
       <RouteCoordinatesToolbar

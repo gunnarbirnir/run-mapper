@@ -10,7 +10,7 @@ import type {
   PointOfInterest,
   PointOfInterestType,
 } from '~/types';
-import { formatNumber } from '~/utils';
+import { formatNumber, getFieldError } from '~/utils';
 import { getWaypointPoiLabel } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
@@ -175,11 +175,7 @@ export const PointOfInterestPanel = ({
                 label="Name"
                 placeholder="POI name"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -193,11 +189,7 @@ export const PointOfInterestPanel = ({
                 placeholder="POI type"
                 items={pointOfInterestTypeOptions}
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={(value) => {
                   field.handleChange(value);
                   setEditPointOfInterestType(value as PointOfInterestType);
@@ -215,11 +207,7 @@ export const PointOfInterestPanel = ({
                 placeholder="POI description"
                 className="h-40 max-h-60 min-h-20"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />

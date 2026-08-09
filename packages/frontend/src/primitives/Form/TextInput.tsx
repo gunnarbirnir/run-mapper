@@ -21,6 +21,7 @@ export const TextInput = ({
   infoText,
   error,
   pattern,
+  disabled,
   className,
   labelClassName,
   containerClassName,
@@ -38,9 +39,10 @@ export const TextInput = ({
         type={type}
         placeholder={placeholder || label}
         pattern={pattern}
+        disabled={disabled}
         className={cn(
           'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
-          { 'border-error-600': error },
+          { 'border-error-600': error, 'bg-gray-100': disabled },
           className,
         )}
         onChange={(e) => {

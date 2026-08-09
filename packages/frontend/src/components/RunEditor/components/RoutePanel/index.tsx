@@ -5,9 +5,9 @@ import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import { BoundingBox, Coordinates, PublicRoute, Waypoint } from '~/types';
-import { formatNumber } from '~/utils';
-import { isSameRoute } from '~/utils/route';
+import { Coordinates, PublicRoute, Waypoint } from '~/types';
+import { formatNumber, getFieldError } from '~/utils';
+import { getBoundingBox, isSameRoute, calculateDistance } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -19,7 +19,7 @@ import { MapState } from '../EditorMap/hooks/useMapState';
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
-  editRouteCoordinates: Coordinates[];
+  routeCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
@@ -49,7 +49,7 @@ export const RoutePanel = ({
   currentItems,
   currentWaypoints,
   routeDistance,
-  editRouteCoordinates,
+  routeCoordinates,
   isEditingRouteCoordinates,
   onClose,
   onUpdateItem,
@@ -95,10 +95,8 @@ export const RoutePanel = ({
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
           : undefined,
-        boundingBox: [
-          { lat: 0, lng: 0 },
-          { lat: 0, lng: 0 },
-        ] as BoundingBox,
+        boundingBox: getBoundingBox(value.coordinates),
+        distance: calculateDistance(value.coordinates),
         coordinates: value.coordinates.map((coordinate) => ({
           ...coordinate,
           // TODO: Get elevation from API
@@ -144,11 +142,11 @@ export const RoutePanel = ({
   }, [onClose, setIsEditingRouteCoordinates]);
 
   const saveRouteCoordinates = useCallback(() => {
-    onCoordinatesChange(editRouteCoordinates);
+    onCoordinatesChange(routeCoordinates);
     onCoordinatesBlur();
     setIsEditingRouteCoordinates(false);
   }, [
-    editRouteCoordinates,
+    routeCoordinates,
     onCoordinatesChange,
     onCoordinatesBlur,
     setIsEditingRouteCoordinates,
@@ -160,12 +158,12 @@ export const RoutePanel = ({
   }, [coordinatesValue, setEditRouteCoordinates, setIsEditingRouteCoordinates]);
 
   const handleCancelEditRouteCoordinates = useCallback(() => {
-    if (isSameRoute(coordinatesValue, editRouteCoordinates)) {
+    if (isSameRoute(coordinatesValue, routeCoordinates)) {
       cancelEditRouteCoordinates();
     } else {
       setCoordinatesDialogOpen(true);
     }
-  }, [coordinatesValue, editRouteCoordinates, cancelEditRouteCoordinates]);
+  }, [coordinatesValue, routeCoordinates, cancelEditRouteCoordinates]);
 
   useEffect(() => {
     editRouteActionsRef.current.onSave = saveRouteCoordinates;
@@ -213,11 +211,7 @@ export const RoutePanel = ({
                 label="Name"
                 placeholder="Route name"
                 value={field.state.value}
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />
@@ -233,11 +227,7 @@ export const RoutePanel = ({
                 placeholder="12.34 km"
                 value={field.state.value}
                 pattern="[0-9]+(\.[0-9]{0,2})?"
-                error={
-                  field.state.meta.isTouched
-                    ? field.state.meta.errors[0]?.message
-                    : undefined
-                }
+                error={getFieldError(field)}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
               />

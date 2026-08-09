@@ -17,6 +17,7 @@ import {
 } from '~/utils/map';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
+import { getBoundingBox } from '~/utils/route';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -74,19 +75,11 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const routeLayer = getRouteLayer();
-    const coordinates =
-      editCoordinates.length > 0
-        ? editCoordinates
-        : (activeRoute?.coordinates ?? []);
     let routePointMarkers: (Marker | undefined)[] = [];
 
     const drawRoute = () => {
-      if (!map.isStyleLoaded() || coordinates.length === 0) {
-        return;
-      }
-
       const source = map.getSource(routeLayer.source);
-      const routeLineFeature = getLineFeature(coordinates);
+      const routeLineFeature = getLineFeature(editCoordinates);
 
       if (source) {
         (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
@@ -100,10 +93,6 @@ export const useDrawRoute = ({
     };
 
     const clearRoute = () => {
-      if (!map.isStyleLoaded() || !map.getStyle()) {
-        return;
-      }
-
       if (map.getLayer(routeLayer.id)) {
         map.removeLayer(routeLayer.id);
       }
@@ -114,7 +103,7 @@ export const useDrawRoute = ({
 
     const drawRoutePoints = () => {
       // TODO: Only route points
-      routePointMarkers = coordinates.map((coordinate, index) =>
+      routePointMarkers = editCoordinates.map((coordinate, index) =>
         addMarker(
           getRoutePointElement({
             isSelected: selectedRoutePoint === index,
@@ -136,7 +125,7 @@ export const useDrawRoute = ({
       }
     };
 
-    if (coordinates.length === 0) {
+    if (editCoordinates.length === 0) {
       clearRoute();
     } else {
       drawRoute();
@@ -153,7 +142,6 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    activeRoute?.coordinates,
     isEditingCoordinates,
     editCoordinates,
     selectedRoutePoint,
@@ -174,24 +162,31 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const bounds = activeRoute?.boundingBox
-      ? formatBounds(activeRoute.boundingBox)
-      : null;
+    const bounds =
+      editCoordinates.length > 0
+        ? formatBounds(getBoundingBox(editCoordinates))
+        : null;
 
-    if (!bounds || !panelIsOpen || waypointPanelIsOpen) {
+    if (
+      !bounds ||
+      !panelIsOpen ||
+      waypointPanelIsOpen ||
+      isEditingCoordinates
+    ) {
       return;
     }
 
     map.fitBounds(bounds, {
-      padding: BOUNDS_PADDING,
       duration: FIT_INITIAL_BOUNDS_DURATION,
+      padding: BOUNDS_PADDING,
     });
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
-    activeRoute?.boundingBox,
     panelIsOpen,
     isAnimatingPanel,
+    isEditingCoordinates,
+    editCoordinates,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,

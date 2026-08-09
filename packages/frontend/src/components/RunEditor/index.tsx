@@ -6,8 +6,13 @@ import type {
   PointOfInterest,
   PublicRoute,
   Waypoint,
+  RunUpdate,
 } from '~/types';
-import { processRunRoute, calculateDistance } from '~/utils/route';
+import {
+  processRunRoute,
+  calculateDistance,
+  getBoundingBox,
+} from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
@@ -18,9 +23,21 @@ import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 
 interface RunEditorProps {
   existingRun?: EditorRun;
+  error?: Error | null;
+  successMessage?: string | null;
+  isDeleting?: boolean;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
 }
 
-export const RunEditor = ({ existingRun }: RunEditorProps) => {
+export const RunEditor = ({
+  existingRun,
+  error,
+  successMessage,
+  isDeleting = false,
+  onSubmit,
+  onDeleteRun,
+}: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
   });
@@ -57,17 +74,28 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
       ),
     [routePanelState.currentItems, routePanelState.editId],
   );
-  const {
-    coordinates: activeRouteCoordinates,
-    elevations: activeRouteElevations,
-  } = useMemo(
+  const { elevations: activeRouteElevations } = useMemo(
+    // TODO: use edit route
     () => processRunRoute(activeRoute?.coordinates || []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeRoute?.id],
   );
   const routeDistance = useMemo(
-    () => calculateDistance(activeRouteCoordinates),
-    [activeRouteCoordinates],
+    () => calculateDistance(editRouteCoordinates),
+    [editRouteCoordinates],
+  );
+  const initialBoundingBox = useMemo(
+    () =>
+      pointOfInterestPanelState.currentItems.length
+        ? getBoundingBox(
+            pointOfInterestPanelState.currentItems.map(
+              (poi) => poi.coordinates,
+            ),
+          )
+        : routePanelState.currentItems.length
+          ? routePanelState.currentItems[0].boundingBox
+          : undefined,
+    [pointOfInterestPanelState.currentItems, routePanelState.currentItems],
   );
 
   return (
@@ -76,29 +104,32 @@ export const RunEditor = ({ existingRun }: RunEditorProps) => {
         <SidePanelContainer
           existingRun={existingRun}
           routeDistance={routeDistance}
-          routeCoordinates={activeRouteCoordinates}
+          routeCoordinates={editRouteCoordinates}
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
-          editRouteCoordinates={editRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           isEditingPoiCoordinates={isEditingPoiCoordinates}
+          isDeleting={isDeleting}
+          error={error}
+          successMessage={successMessage}
           setEditRouteCoordinates={setEditRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
+          onSubmit={onSubmit}
+          onDeleteRun={onDeleteRun}
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            initialBoundingBox={existingRun?.routes[0].boundingBox}
             activeRoute={activeRoute}
-            activeRouteCoordinates={activeRouteCoordinates}
+            initialBoundingBox={initialBoundingBox}
             activeRouteElevations={activeRouteElevations}
             routeDistance={routeDistance}
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}

@@ -10,6 +10,7 @@ import type {
   Waypoint,
   WaypointType,
   Coordinates,
+  RunUpdate,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -28,15 +29,19 @@ interface SidePanelContainerProps {
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
-  editRouteCoordinates: Coordinates[];
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
+  isDeleting: boolean;
+  error?: Error | null;
+  successMessage?: string | null;
   setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -49,15 +54,19 @@ export const SidePanelContainer = ({
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
-  editRouteCoordinates,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  isDeleting,
+  error,
+  successMessage,
   setEditRouteCoordinates,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  onSubmit,
+  onDeleteRun,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -80,6 +89,16 @@ export const SidePanelContainer = ({
       setEditWaypointCoordinates(routeCoordinates[0]);
     }
   }, [onAddWaypoint, setEditWaypointCoordinates, routeCoordinates]);
+
+  const handleSubmit = useCallback(
+    (run: RunUpdate) => {
+      onSubmit(run);
+      routePanelState.onHasSubmittedChanges(false);
+      pointOfInterestPanelState.onHasSubmittedChanges(false);
+      waypointPanelState.onHasSubmittedChanges(false);
+    },
+    [onSubmit, routePanelState, pointOfInterestPanelState, waypointPanelState],
+  );
 
   useHotkey('P', () => {
     if (showRootPanel) {
@@ -111,11 +130,21 @@ export const SidePanelContainer = ({
               existingRun={existingRun}
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+              hasSubmittedChanges={
+                routePanelState.hasSubmittedChanges ||
+                pointOfInterestPanelState.hasSubmittedChanges ||
+                waypointPanelState.hasSubmittedChanges
+              }
+              error={error}
+              successMessage={successMessage}
+              isDeleting={isDeleting}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
               onAddPointOfInterest={onAddPointOfInterest}
               onEditPointOfInterest={onEditPointOfInterest}
+              onSubmit={handleSubmit}
+              onDeleteRun={onDeleteRun}
             />
           ),
         },
@@ -145,7 +174,7 @@ export const SidePanelContainer = ({
               {...routePanelState}
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
-              editRouteCoordinates={editRouteCoordinates}
+              routeCoordinates={routeCoordinates}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}

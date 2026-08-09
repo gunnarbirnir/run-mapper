@@ -1,6 +1,7 @@
 import { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 
 import { SLIDE_IN_DURATION } from '~/primitives/SidePanel';
+import { generateId } from '~/utils';
 
 interface UsePanelStateProps<T> {
   existingItems?: T[];
@@ -16,6 +17,7 @@ export const usePanelState = <T extends { id: string }>({
 }: UsePanelStateProps<T> = {}) => {
   const [showPanel, setShowPanelState] = useState(false);
   const [hasMadeChanges, setHasMadeChanges] = useState(false);
+  const [hasSubmittedChanges, setHasSubmittedChanges] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [currentItemsState, setCurrentItemsState] = useState<T[]>(
     existingItems ?? [],
@@ -69,11 +71,9 @@ export const usePanelState = <T extends { id: string }>({
 
   const onAddItem = useCallback(
     (item: Omit<T, 'id'> & { id?: string }) => {
-      setCurrentItems([
-        ...currentItems,
-        { id: `new-item-${Date.now()}`, ...item } as T,
-      ]);
+      setCurrentItems([...currentItems, { id: generateId(), ...item } as T]);
       setShowPanel(false);
+      setHasSubmittedChanges(true);
     },
     [currentItems, setCurrentItems, setShowPanel],
   );
@@ -88,6 +88,7 @@ export const usePanelState = <T extends { id: string }>({
         ),
       );
       setShowPanel(false);
+      setHasSubmittedChanges(true);
     },
     [currentItems, setCurrentItems, setShowPanel],
   );
@@ -96,6 +97,7 @@ export const usePanelState = <T extends { id: string }>({
     (deleteId: string) => {
       setCurrentItems(currentItems.filter((item) => item.id !== deleteId));
       setShowPanel(false);
+      setHasSubmittedChanges(true);
     },
     [currentItems, setCurrentItems, setShowPanel],
   );
@@ -107,6 +109,7 @@ export const usePanelState = <T extends { id: string }>({
   return {
     showPanel,
     hasMadeChanges,
+    hasSubmittedChanges,
     editId,
     currentItems,
     isAnimatingPanel,
@@ -115,6 +118,7 @@ export const usePanelState = <T extends { id: string }>({
     setCurrentItems,
     onClose,
     onHasMadeChanges: setHasMadeChanges,
+    onHasSubmittedChanges: setHasSubmittedChanges,
     onAddItem,
     onUpdateItem,
     onDeleteItem,

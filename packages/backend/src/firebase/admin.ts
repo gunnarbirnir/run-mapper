@@ -16,10 +16,7 @@ if (!admin.apps.length) {
         credential: admin.credential.cert({
           projectId: requiredEnvVars.ADMIN_PROJECT_ID!,
           clientEmail: requiredEnvVars.ADMIN_CLIENT_EMAIL!,
-          privateKey: requiredEnvVars.ADMIN_PRIVATE_KEY!.replace(
-            /\\n/g,
-            '\n',
-          ),
+          privateKey: requiredEnvVars.ADMIN_PRIVATE_KEY!.replace(/\\n/g, '\n'),
         }),
       });
     } else {
@@ -36,3 +33,5 @@ if (!admin.apps.length) {
 export const firebaseAdmin = admin;
 export const auth = admin.auth();
 export const db = admin.firestore();
+
+db.settings({ ignoreUndefinedProperties: true });

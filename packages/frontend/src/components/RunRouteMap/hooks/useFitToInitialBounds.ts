@@ -49,7 +49,6 @@ export const useFitToInitialBounds = ({
 
     return () => {
       map.off('moveend', handleMoveEnd);
-      isResettingBoundsRef.current = false;
     };
   }, [
     isMapLoaded,

@@ -1,13 +1,22 @@
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
+import { useState } from 'react';
+import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
-import { Form, SidePanel, Button } from '~/primitives';
-import type { EditorRun, PointOfInterest, PublicRoute } from '~/types';
+import { Form, SidePanel, Button, Dialog, StatusMessage } from '~/primitives';
+import type {
+  EditorRun,
+  PointOfInterest,
+  PublicRoute,
+  RunUpdate,
+} from '~/types';
+import { getFieldError } from '~/utils';
 
 import { ItemsSection } from '../ItemsSection';
+import { LeavePageDialog } from '../LeavePageDialog';
 import { PointOfInterestItem } from './PointOfInterestItem';
 import { RouteItem } from './RouteItem';
 
@@ -15,34 +24,73 @@ interface RootPanelProps {
   existingRun?: EditorRun;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
+  hasSubmittedChanges: boolean;
+  error?: Error | null;
+  successMessage?: string | null;
+  isDeleting: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
+  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
+  onDeleteRun?: () => void;
 }
+
+const rootFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
+});
 
 export const RootPanel = ({
   existingRun,
   currentRoutes,
   currentPointsOfInterest,
+  hasSubmittedChanges,
+  error,
+  successMessage,
+  isDeleting,
   onClose,
   onAddRoute,
   onEditRoute,
   onAddPointOfInterest,
   onEditPointOfInterest,
+  onSubmit,
+  onDeleteRun,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
+  const { isSmallScreen } = useMediaQuery();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const isEditing = Boolean(existingRun);
+
   const rootForm = useForm({
     defaultValues: {
       name: existingRun?.name || '',
       publicSlug: existingRun?.publicSlug || '',
     },
-    // onSubmit: ({ value }) => {}
+    validators: {
+      onBlur: rootFormSchema,
+      onSubmit: rootFormSchema,
+    },
+    onSubmit: async ({ value }) => {
+      const updatedRun = {
+        name: value.name,
+        isPublic: true,
+        publicSlug: value.publicSlug,
+        routes: currentRoutes,
+        pointsOfInterest: currentPointsOfInterest,
+      };
+
+      await onSubmit(updatedRun);
+    },
   });
-  const { isSmallScreen } = useMediaQuery();
-  const isEditing = Boolean(existingRun);
+
+  const isDefaultValue =
+    useStore(rootForm.store, (state) => state.isDefaultValue) &&
+    !hasSubmittedChanges;
+  const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
+  const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
 
   return (
     <SidePanel.Content
@@ -60,7 +108,9 @@ export const RootPanel = ({
                 label="Name"
                 placeholder="Run name"
                 value={field.state.value}
+                error={getFieldError(field)}
                 onChange={field.handleChange}
+                onBlur={field.handleBlur}
               />
             )}
           </rootForm.Field>
@@ -73,7 +123,10 @@ export const RootPanel = ({
                 placeholder="example-slug"
                 infoText="Will be used in the URL for the run"
                 value={field.state.value}
+                error={getFieldError(field)}
+                disabled={isEditing}
                 onChange={field.handleChange}
+                onBlur={field.handleBlur}
               />
             )}
           </rootForm.Field>
@@ -86,13 +139,19 @@ export const RootPanel = ({
         >
           {currentRoutes.length > 0 ? (
             <motion.div layout className="space-y-3">
-              {currentRoutes.map((route) => (
-                <RouteItem
-                  key={route.id}
-                  route={route}
-                  onEditRoute={onEditRoute}
-                />
-              ))}
+              {currentRoutes
+                .sort(
+                  (a, b) =>
+                    (a.displayDistance ?? a.distance) -
+                    (b.displayDistance ?? b.distance),
+                )
+                .map((route) => (
+                  <RouteItem
+                    key={route.id}
+                    route={route}
+                    onEditRoute={onEditRoute}
+                  />
+                ))}
             </motion.div>
           ) : null}
         </ItemsSection>
@@ -120,34 +179,73 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
-        <section className="flex flex-col gap-3">
-          {isSmallScreen && (
+        <section className="mb-5 flex flex-col gap-3">
+          {successMessage && (
+            <StatusMessage autoClear status="success">
+              {successMessage}
+            </StatusMessage>
+          )}
+          {error && (
+            <StatusMessage autoClear status="error">
+              {error.message}
+            </StatusMessage>
+          )}
+          <div className="flex flex-col gap-3">
             <Button
               className="w-full"
-              // TODO: Save run
-              onClick={() => console.log('Save run')}
+              type="submit"
+              disabled={!canSubmit || isDefaultValue}
+              isLoading={isSubmitting}
             >
-              Save run
+              {isEditing ? 'Save run' : 'Create run'}
             </Button>
-          )}
-          <Button
-            className="w-full"
-            linkTo="/runs"
-            color={isSmallScreen ? 'gray' : 'black'}
-          >
-            Back to runs
-          </Button>
-          {isEditing && (
             <Button
-              color="errorOutline"
               className="w-full"
-              // TODO: Delete run
-              onClick={() => console.log('Delete run')}
+              linkTo="/runs"
+              color="gray"
+              disabled={isSubmitting}
             >
-              {isSmallScreen ? 'Delete' : 'Delete run'}
+              Back to runs
             </Button>
-          )}
+            {isEditing && (
+              <Button
+                color="errorOutline"
+                className="w-full"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                disabled={isSubmitting}
+              >
+                {isSmallScreen ? 'Delete' : 'Delete run'}
+              </Button>
+            )}
+          </div>
         </section>
+        {onDeleteRun && (
+          <Dialog
+            title="Delete run"
+            description="Are you sure you want to delete the run? This action cannot be undone."
+            isOpen={isDeleteDialogOpen}
+            buttons={[
+              {
+                label: 'Delete',
+                color: 'errorOutline',
+                isLoading: isDeleting,
+                onClick: () => {
+                  onDeleteRun();
+                  setIsDeleteDialogOpen(false);
+                },
+              },
+              {
+                label: 'Cancel',
+                disabled: isDeleting,
+                onClick: () => {
+                  setIsDeleteDialogOpen(false);
+                },
+              },
+            ]}
+            onClose={() => (isDeleting ? null : setIsDeleteDialogOpen(false))}
+          />
+        )}
+        <LeavePageDialog isDirty={!isDefaultValue} />
       </Form>
     </SidePanel.Content>
   );

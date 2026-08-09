@@ -1,10 +1,6 @@
 import { db } from '../firebase/admin.js';
 import type { RunRecordWithId, RunRecord } from '../types/index.js';
 
-export interface RunWithId extends RunRecordWithId {
-  id: string;
-}
-
 /**
  * Repository layer - handles all data access operations
  * Pure data access, no business logic
@@ -28,7 +24,7 @@ export class RunRepository {
   /**
    * Get a run by ID
    */
-  async findById(runId: string): Promise<RunWithId | null> {
+  async findById(runId: string): Promise<RunRecordWithId | null> {
     const runDoc = await db.collection('runs').doc(runId).get();
     if (!runDoc.exists) {
       return null;
@@ -37,7 +33,7 @@ export class RunRepository {
     return {
       id: runDoc.id,
       ...runDoc.data(),
-    } as RunWithId;
+    } as RunRecordWithId;
   }
 
   /**
@@ -46,7 +42,7 @@ export class RunRepository {
   async findByIdAndUserId(
     runId: string,
     userId: string,
-  ): Promise<RunWithId | null> {
+  ): Promise<RunRecordWithId | null> {
     const run = await this.findById(runId);
     if (!run || run.userId !== userId) {
       return null;
@@ -65,28 +61,15 @@ export class RunRepository {
   /**
    * Update a run's public status and slug
    */
-  async updatePublicStatus(
-    runId: string,
-    updates: { isPublic: boolean; publicSlug?: string | null },
-  ): Promise<RunWithId> {
+  async update(runId: string, runData: RunRecord): Promise<RunRecordWithId> {
     const runRef = db.collection('runs').doc(runId);
-    const updatePayload: Record<string, unknown> = {
-      isPublic: updates.isPublic,
-    };
-
-    if (updates.isPublic && updates.publicSlug) {
-      updatePayload.publicSlug = updates.publicSlug;
-    } else {
-      updatePayload.publicSlug = null;
-    }
-
-    await runRef.update(updatePayload);
+    await runRef.update(runData);
     const updatedRunDoc = await runRef.get();
 
     return {
       id: updatedRunDoc.id,
       ...updatedRunDoc.data(),
-    } as RunWithId;
+    } as RunRecordWithId;
   }
 
   /**

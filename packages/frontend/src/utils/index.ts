@@ -72,3 +72,23 @@ export const formatDate = (date: string) => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const getFieldError = (field: {
+  state: {
+    meta: {
+      isTouched: boolean;
+      isBlurred: boolean;
+      errors: ({ message: string } | undefined)[];
+    };
+  };
+  form: { state: { submissionAttempts: number } };
+}) => {
+  return (field.state.meta.isTouched && field.state.meta.isBlurred) ||
+    field.form.state.submissionAttempts > 0
+    ? field.state.meta.errors[0]?.message
+    : undefined;
+};
+
+export const generateId = (): string => {
+  return crypto.randomUUID();
+};

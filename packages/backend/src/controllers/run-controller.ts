@@ -1,11 +1,11 @@
 import type { Context } from 'hono';
 
-import { MAX_ROUTE_DATA_BYTES } from '../config/constants.js';
+import { MAX_RUN_DATA_BYTES } from '../config/constants.js';
 import { runService } from '../services/run-service.js';
 import {
   validateCreateRunBody,
-  validateUpdatePublicBody,
-} from '../utils/runValidation.js';
+  validateUpdateRunBody,
+} from '../utils/validation.js';
 import { isValidPublicSlug, normalizePublicSlug } from '../utils/index.js';
 import type { AuthContext } from '../middleware/auth.js';
 
@@ -19,11 +19,18 @@ export class RunController {
    */
   async getRunsList(c: AuthContext) {
     try {
-      if (!c.user?.uid) {
-        throw new Error('User ID missing in auth context');
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
       }
 
-      const runsList = await runService.getUserRuns(c.user.uid);
+      const runsList = await runService.getUserRuns(userId);
 
       return c.json({
         success: true,
@@ -48,8 +55,19 @@ export class RunController {
    */
   async getUserRun(c: AuthContext) {
     try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
       const runId = c.req.param('id');
-      const run = await runService.getRunForUser(runId, c.user.uid);
+      const run = await runService.getRunForUser(runId, userId);
 
       if (!run) {
         return c.json(
@@ -83,14 +101,25 @@ export class RunController {
    */
   async createRun(c: AuthContext) {
     try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
       // Check content length
       const contentLength = c.req.header('content-length');
-      if (contentLength && Number(contentLength) > MAX_ROUTE_DATA_BYTES) {
+      if (contentLength && Number(contentLength) > MAX_RUN_DATA_BYTES) {
         return c.json(
           {
             success: false,
             error: 'Payload too large',
-            message: `Payload exceeds ${MAX_ROUTE_DATA_BYTES} bytes`,
+            message: `Payload exceeds ${MAX_RUN_DATA_BYTES} bytes`,
           },
           413,
         );
@@ -107,26 +136,20 @@ export class RunController {
             error: err.error,
             message: err.message,
           },
-          err.status as 400 | 409 | 413,
+          err.status as 400,
         );
       }
 
-      const { name, normalizedRouteData, isPublic, publicSlug } =
-        validation.value;
-
       // Create run (service handles slug uniqueness check)
       const created = await runService.createRun({
-        userId: c.user.uid,
-        name,
-        routeData: normalizedRouteData,
-        isPublic,
-        publicSlug,
+        userId,
+        runData: validation.value,
       });
 
       return c.json(
         {
           success: true,
-          data: { id: created.id },
+          data: created,
         },
         201,
       );
@@ -157,14 +180,24 @@ export class RunController {
   }
 
   /**
-   * PUT /runs/editor/:id - Update a run's public status
+   * PUT /runs/editor/:id - Update existing run
    */
-  async updateRunPublicStatus(c: AuthContext) {
+  async updateRun(c: AuthContext) {
     try {
-      const runId = c.req.param('id');
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
 
+      const runId = c.req.param('id');
       // Get existing run to check ownership and get current values
-      const existingRun = await runService.getRunForUser(runId, c.user.uid);
+      const existingRun = await runService.getRunForUser(runId, userId);
       if (!existingRun) {
         return c.json(
           {
@@ -175,13 +208,22 @@ export class RunController {
         );
       }
 
+      // Check content length
+      const contentLength = c.req.header('content-length');
+      if (contentLength && Number(contentLength) > MAX_RUN_DATA_BYTES) {
+        return c.json(
+          {
+            success: false,
+            error: 'Payload too large',
+            message: `Payload exceeds ${MAX_RUN_DATA_BYTES} bytes`,
+          },
+          413,
+        );
+      }
+
       // Parse and validate body
       const body = await c.req.json().catch(() => null);
-      const validation = validateUpdatePublicBody(body, {
-        isPublic: existingRun.isPublic,
-        publicSlug: existingRun.publicSlug,
-      });
-
+      const validation = validateUpdateRunBody(body, existingRun);
       if (!validation.ok) {
         const err = validation.error;
         return c.json(
@@ -190,18 +232,14 @@ export class RunController {
             error: err.error,
             message: err.message,
           },
-          err.status as 400 | 409 | 413,
+          err.status as 400,
         );
       }
 
-      const { isPublic, publicSlug } = validation.value;
-
-      // Update run (service handles slug uniqueness check)
-      const updated = await runService.updateRunPublicStatus({
+      const updated = await runService.updateRun({
         runId,
-        userId: c.user.uid,
-        isPublic,
-        publicSlug,
+        userId,
+        runData: validation.value,
       });
 
       return c.json({
@@ -210,30 +248,6 @@ export class RunController {
       });
     } catch (error) {
       console.error('Error updating run:', error);
-
-      // Handle specific service errors
-      if (error instanceof Error) {
-        if (error.message === 'Run not found') {
-          return c.json(
-            {
-              success: false,
-              error: 'Run not found',
-            },
-            404,
-          );
-        }
-        if (error.message === 'Slug already exists') {
-          return c.json(
-            {
-              success: false,
-              error: 'Slug already exists',
-              message: 'publicSlug is already in use',
-            },
-            409,
-          );
-        }
-      }
-
       return c.json(
         {
           success: false,
@@ -250,8 +264,19 @@ export class RunController {
    */
   async deleteRun(c: AuthContext) {
     try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
       const runId = c.req.param('id');
-      const deleted = await runService.deleteRun(runId, c.user.uid);
+      const deleted = await runService.deleteRun(runId, userId);
 
       if (!deleted) {
         return c.json(
