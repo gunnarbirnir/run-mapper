@@ -5,7 +5,12 @@ import z from 'zod';
 
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
-import { Coordinates, PublicRoute, Waypoint } from '~/types';
+import {
+  RouteCoordinates,
+  PublicRoute,
+  Waypoint,
+  CoordinatesWithId,
+} from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
 import { getBoundingBox, isSameRoute, calculateDistance } from '~/utils/route';
 
@@ -19,11 +24,11 @@ import { MapState } from '../EditorMap/hooks/useMapState';
 interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
-  routeCoordinates: Coordinates[];
+  routeCoordinates: RouteCoordinates[];
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
-  setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
+  setEditRouteControlPoints: (coordinates: CoordinatesWithId[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
@@ -37,6 +42,10 @@ const routeFormSchema = z.object({
   coordinates: z
     .array(
       z.object({
+        id: z.string(),
+        isControlPoint: z.boolean(),
+        elevation: z.number(),
+        distance: z.number(),
         lat: z.number(),
         lng: z.number(),
       }),
@@ -58,7 +67,7 @@ export const RoutePanel = ({
   onDeleteItem,
   onAddWaypoint,
   onEditWaypoint,
-  setEditRouteCoordinates,
+  setEditRouteControlPoints,
   setIsEditingRouteCoordinates,
   editRouteActionsRef,
 }: RoutePanelProps) => {
@@ -73,6 +82,10 @@ export const RoutePanel = ({
       displayDistance: editRoute?.displayDistance?.toString() || '',
       coordinates:
         editRoute?.coordinates.map((coordinate) => ({
+          id: coordinate.id,
+          isControlPoint: coordinate.isControlPoint,
+          elevation: coordinate.elevation,
+          distance: coordinate.distance,
           lat: coordinate.lat,
           lng: coordinate.lng,
         })) || [],
@@ -97,17 +110,23 @@ export const RoutePanel = ({
           : undefined,
         boundingBox: getBoundingBox(value.coordinates),
         distance: calculateDistance(value.coordinates),
-        coordinates: value.coordinates.map((coordinate) => ({
-          ...coordinate,
-          // TODO: Get elevation from API
-          elevation: 0,
-        })),
+        coordinates: value.coordinates,
       };
 
       if (editId) {
         onUpdateItem(editId, updatedRoute);
       } else {
-        onAddItem({ ...updatedRoute, waypoints: currentWaypoints });
+        onAddItem({
+          ...updatedRoute,
+          waypoints: currentWaypoints,
+          elevationStats: {
+            elevationGain: 0,
+            elevationLoss: 0,
+            netElevation: 0,
+            maxElevation: 0,
+            minElevation: 0,
+          },
+        });
       }
     },
   });
@@ -153,9 +172,13 @@ export const RoutePanel = ({
   ]);
 
   const cancelEditRouteCoordinates = useCallback(() => {
-    setEditRouteCoordinates(coordinatesValue);
+    setEditRouteControlPoints(coordinatesValue);
     setIsEditingRouteCoordinates(false);
-  }, [coordinatesValue, setEditRouteCoordinates, setIsEditingRouteCoordinates]);
+  }, [
+    coordinatesValue,
+    setEditRouteControlPoints,
+    setIsEditingRouteCoordinates,
+  ]);
 
   const handleCancelEditRouteCoordinates = useCallback(() => {
     if (isSameRoute(coordinatesValue, routeCoordinates)) {

@@ -1,15 +1,26 @@
 import { POINT_OF_INTEREST_VALUES, WAYPOINT_VALUES } from '~/constants';
 
 export type Coordinates = { lat: number; lng: number };
+export type CoordinatesWithId = Coordinates & { id: string };
 export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
 export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
 export type NoId<T> = Omit<T, 'id'>;
 
-export type RouteCoordinates = Coordinates & {
+export type RouteCoordinates = CoordinatesWithId & {
+  isControlPoint: boolean;
   elevation: number;
+  distance: number;
 };
+
+export interface ElevationStats {
+  elevationGain: number;
+  elevationLoss: number;
+  netElevation: number;
+  maxElevation: number;
+  minElevation: number;
+}
 
 export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
@@ -43,6 +54,7 @@ export interface PublicRoute {
   waypoints: Waypoint[];
   distance: number;
   displayDistance?: number;
+  elevationStats: ElevationStats;
 }
 
 export interface PublicRun {

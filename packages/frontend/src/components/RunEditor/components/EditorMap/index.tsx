@@ -77,12 +77,13 @@ export const EditorMap = ({
   hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
+  editRouteControlPoints,
   editRouteCoordinates,
   isAtInitialBounds,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
-  setEditRouteCoordinates,
+  setEditRouteControlPoints,
   setSelectedRoutePoint,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
@@ -170,7 +171,7 @@ export const EditorMap = ({
     isMapLoaded,
     editCoordinates: editRouteCoordinates,
     selectedRoutePoint,
-    setEditCoordinates: setEditRouteCoordinates,
+    setEditControlPoints: setEditRouteControlPoints,
     setSelectedRoutePoint,
     mapRef,
     isResettingBoundsRef,
@@ -225,15 +226,15 @@ export const EditorMap = ({
       />
       <RouteCoordinatesToolbar
         isEditingRouteCoordinates={isEditingRouteCoordinates}
-        editRouteCoordinates={editRouteCoordinates}
+        editRouteControlPoints={editRouteControlPoints}
         selectedRoutePoint={selectedRoutePoint}
-        setEditRouteCoordinates={setEditRouteCoordinates}
+        setEditRouteControlPoints={setEditRouteControlPoints}
         editRouteActionsRef={editRouteActionsRef}
       />
       <SelectedRoutePointToolbar
         selectedRoutePoint={selectedRoutePoint}
         setSelectedRoutePoint={setSelectedRoutePoint}
-        setEditRouteCoordinates={setEditRouteCoordinates}
+        setEditRouteControlPoints={setEditRouteControlPoints}
       />
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}

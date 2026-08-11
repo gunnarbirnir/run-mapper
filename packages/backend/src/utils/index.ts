@@ -52,14 +52,13 @@ export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
 export const isValidRouteCoordinates = (
   value: unknown,
 ): value is RouteCoordinates => {
-  if (
-    !isValidCoordinates(value) ||
-    !('id' in value) ||
-    !('isRoutePoint' in value)
-  ) {
-    return false;
-  }
-  return isFiniteNumber((value as RouteCoordinates).elevation);
+  return (
+    isValidCoordinates(value) &&
+    'id' in value &&
+    'isControlPoint' in value &&
+    isFiniteNumber((value as RouteCoordinates).elevation) &&
+    isFiniteNumber((value as RouteCoordinates).distance)
+  );
 };
 
 export const isValidWaypointType = (value: unknown): value is WaypointType => {

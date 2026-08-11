@@ -1,26 +1,29 @@
 import { routingRepository } from '../repositories/routing-repository.js';
-import type { Coordinates, RouteBetweenPoints } from '../types/index.js';
+import type {
+  Coordinates,
+  RouteStats,
+  CoordinatesWithId,
+} from '../types/index.js';
 import {
-  sanitizeDirectionsResponse,
   sanitizeRouteBetweenPoints,
+  sanitizeRouteStats,
 } from '../utils/sanitize.js';
 
 export class RoutingService {
   async getRouteBetweenPoints(params: {
     startPoint: Coordinates;
     endPoint: Coordinates;
-  }): Promise<RouteBetweenPoints> {
+  }): Promise<CoordinatesWithId[]> {
     const routeBetweenPoints =
       await routingRepository.getRouteBetweenPoints(params);
-    const sanitizedRoute = sanitizeDirectionsResponse(routeBetweenPoints);
 
-    const routeWithElevations = {
-      ...sanitizedRoute,
-      coordinates: await routingRepository.getCoordinatesBetweenPoints(
-        sanitizedRoute.coordinates,
-      ),
-    };
-    return sanitizeRouteBetweenPoints(routeWithElevations);
+    return sanitizeRouteBetweenPoints(routeBetweenPoints);
+  }
+
+  async getRouteStats(coordinates: Coordinates[]): Promise<RouteStats> {
+    const routeStats = await routingRepository.getRouteStats(coordinates);
+
+    return sanitizeRouteStats(routeStats);
   }
 }
 

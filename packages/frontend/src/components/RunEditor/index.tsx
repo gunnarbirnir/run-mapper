@@ -58,7 +58,7 @@ export const RunEditor = ({
     editRouteCoordinates,
     isEditingRouteCoordinates,
     isEditingPoiCoordinates,
-    setEditRouteCoordinates,
+    setEditRouteControlPoints,
     setIsEditingRouteCoordinates,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
@@ -80,6 +80,7 @@ export const RunEditor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeRoute?.id],
   );
+  // TODO: use route stats
   const routeDistance = useMemo(
     () => calculateDistance(editRouteCoordinates),
     [editRouteCoordinates],
@@ -114,7 +115,7 @@ export const RunEditor = ({
           isDeleting={isDeleting}
           error={error}
           successMessage={successMessage}
-          setEditRouteCoordinates={setEditRouteCoordinates}
+          setEditRouteControlPoints={setEditRouteControlPoints}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}

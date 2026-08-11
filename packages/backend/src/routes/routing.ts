@@ -7,8 +7,12 @@ const routing = new Hono();
 
 routing.use('/*', authMiddleware);
 
-routing.get('/route', (c: AuthContext) =>
+routing.get('/route-between-points', (c: AuthContext) =>
   routingController.getRouteBetweenPoints(c),
+);
+
+routing.get('/route-stats', (c: AuthContext) =>
+  routingController.getRouteStats(c),
 );
 
 export default routing;

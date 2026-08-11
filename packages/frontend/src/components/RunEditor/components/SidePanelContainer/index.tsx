@@ -10,7 +10,9 @@ import type {
   Waypoint,
   WaypointType,
   Coordinates,
+  RouteCoordinates,
   RunUpdate,
+  CoordinatesWithId,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -24,7 +26,7 @@ import { WaypointPanel } from '../WaypointPanel';
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
   routeDistance: number;
-  routeCoordinates: Coordinates[];
+  routeCoordinates: RouteCoordinates[];
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
@@ -34,7 +36,7 @@ interface SidePanelContainerProps {
   isDeleting: boolean;
   error?: Error | null;
   successMessage?: string | null;
-  setEditRouteCoordinates: (coordinates: Coordinates[]) => void;
+  setEditRouteControlPoints: (coordinates: CoordinatesWithId[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
@@ -59,7 +61,7 @@ export const SidePanelContainer = ({
   isDeleting,
   error,
   successMessage,
-  setEditRouteCoordinates,
+  setEditRouteControlPoints,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
@@ -178,7 +180,7 @@ export const SidePanelContainer = ({
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
-              setEditRouteCoordinates={setEditRouteCoordinates}
+              setEditRouteControlPoints={setEditRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
               editRouteActionsRef={editRouteActionsRef}
             />

@@ -8,7 +8,7 @@ import {
   type MutableRefObject,
 } from 'react';
 
-import type { Coordinates, PublicRoute } from '~/types';
+import type { PublicRoute, CoordinatesWithId, RouteCoordinates } from '~/types';
 import {
   getLineFeature,
   getRouteLayer,
@@ -18,6 +18,7 @@ import {
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getBoundingBox } from '~/utils/route';
+import { generateId } from '~/utils';
 
 interface UseMapRouteProps {
   activeRoute: PublicRoute | undefined;
@@ -27,10 +28,10 @@ interface UseMapRouteProps {
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
   isEditingCoordinates: boolean;
-  editCoordinates: Coordinates[];
-  selectedRoutePoint: number | null;
-  setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
-  setSelectedRoutePoint: Dispatch<SetStateAction<number | null>>;
+  editCoordinates: RouteCoordinates[];
+  selectedRoutePoint: string | null;
+  setEditControlPoints: Dispatch<SetStateAction<CoordinatesWithId[]>>;
+  setSelectedRoutePoint: Dispatch<SetStateAction<string | null>>;
   mapRef: RefObject<Map>;
   isResettingBoundsRef: MutableRefObject<boolean>;
 }
@@ -45,7 +46,7 @@ export const useDrawRoute = ({
   isEditingCoordinates,
   editCoordinates,
   selectedRoutePoint,
-  setEditCoordinates,
+  setEditControlPoints,
   setSelectedRoutePoint,
   mapRef,
   isResettingBoundsRef,
@@ -55,17 +56,17 @@ export const useDrawRoute = ({
 
   // Reset edit coordinates when active route changes
   useEffect(() => {
-    setEditCoordinates(activeRoute?.coordinates ?? []);
+    setEditControlPoints(activeRoute?.coordinates ?? []);
     setSelectedRoutePoint(null);
-  }, [activeRoute, setEditCoordinates, setSelectedRoutePoint]);
+  }, [activeRoute, setEditControlPoints, setSelectedRoutePoint]);
 
   // Reset edit coordinates when panel closes
   useEffect(() => {
     if (!panelIsOpen) {
-      setEditCoordinates([]);
+      setEditControlPoints([]);
       setSelectedRoutePoint(null);
     }
-  }, [panelIsOpen, setEditCoordinates, setSelectedRoutePoint]);
+  }, [panelIsOpen, setEditControlPoints, setSelectedRoutePoint]);
 
   // Draw route
   useEffect(() => {
@@ -102,21 +103,22 @@ export const useDrawRoute = ({
     };
 
     const drawRoutePoints = () => {
-      // TODO: Only route points
-      routePointMarkers = editCoordinates.map((coordinate, index) =>
-        addMarker(
-          getRoutePointElement({
-            isSelected: selectedRoutePoint === index,
-            onClick: () => setSelectedRoutePoint(index),
-            onEnter: () => (disableMapClickRef.current = true),
-            onLeave: () => (disableMapClickRef.current = false),
-          }),
-          {
-            lng: coordinate.lng,
-            lat: coordinate.lat,
-          },
-        ),
-      );
+      routePointMarkers = editCoordinates
+        .filter((coordinate) => coordinate.isControlPoint)
+        .map((coordinate) =>
+          addMarker(
+            getRoutePointElement({
+              isSelected: selectedRoutePoint === coordinate.id,
+              onClick: () => setSelectedRoutePoint(coordinate.id),
+              onEnter: () => (disableMapClickRef.current = true),
+              onLeave: () => (disableMapClickRef.current = false),
+            }),
+            {
+              lng: coordinate.lng,
+              lat: coordinate.lat,
+            },
+          ),
+        );
     };
 
     const onStyleLoad = () => {
@@ -200,25 +202,31 @@ export const useDrawRoute = ({
     }
 
     const map = mapRef.current;
-    const handleClick = (e: MapMouseEvent) => {
+    const handleClick = async (e: MapMouseEvent) => {
       if (disableMapClickRef.current) {
         return;
       }
 
       const newCoordinates = {
+        id: generateId(),
         lng: e.lngLat.lng,
         lat: e.lngLat.lat,
       };
 
       if (selectedRoutePoint === null) {
-        setEditCoordinates((prevCoordinates) => [
+        setEditControlPoints((prevCoordinates) => [
           ...prevCoordinates,
           newCoordinates,
         ]);
       } else {
-        setEditCoordinates((prevCoordinates) => {
+        setEditControlPoints((prevCoordinates) => {
           const updatedCoordinates = [...prevCoordinates];
-          updatedCoordinates[selectedRoutePoint] = newCoordinates;
+          const index = updatedCoordinates.findIndex(
+            (coordinate) => coordinate.id === selectedRoutePoint,
+          );
+          if (index !== -1) {
+            updatedCoordinates[index] = newCoordinates;
+          }
           return updatedCoordinates;
         });
         setSelectedRoutePoint(null);
@@ -234,7 +242,8 @@ export const useDrawRoute = ({
     isMapLoaded,
     isEditingCoordinates,
     selectedRoutePoint,
-    setEditCoordinates,
+    editCoordinates,
+    setEditControlPoints,
     setSelectedRoutePoint,
     mapRef,
     disableMapClickRef,

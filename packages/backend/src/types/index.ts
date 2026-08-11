@@ -4,13 +4,13 @@ import {
 } from '../config/constants.js';
 
 export type Coordinates = { lat: number; lng: number };
+export type CoordinatesWithId = Coordinates & { id: string };
 export type BoundingBox = [Coordinates, Coordinates];
-export type Elevation = { value: number };
 
-export type RouteCoordinates = Coordinates & {
-  id: string;
-  isRoutePoint: boolean;
+export type RouteCoordinates = CoordinatesWithId & {
+  isControlPoint: boolean;
   elevation: number;
+  distance: number;
 };
 
 export interface ElevationStats {
@@ -85,12 +85,6 @@ export interface ListRun {
   imageSeed: number;
 }
 
-export interface RouteBetweenPoints {
-  distance: number;
-  elevationStats: ElevationStats;
-  coordinates: RouteCoordinates[];
-}
-
 export interface DirectionsResponse {
   routes: {
     geometry: {
@@ -98,4 +92,11 @@ export interface DirectionsResponse {
     };
     distance: number;
   }[];
+}
+
+export interface RouteStats {
+  boundingBox: BoundingBox;
+  coordinates: RouteCoordinates[];
+  distance: number;
+  elevationStats: ElevationStats;
 }

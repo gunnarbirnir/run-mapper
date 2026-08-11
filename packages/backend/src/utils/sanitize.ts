@@ -5,19 +5,24 @@ import type {
   PointOfInterest,
   Waypoint,
   Coordinates,
+  CoordinatesWithId,
   EditorRun,
-  RouteBetweenPoints,
   DirectionsResponse,
+  RouteStats,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
 import {
-  generateId,
   generateImageSeed,
   isValidBoundingBox,
   isValidRouteCoordinates,
   isValidCoordinates,
+  generateId,
 } from './index.js';
-import { getElevationStats } from './route.js';
+import {
+  getBoundingBox,
+  getElevationStats,
+  haversineDistance,
+} from './route.js';
 
 // Sanitize fetched data in service layer
 
@@ -106,45 +111,68 @@ export const sanitizeEditorRun = (runData: RunRecordWithId): EditorRun => {
   };
 };
 
-export const sanitizeDirectionsResponse = (
+export const sanitizeRouteBetweenPoints = (
   directionsResponse: DirectionsResponse,
-): { distance: number; coordinates: Coordinates[] } => {
+): CoordinatesWithId[] => {
+  if (directionsResponse.routes.length === 0) {
+    return [];
+  }
+
+  return directionsResponse.routes[0].geometry.coordinates
+    .map((coordinate) => ({
+      id: generateId(),
+      lng: coordinate[0],
+      lat: coordinate[1],
+    }))
+    .filter(isValidCoordinates);
+};
+
+export const sanitizeRouteStats = (
+  directionsResponse: DirectionsResponse,
+): RouteStats => {
   if (directionsResponse.routes.length === 0) {
     return {
-      distance: 0,
+      boundingBox: DEFAULT_BOUNDING_BOX,
       coordinates: [],
+      distance: 0,
+      elevationStats: {
+        elevationGain: 0,
+        elevationLoss: 0,
+        netElevation: 0,
+        maxElevation: 0,
+        minElevation: 0,
+      },
     };
   }
 
   const routeResponse = directionsResponse.routes[0];
+  const responseCoordinates = routeResponse.geometry.coordinates;
+  let cumulativeDistance = 0;
+  const coordinates = responseCoordinates
+    .map((coord, index) => ({
+      id: generateId(),
+      lng: coord[0],
+      lat: coord[1],
+      isControlPoint: false,
+      // TODO: Get elevation
+      elevation: 0,
+      distance: (cumulativeDistance +=
+        index === 0
+          ? 0
+          : haversineDistance(
+              {
+                lng: responseCoordinates[index - 1][0],
+                lat: responseCoordinates[index - 1][1],
+              },
+              { lng: coord[0], lat: coord[1] },
+            )),
+    }))
+    .filter(isValidRouteCoordinates);
 
   return {
-    distance: directionsResponse.routes[0].distance ?? 0,
-    coordinates: routeResponse.geometry.coordinates
-      .map((coordinate) => ({
-        lng: coordinate[0],
-        lat: coordinate[1],
-      }))
-      .filter(isValidCoordinates),
-  };
-};
-
-export const sanitizeRouteBetweenPoints = (routeBetweenPoints: {
-  distance: number;
-  coordinates: (Coordinates & { elevation: number })[];
-}): RouteBetweenPoints => {
-  return {
-    distance: routeBetweenPoints.distance ?? 0,
-    elevationStats: getElevationStats(routeBetweenPoints.coordinates),
-    coordinates: routeBetweenPoints.coordinates
-      .map((coordinate, index) => ({
-        id: generateId(),
-        isRoutePoint:
-          index === 0 || index === routeBetweenPoints.coordinates.length - 1,
-        lng: coordinate.lng,
-        lat: coordinate.lat,
-        elevation: coordinate.elevation,
-      }))
-      .filter(isValidRouteCoordinates),
+    coordinates,
+    distance: routeResponse.distance,
+    boundingBox: getBoundingBox(coordinates),
+    elevationStats: getElevationStats(coordinates),
   };
 };

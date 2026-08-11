@@ -1,7 +1,14 @@
 import { useState, useRef, useCallback } from 'react';
 import { Map } from 'mapbox-gl';
 
-import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
+import {
+  Coordinates,
+  CoordinatesWithId,
+  PointOfInterestType,
+  WaypointType,
+} from '~/types';
+
+import { useEditRouteCoordinates } from './useEditRouteCoordinates';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
@@ -18,15 +25,17 @@ export const useMapState = () => {
   const isResettingBoundsRef = useRef(false);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [editRouteCoordinates, setEditRouteCoordinates] = useState<
-    Coordinates[]
+  const [editRouteControlPoints, setEditRouteControlPoints] = useState<
+    CoordinatesWithId[]
   >([]);
+  const { editRouteCoordinates } = useEditRouteCoordinates({
+    editRouteControlPoints,
+  });
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
-  const [selectedRoutePoint, setSelectedRoutePoint] =
-    // Index of the selected route point
-    // TODO: Use id instead
-    useState<number | null>(null);
+  const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
+    null,
+  );
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
@@ -48,6 +57,7 @@ export const useMapState = () => {
 
   return {
     isMapLoaded,
+    editRouteControlPoints,
     editRouteCoordinates,
     isEditingRouteCoordinates,
     selectedRoutePoint,
@@ -57,7 +67,7 @@ export const useMapState = () => {
     editWaypointCoordinates,
     isAtInitialBounds,
     setIsMapLoaded,
-    setEditRouteCoordinates,
+    setEditRouteControlPoints,
     setIsEditingRouteCoordinates,
     setSelectedRoutePoint,
     setIsEditingPoiCoordinates,

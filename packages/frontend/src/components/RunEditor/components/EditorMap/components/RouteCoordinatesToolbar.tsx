@@ -3,7 +3,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { useCallback } from 'react';
 
 import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
-import type { Coordinates } from '~/types';
+import type { CoordinatesWithId } from '~/types';
 
 import type { MapState } from '../hooks/useMapState';
 import { useRouteUndoRedo } from '../hooks/useRouteUndoRedo';
@@ -11,17 +11,17 @@ import { ToolbarContainer } from './ToolbarContainer';
 
 interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
-  selectedRoutePoint: number | null;
-  editRouteCoordinates: Coordinates[];
-  setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
+  selectedRoutePoint: string | null;
+  editRouteControlPoints: CoordinatesWithId[];
+  setEditRouteControlPoints: MapState['setEditRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
   isEditingRouteCoordinates,
   selectedRoutePoint,
-  editRouteCoordinates,
-  setEditRouteCoordinates,
+  editRouteControlPoints,
+  setEditRouteControlPoints,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
   const isVisible = isEditingRouteCoordinates && selectedRoutePoint === null;
@@ -29,8 +29,8 @@ export const RouteCoordinatesToolbar = ({
   const { handleUndo, handleRedo, isUndoDisabled, isRedoDisabled } =
     useRouteUndoRedo({
       initialize: isEditingRouteCoordinates,
-      editRouteCoordinates,
-      setEditRouteCoordinates,
+      editRouteControlPoints,
+      setEditRouteControlPoints,
     });
 
   const onSave = useCallback(() => {
@@ -42,8 +42,8 @@ export const RouteCoordinatesToolbar = ({
   }, [editRouteActionsRef]);
 
   const onClear = useCallback(() => {
-    setEditRouteCoordinates([]);
-  }, [setEditRouteCoordinates]);
+    setEditRouteControlPoints([]);
+  }, [setEditRouteControlPoints]);
 
   useHotkey('Enter', onSave, {
     conflictBehavior: 'replace',

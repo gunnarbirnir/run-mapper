@@ -145,6 +145,7 @@ export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
   ];
 };
 
+// TODO: use distance from route coordinates
 export const getCoordinatesFromPosition = (
   position: number,
   coordinates: Coordinates[],

@@ -8,15 +8,15 @@ import { ToolbarContainer } from './ToolbarContainer';
 import { MapState } from '../hooks/useMapState';
 
 interface SelectedRoutePointToolbarProps {
-  selectedRoutePoint: number | null;
+  selectedRoutePoint: string | null;
   setSelectedRoutePoint: MapState['setSelectedRoutePoint'];
-  setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
+  setEditRouteControlPoints: MapState['setEditRouteControlPoints'];
 }
 
 export const SelectedRoutePointToolbar = ({
   selectedRoutePoint,
   setSelectedRoutePoint,
-  setEditRouteCoordinates,
+  setEditRouteControlPoints,
 }: SelectedRoutePointToolbarProps) => {
   const isVisible = selectedRoutePoint !== null;
 
@@ -26,10 +26,10 @@ export const SelectedRoutePointToolbar = ({
 
   const onDelete = useCallback(() => {
     setSelectedRoutePoint(null);
-    setEditRouteCoordinates((prev) =>
-      prev.filter((_, index) => index !== selectedRoutePoint),
+    setEditRouteControlPoints((prev) =>
+      prev.filter((coordinate) => coordinate.id !== selectedRoutePoint),
     );
-  }, [selectedRoutePoint, setSelectedRoutePoint, setEditRouteCoordinates]);
+  }, [selectedRoutePoint, setSelectedRoutePoint, setEditRouteControlPoints]);
 
   useHotkey('Backspace', onDelete, {
     conflictBehavior: 'replace',
