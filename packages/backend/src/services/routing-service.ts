@@ -13,6 +13,7 @@ export class RoutingService {
   async getRouteBetweenPoints(params: {
     startPoint: Coordinates;
     endPoint: Coordinates;
+    mode: 'driving' | 'walking';
   }): Promise<CoordinatesWithId[]> {
     const routeBetweenPoints =
       await routingRepository.getRouteBetweenPoints(params);
@@ -21,7 +22,9 @@ export class RoutingService {
   }
 
   async getRouteStats(coordinates: Coordinates[]): Promise<RouteStats> {
-    return sanitizeRouteStats(coordinates);
+    const routeElevations =
+      await routingRepository.getRouteElevations(coordinates);
+    return sanitizeRouteStats(coordinates, routeElevations);
   }
 }
 

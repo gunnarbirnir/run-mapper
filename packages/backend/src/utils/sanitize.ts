@@ -127,7 +127,10 @@ export const sanitizeRouteBetweenPoints = (
     .filter(isValidCoordinates);
 };
 
-export const sanitizeRouteStats = (coordinates: Coordinates[]): RouteStats => {
+export const sanitizeRouteStats = (
+  coordinates: Coordinates[],
+  elevations: number[],
+): RouteStats => {
   let cumulativeDistance = 0;
   const routeCoordinates = coordinates
     .map((coord, index) => ({
@@ -135,8 +138,7 @@ export const sanitizeRouteStats = (coordinates: Coordinates[]): RouteStats => {
       lng: coord.lng,
       lat: coord.lat,
       isControlPoint: false,
-      // TODO: Get elevation
-      elevation: 0,
+      elevation: elevations[index] ?? 0,
       distance: (cumulativeDistance +=
         index === 0 ? 0 : haversineDistance(coordinates[index - 1], coord)),
     }))

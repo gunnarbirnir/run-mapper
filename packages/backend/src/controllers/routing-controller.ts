@@ -19,6 +19,7 @@ export class RoutingController {
       const endLat = c.req.query('endLat');
       const startLng = c.req.query('startLng');
       const endLng = c.req.query('endLng');
+      const mode = c.req.query('mode');
 
       if (!startLat || !endLat || !startLng || !endLng) {
         return c.json(
@@ -33,6 +34,7 @@ export class RoutingController {
       const routeBetweenPoints = await routingService.getRouteBetweenPoints({
         startPoint: { lat: Number(startLat), lng: Number(startLng) },
         endPoint: { lat: Number(endLat), lng: Number(endLng) },
+        mode: mode === 'driving' ? 'driving' : 'walking',
       });
 
       return c.json({
