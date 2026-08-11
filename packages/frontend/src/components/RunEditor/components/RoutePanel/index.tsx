@@ -108,6 +108,7 @@ export const RoutePanel = ({
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
           : undefined,
+        // TODO: use route stats
         boundingBox: getBoundingBox(value.coordinates),
         distance: calculateDistance(value.coordinates),
         coordinates: value.coordinates,

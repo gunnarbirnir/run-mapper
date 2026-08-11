@@ -10,6 +10,7 @@ import type {
   WaypointType,
   InnerWaypointType,
   Coordinates,
+  RouteCoordinates,
 } from '~/types';
 import { getWaypointPoiLabel, getCoordinatesFromPosition } from '~/utils/route';
 import { formatNumber, getFieldError } from '~/utils';
@@ -19,7 +20,7 @@ import { PanelState } from '../../hooks/usePanelState';
 
 interface WaypointPanelProps extends PanelState<Waypoint> {
   routeDistance: number;
-  routeCoordinates: Coordinates[];
+  routeCoordinates: RouteCoordinates[];
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
 }

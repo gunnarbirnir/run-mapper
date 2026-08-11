@@ -186,6 +186,7 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
+    routeDistance,
     routeCoordinates: editRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,

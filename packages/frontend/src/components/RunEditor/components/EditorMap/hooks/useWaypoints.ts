@@ -1,8 +1,13 @@
 import type { Map, Marker } from 'mapbox-gl';
 import { useEffect, type RefObject, useRef } from 'react';
 
-import type { Coordinates, Waypoint, WaypointType } from '~/types';
-import { calculateDistance, getCoordinatesFromPosition } from '~/utils/route';
+import type {
+  Coordinates,
+  Waypoint,
+  WaypointType,
+  RouteCoordinates,
+} from '~/types';
+import { getCoordinatesFromPosition } from '~/utils/route';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
 
@@ -10,7 +15,8 @@ import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;
-  routeCoordinates: Coordinates[];
+  routeCoordinates: RouteCoordinates[];
+  routeDistance: number;
   waypoints: Waypoint[];
   activeWaypoint: string | null;
   panelIsOpen: boolean;
@@ -27,16 +33,14 @@ interface UseWaypointsProps {
 
 const getPositionCoordinates = (
   waypoint: Waypoint,
-  coordinates: Coordinates[],
-): Coordinates | null => {
+  coordinates: RouteCoordinates[],
+  routeDistance: number,
+): RouteCoordinates | null => {
   if (waypoint.type === 'start') {
     return getCoordinatesFromPosition(0, coordinates);
   }
   if (waypoint.type === 'end') {
-    return getCoordinatesFromPosition(
-      calculateDistance(coordinates),
-      coordinates,
-    );
+    return getCoordinatesFromPosition(routeDistance, coordinates);
   }
   return getCoordinatesFromPosition(waypoint.position, coordinates);
 };
@@ -44,6 +48,7 @@ const getPositionCoordinates = (
 export const useWaypoints = ({
   isMapLoaded,
   routeCoordinates,
+  routeDistance,
   waypoints,
   activeWaypoint,
   panelIsOpen,
@@ -90,6 +95,7 @@ export const useWaypoints = ({
       const positionCoordinates = getPositionCoordinates(
         waypoint,
         routeCoordinates,
+        routeDistance,
       );
 
       if (!positionCoordinates) {
@@ -163,6 +169,7 @@ export const useWaypoints = ({
     isMapLoaded,
     activeWaypoint,
     routeCoordinates,
+    routeDistance,
     waypoints,
     hasMadeChanges,
     panelIsOpen,
@@ -192,6 +199,7 @@ export const useWaypoints = ({
     const positionCoordinates = getPositionCoordinates(
       activeWaypointDetails,
       routeCoordinates,
+      routeDistance,
     );
 
     if (positionCoordinates) {
@@ -205,6 +213,7 @@ export const useWaypoints = ({
     isMapLoaded,
     activeWaypoint,
     routeCoordinates,
+    routeDistance,
     waypoints,
     panelIsOpen,
     isAnimatingPanel,

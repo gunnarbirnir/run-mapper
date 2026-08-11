@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import type {
@@ -29,13 +29,31 @@ export const useEditRouteCoordinates = ({
 }: UseEditRouteCoordinatesProps) => {
   const queryClient = useQueryClient();
   const cachedRouteBetweenPointsRef = useRef<
-    Record<string, CoordinatesWithId[]>
+    Record<string, RouteCoordinates[]>
   >({});
 
   const [editRouteCoordinates, setEditRouteCoordinates] = useState<
     RouteCoordinates[]
   >([]);
   const [routeStats, setRouteStats] = useState<RouteStats | null>(null);
+  const [isLoadingRouteBetweenPoints, setIsLoadingRouteBetweenPoints] =
+    useState(false);
+  const [isLoadingRouteStats, setIsLoadingRouteStats] = useState(false);
+
+  const editRouteCoordinatesValue = useMemo(
+    () =>
+      !isEditingRouteCoordinates &&
+      !isLoadingRouteStats &&
+      routeStats?.coordinates
+        ? routeStats.coordinates
+        : editRouteCoordinates,
+    [
+      editRouteCoordinates,
+      isEditingRouteCoordinates,
+      isLoadingRouteStats,
+      routeStats,
+    ],
+  );
 
   const fetchRouteBetweenPoints = useCallback(
     (params: {
@@ -79,66 +97,107 @@ export const useEditRouteCoordinates = ({
   );
 
   useEffect(() => {
+    let hasBeenCancelled = false;
+
     const updateEditRouteCoordinates = async () => {
       const updatedEditRouteCoordinates: RouteCoordinates[] = [];
       let previousPoint: CoordinatesWithId | null = null;
+      setIsLoadingRouteBetweenPoints(true);
 
-      for (const point of editRouteControlPoints) {
-        if (previousPoint) {
-          const segmentIdentifier = `${previousPoint.lat};${previousPoint.lng}-${point.lat};${point.lng}`;
-          if (cachedRouteBetweenPointsRef.current[segmentIdentifier]) {
-            updatedEditRouteCoordinates.push(
-              ...cachedRouteBetweenPointsRef.current[segmentIdentifier].map(
+      try {
+        for (const point of editRouteControlPoints) {
+          if (previousPoint) {
+            const segmentIdentifier = `${previousPoint.lat};${previousPoint.lng}-${point.lat};${point.lng}`;
+            const cachedRouteBetweenPoints =
+              cachedRouteBetweenPointsRef.current[segmentIdentifier];
+
+            if (cachedRouteBetweenPoints) {
+              updatedEditRouteCoordinates.push(...cachedRouteBetweenPoints);
+            } else {
+              const { data: routeBetweenPoints } =
+                await fetchRouteBetweenPoints({
+                  startLat: previousPoint.lat,
+                  startLng: previousPoint.lng,
+                  endLat: point.lat,
+                  endLng: point.lng,
+                });
+              const formattedRouteBetweenPoints = routeBetweenPoints.map(
                 convertToRouteCoordinates(false),
-              ),
-            );
-          } else {
-            const { data: routeBetweenPoints } = await fetchRouteBetweenPoints({
-              startLat: previousPoint.lat,
-              startLng: previousPoint.lng,
-              endLat: point.lat,
-              endLng: point.lng,
-            });
-            updatedEditRouteCoordinates.push(
-              ...routeBetweenPoints.map(convertToRouteCoordinates(false)),
-            );
-            cachedRouteBetweenPointsRef.current[segmentIdentifier] =
-              routeBetweenPoints;
+              );
+
+              updatedEditRouteCoordinates.push(...formattedRouteBetweenPoints);
+              cachedRouteBetweenPointsRef.current[segmentIdentifier] =
+                formattedRouteBetweenPoints;
+            }
           }
+
+          updatedEditRouteCoordinates.push(
+            convertToRouteCoordinates(true)(point),
+          );
+          previousPoint = point;
         }
 
-        updatedEditRouteCoordinates.push(
-          convertToRouteCoordinates(true)(point),
-        );
-        previousPoint = point;
+        if (!hasBeenCancelled) {
+          setEditRouteCoordinates(updatedEditRouteCoordinates);
+        }
+      } catch {
+        // Ignore cancelled requests
+      } finally {
+        if (!hasBeenCancelled) {
+          setIsLoadingRouteBetweenPoints(false);
+        }
       }
-
-      setEditRouteCoordinates(updatedEditRouteCoordinates);
     };
 
     updateEditRouteCoordinates();
+
+    return () => {
+      hasBeenCancelled = true;
+      setIsLoadingRouteBetweenPoints(false);
+    };
   }, [editRouteControlPoints, fetchRouteBetweenPoints]);
 
   useEffect(() => {
-    // TODO: Handle loading and cancelling
+    let hasBeenCancelled = false;
+
     const updateRouteStats = async () => {
       if (!isEditingRouteCoordinates) {
         if (editRouteCoordinates.length > 0) {
-          const { data: routeStats } =
-            await fetchRouteStats(editRouteCoordinates);
-          setRouteStats(routeStats);
+          try {
+            setIsLoadingRouteStats(true);
+            const { data: routeStats } =
+              await fetchRouteStats(editRouteCoordinates);
+
+            if (!hasBeenCancelled) {
+              setRouteStats(routeStats);
+            }
+          } catch {
+            // Ignore cancelled requests
+          } finally {
+            if (!hasBeenCancelled) {
+              setIsLoadingRouteStats(false);
+            }
+          }
         } else {
           setRouteStats(null);
         }
       }
     };
+
     updateRouteStats();
+
+    return () => {
+      hasBeenCancelled = true;
+      setIsLoadingRouteStats(false);
+    };
   }, [editRouteCoordinates, fetchRouteStats, isEditingRouteCoordinates]);
 
   return {
-    editRouteCoordinates,
+    editRouteCoordinates: editRouteCoordinatesValue,
     routeDistance: routeStats?.distance,
     routeBoundingBox: routeStats?.boundingBox,
     routeElevationStats: routeStats?.elevationStats,
+    isLoadingRouteBetweenPoints,
+    isLoadingRouteStats,
   };
 };
