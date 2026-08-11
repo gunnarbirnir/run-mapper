@@ -21,9 +21,7 @@ export class RoutingService {
   }
 
   async getRouteStats(coordinates: Coordinates[]): Promise<RouteStats> {
-    const routeStats = await routingRepository.getRouteStats(coordinates);
-
-    return sanitizeRouteStats(routeStats);
+    return sanitizeRouteStats(coordinates);
   }
 }
 

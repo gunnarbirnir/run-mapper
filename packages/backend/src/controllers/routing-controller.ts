@@ -1,6 +1,5 @@
 import { routingService } from '../services/routing-service.js';
 import type { AuthContext } from '../middleware/auth.js';
-import type { Coordinates } from '../types/index.js';
 
 export class RoutingController {
   async getRouteBetweenPoints(c: AuthContext) {
@@ -79,9 +78,11 @@ export class RoutingController {
         );
       }
 
-      const routeStats = await routingService.getRouteStats(
-        JSON.parse(coordinates) as Coordinates[],
-      );
+      const coordinatesArray = coordinates.split(';').map((coordinate) => {
+        const [lng, lat] = coordinate.split(',');
+        return { lng: Number(lng), lat: Number(lat) };
+      });
+      const routeStats = await routingService.getRouteStats(coordinatesArray);
 
       return c.json({
         success: true,

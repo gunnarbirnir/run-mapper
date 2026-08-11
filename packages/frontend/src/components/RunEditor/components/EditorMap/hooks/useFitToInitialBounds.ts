@@ -6,7 +6,7 @@ import {
 } from 'react';
 import type { Map } from 'mapbox-gl';
 
-import type { Bounds, Coordinates } from '~/types';
+import type { BoundingBox, Bounds, Coordinates } from '~/types';
 import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
 import { getBoundingBox } from '~/utils/route';
 import { formatBounds, isSameBounds } from '~/utils/map';
@@ -14,6 +14,7 @@ import { formatBounds, isSameBounds } from '~/utils/map';
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;
   initialBounds: Bounds;
+  routeBoundingBox?: BoundingBox;
   routeCoordinates: Coordinates[];
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   mapRef: RefObject<Map>;
@@ -24,6 +25,7 @@ interface UseFitToInitialBoundsProps {
 export const useFitToInitialBounds = ({
   isMapLoaded,
   initialBounds,
+  routeBoundingBox,
   routeCoordinates,
   mapRef,
   setIsAtInitialBounds,
@@ -52,7 +54,7 @@ export const useFitToInitialBounds = ({
 
     const activeBounds =
       routeCoordinates.length > 0
-        ? formatBounds(getBoundingBox(routeCoordinates))
+        ? formatBounds(routeBoundingBox || getBoundingBox(routeCoordinates))
         : initialBounds;
 
     if (
@@ -77,6 +79,7 @@ export const useFitToInitialBounds = ({
   }, [
     isMapLoaded,
     initialBounds,
+    routeBoundingBox,
     routeCoordinates,
     setIsAtInitialBounds,
     mapRef,

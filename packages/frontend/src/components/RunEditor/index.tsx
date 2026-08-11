@@ -8,11 +8,7 @@ import type {
   Waypoint,
   RunUpdate,
 } from '~/types';
-import {
-  processRunRoute,
-  calculateDistance,
-  getBoundingBox,
-} from '~/utils/route';
+import { getBoundingBox } from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
 import { EditorMap, useMapState } from './components/EditorMap';
@@ -55,6 +51,7 @@ export const RunEditor = ({
 
   const mapState = useMapState();
   const {
+    routeDistance = 0,
     editRouteCoordinates,
     isEditingRouteCoordinates,
     isEditingPoiCoordinates,
@@ -73,17 +70,6 @@ export const RunEditor = ({
         (route) => route.id === routePanelState.editId,
       ),
     [routePanelState.currentItems, routePanelState.editId],
-  );
-  const { elevations: activeRouteElevations } = useMemo(
-    // TODO: use edit route
-    () => processRunRoute(activeRoute?.coordinates || []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeRoute?.id],
-  );
-  // TODO: use route stats
-  const routeDistance = useMemo(
-    () => calculateDistance(editRouteCoordinates),
-    [editRouteCoordinates],
   );
   const initialBoundingBox = useMemo(
     () =>
@@ -131,7 +117,6 @@ export const RunEditor = ({
             {...mapState}
             activeRoute={activeRoute}
             initialBoundingBox={initialBoundingBox}
-            activeRouteElevations={activeRouteElevations}
             routeDistance={routeDistance}
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
             routePanelIsOpen={routePanelState.showPanel}

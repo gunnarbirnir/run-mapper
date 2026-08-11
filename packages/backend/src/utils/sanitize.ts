@@ -127,52 +127,25 @@ export const sanitizeRouteBetweenPoints = (
     .filter(isValidCoordinates);
 };
 
-export const sanitizeRouteStats = (
-  directionsResponse: DirectionsResponse,
-): RouteStats => {
-  if (directionsResponse.routes.length === 0) {
-    return {
-      boundingBox: DEFAULT_BOUNDING_BOX,
-      coordinates: [],
-      distance: 0,
-      elevationStats: {
-        elevationGain: 0,
-        elevationLoss: 0,
-        netElevation: 0,
-        maxElevation: 0,
-        minElevation: 0,
-      },
-    };
-  }
-
-  const routeResponse = directionsResponse.routes[0];
-  const responseCoordinates = routeResponse.geometry.coordinates;
+export const sanitizeRouteStats = (coordinates: Coordinates[]): RouteStats => {
   let cumulativeDistance = 0;
-  const coordinates = responseCoordinates
+  const routeCoordinates = coordinates
     .map((coord, index) => ({
       id: generateId(),
-      lng: coord[0],
-      lat: coord[1],
+      lng: coord.lng,
+      lat: coord.lat,
       isControlPoint: false,
       // TODO: Get elevation
       elevation: 0,
       distance: (cumulativeDistance +=
-        index === 0
-          ? 0
-          : haversineDistance(
-              {
-                lng: responseCoordinates[index - 1][0],
-                lat: responseCoordinates[index - 1][1],
-              },
-              { lng: coord[0], lat: coord[1] },
-            )),
+        index === 0 ? 0 : haversineDistance(coordinates[index - 1], coord)),
     }))
     .filter(isValidRouteCoordinates);
 
   return {
-    coordinates,
-    distance: routeResponse.distance,
-    boundingBox: getBoundingBox(coordinates),
-    elevationStats: getElevationStats(coordinates),
+    distance: cumulativeDistance,
+    coordinates: routeCoordinates,
+    boundingBox: getBoundingBox(routeCoordinates),
+    elevationStats: getElevationStats(routeCoordinates),
   };
 };

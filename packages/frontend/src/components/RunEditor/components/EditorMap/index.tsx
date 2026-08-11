@@ -2,15 +2,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 
-import {
-  BoundingBox,
-  Elevation,
-  PointOfInterest,
-  PublicRoute,
-  Waypoint,
-} from '~/types';
+import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
-import { calculateElevationGain } from '~/utils/route';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
@@ -31,7 +24,6 @@ import { DEFAULT_EDITOR_BOUNDS } from './constants';
 interface EditorMapProps extends MapState {
   rootPanelIsAnimating: boolean;
   activeRoute: PublicRoute | undefined;
-  activeRouteElevations: Elevation[];
   routeDistance: number;
   routePanelIsOpen: boolean;
   routePanelIsAnimating: boolean;
@@ -54,7 +46,6 @@ interface EditorMapProps extends MapState {
 export const EditorMap = ({
   rootPanelIsAnimating,
   activeRoute,
-  activeRouteElevations,
   routeDistance,
   routePanelIsOpen,
   routePanelIsAnimating,
@@ -77,6 +68,8 @@ export const EditorMap = ({
   hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
+  routeBoundingBox,
+  routeElevationStats,
   editRouteControlPoints,
   editRouteCoordinates,
   isAtInitialBounds,
@@ -105,9 +98,6 @@ export const EditorMap = ({
         : DEFAULT_EDITOR_BOUNDS,
     [initialBoundingBox],
   );
-  const elevationGain = useMemo(() => {
-    return calculateElevationGain(activeRouteElevations);
-  }, [activeRouteElevations]);
 
   const isAnyPanelAnimating =
     rootPanelIsAnimating ||
@@ -147,6 +137,7 @@ export const EditorMap = ({
   useFitToInitialBounds({
     isMapLoaded,
     initialBounds,
+    routeBoundingBox,
     routeCoordinates: editRouteCoordinates,
     setIsAtInitialBounds,
     mapRef,
@@ -214,8 +205,11 @@ export const EditorMap = ({
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
-        {routeDistance > 0 ? (
-          <RouteStats distance={routeDistance} elevationGain={elevationGain} />
+        {routeDistance > 0 && !isEditingRouteCoordinates ? (
+          <RouteStats
+            distance={routeDistance}
+            elevationGain={routeElevationStats?.elevationGain ?? 0}
+          />
         ) : null}
       </AnimatePresence>
       <ActionButtonsContainer

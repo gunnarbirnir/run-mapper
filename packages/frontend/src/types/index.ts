@@ -84,6 +84,13 @@ export interface ListRun {
   imageSeed: number;
 }
 
+export interface RouteStats {
+  boundingBox: BoundingBox;
+  coordinates: RouteCoordinates[];
+  distance: number;
+  elevationStats: ElevationStats;
+}
+
 export type ApiResponse<T> = {
   data: T;
   success: boolean;

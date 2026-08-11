@@ -28,11 +28,18 @@ export const useMapState = () => {
   const [editRouteControlPoints, setEditRouteControlPoints] = useState<
     CoordinatesWithId[]
   >([]);
-  const { editRouteCoordinates } = useEditRouteCoordinates({
-    editRouteControlPoints,
-  });
+
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
+  const {
+    editRouteCoordinates,
+    routeDistance,
+    routeBoundingBox,
+    routeElevationStats,
+  } = useEditRouteCoordinates({
+    editRouteControlPoints,
+    isEditingRouteCoordinates,
+  });
   const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
     null,
   );
@@ -57,6 +64,9 @@ export const useMapState = () => {
 
   return {
     isMapLoaded,
+    routeDistance,
+    routeBoundingBox,
+    routeElevationStats,
     editRouteControlPoints,
     editRouteCoordinates,
     isEditingRouteCoordinates,

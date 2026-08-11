@@ -16,16 +16,6 @@ export class RoutingRepository {
     );
     return await response.json();
   }
-
-  async getRouteStats(coordinates: Coordinates[]): Promise<DirectionsResponse> {
-    const formattedCoordinates = coordinates
-      .map((coordinate) => `${coordinate.lng},${coordinate.lat}`)
-      .join(';');
-    const response = await fetch(
-      `${MAPBOX_DIRECTIONS_BASE_URL}/${formattedCoordinates}?geometries=geojson&overview=full&access_token=${process.env.MAPBOX_ACCESS_TOKEN}`,
-    );
-    return await response.json();
-  }
 }
 
 export const routingRepository = new RoutingRepository();

@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import type { CoordinatesWithId, RouteCoordinates, ApiResponse } from '~/types';
+import type {
+  CoordinatesWithId,
+  RouteCoordinates,
+  ApiResponse,
+  RouteStats,
+} from '~/types';
 import { api } from '~/service';
 
 interface UseEditRouteCoordinatesProps {
   editRouteControlPoints: CoordinatesWithId[];
+  isEditingRouteCoordinates: boolean;
 }
 
 const convertToRouteCoordinates =
@@ -19,14 +25,17 @@ const convertToRouteCoordinates =
 
 export const useEditRouteCoordinates = ({
   editRouteControlPoints,
+  isEditingRouteCoordinates,
 }: UseEditRouteCoordinatesProps) => {
   const queryClient = useQueryClient();
-  const [editRouteCoordinates, setEditRouteCoordinates] = useState<
-    RouteCoordinates[]
-  >([]);
   const cachedRouteBetweenPointsRef = useRef<
     Record<string, CoordinatesWithId[]>
   >({});
+
+  const [editRouteCoordinates, setEditRouteCoordinates] = useState<
+    RouteCoordinates[]
+  >([]);
+  const [routeStats, setRouteStats] = useState<RouteStats | null>(null);
 
   const fetchRouteBetweenPoints = useCallback(
     (params: {
@@ -47,6 +56,23 @@ export const useEditRouteCoordinates = ({
         staleTime: 60_000 * 10, // 10 minutes
         queryFn: () =>
           api.get(`/routing/route-between-points?${searchParams.toString()}`),
+      });
+    },
+    [queryClient],
+  );
+  const fetchRouteStats = useCallback(
+    (coordinates: CoordinatesWithId[]) => {
+      const searchParams = new URLSearchParams({
+        coordinates: coordinates
+          .map((coordinate) => `${coordinate.lng},${coordinate.lat}`)
+          .join(';'),
+      });
+
+      return queryClient.fetchQuery<ApiResponse<RouteStats>>({
+        queryKey: ['route-stats', coordinates],
+        staleTime: 60_000, // 1 minute
+        queryFn: () =>
+          api.get(`/routing/route-stats?${searchParams.toString()}`),
       });
     },
     [queryClient],
@@ -93,11 +119,26 @@ export const useEditRouteCoordinates = ({
     updateEditRouteCoordinates();
   }, [editRouteControlPoints, fetchRouteBetweenPoints]);
 
+  useEffect(() => {
+    // TODO: Handle loading and cancelling
+    const updateRouteStats = async () => {
+      if (!isEditingRouteCoordinates) {
+        if (editRouteCoordinates.length > 0) {
+          const { data: routeStats } =
+            await fetchRouteStats(editRouteCoordinates);
+          setRouteStats(routeStats);
+        } else {
+          setRouteStats(null);
+        }
+      }
+    };
+    updateRouteStats();
+  }, [editRouteCoordinates, fetchRouteStats, isEditingRouteCoordinates]);
+
   return {
     editRouteCoordinates,
-    // TODO:
-    // routeDistance,
-    // routeBoundingBox,
-    // routeElevationStats
+    routeDistance: routeStats?.distance,
+    routeBoundingBox: routeStats?.boundingBox,
+    routeElevationStats: routeStats?.elevationStats,
   };
 };
