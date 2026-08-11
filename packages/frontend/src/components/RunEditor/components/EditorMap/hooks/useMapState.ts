@@ -28,7 +28,6 @@ export const useMapState = () => {
   const [editRouteControlPoints, setEditRouteControlPoints] = useState<
     CoordinatesWithId[]
   >([]);
-
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
   const {
@@ -36,6 +35,8 @@ export const useMapState = () => {
     routeDistance,
     routeBoundingBox,
     routeElevationStats,
+    isLoadingRouteStats,
+    isLoadingRouteBetweenPoints,
   } = useEditRouteCoordinates({
     editRouteControlPoints,
     isEditingRouteCoordinates,
@@ -76,6 +77,8 @@ export const useMapState = () => {
     editWaypointType,
     editWaypointCoordinates,
     isAtInitialBounds,
+    isLoadingRouteStats,
+    isLoadingRouteBetweenPoints,
     setIsMapLoaded,
     setEditRouteControlPoints,
     setIsEditingRouteCoordinates,

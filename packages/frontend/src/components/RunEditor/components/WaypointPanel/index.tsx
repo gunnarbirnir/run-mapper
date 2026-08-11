@@ -275,14 +275,12 @@ export const WaypointPanel = ({
             selector={(state) => [
               state.canSubmit,
               state.isSubmitting,
-              state.isDefaultValue,
               state.values.name.length === 0,
               state.values.position > positionMax,
             ]}
             children={([
               canSubmit,
               isSubmitting,
-              isDefaultValue,
               invalidName,
               invalidPosition,
             ]) => (

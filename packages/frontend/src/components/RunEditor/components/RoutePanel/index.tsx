@@ -6,13 +6,15 @@ import z from 'zod';
 import { useId } from '~/hooks/useId';
 import { Button, Dialog, Form, SidePanel } from '~/primitives';
 import {
+  BoundingBox,
   RouteCoordinates,
   PublicRoute,
   Waypoint,
   CoordinatesWithId,
+  ElevationStats,
 } from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
-import { getBoundingBox, isSameRoute, calculateDistance } from '~/utils/route';
+import { getBoundingBox, isSameRoute } from '~/utils/route';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -25,6 +27,8 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   routeDistance: number;
   routeCoordinates: RouteCoordinates[];
+  routeBoundingBox?: BoundingBox;
+  routeElevationStats?: ElevationStats;
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
@@ -59,6 +63,8 @@ export const RoutePanel = ({
   currentWaypoints,
   routeDistance,
   routeCoordinates,
+  routeBoundingBox,
+  routeElevationStats,
   isEditingRouteCoordinates,
   onClose,
   onUpdateItem,
@@ -105,13 +111,19 @@ export const RoutePanel = ({
     onSubmit: ({ value }) => {
       const updatedRoute = {
         name: value.name,
+        distance: routeDistance,
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
           : undefined,
-        // TODO: use route stats
-        boundingBox: getBoundingBox(value.coordinates),
-        distance: calculateDistance(value.coordinates),
-        coordinates: value.coordinates,
+        boundingBox: routeBoundingBox || getBoundingBox(value.coordinates),
+        coordinates: routeCoordinates,
+        elevationStats: routeElevationStats ?? {
+          elevationGain: 0,
+          elevationLoss: 0,
+          netElevation: 0,
+          maxElevation: 0,
+          minElevation: 0,
+        },
       };
 
       if (editId) {
@@ -120,13 +132,6 @@ export const RoutePanel = ({
         onAddItem({
           ...updatedRoute,
           waypoints: currentWaypoints,
-          elevationStats: {
-            elevationGain: 0,
-            elevationLoss: 0,
-            netElevation: 0,
-            maxElevation: 0,
-            minElevation: 0,
-          },
         });
       }
     },
@@ -136,8 +141,8 @@ export const RoutePanel = ({
   const hasMadeWaypointChanges = !editId && !hasDefaultWaypoints;
   const isDefaultValue =
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
-    !hasMadeWaypointChanges &&
-    !isEditingRouteCoordinates;
+    !hasMadeWaypointChanges;
+  const disableSubmit = isDefaultValue || isEditingRouteCoordinates;
 
   const {
     state: { value: coordinatesValue },
@@ -149,8 +154,10 @@ export const RoutePanel = ({
   });
 
   const submitForm = useCallback(() => {
-    routeForm.handleSubmit();
-  }, [routeForm]);
+    if (!disableSubmit) {
+      routeForm.handleSubmit();
+    }
+  }, [routeForm, disableSubmit]);
 
   const resetForm = useCallback(() => {
     routeForm.reset(formDefaultValues);
@@ -322,16 +329,12 @@ export const RoutePanel = ({
         </ItemsSection>
         <section className="flex flex-col gap-3">
           <routeForm.Subscribe
-            selector={(state) => [
-              state.canSubmit,
-              state.isSubmitting,
-              state.isDefaultValue,
-            ]}
-            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || isDefaultValue}
+                disabled={!canSubmit || disableSubmit}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update Route' : 'Add Route'}

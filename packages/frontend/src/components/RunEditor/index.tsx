@@ -52,6 +52,8 @@ export const RunEditor = ({
   const mapState = useMapState();
   const {
     routeDistance = 0,
+    routeBoundingBox,
+    routeElevationStats,
     editRouteCoordinates,
     isEditingRouteCoordinates,
     isEditingPoiCoordinates,
@@ -91,6 +93,8 @@ export const RunEditor = ({
         <SidePanelContainer
           existingRun={existingRun}
           routeDistance={routeDistance}
+          routeBoundingBox={routeBoundingBox}
+          routeElevationStats={routeElevationStats}
           routeCoordinates={editRouteCoordinates}
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}

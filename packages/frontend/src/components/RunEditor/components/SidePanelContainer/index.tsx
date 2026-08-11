@@ -4,6 +4,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { SidePanel } from '~/primitives';
 import type {
   EditorRun,
+  BoundingBox,
   PointOfInterest,
   PointOfInterestType,
   PublicRoute,
@@ -13,6 +14,7 @@ import type {
   RouteCoordinates,
   RunUpdate,
   CoordinatesWithId,
+  ElevationStats,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -27,6 +29,8 @@ interface SidePanelContainerProps {
   existingRun?: EditorRun;
   routeDistance: number;
   routeCoordinates: RouteCoordinates[];
+  routeBoundingBox?: BoundingBox;
+  routeElevationStats?: ElevationStats;
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
@@ -51,6 +55,8 @@ interface SidePanelContainerProps {
 export const SidePanelContainer = ({
   existingRun,
   routeDistance,
+  routeBoundingBox,
+  routeElevationStats,
   routeCoordinates,
   rootPanelState,
   routePanelState,
@@ -177,6 +183,8 @@ export const SidePanelContainer = ({
               currentWaypoints={waypointPanelState.currentItems}
               routeDistance={routeDistance}
               routeCoordinates={routeCoordinates}
+              routeBoundingBox={routeBoundingBox}
+              routeElevationStats={routeElevationStats}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}

@@ -73,6 +73,7 @@ export const EditorMap = ({
   editRouteControlPoints,
   editRouteCoordinates,
   isAtInitialBounds,
+  isLoadingRouteStats,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
@@ -206,7 +207,9 @@ export const EditorMap = ({
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
-        {routeDistance > 0 && !isEditingRouteCoordinates ? (
+        {routeDistance > 0 &&
+        !isEditingRouteCoordinates &&
+        !isLoadingRouteStats ? (
           <RouteStats
             distance={routeDistance}
             elevationGain={routeElevationStats?.elevationGain ?? 0}

@@ -98,9 +98,11 @@ export const PointOfInterestPanel = ({
     },
   });
 
-  const isDefaultValue =
-    useStore(poiForm.store, (state) => state.isDefaultValue) &&
-    !isEditingPoiCoordinates;
+  const isDefaultValue = useStore(
+    poiForm.store,
+    (state) => state.isDefaultValue,
+  );
+  const disableSubmit = isDefaultValue || isEditingPoiCoordinates;
   const { handleChange: onLatChange, handleBlur: onLatBlur } = useField({
     form: poiForm,
     name: 'lat',
@@ -111,8 +113,10 @@ export const PointOfInterestPanel = ({
   });
 
   const submitForm = useCallback(() => {
-    poiForm.handleSubmit();
-  }, [poiForm]);
+    if (!disableSubmit) {
+      poiForm.handleSubmit();
+    }
+  }, [poiForm, disableSubmit]);
 
   const resetForm = useCallback(() => {
     poiForm.reset(formDefaultValues);
@@ -261,16 +265,12 @@ export const PointOfInterestPanel = ({
         </section>
         <section className="flex flex-col gap-3">
           <poiForm.Subscribe
-            selector={(state) => [
-              state.canSubmit,
-              state.isSubmitting,
-              state.isDefaultValue,
-            ]}
-            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || isDefaultValue}
+                disabled={!canSubmit || disableSubmit}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update POI' : 'Add POI'}
