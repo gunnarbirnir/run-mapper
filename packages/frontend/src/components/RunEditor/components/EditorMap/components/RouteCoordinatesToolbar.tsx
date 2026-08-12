@@ -6,6 +6,7 @@ import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
 import type { CoordinatesWithId } from '~/types';
 
 import type { MapState } from '../hooks/useMapState';
+import type { ActiveRouteState } from '../hooks/useActiveRoute';
 import { useRouteUndoRedo } from '../hooks/useRouteUndoRedo';
 import { ToolbarContainer } from './ToolbarContainer';
 
@@ -13,7 +14,7 @@ interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
   selectedRoutePoint: string | null;
   editRouteControlPoints: CoordinatesWithId[];
-  setEditRouteControlPoints: MapState['setEditRouteControlPoints'];
+  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 

@@ -5,12 +5,12 @@ import { useCallback } from 'react';
 import { Icon, RoundButton, Text, Tooltip } from '~/primitives';
 
 import { ToolbarContainer } from './ToolbarContainer';
-import { MapState } from '../hooks/useMapState';
+import { ActiveRouteState } from '../hooks/useActiveRoute';
 
 interface SelectedRoutePointToolbarProps {
   selectedRoutePoint: string | null;
-  setSelectedRoutePoint: MapState['setSelectedRoutePoint'];
-  setEditRouteControlPoints: MapState['setEditRouteControlPoints'];
+  setSelectedRoutePoint: ActiveRouteState['setSelectedRoutePoint'];
+  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 export const SelectedRoutePointToolbar = ({

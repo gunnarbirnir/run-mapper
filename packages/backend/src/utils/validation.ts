@@ -13,6 +13,7 @@ import {
   PublicRoute,
   Coordinates,
   EditorRun,
+  RouteStats,
 } from '../types/index.js';
 import type {
   ValidationResult,
@@ -732,5 +733,63 @@ export const validateUpdateRunBody = (
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,
     },
+  };
+};
+
+export const validateRouteStatsBody = (
+  rawBody: unknown,
+): ValidationResult<RouteCoordinates[]> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'Request body must be a JSON object',
+      },
+    };
+  }
+
+  const body = rawBody as RouteStats;
+  const { coordinates } = body;
+
+  if (coordinates !== undefined && !Array.isArray(coordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'coordinates must be an array',
+      },
+    };
+  }
+
+  const normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
+
+  if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
+      },
+    };
+  }
+
+  if (!normalizedCoordinates.every(isValidRouteCoordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'coordinates must be an array of valid route coordinates',
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    value: normalizedCoordinates,
   };
 };

@@ -10,8 +10,9 @@ import type {
 } from '~/types';
 import { api } from '~/service';
 
-interface UseEditRouteProps {
-  activeRoute: PublicRoute | undefined;
+interface UseActiveRouteProps {
+  panelIsOpen: boolean;
+  currentEditRoute: PublicRoute | undefined;
 }
 
 const convertToRouteCoordinates =
@@ -23,18 +24,26 @@ const convertToRouteCoordinates =
     ...coordinates,
   });
 
-// TODO: Handle existing route - Better naming?
+const getSegmentIdentifier = (
+  previousPoint: CoordinatesWithId,
+  point: CoordinatesWithId,
+) => {
+  return `${previousPoint.lat};${previousPoint.lng}-${point.lat};${point.lng}`;
+};
 
-export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
+export const useActiveRoute = ({
+  panelIsOpen,
+  currentEditRoute,
+}: UseActiveRouteProps) => {
   const queryClient = useQueryClient();
   const cachedRouteBetweenPointsRef = useRef<
     Record<string, RouteCoordinates[]>
   >({});
 
-  const [editRouteCoordinates, setEditRouteCoordinates] = useState<
+  const [activeRouteCoordinates, setActiveRouteCoordinates] = useState<
     RouteCoordinates[]
   >([]);
-  const [editRouteControlPoints, setEditRouteControlPoints] = useState<
+  const [activeRouteControlPoints, setActiveRouteControlPoints] = useState<
     CoordinatesWithId[]
   >([]);
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
@@ -47,20 +56,73 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
     useState(false);
   const [isLoadingRouteStats, setIsLoadingRouteStats] = useState(false);
 
-  const editRouteCoordinatesValue = useMemo(
+  const activeRouteCoordinatesValue = useMemo(
     () =>
       !isEditingRouteCoordinates &&
       !isLoadingRouteStats &&
       routeStats?.coordinates
         ? routeStats.coordinates
-        : editRouteCoordinates,
+        : activeRouteCoordinates,
     [
-      editRouteCoordinates,
+      activeRouteCoordinates,
       isEditingRouteCoordinates,
       isLoadingRouteStats,
       routeStats,
     ],
   );
+
+  const resetActiveRoute = useCallback(() => {
+    setActiveRouteCoordinates([]);
+    setActiveRouteControlPoints([]);
+    setSelectedRoutePoint(null);
+    setIsEditingRouteCoordinates(false);
+    setRouteStats(null);
+    setIsLoadingRouteBetweenPoints(false);
+    setIsLoadingRouteStats(false);
+  }, []);
+
+  useEffect(() => {
+    const currentEditRouteCoordinates = currentEditRoute?.coordinates ?? [];
+    const currentEditRouteControlPoints = currentEditRouteCoordinates
+      .filter((coord) => coord.isControlPoint)
+      .map((coord) => ({
+        id: coord.id,
+        lat: coord.lat,
+        lng: coord.lng,
+      }));
+
+    resetActiveRoute();
+    setActiveRouteCoordinates(currentEditRouteCoordinates);
+    setActiveRouteControlPoints(currentEditRouteControlPoints);
+
+    const currentEditCachedRoutes: Record<string, RouteCoordinates[]> = {};
+    let segmentCoordinates: RouteCoordinates[] = [];
+    let previousControlPoint: CoordinatesWithId | null = null;
+
+    for (const coord of currentEditRouteCoordinates) {
+      if (coord.isControlPoint) {
+        if (previousControlPoint) {
+          const segmentIdentifier = getSegmentIdentifier(
+            previousControlPoint,
+            coord,
+          );
+          currentEditCachedRoutes[segmentIdentifier] = segmentCoordinates;
+          segmentCoordinates = [];
+        }
+        previousControlPoint = coord;
+      } else {
+        segmentCoordinates.push(coord);
+      }
+    }
+
+    cachedRouteBetweenPointsRef.current = currentEditCachedRoutes;
+  }, [currentEditRoute, resetActiveRoute]);
+
+  useEffect(() => {
+    if (!panelIsOpen) {
+      resetActiveRoute();
+    }
+  }, [panelIsOpen, resetActiveRoute]);
 
   const fetchRouteBetweenPoints = useCallback(
     (params: {
@@ -85,19 +147,13 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
     },
     [queryClient],
   );
-  const fetchRouteStats = useCallback(
-    (coordinates: CoordinatesWithId[]) => {
-      const searchParams = new URLSearchParams({
-        coordinates: coordinates
-          .map((coordinate) => `${coordinate.lng},${coordinate.lat}`)
-          .join(';'),
-      });
 
+  const fetchRouteStats = useCallback(
+    (coordinates: RouteCoordinates[]) => {
       return queryClient.fetchQuery<ApiResponse<RouteStats>>({
         queryKey: ['route-stats', coordinates],
         staleTime: 60_000, // 1 minute
-        queryFn: () =>
-          api.get(`/routing/route-stats?${searchParams.toString()}`),
+        queryFn: () => api.post('/routing/route-stats', { coordinates }),
       });
     },
     [queryClient],
@@ -112,9 +168,12 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
       setIsLoadingRouteBetweenPoints(true);
 
       try {
-        for (const point of editRouteControlPoints) {
+        for (const point of activeRouteControlPoints) {
           if (previousPoint) {
-            const segmentIdentifier = `${previousPoint.lat};${previousPoint.lng}-${point.lat};${point.lng}`;
+            const segmentIdentifier = getSegmentIdentifier(
+              previousPoint,
+              point,
+            );
             const cachedRouteBetweenPoints =
               cachedRouteBetweenPointsRef.current[segmentIdentifier];
 
@@ -145,7 +204,7 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
         }
 
         if (!hasBeenCancelled) {
-          setEditRouteCoordinates(updatedEditRouteCoordinates);
+          setActiveRouteCoordinates(updatedEditRouteCoordinates);
         }
       } catch {
         // Ignore cancelled requests
@@ -162,18 +221,19 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
       hasBeenCancelled = true;
       setIsLoadingRouteBetweenPoints(false);
     };
-  }, [editRouteControlPoints, fetchRouteBetweenPoints]);
+  }, [activeRouteControlPoints, fetchRouteBetweenPoints]);
 
   useEffect(() => {
     let hasBeenCancelled = false;
 
     const updateRouteStats = async () => {
       if (!isEditingRouteCoordinates) {
-        if (editRouteCoordinates.length > 0) {
+        if (activeRouteCoordinates.length > 0) {
           try {
             setIsLoadingRouteStats(true);
-            const { data: routeStats } =
-              await fetchRouteStats(editRouteCoordinates);
+            const { data: routeStats } = await fetchRouteStats(
+              activeRouteCoordinates,
+            );
 
             if (!hasBeenCancelled) {
               setRouteStats(routeStats);
@@ -197,22 +257,22 @@ export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
       hasBeenCancelled = true;
       setIsLoadingRouteStats(false);
     };
-  }, [editRouteCoordinates, fetchRouteStats, isEditingRouteCoordinates]);
+  }, [activeRouteCoordinates, fetchRouteStats, isEditingRouteCoordinates]);
 
   return {
-    editRouteCoordinates: editRouteCoordinatesValue,
-    editRouteControlPoints,
+    activeRouteCoordinates: activeRouteCoordinatesValue,
+    activeRouteDistance: routeStats?.distance ?? 0,
+    activeRouteBoundingBox: routeStats?.boundingBox,
+    activeRouteElevationStats: routeStats?.elevationStats,
+    activeRouteControlPoints,
     isEditingRouteCoordinates,
     selectedRoutePoint,
-    routeDistance: routeStats?.distance ?? 0,
-    routeBoundingBox: routeStats?.boundingBox,
-    routeElevationStats: routeStats?.elevationStats,
     isLoadingRouteBetweenPoints,
     isLoadingRouteStats,
-    setEditRouteControlPoints,
+    setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
     setSelectedRoutePoint,
   };
 };
 
-export type EditRouteState = ReturnType<typeof useEditRoute>;
+export type ActiveRouteState = ReturnType<typeof useActiveRoute>;

@@ -9,6 +9,7 @@ import type {
   EditorRun,
   DirectionsResponse,
   RouteStats,
+  RouteCoordinates,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
 import {
@@ -128,16 +129,16 @@ export const sanitizeRouteBetweenPoints = (
 };
 
 export const sanitizeRouteStats = (
-  coordinates: Coordinates[],
+  coordinates: RouteCoordinates[],
   elevations: number[],
 ): RouteStats => {
   let cumulativeDistance = 0;
   const routeCoordinates = coordinates
     .map((coord, index) => ({
-      id: generateId(),
+      id: coord.id,
       lng: coord.lng,
       lat: coord.lat,
-      isControlPoint: false,
+      isControlPoint: coord.isControlPoint,
       elevation: elevations[index] ?? 0,
       distance: (cumulativeDistance +=
         index === 0 ? 0 : haversineDistance(coordinates[index - 1], coord)),

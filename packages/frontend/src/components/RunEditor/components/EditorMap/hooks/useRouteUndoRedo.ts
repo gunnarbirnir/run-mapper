@@ -3,12 +3,12 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import type { CoordinatesWithId } from '~/types';
 import { isSameRoute } from '~/utils/route';
 
-import { MapState } from './useMapState';
+import type { ActiveRouteState } from './useActiveRoute';
 
 interface RouteUndoRedoProps {
   initialize?: boolean;
   editRouteControlPoints: CoordinatesWithId[];
-  setEditRouteControlPoints: MapState['setEditRouteControlPoints'];
+  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 const MAX_HISTORY_LENGTH = 10;

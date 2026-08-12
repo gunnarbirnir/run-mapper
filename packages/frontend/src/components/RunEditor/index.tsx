@@ -11,7 +11,7 @@ import type {
 import { getBoundingBox } from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
-import { EditorMap, useMapState, useEditRoute } from './components/EditorMap';
+import { EditorMap, useMapState, useActiveRoute } from './components/EditorMap';
 import { SidePanelContainer } from './components/SidePanelContainer';
 import { usePanelState } from './hooks/usePanelState';
 import { useRootPanelState } from './hooks/useRootPanelState';
@@ -49,7 +49,7 @@ export const RunEditor = ({
     waypointPanelState,
   });
 
-  const activeRoute = useMemo(
+  const currentEditRoute = useMemo(
     () =>
       routePanelState.currentItems.find(
         (route) => route.id === routePanelState.editId,
@@ -81,18 +81,19 @@ export const RunEditor = ({
     editRouteActionsRef,
     onUpdatePoiCoordinatesRef,
   } = mapState;
-  const editRouteState = useEditRoute({
-    activeRoute,
+  const activeRouteState = useActiveRoute({
+    panelIsOpen: routePanelState.showPanel,
+    currentEditRoute,
   });
   const {
-    editRouteCoordinates,
-    routeDistance,
-    routeBoundingBox,
-    routeElevationStats,
+    activeRouteCoordinates,
+    activeRouteDistance,
+    activeRouteBoundingBox,
+    activeRouteElevationStats,
     isEditingRouteCoordinates,
-    setEditRouteControlPoints,
+    setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
-  } = editRouteState;
+  } = activeRouteState;
 
   return (
     <IdProvider baseId="run-editor">
@@ -104,10 +105,10 @@ export const RunEditor = ({
           isDeleting={isDeleting}
           successMessage={successMessage}
           // Edit route state
-          routeDistance={routeDistance}
-          routeBoundingBox={routeBoundingBox}
-          routeElevationStats={routeElevationStats}
-          routeCoordinates={editRouteCoordinates}
+          routeDistance={activeRouteDistance}
+          routeBoundingBox={activeRouteBoundingBox}
+          routeElevationStats={activeRouteElevationStats}
+          routeCoordinates={activeRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           // Panel states
           rootPanelState={rootPanelState}
@@ -119,7 +120,7 @@ export const RunEditor = ({
           // Handlers
           onSubmit={onSubmit}
           onDeleteRun={onDeleteRun}
-          setEditRouteControlPoints={setEditRouteControlPoints}
+          setEditRouteControlPoints={setActiveRouteControlPoints}
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
@@ -132,7 +133,7 @@ export const RunEditor = ({
         <div className="z-1 flex flex-1 flex-col">
           <EditorMap
             {...mapState}
-            {...editRouteState}
+            {...activeRouteState}
             initialBoundingBox={initialBoundingBox}
             rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
             // Route panel state

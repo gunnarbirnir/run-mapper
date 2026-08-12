@@ -3,6 +3,7 @@ import type {
   Coordinates,
   RouteStats,
   CoordinatesWithId,
+  RouteCoordinates,
 } from '../types/index.js';
 import {
   sanitizeRouteBetweenPoints,
@@ -21,7 +22,7 @@ export class RoutingService {
     return sanitizeRouteBetweenPoints(routeBetweenPoints);
   }
 
-  async getRouteStats(coordinates: Coordinates[]): Promise<RouteStats> {
+  async getRouteStats(coordinates: RouteCoordinates[]): Promise<RouteStats> {
     const routeElevations =
       await routingRepository.getRouteElevations(coordinates);
     return sanitizeRouteStats(coordinates, routeElevations);

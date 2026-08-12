@@ -1,5 +1,6 @@
 import { routingService } from '../services/routing-service.js';
 import type { AuthContext } from '../middleware/auth.js';
+import { validateRouteStatsBody } from '../utils/validation.js';
 
 export class RoutingController {
   async getRouteBetweenPoints(c: AuthContext) {
@@ -68,23 +69,21 @@ export class RoutingController {
         );
       }
 
-      const coordinates = c.req.query('coordinates');
-
-      if (!coordinates) {
+      const body = await c.req.json().catch(() => null);
+      const validation = validateRouteStatsBody(body);
+      if (!validation.ok) {
+        const err = validation.error;
         return c.json(
           {
             success: false,
-            error: 'Coordinates are required',
+            error: err.error,
+            message: err.message,
           },
-          400,
+          err.status as 400,
         );
       }
 
-      const coordinatesArray = coordinates.split(';').map((coordinate) => {
-        const [lng, lat] = coordinate.split(',');
-        return { lng: Number(lng), lat: Number(lat) };
-      });
-      const routeStats = await routingService.getRouteStats(coordinatesArray);
+      const routeStats = await routingService.getRouteStats(validation.value);
 
       return c.json({
         success: true,

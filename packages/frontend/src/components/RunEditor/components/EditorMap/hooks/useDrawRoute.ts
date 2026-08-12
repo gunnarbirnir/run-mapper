@@ -8,7 +8,7 @@ import {
   type MutableRefObject,
 } from 'react';
 
-import type { PublicRoute, CoordinatesWithId, RouteCoordinates } from '~/types';
+import type { CoordinatesWithId, RouteCoordinates } from '~/types';
 import {
   getLineFeature,
   getRouteLayer,
@@ -21,7 +21,6 @@ import { getBoundingBox } from '~/utils/route';
 import { generateId } from '~/utils';
 
 interface UseMapRouteProps {
-  activeRoute: PublicRoute | undefined;
   panelIsOpen: boolean;
   isAnimatingPanel: boolean;
   waypointPanelIsOpen: boolean;
@@ -37,7 +36,6 @@ interface UseMapRouteProps {
 }
 
 export const useDrawRoute = ({
-  activeRoute,
   panelIsOpen,
   isAnimatingPanel,
   waypointPanelIsOpen,
@@ -53,20 +51,6 @@ export const useDrawRoute = ({
 }: UseMapRouteProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
   const disableMapClickRef = useRef(false);
-
-  // Reset edit coordinates when active route changes
-  useEffect(() => {
-    setEditControlPoints(activeRoute?.coordinates ?? []);
-    setSelectedRoutePoint(null);
-  }, [activeRoute, setEditControlPoints, setSelectedRoutePoint]);
-
-  // Reset edit coordinates when panel closes
-  useEffect(() => {
-    if (!panelIsOpen) {
-      setEditControlPoints([]);
-      setSelectedRoutePoint(null);
-    }
-  }, [panelIsOpen, setEditControlPoints, setSelectedRoutePoint]);
 
   // Draw route
   useEffect(() => {

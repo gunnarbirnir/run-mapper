@@ -14,7 +14,7 @@ import { useDrawRoute } from './hooks/useDrawRoute';
 import { useLoadMap } from './hooks/useLoadMap';
 import { useMapCursor } from './hooks/useMapCursor';
 import { useMapState, type MapState } from './hooks/useMapState';
-import { useEditRoute, type EditRouteState } from './hooks/useEditRoute';
+import { useActiveRoute, type ActiveRouteState } from './hooks/useActiveRoute';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
@@ -23,7 +23,7 @@ import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { DEFAULT_EDITOR_BOUNDS } from './constants';
 
 type EditorMapProps = MapState &
-  EditRouteState & {
+  ActiveRouteState & {
     rootPanelIsAnimating: boolean;
     routePanelIsOpen: boolean;
     routePanelIsAnimating: boolean;
@@ -45,7 +45,7 @@ type EditorMapProps = MapState &
 
 export const EditorMap = ({
   rootPanelIsAnimating,
-  routeDistance,
+  activeRouteDistance,
   routePanelIsOpen,
   routePanelIsAnimating,
   hasMadeRouteChanges,
@@ -67,16 +67,16 @@ export const EditorMap = ({
   hasMadeWaypointChanges,
   initialBoundingBox,
   isMapLoaded,
-  routeBoundingBox,
-  routeElevationStats,
-  editRouteControlPoints,
-  editRouteCoordinates,
+  activeRouteBoundingBox,
+  activeRouteElevationStats,
+  activeRouteControlPoints,
+  activeRouteCoordinates,
   isAtInitialBounds,
   isLoadingRouteStats,
   onEditPointOfInterest,
   onEditWaypoint,
   setIsMapLoaded,
-  setEditRouteControlPoints,
+  setActiveRouteControlPoints,
   setSelectedRoutePoint,
   setIsEditingPoiCoordinates,
   setEditPointOfInterestType,
@@ -137,8 +137,8 @@ export const EditorMap = ({
   useFitToInitialBounds({
     isMapLoaded,
     initialBounds,
-    routeBoundingBox,
-    routeCoordinates: editRouteCoordinates,
+    routeBoundingBox: activeRouteBoundingBox,
+    routeCoordinates: activeRouteCoordinates,
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,
@@ -153,17 +153,15 @@ export const EditorMap = ({
   });
 
   useDrawRoute({
-    // TODO: remove
-    activeRoute: undefined,
     panelIsOpen: routePanelIsOpen,
     isAnimatingPanel: routePanelIsAnimating,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     isEditingCoordinates: isEditingRouteCoordinates,
     isMapLoaded,
-    editCoordinates: editRouteCoordinates,
+    editCoordinates: activeRouteCoordinates,
     selectedRoutePoint,
-    setEditControlPoints: setEditRouteControlPoints,
+    setEditControlPoints: setActiveRouteControlPoints,
     setSelectedRoutePoint,
     mapRef,
     isResettingBoundsRef,
@@ -187,8 +185,8 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    routeDistance,
-    routeCoordinates: editRouteCoordinates,
+    routeDistance: activeRouteDistance,
+    routeCoordinates: activeRouteCoordinates,
     waypoints: currentWaypoints,
     activeWaypoint,
     panelIsOpen: waypointPanelIsOpen,
@@ -207,12 +205,12 @@ export const EditorMap = ({
     <div className="bg-secondary-100 relative flex h-full w-full flex-1">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
-        {routeDistance > 0 &&
+        {activeRouteDistance > 0 &&
         !isEditingRouteCoordinates &&
         !isLoadingRouteStats ? (
           <RouteStats
-            distance={routeDistance}
-            elevationGain={routeElevationStats?.elevationGain ?? 0}
+            distance={activeRouteDistance}
+            elevationGain={activeRouteElevationStats?.elevationGain ?? 0}
           />
         ) : null}
       </AnimatePresence>
@@ -224,15 +222,15 @@ export const EditorMap = ({
       />
       <RouteCoordinatesToolbar
         isEditingRouteCoordinates={isEditingRouteCoordinates}
-        editRouteControlPoints={editRouteControlPoints}
+        editRouteControlPoints={activeRouteControlPoints}
         selectedRoutePoint={selectedRoutePoint}
-        setEditRouteControlPoints={setEditRouteControlPoints}
+        setEditRouteControlPoints={setActiveRouteControlPoints}
         editRouteActionsRef={editRouteActionsRef}
       />
       <SelectedRoutePointToolbar
         selectedRoutePoint={selectedRoutePoint}
         setSelectedRoutePoint={setSelectedRoutePoint}
-        setEditRouteControlPoints={setEditRouteControlPoints}
+        setEditRouteControlPoints={setActiveRouteControlPoints}
       />
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}
@@ -242,4 +240,4 @@ export const EditorMap = ({
   );
 };
 
-export { useMapState, useEditRoute };
+export { useMapState, useActiveRoute };
