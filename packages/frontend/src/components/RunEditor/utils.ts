@@ -1,34 +1,23 @@
 import type { Waypoint } from '~/types';
 import { generateId } from '~/utils';
 
-export const getWaypointsWithStartAndEnd = (waypoints: Waypoint[] = []) => {
-  const updatedWaypoints = [...waypoints];
-  const waypointTypes = waypoints.reduce((types, wp) => {
-    types.add(wp.type);
-    return types;
-  }, new Set<string>());
-
-  if (!waypointTypes.has('start')) {
-    updatedWaypoints.unshift({
+export const getStartAndEndWaypoints = (): Waypoint[] => {
+  return [
+    {
       id: generateId(),
       type: 'start',
       name: 'Start',
       coordinates: { lat: 0, lng: 0 },
       position: 0,
-    });
-  }
-
-  if (!waypointTypes.has('end')) {
-    updatedWaypoints.push({
+    },
+    {
       id: generateId(),
       type: 'end',
       name: 'End',
       coordinates: { lat: 0, lng: 0 },
       position: 0,
-    });
-  }
-
-  return updatedWaypoints;
+    },
+  ];
 };
 
 export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {

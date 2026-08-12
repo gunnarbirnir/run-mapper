@@ -1,14 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Map } from 'mapbox-gl';
 
-import {
-  Coordinates,
-  CoordinatesWithId,
-  PointOfInterestType,
-  WaypointType,
-} from '~/types';
-
-import { useEditRouteCoordinates } from './useEditRouteCoordinates';
+import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
@@ -23,27 +16,9 @@ export const useMapState = () => {
     onCancel: () => {},
   });
   const isResettingBoundsRef = useRef(false);
+  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [editRouteControlPoints, setEditRouteControlPoints] = useState<
-    CoordinatesWithId[]
-  >([]);
-  const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
-    useState(false);
-  const {
-    editRouteCoordinates,
-    routeDistance,
-    routeBoundingBox,
-    routeElevationStats,
-    isLoadingRouteStats,
-    isLoadingRouteBetweenPoints,
-  } = useEditRouteCoordinates({
-    editRouteControlPoints,
-    isEditingRouteCoordinates,
-  });
-  const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
-    null,
-  );
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
@@ -52,37 +27,23 @@ export const useMapState = () => {
   );
   const [editWaypointCoordinates, setEditWaypointCoordinates] =
     useState<Coordinates | null>(null);
-  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
   const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
 
   const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
     onUpdatePoiCoordinatesRef.current?.(coordinates);
   }, []);
-
   const fitToInitialBounds = useCallback(() => {
     fitToInitialBoundsRef.current?.();
   }, [fitToInitialBoundsRef]);
 
   return {
     isMapLoaded,
-    routeDistance,
-    routeBoundingBox,
-    routeElevationStats,
-    editRouteControlPoints,
-    editRouteCoordinates,
-    isEditingRouteCoordinates,
-    selectedRoutePoint,
     isEditingPoiCoordinates,
     editPointOfInterestType,
     editWaypointType,
     editWaypointCoordinates,
     isAtInitialBounds,
-    isLoadingRouteStats,
-    isLoadingRouteBetweenPoints,
     setIsMapLoaded,
-    setEditRouteControlPoints,
-    setIsEditingRouteCoordinates,
-    setSelectedRoutePoint,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,

@@ -2,7 +2,7 @@ import { useMemo, useCallback, useState, useLayoutEffect } from 'react';
 
 import type { PublicRoute, Waypoint } from '~/types';
 
-import { getWaypointsWithStartAndEnd } from '../utils';
+import { getStartAndEndWaypoints } from '../utils';
 import { PanelState } from './usePanelState';
 
 interface UseWaypointCurrentItemsProps {
@@ -29,7 +29,7 @@ export const useWaypointCurrentItems = ({
   useLayoutEffect(() => {
     if (routePanelVisible && !routeEditId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setNewRouteWaypoints(getWaypointsWithStartAndEnd());
+      setNewRouteWaypoints(getStartAndEndWaypoints());
     } else {
       setNewRouteWaypoints(null);
     }

@@ -2,7 +2,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 
-import { BoundingBox, PointOfInterest, PublicRoute, Waypoint } from '~/types';
+import { BoundingBox, PointOfInterest, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
@@ -14,6 +14,7 @@ import { useDrawRoute } from './hooks/useDrawRoute';
 import { useLoadMap } from './hooks/useLoadMap';
 import { useMapCursor } from './hooks/useMapCursor';
 import { useMapState, type MapState } from './hooks/useMapState';
+import { useEditRoute, type EditRouteState } from './hooks/useEditRoute';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
@@ -21,31 +22,29 @@ import { useWaypoints } from './hooks/useWaypoints';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { DEFAULT_EDITOR_BOUNDS } from './constants';
 
-interface EditorMapProps extends MapState {
-  rootPanelIsAnimating: boolean;
-  activeRoute: PublicRoute | undefined;
-  routeDistance: number;
-  routePanelIsOpen: boolean;
-  routePanelIsAnimating: boolean;
-  hasMadeRouteChanges: boolean;
-  currentPointsOfInterest: PointOfInterest[];
-  activePointOfInterest: string | null;
-  pointOfInterestPanelIsOpen: boolean;
-  pointOfInterestPanelIsAnimating: boolean;
-  hasMadePointOfInterestChanges: boolean;
-  currentWaypoints: Waypoint[];
-  activeWaypoint: string | null;
-  waypointPanelIsOpen: boolean;
-  waypointPanelIsAnimating: boolean;
-  hasMadeWaypointChanges: boolean;
-  initialBoundingBox?: BoundingBox;
-  onEditPointOfInterest: (pointOfInterestId: string) => void;
-  onEditWaypoint: (waypointId: string) => void;
-}
+type EditorMapProps = MapState &
+  EditRouteState & {
+    rootPanelIsAnimating: boolean;
+    routePanelIsOpen: boolean;
+    routePanelIsAnimating: boolean;
+    hasMadeRouteChanges: boolean;
+    currentPointsOfInterest: PointOfInterest[];
+    activePointOfInterest: string | null;
+    pointOfInterestPanelIsOpen: boolean;
+    pointOfInterestPanelIsAnimating: boolean;
+    hasMadePointOfInterestChanges: boolean;
+    currentWaypoints: Waypoint[];
+    activeWaypoint: string | null;
+    waypointPanelIsOpen: boolean;
+    waypointPanelIsAnimating: boolean;
+    hasMadeWaypointChanges: boolean;
+    initialBoundingBox?: BoundingBox;
+    onEditPointOfInterest: (pointOfInterestId: string) => void;
+    onEditWaypoint: (waypointId: string) => void;
+  };
 
 export const EditorMap = ({
   rootPanelIsAnimating,
-  activeRoute,
   routeDistance,
   routePanelIsOpen,
   routePanelIsAnimating,
@@ -154,7 +153,8 @@ export const EditorMap = ({
   });
 
   useDrawRoute({
-    activeRoute,
+    // TODO: remove
+    activeRoute: undefined,
     panelIsOpen: routePanelIsOpen,
     isAnimatingPanel: routePanelIsAnimating,
     waypointPanelIsOpen,
@@ -242,4 +242,4 @@ export const EditorMap = ({
   );
 };
 
-export { useMapState };
+export { useMapState, useEditRoute };

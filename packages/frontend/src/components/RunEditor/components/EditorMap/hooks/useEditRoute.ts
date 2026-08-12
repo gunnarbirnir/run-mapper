@@ -6,12 +6,12 @@ import type {
   RouteCoordinates,
   ApiResponse,
   RouteStats,
+  PublicRoute,
 } from '~/types';
 import { api } from '~/service';
 
-interface UseEditRouteCoordinatesProps {
-  editRouteControlPoints: CoordinatesWithId[];
-  isEditingRouteCoordinates: boolean;
+interface UseEditRouteProps {
+  activeRoute: PublicRoute | undefined;
 }
 
 const convertToRouteCoordinates =
@@ -23,10 +23,9 @@ const convertToRouteCoordinates =
     ...coordinates,
   });
 
-export const useEditRouteCoordinates = ({
-  editRouteControlPoints,
-  isEditingRouteCoordinates,
-}: UseEditRouteCoordinatesProps) => {
+// TODO: Handle existing route - Better naming?
+
+export const useEditRoute = ({ _activeRoute }: UseEditRouteProps) => {
   const queryClient = useQueryClient();
   const cachedRouteBetweenPointsRef = useRef<
     Record<string, RouteCoordinates[]>
@@ -35,6 +34,14 @@ export const useEditRouteCoordinates = ({
   const [editRouteCoordinates, setEditRouteCoordinates] = useState<
     RouteCoordinates[]
   >([]);
+  const [editRouteControlPoints, setEditRouteControlPoints] = useState<
+    CoordinatesWithId[]
+  >([]);
+  const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
+    useState(false);
+  const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
+    null,
+  );
   const [routeStats, setRouteStats] = useState<RouteStats | null>(null);
   const [isLoadingRouteBetweenPoints, setIsLoadingRouteBetweenPoints] =
     useState(false);
@@ -194,10 +201,18 @@ export const useEditRouteCoordinates = ({
 
   return {
     editRouteCoordinates: editRouteCoordinatesValue,
-    routeDistance: routeStats?.distance,
+    editRouteControlPoints,
+    isEditingRouteCoordinates,
+    selectedRoutePoint,
+    routeDistance: routeStats?.distance ?? 0,
     routeBoundingBox: routeStats?.boundingBox,
     routeElevationStats: routeStats?.elevationStats,
     isLoadingRouteBetweenPoints,
     isLoadingRouteStats,
+    setEditRouteControlPoints,
+    setIsEditingRouteCoordinates,
+    setSelectedRoutePoint,
   };
 };
+
+export type EditRouteState = ReturnType<typeof useEditRoute>;
