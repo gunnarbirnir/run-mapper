@@ -46,15 +46,18 @@ export type PointOfInterest = {
   type: PointOfInterestType;
 };
 
-export interface PublicRoute {
-  id: string;
-  name: string;
+export interface RouteStats {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
-  waypoints: Waypoint[];
   distance: number;
-  displayDistance?: number;
   elevationStats: ElevationStats;
+}
+
+export interface PublicRoute extends RouteStats {
+  id: string;
+  name: string;
+  waypoints: Waypoint[];
+  displayDistance?: number;
 }
 
 export interface PublicRun {
@@ -82,13 +85,6 @@ export interface ListRun {
   createdAt: string;
   updatedAt?: string;
   imageSeed: number;
-}
-
-export interface RouteStats {
-  boundingBox: BoundingBox;
-  coordinates: RouteCoordinates[];
-  distance: number;
-  elevationStats: ElevationStats;
 }
 
 export type ApiResponse<T> = {

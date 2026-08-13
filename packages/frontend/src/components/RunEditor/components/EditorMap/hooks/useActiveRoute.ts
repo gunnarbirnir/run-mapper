@@ -207,7 +207,7 @@ export const useActiveRoute = ({
           setActiveRouteCoordinates(updatedEditRouteCoordinates);
         }
       } catch {
-        // Ignore cancelled requests
+        // Ignore for now
       } finally {
         if (!hasBeenCancelled) {
           setIsLoadingRouteBetweenPoints(false);
@@ -239,7 +239,7 @@ export const useActiveRoute = ({
               setRouteStats(routeStats);
             }
           } catch {
-            // Ignore cancelled requests
+            // Ignore for now
           } finally {
             if (!hasBeenCancelled) {
               setIsLoadingRouteStats(false);
