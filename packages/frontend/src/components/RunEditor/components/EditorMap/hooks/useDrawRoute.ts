@@ -8,14 +8,19 @@ import {
   type MutableRefObject,
 } from 'react';
 
-import type { CoordinatesWithId, RouteCoordinates } from '~/types';
+import type {
+  CoordinatesWithId,
+  RouteCoordinates,
+  Bounds,
+  BoundingBox,
+} from '~/types';
 import {
   getLineFeature,
   getRouteLayer,
   formatBounds,
   getRoutePointElement,
 } from '~/utils/map';
-import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import { FIT_BOUNDS_CONFIG } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getBoundingBox } from '~/utils/route';
 import { generateId } from '~/utils';
@@ -29,6 +34,8 @@ interface UseMapRouteProps {
   isEditingCoordinates: boolean;
   editCoordinates: RouteCoordinates[];
   selectedRoutePoint: string | null;
+  initialBounds: Bounds;
+  activeRouteBoundingBox?: BoundingBox;
   setEditControlPoints: Dispatch<SetStateAction<CoordinatesWithId[]>>;
   setSelectedRoutePoint: Dispatch<SetStateAction<string | null>>;
   mapRef: RefObject<Map>;
@@ -44,6 +51,8 @@ export const useDrawRoute = ({
   isEditingCoordinates,
   editCoordinates,
   selectedRoutePoint,
+  initialBounds,
+  activeRouteBoundingBox,
   setEditControlPoints,
   setSelectedRoutePoint,
   mapRef,
@@ -150,27 +159,23 @@ export const useDrawRoute = ({
     const map = mapRef.current;
     const bounds =
       editCoordinates.length > 0
-        ? formatBounds(getBoundingBox(editCoordinates))
-        : null;
+        ? formatBounds(
+            activeRouteBoundingBox || getBoundingBox(editCoordinates),
+          )
+        : initialBounds;
 
-    if (
-      !bounds ||
-      !panelIsOpen ||
-      waypointPanelIsOpen ||
-      isEditingCoordinates
-    ) {
+    if (!panelIsOpen || waypointPanelIsOpen || isEditingCoordinates) {
       return;
     }
 
-    map.fitBounds(bounds, {
-      duration: FIT_INITIAL_BOUNDS_DURATION,
-      padding: BOUNDS_PADDING,
-    });
+    map.fitBounds(bounds, { ...FIT_BOUNDS_CONFIG });
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
     panelIsOpen,
     isAnimatingPanel,
+    initialBounds,
+    activeRouteBoundingBox,
     isEditingCoordinates,
     editCoordinates,
     waypointPanelIsOpen,

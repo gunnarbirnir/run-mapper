@@ -13,16 +13,16 @@ import { ToolbarContainer } from './ToolbarContainer';
 interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
   selectedRoutePoint: string | null;
-  editRouteControlPoints: CoordinatesWithId[];
-  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
+  activeRouteControlPoints: CoordinatesWithId[];
+  setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
   isEditingRouteCoordinates,
   selectedRoutePoint,
-  editRouteControlPoints,
-  setEditRouteControlPoints,
+  activeRouteControlPoints,
+  setActiveRouteControlPoints,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
   const isVisible = isEditingRouteCoordinates && selectedRoutePoint === null;
@@ -30,8 +30,8 @@ export const RouteCoordinatesToolbar = ({
   const { handleUndo, handleRedo, isUndoDisabled, isRedoDisabled } =
     useRouteUndoRedo({
       initialize: isEditingRouteCoordinates,
-      editRouteControlPoints,
-      setEditRouteControlPoints,
+      activeRouteControlPoints,
+      setActiveRouteControlPoints,
     });
 
   const onSave = useCallback(() => {
@@ -43,8 +43,8 @@ export const RouteCoordinatesToolbar = ({
   }, [editRouteActionsRef]);
 
   const onClear = useCallback(() => {
-    setEditRouteControlPoints([]);
-  }, [setEditRouteControlPoints]);
+    setActiveRouteControlPoints([]);
+  }, [setActiveRouteControlPoints]);
 
   useHotkey('Enter', onSave, {
     conflictBehavior: 'replace',

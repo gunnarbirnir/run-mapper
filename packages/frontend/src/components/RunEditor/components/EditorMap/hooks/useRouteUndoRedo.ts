@@ -7,49 +7,49 @@ import type { ActiveRouteState } from './useActiveRoute';
 
 interface RouteUndoRedoProps {
   initialize?: boolean;
-  editRouteControlPoints: CoordinatesWithId[];
-  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
+  activeRouteControlPoints: CoordinatesWithId[];
+  setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 const MAX_HISTORY_LENGTH = 10;
 
 export const useRouteUndoRedo = ({
   initialize = false,
-  editRouteControlPoints,
-  setEditRouteControlPoints,
+  activeRouteControlPoints,
+  setActiveRouteControlPoints,
 }: RouteUndoRedoProps) => {
-  const currentEditControlPointsRef = useRef(editRouteControlPoints);
+  const currentActiveControlPointsRef = useRef(activeRouteControlPoints);
   const [history, setHistory] = useState<CoordinatesWithId[][]>([
-    editRouteControlPoints,
+    activeRouteControlPoints,
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (initialize) {
-      setHistory([editRouteControlPoints]);
+      setHistory([activeRouteControlPoints]);
       setCurrentIndex(0);
-      currentEditControlPointsRef.current = editRouteControlPoints;
+      currentActiveControlPointsRef.current = activeRouteControlPoints;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialize]);
 
   useEffect(() => {
     const routeHasChanged = !isSameRoute(
-      editRouteControlPoints,
-      currentEditControlPointsRef.current,
+      activeRouteControlPoints,
+      currentActiveControlPointsRef.current,
     );
 
     if (routeHasChanged) {
       setHistory((prevHistory) => {
         const newHistory = [
           ...prevHistory.slice(0, currentIndex + 1),
-          editRouteControlPoints,
+          activeRouteControlPoints,
         ];
         return newHistory.slice(-MAX_HISTORY_LENGTH);
       });
-      currentEditControlPointsRef.current = editRouteControlPoints;
+      currentActiveControlPointsRef.current = activeRouteControlPoints;
     }
-  }, [editRouteControlPoints, currentIndex]);
+  }, [activeRouteControlPoints, currentIndex]);
 
   useEffect(() => {
     setCurrentIndex(history.length - 1);
@@ -61,10 +61,10 @@ export const useRouteUndoRedo = ({
       const newCoordinates = history[newIndex];
 
       setCurrentIndex(newIndex);
-      setEditRouteControlPoints(newCoordinates);
-      currentEditControlPointsRef.current = newCoordinates;
+      setActiveRouteControlPoints(newCoordinates);
+      currentActiveControlPointsRef.current = newCoordinates;
     }
-  }, [currentIndex, history, setEditRouteControlPoints]);
+  }, [currentIndex, history, setActiveRouteControlPoints]);
 
   const handleRedo = useCallback(() => {
     if (currentIndex < history.length - 1) {
@@ -72,10 +72,10 @@ export const useRouteUndoRedo = ({
       const newCoordinates = history[newIndex];
 
       setCurrentIndex(newIndex);
-      setEditRouteControlPoints(newCoordinates);
-      currentEditControlPointsRef.current = newCoordinates;
+      setActiveRouteControlPoints(newCoordinates);
+      currentActiveControlPointsRef.current = newCoordinates;
     }
-  }, [currentIndex, history, setEditRouteControlPoints]);
+  }, [currentIndex, history, setActiveRouteControlPoints]);
 
   return {
     handleUndo,

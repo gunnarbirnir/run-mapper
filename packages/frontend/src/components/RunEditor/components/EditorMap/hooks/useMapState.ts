@@ -5,6 +5,8 @@ import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
+  const isResettingBoundsRef = useRef(false);
+  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
   const onUpdatePoiCoordinatesRef = useRef<
     ((coordinates: Coordinates) => void) | null
   >(null);
@@ -15,10 +17,9 @@ export const useMapState = () => {
     onSave: () => {},
     onCancel: () => {},
   });
-  const isResettingBoundsRef = useRef(false);
-  const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
   const [editPointOfInterestType, setEditPointOfInterestType] =
     useState<PointOfInterestType | null>(null);
@@ -27,35 +28,34 @@ export const useMapState = () => {
   );
   const [editWaypointCoordinates, setEditWaypointCoordinates] =
     useState<Coordinates | null>(null);
-  const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
 
-  const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
-    onUpdatePoiCoordinatesRef.current?.(coordinates);
-  }, []);
   const fitToInitialBounds = useCallback(() => {
     fitToInitialBoundsRef.current?.();
   }, [fitToInitialBoundsRef]);
+  const onUpdatePoiCoordinates = useCallback((coordinates: Coordinates) => {
+    onUpdatePoiCoordinatesRef.current?.(coordinates);
+  }, []);
 
   return {
     isMapLoaded,
-    isEditingPoiCoordinates,
+    isAtInitialBounds,
     editPointOfInterestType,
+    isEditingPoiCoordinates,
     editWaypointType,
     editWaypointCoordinates,
-    isAtInitialBounds,
+    fitToInitialBounds,
+    onUpdatePoiCoordinates,
     setIsMapLoaded,
+    setIsAtInitialBounds,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
-    setIsAtInitialBounds,
-    onUpdatePoiCoordinates,
-    fitToInitialBounds,
     mapRef,
-    onUpdatePoiCoordinatesRef,
-    editRouteActionsRef,
     fitToInitialBoundsRef,
     isResettingBoundsRef,
+    editRouteActionsRef,
+    onUpdatePoiCoordinatesRef,
   };
 };
 

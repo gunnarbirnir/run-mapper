@@ -10,13 +10,13 @@ import { ActiveRouteState } from '../hooks/useActiveRoute';
 interface SelectedRoutePointToolbarProps {
   selectedRoutePoint: string | null;
   setSelectedRoutePoint: ActiveRouteState['setSelectedRoutePoint'];
-  setEditRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
+  setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 export const SelectedRoutePointToolbar = ({
   selectedRoutePoint,
   setSelectedRoutePoint,
-  setEditRouteControlPoints,
+  setActiveRouteControlPoints,
 }: SelectedRoutePointToolbarProps) => {
   const isVisible = selectedRoutePoint !== null;
 
@@ -26,10 +26,10 @@ export const SelectedRoutePointToolbar = ({
 
   const onDelete = useCallback(() => {
     setSelectedRoutePoint(null);
-    setEditRouteControlPoints((prev) =>
+    setActiveRouteControlPoints((prev) =>
       prev.filter((coordinate) => coordinate.id !== selectedRoutePoint),
     );
-  }, [selectedRoutePoint, setSelectedRoutePoint, setEditRouteControlPoints]);
+  }, [selectedRoutePoint, setSelectedRoutePoint, setActiveRouteControlPoints]);
 
   useHotkey('Backspace', onDelete, {
     conflictBehavior: 'replace',

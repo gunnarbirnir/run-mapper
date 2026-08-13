@@ -9,16 +9,16 @@ import { RefObject } from 'react';
 
 interface ActionButtonsContainerProps {
   isMapLoaded: boolean;
-  mapRef: RefObject<Map>;
   isAtInitialBounds: boolean;
   resetRoute: () => void;
+  mapRef: RefObject<Map>;
 }
 
 export const ActionButtonsContainer = ({
   isMapLoaded,
-  mapRef,
   isAtInitialBounds,
   resetRoute,
+  mapRef,
 }: ActionButtonsContainerProps) => {
   const { isSmallScreen } = useMediaQuery();
   const { zoomIn, zoomOut, canZoomIn, canZoomOut } = useMapZoom({
