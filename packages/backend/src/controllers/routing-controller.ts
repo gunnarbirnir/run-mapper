@@ -1,6 +1,6 @@
 import { routingService } from '../services/routing-service.js';
 import type { AuthContext } from '../middleware/auth.js';
-import { validateRouteStatsBody } from '../utils/validation.js';
+import { validateRouteDataBody } from '../utils/validation.js';
 
 export class RoutingController {
   async getRouteBetweenPoints(c: AuthContext) {
@@ -56,7 +56,7 @@ export class RoutingController {
     }
   }
 
-  async getRouteStats(c: AuthContext) {
+  async getRouteData(c: AuthContext) {
     try {
       const userId = c.user?.uid;
       if (!userId) {
@@ -70,7 +70,7 @@ export class RoutingController {
       }
 
       const body = await c.req.json().catch(() => null);
-      const validation = validateRouteStatsBody(body);
+      const validation = validateRouteDataBody(body);
       if (!validation.ok) {
         const err = validation.error;
         return c.json(
@@ -83,18 +83,18 @@ export class RoutingController {
         );
       }
 
-      const routeStats = await routingService.getRouteStats(validation.value);
+      const routeData = await routingService.getRouteData(validation.value);
 
       return c.json({
         success: true,
-        data: routeStats,
+        data: routeData,
       });
     } catch (error) {
-      console.error('Error fetching route stats:', error);
+      console.error('Error fetching route data:', error);
       return c.json(
         {
           success: false,
-          error: 'Failed to fetch route stats',
+          error: 'Failed to fetch route data',
           message: 'An unexpected error occurred',
         },
         500,

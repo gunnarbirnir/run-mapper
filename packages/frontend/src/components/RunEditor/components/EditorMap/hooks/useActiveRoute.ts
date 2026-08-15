@@ -5,7 +5,7 @@ import type {
   CoordinatesWithId,
   RouteCoordinates,
   ApiResponse,
-  RouteStats,
+  RouteData,
   PublicRoute,
 } from '~/types';
 import { api } from '~/service';
@@ -51,23 +51,23 @@ export const useActiveRoute = ({
   const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
     null,
   );
-  const [routeStats, setRouteStats] = useState<RouteStats | null>(null);
+  const [routeData, setRouteData] = useState<RouteData | null>(null);
   const [isLoadingRouteBetweenPoints, setIsLoadingRouteBetweenPoints] =
     useState(false);
-  const [isLoadingRouteStats, setIsLoadingRouteStats] = useState(false);
+  const [isLoadingRouteData, setIsLoadingRouteData] = useState(false);
 
   const activeRouteCoordinatesValue = useMemo(
     () =>
       !isEditingRouteCoordinates &&
-      !isLoadingRouteStats &&
-      routeStats?.coordinates
-        ? routeStats.coordinates
+      !isLoadingRouteData &&
+      routeData?.coordinates
+        ? routeData.coordinates
         : activeRouteCoordinates,
     [
       activeRouteCoordinates,
       isEditingRouteCoordinates,
-      isLoadingRouteStats,
-      routeStats,
+      isLoadingRouteData,
+      routeData,
     ],
   );
 
@@ -76,9 +76,9 @@ export const useActiveRoute = ({
     setActiveRouteControlPoints([]);
     setSelectedRoutePoint(null);
     setIsEditingRouteCoordinates(false);
-    setRouteStats(null);
+    setRouteData(null);
     setIsLoadingRouteBetweenPoints(false);
-    setIsLoadingRouteStats(false);
+    setIsLoadingRouteData(false);
   }, []);
 
   useEffect(() => {
@@ -148,12 +148,12 @@ export const useActiveRoute = ({
     [queryClient],
   );
 
-  const fetchRouteStats = useCallback(
+  const fetchRouteData = useCallback(
     (coordinates: RouteCoordinates[]) => {
-      return queryClient.fetchQuery<ApiResponse<RouteStats>>({
-        queryKey: ['route-stats', coordinates],
+      return queryClient.fetchQuery<ApiResponse<RouteData>>({
+        queryKey: ['route-data', coordinates],
         staleTime: 60_000, // 1 minute
-        queryFn: () => api.post('/routing/route-stats', { coordinates }),
+        queryFn: () => api.post('/routing/route-data', { coordinates }),
       });
     },
     [queryClient],
@@ -226,49 +226,49 @@ export const useActiveRoute = ({
   useEffect(() => {
     let hasBeenCancelled = false;
 
-    const updateRouteStats = async () => {
+    const updateRouteData = async () => {
       if (!isEditingRouteCoordinates) {
         if (activeRouteCoordinates.length > 0) {
           try {
-            setIsLoadingRouteStats(true);
-            const { data: routeStats } = await fetchRouteStats(
+            setIsLoadingRouteData(true);
+            const { data: routeData } = await fetchRouteData(
               activeRouteCoordinates,
             );
 
             if (!hasBeenCancelled) {
-              setRouteStats(routeStats);
+              setRouteData(routeData);
             }
           } catch {
             // Ignore for now
           } finally {
             if (!hasBeenCancelled) {
-              setIsLoadingRouteStats(false);
+              setIsLoadingRouteData(false);
             }
           }
         } else {
-          setRouteStats(null);
+          setRouteData(null);
         }
       }
     };
 
-    updateRouteStats();
+    updateRouteData();
 
     return () => {
       hasBeenCancelled = true;
-      setIsLoadingRouteStats(false);
+      setIsLoadingRouteData(false);
     };
-  }, [activeRouteCoordinates, fetchRouteStats, isEditingRouteCoordinates]);
+  }, [activeRouteCoordinates, fetchRouteData, isEditingRouteCoordinates]);
 
   return {
     activeRouteCoordinates: activeRouteCoordinatesValue,
-    activeRouteDistance: routeStats?.distance ?? 0,
-    activeRouteBoundingBox: routeStats?.boundingBox,
-    activeRouteElevationStats: routeStats?.elevationStats,
+    activeRouteDistance: routeData?.distance ?? 0,
+    activeRouteBoundingBox: routeData?.boundingBox,
+    activeRouteElevationStats: routeData?.elevationStats,
     activeRouteControlPoints,
     isEditingRouteCoordinates,
     selectedRoutePoint,
     isLoadingRouteBetweenPoints,
-    isLoadingRouteStats,
+    isLoadingRouteData,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
     setSelectedRoutePoint,

@@ -43,14 +43,14 @@ export type PointOfInterest = {
   type: PointOfInterestType;
 };
 
-export interface RouteStats {
+export interface RouteData {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
   distance: number;
   elevationStats: ElevationStats;
 }
 
-export interface PublicRoute extends RouteStats {
+export interface PublicRoute extends RouteData {
   id: string;
   name: string;
   waypoints: Waypoint[];

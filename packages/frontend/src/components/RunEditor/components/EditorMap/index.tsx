@@ -65,7 +65,7 @@ export const EditorMap = ({
   activeRouteElevationStats,
   isEditingRouteCoordinates,
   selectedRoutePoint,
-  isLoadingRouteStats,
+  isLoadingRouteData,
   // Panel states
   rootPanelIsAnimating,
   routePanelIsOpen,
@@ -121,7 +121,7 @@ export const EditorMap = ({
   const showRouteStats =
     activeRouteDistance > 0 &&
     !isEditingRouteCoordinates &&
-    !isLoadingRouteStats;
+    !isLoadingRouteData;
 
   useLoadMap({
     initialBounds,

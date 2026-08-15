@@ -11,8 +11,8 @@ routing.get('/route-between-points', (c: AuthContext) =>
   routingController.getRouteBetweenPoints(c),
 );
 
-routing.post('/route-stats', (c: AuthContext) =>
-  routingController.getRouteStats(c),
+routing.post('/route-data', (c: AuthContext) =>
+  routingController.getRouteData(c),
 );
 
 export default routing;

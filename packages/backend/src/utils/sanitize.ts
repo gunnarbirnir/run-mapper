@@ -8,7 +8,7 @@ import type {
   CoordinatesWithId,
   EditorRun,
   DirectionsResponse,
-  RouteStats,
+  RouteData,
   RouteCoordinates,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
@@ -128,10 +128,10 @@ export const sanitizeRouteBetweenPoints = (
     .filter(isValidCoordinates);
 };
 
-export const sanitizeRouteStats = (
+export const sanitizeRouteData = (
   coordinates: RouteCoordinates[],
   elevations: number[],
-): RouteStats => {
+): RouteData => {
   let cumulativeDistance = 0;
   const routeCoordinates = coordinates
     .map((coord, index) => ({

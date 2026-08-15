@@ -1,13 +1,13 @@
 import { routingRepository } from '../repositories/routing-repository.js';
 import type {
   Coordinates,
-  RouteStats,
+  RouteData,
   CoordinatesWithId,
   RouteCoordinates,
 } from '../types/index.js';
 import {
   sanitizeRouteBetweenPoints,
-  sanitizeRouteStats,
+  sanitizeRouteData,
 } from '../utils/sanitize.js';
 
 export class RoutingService {
@@ -22,10 +22,10 @@ export class RoutingService {
     return sanitizeRouteBetweenPoints(routeBetweenPoints);
   }
 
-  async getRouteStats(coordinates: RouteCoordinates[]): Promise<RouteStats> {
+  async getRouteData(coordinates: RouteCoordinates[]): Promise<RouteData> {
     const routeElevations =
       await routingRepository.getRouteElevations(coordinates);
-    return sanitizeRouteStats(coordinates, routeElevations);
+    return sanitizeRouteData(coordinates, routeElevations);
   }
 }
 

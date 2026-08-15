@@ -13,7 +13,7 @@ import {
   PublicRoute,
   Coordinates,
   EditorRun,
-  RouteStats,
+  RouteData,
 } from '../types/index.js';
 import type {
   ValidationResult,
@@ -736,7 +736,7 @@ export const validateUpdateRunBody = (
   };
 };
 
-export const validateRouteStatsBody = (
+export const validateRouteDataBody = (
   rawBody: unknown,
 ): ValidationResult<RouteCoordinates[]> => {
   if (!rawBody || typeof rawBody !== 'object') {
@@ -750,7 +750,7 @@ export const validateRouteStatsBody = (
     };
   }
 
-  const body = rawBody as RouteStats;
+  const body = rawBody as RouteData;
   const { coordinates } = body;
 
   if (coordinates !== undefined && !Array.isArray(coordinates)) {
