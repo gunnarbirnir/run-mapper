@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 
-import type { CoordinatesWithId } from '~/types';
+import type { RouteCoordinates } from '~/types';
 import { isSameRoute } from '~/utils/route';
 
 import type { ActiveRouteState } from './useActiveRoute';
 
 interface RouteUndoRedoProps {
   initialize?: boolean;
-  activeRouteControlPoints: CoordinatesWithId[];
+  activeRouteControlPoints: RouteCoordinates[];
   setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
@@ -19,7 +19,7 @@ export const useRouteUndoRedo = ({
   setActiveRouteControlPoints,
 }: RouteUndoRedoProps) => {
   const currentActiveControlPointsRef = useRef(activeRouteControlPoints);
-  const [history, setHistory] = useState<CoordinatesWithId[][]>([
+  const [history, setHistory] = useState<RouteCoordinates[][]>([
     activeRouteControlPoints,
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);

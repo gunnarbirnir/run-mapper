@@ -23,9 +23,23 @@ export class RoutingService {
   }
 
   async getRouteData(coordinates: RouteCoordinates[]): Promise<RouteData> {
+    const elevationCoordinates = [];
+    const elevationIndices = [];
+
+    for (let i = 0; i < coordinates.length; i++) {
+      const coordinate = coordinates[i];
+      if (coordinate.elevation === undefined) {
+        elevationCoordinates.push(coordinate);
+        elevationIndices.push(i);
+      }
+    }
+
     const routeElevations =
-      await routingRepository.getRouteElevations(coordinates);
-    return sanitizeRouteData(coordinates, routeElevations);
+      elevationCoordinates.length > 0
+        ? await routingRepository.getRouteElevations(elevationCoordinates)
+        : [];
+
+    return sanitizeRouteData(coordinates, routeElevations, elevationIndices);
   }
 }
 

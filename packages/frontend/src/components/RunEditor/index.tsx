@@ -58,7 +58,6 @@ export const RunEditor = ({
   );
   const initialBoundingBox = useMemo(
     () =>
-      // TODO: Reduce zoom if only one POI
       pointOfInterestPanelState.currentItems.length
         ? getBoundingBox(
             pointOfInterestPanelState.currentItems.map(

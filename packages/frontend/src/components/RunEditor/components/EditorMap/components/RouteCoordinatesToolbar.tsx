@@ -3,7 +3,7 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { useCallback } from 'react';
 
 import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
-import type { CoordinatesWithId } from '~/types';
+import type { RouteCoordinates } from '~/types';
 
 import type { MapState } from '../hooks/useMapState';
 import type { ActiveRouteState } from '../hooks/useActiveRoute';
@@ -13,7 +13,7 @@ import { ToolbarContainer } from './ToolbarContainer';
 interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
   selectedRoutePoint: string | null;
-  activeRouteControlPoints: CoordinatesWithId[];
+  activeRouteControlPoints: RouteCoordinates[];
   setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }

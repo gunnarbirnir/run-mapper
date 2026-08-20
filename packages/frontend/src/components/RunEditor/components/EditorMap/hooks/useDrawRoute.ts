@@ -8,12 +8,7 @@ import {
   type MutableRefObject,
 } from 'react';
 
-import type {
-  CoordinatesWithId,
-  RouteCoordinates,
-  Bounds,
-  BoundingBox,
-} from '~/types';
+import type { RouteCoordinates, Bounds, BoundingBox } from '~/types';
 import {
   getLineFeature,
   getRouteLayer,
@@ -36,7 +31,7 @@ interface UseMapRouteProps {
   selectedRoutePoint: string | null;
   initialBounds: Bounds;
   activeRouteBoundingBox?: BoundingBox;
-  setEditControlPoints: Dispatch<SetStateAction<CoordinatesWithId[]>>;
+  setEditControlPoints: Dispatch<SetStateAction<RouteCoordinates[]>>;
   setSelectedRoutePoint: Dispatch<SetStateAction<string | null>>;
   mapRef: RefObject<Map>;
   isResettingBoundsRef: MutableRefObject<boolean>;
@@ -200,6 +195,7 @@ export const useDrawRoute = ({
         id: generateId(),
         lng: e.lngLat.lng,
         lat: e.lngLat.lat,
+        isControlPoint: true,
       };
 
       if (selectedRoutePoint === null) {

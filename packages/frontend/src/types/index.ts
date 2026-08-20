@@ -10,8 +10,8 @@ export type NoId<T> = Omit<T, 'id'>;
 
 export type RouteCoordinates = CoordinatesWithId & {
   isControlPoint: boolean;
-  elevation: number;
-  distance: number;
+  elevation?: number;
+  distance?: number;
 };
 
 export interface ElevationStats {

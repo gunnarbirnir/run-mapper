@@ -15,20 +15,35 @@ interface UseActiveRouteProps {
   currentEditRoute: PublicRoute | undefined;
 }
 
-const convertToRouteCoordinates =
-  (isControlPoint = false) =>
-  (coordinates: CoordinatesWithId): RouteCoordinates => ({
-    isControlPoint,
-    elevation: 0,
-    distance: 0,
-    ...coordinates,
-  });
-
 const getSegmentIdentifier = (
-  previousPoint: CoordinatesWithId,
-  point: CoordinatesWithId,
+  previousPoint: RouteCoordinates,
+  point: RouteCoordinates,
 ) => {
   return `${previousPoint.lat};${previousPoint.lng}-${point.lat};${point.lng}`;
+};
+
+const getUpdatedCachedRoutes = (activeRouteCoordinates: RouteCoordinates[]) => {
+  const updatedCachedRoutes: Record<string, RouteCoordinates[]> = {};
+  let segmentCoordinates: RouteCoordinates[] = [];
+  let previousControlPoint: RouteCoordinates | null = null;
+
+  for (const coord of activeRouteCoordinates) {
+    if (coord.isControlPoint) {
+      if (previousControlPoint) {
+        const segmentIdentifier = getSegmentIdentifier(
+          previousControlPoint,
+          coord,
+        );
+        updatedCachedRoutes[segmentIdentifier] = segmentCoordinates;
+        segmentCoordinates = [];
+      }
+      previousControlPoint = coord;
+    } else {
+      segmentCoordinates.push(coord);
+    }
+  }
+
+  return updatedCachedRoutes;
 };
 
 export const useActiveRoute = ({
@@ -44,10 +59,11 @@ export const useActiveRoute = ({
     RouteCoordinates[]
   >([]);
   const [activeRouteControlPoints, setActiveRouteControlPoints] = useState<
-    CoordinatesWithId[]
+    RouteCoordinates[]
   >([]);
   const [isEditingRouteCoordinates, setIsEditingRouteCoordinates] =
     useState(false);
+  const [routeHasBeenEdited, setRouteHasBeenEdited] = useState(false);
   const [selectedRoutePoint, setSelectedRoutePoint] = useState<string | null>(
     null,
   );
@@ -79,50 +95,8 @@ export const useActiveRoute = ({
     setRouteData(null);
     setIsLoadingRouteBetweenPoints(false);
     setIsLoadingRouteData(false);
+    cachedRouteBetweenPointsRef.current = {};
   }, []);
-
-  useEffect(() => {
-    const currentEditRouteCoordinates = currentEditRoute?.coordinates ?? [];
-    const currentEditRouteControlPoints = currentEditRouteCoordinates
-      .filter((coord) => coord.isControlPoint)
-      .map((coord) => ({
-        id: coord.id,
-        lat: coord.lat,
-        lng: coord.lng,
-      }));
-
-    resetActiveRoute();
-    setActiveRouteCoordinates(currentEditRouteCoordinates);
-    setActiveRouteControlPoints(currentEditRouteControlPoints);
-
-    const currentEditCachedRoutes: Record<string, RouteCoordinates[]> = {};
-    let segmentCoordinates: RouteCoordinates[] = [];
-    let previousControlPoint: CoordinatesWithId | null = null;
-
-    for (const coord of currentEditRouteCoordinates) {
-      if (coord.isControlPoint) {
-        if (previousControlPoint) {
-          const segmentIdentifier = getSegmentIdentifier(
-            previousControlPoint,
-            coord,
-          );
-          currentEditCachedRoutes[segmentIdentifier] = segmentCoordinates;
-          segmentCoordinates = [];
-        }
-        previousControlPoint = coord;
-      } else {
-        segmentCoordinates.push(coord);
-      }
-    }
-
-    cachedRouteBetweenPointsRef.current = currentEditCachedRoutes;
-  }, [currentEditRoute, resetActiveRoute]);
-
-  useEffect(() => {
-    if (!panelIsOpen) {
-      resetActiveRoute();
-    }
-  }, [panelIsOpen, resetActiveRoute]);
 
   const fetchRouteBetweenPoints = useCallback(
     (params: {
@@ -160,12 +134,52 @@ export const useActiveRoute = ({
   );
 
   useEffect(() => {
+    if (!panelIsOpen) {
+      resetActiveRoute();
+    }
+  }, [panelIsOpen, resetActiveRoute]);
+
+  useEffect(() => {
+    resetActiveRoute();
+
+    if (!currentEditRoute) {
+      return;
+    }
+
+    const currentEditRouteCoordinates = currentEditRoute.coordinates;
+    const currentEditRouteControlPoints = currentEditRouteCoordinates.filter(
+      (coord) => coord.isControlPoint,
+    );
+
+    setRouteData(currentEditRoute);
+    setActiveRouteCoordinates(currentEditRouteCoordinates);
+    setActiveRouteControlPoints(currentEditRouteControlPoints);
+    cachedRouteBetweenPointsRef.current = getUpdatedCachedRoutes(
+      currentEditRouteCoordinates,
+    );
+  }, [currentEditRoute, resetActiveRoute]);
+
+  useEffect(() => {
+    if (isEditingRouteCoordinates) {
+      setRouteHasBeenEdited(true);
+    }
+  }, [isEditingRouteCoordinates]);
+
+  useEffect(() => {
+    if (routeData) {
+      // To get elevation data so it doesn't need to be fetched again
+      cachedRouteBetweenPointsRef.current = getUpdatedCachedRoutes(
+        routeData.coordinates,
+      );
+    }
+  }, [routeData]);
+
+  useEffect(() => {
     let hasBeenCancelled = false;
 
-    const updateEditRouteCoordinates = async () => {
-      const updatedEditRouteCoordinates: RouteCoordinates[] = [];
-      let previousPoint: CoordinatesWithId | null = null;
-      setIsLoadingRouteBetweenPoints(true);
+    const updateActiveRouteCoordinates = async () => {
+      const updatedActiveRouteCoordinates: RouteCoordinates[] = [];
+      let previousPoint: RouteCoordinates | null = null;
 
       try {
         for (const point of activeRouteControlPoints) {
@@ -178,8 +192,9 @@ export const useActiveRoute = ({
               cachedRouteBetweenPointsRef.current[segmentIdentifier];
 
             if (cachedRouteBetweenPoints) {
-              updatedEditRouteCoordinates.push(...cachedRouteBetweenPoints);
+              updatedActiveRouteCoordinates.push(...cachedRouteBetweenPoints);
             } else {
+              setIsLoadingRouteBetweenPoints(true);
               const { data: routeBetweenPoints } =
                 await fetchRouteBetweenPoints({
                   startLat: previousPoint.lat,
@@ -188,23 +203,29 @@ export const useActiveRoute = ({
                   endLng: point.lng,
                 });
               const formattedRouteBetweenPoints = routeBetweenPoints.map(
-                convertToRouteCoordinates(false),
+                (coord) => ({
+                  ...coord,
+                  isControlPoint: false,
+                }),
               );
 
-              updatedEditRouteCoordinates.push(...formattedRouteBetweenPoints);
+              updatedActiveRouteCoordinates.push(
+                ...formattedRouteBetweenPoints,
+              );
               cachedRouteBetweenPointsRef.current[segmentIdentifier] =
                 formattedRouteBetweenPoints;
             }
           }
 
-          updatedEditRouteCoordinates.push(
-            convertToRouteCoordinates(true)(point),
-          );
+          updatedActiveRouteCoordinates.push({
+            ...point,
+            isControlPoint: true,
+          });
           previousPoint = point;
         }
 
         if (!hasBeenCancelled) {
-          setActiveRouteCoordinates(updatedEditRouteCoordinates);
+          setActiveRouteCoordinates(updatedActiveRouteCoordinates);
         }
       } catch {
         // Ignore for now
@@ -215,7 +236,7 @@ export const useActiveRoute = ({
       }
     };
 
-    updateEditRouteCoordinates();
+    updateActiveRouteCoordinates();
 
     return () => {
       hasBeenCancelled = true;
@@ -227,27 +248,29 @@ export const useActiveRoute = ({
     let hasBeenCancelled = false;
 
     const updateRouteData = async () => {
-      if (!isEditingRouteCoordinates) {
-        if (activeRouteCoordinates.length > 0) {
-          try {
-            setIsLoadingRouteData(true);
-            const { data: routeData } = await fetchRouteData(
-              activeRouteCoordinates,
-            );
+      if (isEditingRouteCoordinates || !routeHasBeenEdited) {
+        return;
+      }
 
-            if (!hasBeenCancelled) {
-              setRouteData(routeData);
-            }
-          } catch {
-            // Ignore for now
-          } finally {
-            if (!hasBeenCancelled) {
-              setIsLoadingRouteData(false);
-            }
+      if (activeRouteCoordinates.length > 0) {
+        try {
+          setIsLoadingRouteData(true);
+          const { data: routeData } = await fetchRouteData(
+            activeRouteCoordinates,
+          );
+
+          if (!hasBeenCancelled) {
+            setRouteData(routeData);
           }
-        } else {
-          setRouteData(null);
+        } catch {
+          // Ignore for now
+        } finally {
+          if (!hasBeenCancelled) {
+            setIsLoadingRouteData(false);
+          }
         }
+      } else {
+        setRouteData(null);
       }
     };
 
@@ -257,7 +280,12 @@ export const useActiveRoute = ({
       hasBeenCancelled = true;
       setIsLoadingRouteData(false);
     };
-  }, [activeRouteCoordinates, fetchRouteData, isEditingRouteCoordinates]);
+  }, [
+    activeRouteCoordinates,
+    isEditingRouteCoordinates,
+    routeHasBeenEdited,
+    fetchRouteData,
+  ]);
 
   return {
     activeRouteCoordinates: activeRouteCoordinatesValue,

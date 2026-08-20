@@ -53,11 +53,7 @@ export const isValidRouteCoordinates = (
   value: unknown,
 ): value is RouteCoordinates => {
   return (
-    isValidCoordinates(value) &&
-    'id' in value &&
-    'isControlPoint' in value &&
-    isFiniteNumber((value as RouteCoordinates).elevation) &&
-    isFiniteNumber((value as RouteCoordinates).distance)
+    isValidCoordinates(value) && 'id' in value && 'isControlPoint' in value
   );
 };
 
@@ -77,4 +73,8 @@ export const getCurrentTimestamp = (): string => {
 
 export const generateId = (): string => {
   return crypto.randomUUID();
+};
+
+export const roundNumber = (value: number, decimals: number): number => {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 };

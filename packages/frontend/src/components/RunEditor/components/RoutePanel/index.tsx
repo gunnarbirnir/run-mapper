@@ -10,7 +10,6 @@ import {
   RouteCoordinates,
   PublicRoute,
   Waypoint,
-  CoordinatesWithId,
   ElevationStats,
 } from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
@@ -32,7 +31,7 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   isEditingRouteCoordinates: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
-  setEditRouteControlPoints: (coordinates: CoordinatesWithId[]) => void;
+  setEditRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
@@ -169,7 +168,13 @@ export const RoutePanel = ({
   }, [onClose, setIsEditingRouteCoordinates]);
 
   const saveRouteCoordinates = useCallback(() => {
-    onCoordinatesChange(routeCoordinates);
+    onCoordinatesChange(
+      routeCoordinates.map((coordinate) => ({
+        ...coordinate,
+        elevation: coordinate.elevation ?? 0,
+        distance: coordinate.distance ?? 0,
+      })),
+    );
     onCoordinatesBlur();
     setIsEditingRouteCoordinates(false);
   }, [

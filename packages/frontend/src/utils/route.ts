@@ -28,7 +28,7 @@ export const processRunRoute = (
     }
     coordinates.push(currentCoord);
     prevCoord = currentCoord;
-    elevations.push({ value: routeCoordinate.elevation, distance });
+    elevations.push({ value: routeCoordinate.elevation ?? 0, distance });
   });
 
   return { coordinates, elevations };
@@ -158,7 +158,7 @@ export const getCoordinatesFromPosition = (
 
   for (let i = 1; i < coordinates.length; i++) {
     const currentCoordinate = coordinates[i];
-    const delta = Math.abs(position - currentCoordinate.distance);
+    const delta = Math.abs(position - (currentCoordinate.distance ?? 0));
 
     if (delta < closestDelta) {
       closestDelta = delta;

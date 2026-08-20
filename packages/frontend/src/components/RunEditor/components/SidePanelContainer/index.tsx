@@ -13,7 +13,6 @@ import type {
   Coordinates,
   RouteCoordinates,
   RunUpdate,
-  CoordinatesWithId,
   ElevationStats,
 } from '~/types';
 
@@ -40,7 +39,7 @@ interface SidePanelContainerProps {
   isDeleting: boolean;
   error?: Error | null;
   successMessage?: string | null;
-  setEditRouteControlPoints: (coordinates: CoordinatesWithId[]) => void;
+  setEditRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;

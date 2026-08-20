@@ -9,8 +9,8 @@ export type BoundingBox = [Coordinates, Coordinates];
 
 export type RouteCoordinates = CoordinatesWithId & {
   isControlPoint: boolean;
-  elevation: number;
-  distance: number;
+  elevation?: number;
+  distance?: number;
 };
 
 export interface ElevationStats {

@@ -18,6 +18,7 @@ import {
   isValidRouteCoordinates,
   isValidCoordinates,
   generateId,
+  roundNumber,
 } from './index.js';
 import {
   getBoundingBox,
@@ -32,6 +33,8 @@ const DEFAULT_BOUNDING_BOX: BoundingBox = [
   DEFAULT_COORDINATES,
   DEFAULT_COORDINATES,
 ];
+const DISTANCE_DECIMALS = 5;
+const COORDINATES_DECIMALS = 6;
 
 export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   return {
@@ -130,23 +133,30 @@ export const sanitizeRouteBetweenPoints = (
 
 export const sanitizeRouteData = (
   coordinates: RouteCoordinates[],
-  elevations: number[],
+  routeElevations: number[],
+  elevationIndices: number[],
 ): RouteData => {
   let cumulativeDistance = 0;
-  const routeCoordinates = coordinates
-    .map((coord, index) => ({
-      id: coord.id,
-      lng: coord.lng,
-      lat: coord.lat,
-      isControlPoint: coord.isControlPoint,
-      elevation: elevations[index] ?? 0,
-      distance: (cumulativeDistance +=
+  const routeCoordinates = coordinates.map((coord, index) => ({
+    id: coord.id,
+    lng: roundNumber(coord.lng, COORDINATES_DECIMALS),
+    lat: roundNumber(coord.lat, COORDINATES_DECIMALS),
+    isControlPoint: coord.isControlPoint ?? false,
+    elevation: coord.elevation ?? 0,
+    distance: roundNumber(
+      (cumulativeDistance +=
         index === 0 ? 0 : haversineDistance(coordinates[index - 1], coord)),
-    }))
-    .filter(isValidRouteCoordinates);
+      DISTANCE_DECIMALS,
+    ),
+  }));
+
+  for (let i = 0; i < elevationIndices.length; i++) {
+    const index = elevationIndices[i];
+    routeCoordinates[index].elevation = routeElevations[i];
+  }
 
   return {
-    distance: cumulativeDistance,
+    distance: roundNumber(cumulativeDistance, DISTANCE_DECIMALS),
     coordinates: routeCoordinates,
     boundingBox: getBoundingBox(routeCoordinates),
     elevationStats: getElevationStats(routeCoordinates),

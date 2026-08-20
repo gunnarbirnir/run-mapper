@@ -140,9 +140,9 @@ export const calculateMinElevation = (
 };
 
 export const getElevationStats = (
-  coordinates: { elevation: number }[],
+  coordinates: { elevation?: number }[],
 ): ElevationStats => {
-  const elevations = coordinates.map((c) => c.elevation);
+  const elevations = coordinates.map((c) => c.elevation ?? 0);
   const elevationGain = calculateElevationGain(elevations);
   const elevationLoss = calculateElevationLoss(elevations);
   const netElevation = elevationGain - elevationLoss;
