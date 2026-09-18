@@ -26,54 +26,54 @@ import { WaypointPanel } from '../WaypointPanel';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
-  routeDistance: number;
-  routeCoordinates: RouteCoordinates[];
-  routeBoundingBox?: BoundingBox;
-  routeElevationStats?: ElevationStats;
+  isDeleting: boolean;
+  error?: Error | null;
+  successMessage?: string | null;
+  activeRouteDistance: number;
+  activeRouteCoordinates: RouteCoordinates[];
+  activeRouteBoundingBox?: BoundingBox;
+  activeRouteElevationStats?: ElevationStats;
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
   waypointPanelState: PanelState<Waypoint>;
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
-  isDeleting: boolean;
-  error?: Error | null;
-  successMessage?: string | null;
-  setEditRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
+  onSubmit: (run: RunUpdate) => Promise<unknown>;
+  onDeleteRun?: () => Promise<unknown>;
+  setActiveRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
-  onSubmit: (run: RunUpdate) => void;
-  onDeleteRun?: () => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
 
 export const SidePanelContainer = ({
   existingRun,
-  routeDistance,
-  routeBoundingBox,
-  routeElevationStats,
-  routeCoordinates,
+  isDeleting,
+  error,
+  successMessage,
+  activeRouteDistance,
+  activeRouteBoundingBox,
+  activeRouteElevationStats,
+  activeRouteCoordinates,
   rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
   waypointPanelState,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
-  isDeleting,
-  error,
-  successMessage,
-  setEditRouteControlPoints,
+  onSubmit,
+  onDeleteRun,
+  setActiveRouteControlPoints,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
-  onSubmit,
-  onDeleteRun,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -92,14 +92,14 @@ export const SidePanelContainer = ({
 
   const handleAddWaypoint = useCallback(() => {
     onAddWaypoint();
-    if (routeCoordinates.length > 0) {
-      setEditWaypointCoordinates(routeCoordinates[0]);
+    if (activeRouteCoordinates.length > 0) {
+      setEditWaypointCoordinates(activeRouteCoordinates[0]);
     }
-  }, [onAddWaypoint, setEditWaypointCoordinates, routeCoordinates]);
+  }, [onAddWaypoint, setEditWaypointCoordinates, activeRouteCoordinates]);
 
   const handleSubmit = useCallback(
-    (run: RunUpdate) => {
-      onSubmit(run);
+    async (run: RunUpdate) => {
+      await onSubmit(run);
       routePanelState.onHasSubmittedChanges(false);
       pointOfInterestPanelState.onHasSubmittedChanges(false);
       waypointPanelState.onHasSubmittedChanges(false);
@@ -135,6 +135,9 @@ export const SidePanelContainer = ({
           content: (
             <RootPanel
               existingRun={existingRun}
+              error={error}
+              successMessage={successMessage}
+              isDeleting={isDeleting}
               currentRoutes={routePanelState.currentItems}
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               hasSubmittedChanges={
@@ -142,9 +145,6 @@ export const SidePanelContainer = ({
                 pointOfInterestPanelState.hasSubmittedChanges ||
                 waypointPanelState.hasSubmittedChanges
               }
-              error={error}
-              successMessage={successMessage}
-              isDeleting={isDeleting}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
@@ -179,15 +179,15 @@ export const SidePanelContainer = ({
           content: (
             <RoutePanel
               {...routePanelState}
-              currentWaypoints={waypointPanelState.currentItems}
-              routeDistance={routeDistance}
-              routeCoordinates={routeCoordinates}
-              routeBoundingBox={routeBoundingBox}
-              routeElevationStats={routeElevationStats}
+              activeRouteDistance={activeRouteDistance}
+              activeRouteCoordinates={activeRouteCoordinates}
+              activeRouteBoundingBox={activeRouteBoundingBox}
+              activeRouteElevationStats={activeRouteElevationStats}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
+              currentWaypoints={waypointPanelState.currentItems}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
-              setEditRouteControlPoints={setEditRouteControlPoints}
+              setActiveRouteControlPoints={setActiveRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
               editRouteActionsRef={editRouteActionsRef}
             />
@@ -201,8 +201,8 @@ export const SidePanelContainer = ({
           content: (
             <WaypointPanel
               {...waypointPanelState}
-              routeDistance={routeDistance}
-              routeCoordinates={routeCoordinates}
+              activeRouteDistance={activeRouteDistance}
+              activeRouteCoordinates={activeRouteCoordinates}
               setEditWaypointType={setEditWaypointType}
               setEditWaypointCoordinates={setEditWaypointCoordinates}
             />

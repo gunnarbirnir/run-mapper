@@ -17,6 +17,8 @@ import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
 import type { MapState } from '../EditorMap/hooks/useMapState';
 
+const COORDINATES_DISPLAY_DECIMALS = 5;
+
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
   isEditingPoiCoordinates: boolean;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
@@ -225,7 +227,12 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
-                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
+                  {field.state.value
+                    ? formatNumber(
+                        field.state.value,
+                        COORDINATES_DISPLAY_DECIMALS,
+                      )
+                    : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -233,7 +240,12 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
-                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
+                  {field.state.value
+                    ? formatNumber(
+                        field.state.value,
+                        COORDINATES_DISPLAY_DECIMALS,
+                      )
+                    : '-'}
                 </Text>
               )}
             </poiForm.Field>

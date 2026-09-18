@@ -22,8 +22,8 @@ interface RunEditorProps {
   error?: Error | null;
   successMessage?: string | null;
   isDeleting?: boolean;
-  onSubmit: (run: RunUpdate) => void;
-  onDeleteRun?: () => void;
+  onSubmit: (run: RunUpdate) => Promise<unknown>;
+  onDeleteRun?: () => Promise<unknown>;
 }
 
 export const RunEditor = ({
@@ -103,11 +103,11 @@ export const RunEditor = ({
           error={error}
           isDeleting={isDeleting}
           successMessage={successMessage}
-          // Edit route state
-          routeDistance={activeRouteDistance}
-          routeBoundingBox={activeRouteBoundingBox}
-          routeElevationStats={activeRouteElevationStats}
-          routeCoordinates={activeRouteCoordinates}
+          // Active route state
+          activeRouteDistance={activeRouteDistance}
+          activeRouteBoundingBox={activeRouteBoundingBox}
+          activeRouteElevationStats={activeRouteElevationStats}
+          activeRouteCoordinates={activeRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           // Panel states
           rootPanelState={rootPanelState}
@@ -119,7 +119,7 @@ export const RunEditor = ({
           // Handlers
           onSubmit={onSubmit}
           onDeleteRun={onDeleteRun}
-          setEditRouteControlPoints={setActiveRouteControlPoints}
+          setActiveRouteControlPoints={setActiveRouteControlPoints}
           setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}

@@ -38,7 +38,7 @@ export const useResetBounds = ({
       return;
     }
 
-    mapRef.current.fitBounds(initialBounds, { ...FIT_BOUNDS_CONFIG });
+    mapRef.current.fitBounds(initialBounds, FIT_BOUNDS_CONFIG);
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,

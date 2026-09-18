@@ -64,6 +64,10 @@ export const formatNumber = (
   return parseFloat(num.toFixed(maxDecimals));
 };
 
+export const roundNumber = (value: number, decimals: number): number => {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+};
+
 export const formatDate = (date: string) => {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, '0');

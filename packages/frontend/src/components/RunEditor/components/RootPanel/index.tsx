@@ -22,19 +22,19 @@ import { RouteItem } from './RouteItem';
 
 interface RootPanelProps {
   existingRun?: EditorRun;
-  currentRoutes: PublicRoute[];
-  currentPointsOfInterest: PointOfInterest[];
-  hasSubmittedChanges: boolean;
   error?: Error | null;
   successMessage?: string | null;
   isDeleting: boolean;
+  currentRoutes: PublicRoute[];
+  currentPointsOfInterest: PointOfInterest[];
+  hasSubmittedChanges: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
-  onSubmit: (run: RunUpdate) => void;
-  onDeleteRun?: () => void;
+  onSubmit: (run: RunUpdate) => Promise<unknown>;
+  onDeleteRun?: () => Promise<unknown>;
 }
 
 const rootFormSchema = z.object({
@@ -44,12 +44,12 @@ const rootFormSchema = z.object({
 
 export const RootPanel = ({
   existingRun,
-  currentRoutes,
-  currentPointsOfInterest,
-  hasSubmittedChanges,
   error,
   successMessage,
   isDeleting,
+  currentRoutes,
+  currentPointsOfInterest,
+  hasSubmittedChanges,
   onClose,
   onAddRoute,
   onEditRoute,
@@ -229,8 +229,8 @@ export const RootPanel = ({
                 label: 'Delete',
                 color: 'errorOutline',
                 isLoading: isDeleting,
-                onClick: () => {
-                  onDeleteRun();
+                onClick: async () => {
+                  await onDeleteRun();
                   setIsDeleteDialogOpen(false);
                 },
               },

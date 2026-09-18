@@ -165,20 +165,18 @@ export const EditorMap = ({
     mapRef,
   });
 
-  // Pick up from here
-
   useDrawRoute({
-    panelIsOpen: routePanelIsOpen,
-    isAnimatingPanel: routePanelIsAnimating,
+    routePanelIsOpen,
+    routePanelIsAnimating,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
-    isEditingCoordinates: isEditingRouteCoordinates,
+    isEditingRouteCoordinates,
     isMapLoaded,
-    editCoordinates: activeRouteCoordinates,
+    activeRouteCoordinates,
     selectedRoutePoint,
     initialBounds,
     activeRouteBoundingBox,
-    setEditControlPoints: setActiveRouteControlPoints,
+    setActiveRouteControlPoints,
     setSelectedRoutePoint,
     mapRef,
     isResettingBoundsRef,
@@ -186,12 +184,12 @@ export const EditorMap = ({
 
   usePointsOfInterest({
     isMapLoaded,
-    pointsOfInterest: currentPointsOfInterest,
+    currentPointsOfInterest,
     activePointOfInterest,
-    panelIsOpen: pointOfInterestPanelIsOpen,
-    isAnimatingPanel: pointOfInterestPanelIsAnimating,
+    pointOfInterestPanelIsOpen,
+    pointOfInterestPanelIsAnimating,
     hasMadeAnyChanges,
-    isEditingCoordinates: isEditingPoiCoordinates,
+    isEditingPoiCoordinates,
     isEditingRouteCoordinates,
     editPointOfInterestType,
     onEditPointOfInterest,
@@ -202,13 +200,13 @@ export const EditorMap = ({
 
   useWaypoints({
     isMapLoaded,
-    routeDistance: activeRouteDistance,
-    routeCoordinates: activeRouteCoordinates,
-    waypoints: currentWaypoints,
+    activeRouteDistance,
+    activeRouteCoordinates,
+    currentWaypoints,
     activeWaypoint,
-    panelIsOpen: waypointPanelIsOpen,
-    isAnimatingPanel: waypointPanelIsAnimating,
-    hasMadeChanges: hasMadeWaypointChanges,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
+    hasMadeWaypointChanges,
     editWaypointType,
     editWaypointCoordinates,
     isEditingRouteCoordinates,

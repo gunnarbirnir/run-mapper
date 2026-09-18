@@ -1,7 +1,11 @@
 import type { Map, MapMouseEvent, Marker } from 'mapbox-gl';
 import { useEffect, type RefObject, useState } from 'react';
 
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
+import {
+  FLY_TO_WAYPOINT_DURATION,
+  WAYPOINT_ZOOM,
+  COORDINATES_DECIMALS,
+} from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import type {
   Coordinates,
@@ -9,15 +13,16 @@ import type {
   PointOfInterestType,
 } from '~/types';
 import { getPointOfInterestMarkerElement } from '~/utils/map';
+import { roundNumber } from '~/utils';
 
 interface UsePointsOfInterestProps {
   isMapLoaded: boolean;
-  pointsOfInterest: PointOfInterest[];
+  currentPointsOfInterest: PointOfInterest[];
   activePointOfInterest: string | null;
-  panelIsOpen: boolean;
-  isAnimatingPanel: boolean;
+  pointOfInterestPanelIsOpen: boolean;
+  pointOfInterestPanelIsAnimating: boolean;
   hasMadeAnyChanges: boolean;
-  isEditingCoordinates: boolean;
+  isEditingPoiCoordinates: boolean;
   isEditingRouteCoordinates: boolean;
   editPointOfInterestType: PointOfInterestType | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
@@ -28,13 +33,13 @@ interface UsePointsOfInterestProps {
 
 export const usePointsOfInterest = ({
   isMapLoaded,
-  pointsOfInterest,
+  currentPointsOfInterest,
   activePointOfInterest,
-  panelIsOpen,
-  isAnimatingPanel,
+  pointOfInterestPanelIsOpen,
+  pointOfInterestPanelIsAnimating,
   hasMadeAnyChanges,
   isEditingRouteCoordinates,
-  isEditingCoordinates,
+  isEditingPoiCoordinates,
   editPointOfInterestType,
   onEditPointOfInterest,
   onUpdatePoiCoordinates,
@@ -45,7 +50,7 @@ export const usePointsOfInterest = ({
   const [editCoordinates, setEditCoordinates] = useState<Coordinates | null>(
     null,
   );
-  const isEditingInMap = isEditingRouteCoordinates || isEditingCoordinates;
+  const isEditingInMap = isEditingRouteCoordinates || isEditingPoiCoordinates;
 
   // Reset edit point of interest when active point of interest changes
   useEffect(() => {
@@ -56,12 +61,16 @@ export const usePointsOfInterest = ({
 
   // Reset edit point of interest when panel closes
   useEffect(() => {
-    if (!panelIsOpen) {
+    if (!pointOfInterestPanelIsOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditCoordinates(null);
       setEditPointOfInterestType(null);
     }
-  }, [panelIsOpen, setEditCoordinates, setEditPointOfInterestType]);
+  }, [
+    pointOfInterestPanelIsOpen,
+    setEditCoordinates,
+    setEditPointOfInterestType,
+  ]);
 
   // Draw points of interest
   useEffect(() => {
@@ -71,7 +80,7 @@ export const usePointsOfInterest = ({
 
     let pointsOfInterestMarkers = [];
 
-    for (const pointOfInterest of pointsOfInterest) {
+    for (const pointOfInterest of currentPointsOfInterest) {
       const isActive = pointOfInterest.id === activePointOfInterest;
       pointsOfInterestMarkers.push(
         addMarker(
@@ -95,7 +104,11 @@ export const usePointsOfInterest = ({
     }
 
     // New point of interest
-    if (editCoordinates && !activePointOfInterest && panelIsOpen) {
+    if (
+      editCoordinates &&
+      !activePointOfInterest &&
+      pointOfInterestPanelIsOpen
+    ) {
       pointsOfInterestMarkers.push(
         addMarker(
           getPointOfInterestMarkerElement({
@@ -118,10 +131,10 @@ export const usePointsOfInterest = ({
   }, [
     isMapLoaded,
     activePointOfInterest,
-    pointsOfInterest,
+    currentPointsOfInterest,
     hasMadeAnyChanges,
     editPointOfInterestType,
-    panelIsOpen,
+    pointOfInterestPanelIsOpen,
     editCoordinates,
     isEditingInMap,
     addMarker,
@@ -131,12 +144,12 @@ export const usePointsOfInterest = ({
 
   // Zoom into active point of interest
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || pointOfInterestPanelIsAnimating) {
       return;
     }
 
     const map = mapRef.current;
-    const activePointOfInterestDetails = pointsOfInterest.find(
+    const activePointOfInterestDetails = currentPointsOfInterest.find(
       (pointOfInterest: PointOfInterest) =>
         pointOfInterest.id === activePointOfInterest,
     );
@@ -144,7 +157,7 @@ export const usePointsOfInterest = ({
     if (
       !activePointOfInterest ||
       !activePointOfInterestDetails ||
-      !panelIsOpen
+      !pointOfInterestPanelIsOpen
     ) {
       return;
     }
@@ -160,23 +173,23 @@ export const usePointsOfInterest = ({
   }, [
     isMapLoaded,
     activePointOfInterest,
-    pointsOfInterest,
-    panelIsOpen,
-    isAnimatingPanel,
+    currentPointsOfInterest,
+    pointOfInterestPanelIsOpen,
+    pointOfInterestPanelIsAnimating,
     mapRef,
   ]);
 
   // Handle update coordinates click
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !isEditingCoordinates) {
+    if (!isMapLoaded || !mapRef.current || !isEditingPoiCoordinates) {
       return;
     }
 
     const map = mapRef.current;
     const handleClick = (e: MapMouseEvent) => {
       const newCoordinates = {
-        lng: e.lngLat.lng,
-        lat: e.lngLat.lat,
+        lng: roundNumber(e.lngLat.lng, COORDINATES_DECIMALS),
+        lat: roundNumber(e.lngLat.lat, COORDINATES_DECIMALS),
       };
       setEditCoordinates(newCoordinates);
       onUpdatePoiCoordinates(newCoordinates);
@@ -187,5 +200,5 @@ export const usePointsOfInterest = ({
     return () => {
       map.off('click', handleClick);
     };
-  }, [isMapLoaded, isEditingCoordinates, onUpdatePoiCoordinates, mapRef]);
+  }, [isMapLoaded, isEditingPoiCoordinates, onUpdatePoiCoordinates, mapRef]);
 };

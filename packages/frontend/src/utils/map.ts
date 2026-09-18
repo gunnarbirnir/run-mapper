@@ -69,16 +69,22 @@ export const getMarkerElement = ({
   hoverColor,
   onClick,
   isEditingInMap,
+  isFocused,
 }: {
   color: string;
   hoverColor: string;
   onClick?: () => void;
   isEditingInMap?: boolean;
+  isFocused?: boolean;
 }): HTMLElement => {
   const marker = document.createElement('div');
   marker.className = cn(
     'w-6 h-6 rounded-full border-4 border-white shadow-md/30',
-    { 'cursor-pointer': onClick, 'cursor-crosshair': isEditingInMap },
+    {
+      'cursor-pointer': onClick,
+      'cursor-crosshair': isEditingInMap,
+      'outline outline-2': isFocused,
+    },
   );
   marker.style.backgroundColor = getCssVariableValue(color);
 

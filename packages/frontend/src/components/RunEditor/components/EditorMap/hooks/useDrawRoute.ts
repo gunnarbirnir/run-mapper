@@ -15,40 +15,40 @@ import {
   formatBounds,
   getRoutePointElement,
 } from '~/utils/map';
-import { FIT_BOUNDS_CONFIG } from '~/constants/map';
+import { FIT_BOUNDS_CONFIG, COORDINATES_DECIMALS } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getBoundingBox } from '~/utils/route';
-import { generateId } from '~/utils';
+import { generateId, roundNumber } from '~/utils';
 
 interface UseMapRouteProps {
-  panelIsOpen: boolean;
-  isAnimatingPanel: boolean;
+  routePanelIsOpen: boolean;
+  routePanelIsAnimating: boolean;
   waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
-  isEditingCoordinates: boolean;
-  editCoordinates: RouteCoordinates[];
+  isEditingRouteCoordinates: boolean;
+  activeRouteCoordinates: RouteCoordinates[];
   selectedRoutePoint: string | null;
   initialBounds: Bounds;
   activeRouteBoundingBox?: BoundingBox;
-  setEditControlPoints: Dispatch<SetStateAction<RouteCoordinates[]>>;
+  setActiveRouteControlPoints: Dispatch<SetStateAction<RouteCoordinates[]>>;
   setSelectedRoutePoint: Dispatch<SetStateAction<string | null>>;
   mapRef: RefObject<Map>;
   isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useDrawRoute = ({
-  panelIsOpen,
-  isAnimatingPanel,
+  routePanelIsOpen,
+  routePanelIsAnimating,
   waypointPanelIsOpen,
   waypointPanelIsAnimating,
   isMapLoaded,
-  isEditingCoordinates,
-  editCoordinates,
+  isEditingRouteCoordinates,
+  activeRouteCoordinates,
   selectedRoutePoint,
   initialBounds,
   activeRouteBoundingBox,
-  setEditControlPoints,
+  setActiveRouteControlPoints,
   setSelectedRoutePoint,
   mapRef,
   isResettingBoundsRef,
@@ -68,7 +68,7 @@ export const useDrawRoute = ({
 
     const drawRoute = () => {
       const source = map.getSource(routeLayer.source);
-      const routeLineFeature = getLineFeature(editCoordinates);
+      const routeLineFeature = getLineFeature(activeRouteCoordinates);
 
       if (source) {
         (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
@@ -91,7 +91,7 @@ export const useDrawRoute = ({
     };
 
     const drawRoutePoints = () => {
-      routePointMarkers = editCoordinates
+      routePointMarkers = activeRouteCoordinates
         .filter((coordinate) => coordinate.isControlPoint)
         .map((coordinate) =>
           addMarker(
@@ -115,11 +115,11 @@ export const useDrawRoute = ({
       }
     };
 
-    if (editCoordinates.length === 0) {
+    if (activeRouteCoordinates.length === 0) {
       clearRoute();
     } else {
       drawRoute();
-      if (isEditingCoordinates) {
+      if (isEditingRouteCoordinates) {
         drawRoutePoints();
       }
     }
@@ -132,8 +132,8 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    isEditingCoordinates,
-    editCoordinates,
+    isEditingRouteCoordinates,
+    activeRouteCoordinates,
     selectedRoutePoint,
     addMarker,
     setSelectedRoutePoint,
@@ -145,7 +145,7 @@ export const useDrawRoute = ({
     if (
       !isMapLoaded ||
       !mapRef.current ||
-      isAnimatingPanel ||
+      routePanelIsAnimating ||
       waypointPanelIsAnimating
     ) {
       return;
@@ -153,26 +153,26 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const bounds =
-      editCoordinates.length > 0
+      activeRouteCoordinates.length > 0
         ? formatBounds(
-            activeRouteBoundingBox || getBoundingBox(editCoordinates),
+            activeRouteBoundingBox || getBoundingBox(activeRouteCoordinates),
           )
         : initialBounds;
 
-    if (!panelIsOpen || waypointPanelIsOpen || isEditingCoordinates) {
+    if (!routePanelIsOpen || waypointPanelIsOpen || isEditingRouteCoordinates) {
       return;
     }
 
-    map.fitBounds(bounds, { ...FIT_BOUNDS_CONFIG });
+    map.fitBounds(bounds, FIT_BOUNDS_CONFIG);
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
-    panelIsOpen,
-    isAnimatingPanel,
+    routePanelIsOpen,
+    routePanelIsAnimating,
     initialBounds,
     activeRouteBoundingBox,
-    isEditingCoordinates,
-    editCoordinates,
+    isEditingRouteCoordinates,
+    activeRouteCoordinates,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,
@@ -181,7 +181,7 @@ export const useDrawRoute = ({
 
   // Handle update coordinates click
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !isEditingCoordinates) {
+    if (!isMapLoaded || !mapRef.current || !isEditingRouteCoordinates) {
       return;
     }
 
@@ -193,18 +193,18 @@ export const useDrawRoute = ({
 
       const newCoordinates = {
         id: generateId(),
-        lng: e.lngLat.lng,
-        lat: e.lngLat.lat,
+        lng: roundNumber(e.lngLat.lng, COORDINATES_DECIMALS),
+        lat: roundNumber(e.lngLat.lat, COORDINATES_DECIMALS),
         isControlPoint: true,
       };
 
       if (selectedRoutePoint === null) {
-        setEditControlPoints((prevCoordinates) => [
+        setActiveRouteControlPoints((prevCoordinates) => [
           ...prevCoordinates,
           newCoordinates,
         ]);
       } else {
-        setEditControlPoints((prevCoordinates) => {
+        setActiveRouteControlPoints((prevCoordinates) => {
           const updatedCoordinates = [...prevCoordinates];
           const index = updatedCoordinates.findIndex(
             (coordinate) => coordinate.id === selectedRoutePoint,
@@ -225,10 +225,10 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    isEditingCoordinates,
+    isEditingRouteCoordinates,
     selectedRoutePoint,
-    editCoordinates,
-    setEditControlPoints,
+    activeRouteCoordinates,
+    setActiveRouteControlPoints,
     setSelectedRoutePoint,
     mapRef,
     disableMapClickRef,

@@ -15,13 +15,13 @@ import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
 
 interface UseWaypointsProps {
   isMapLoaded: boolean;
-  routeCoordinates: RouteCoordinates[];
-  routeDistance: number;
-  waypoints: Waypoint[];
+  activeRouteCoordinates: RouteCoordinates[];
+  activeRouteDistance: number;
+  currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
-  panelIsOpen: boolean;
-  isAnimatingPanel: boolean;
-  hasMadeChanges: boolean;
+  waypointPanelIsOpen: boolean;
+  waypointPanelIsAnimating: boolean;
+  hasMadeWaypointChanges: boolean;
   editWaypointType: WaypointType | null;
   editWaypointCoordinates: Coordinates | null;
   isEditingRouteCoordinates: boolean;
@@ -34,26 +34,26 @@ interface UseWaypointsProps {
 const getPositionCoordinates = (
   waypoint: Waypoint,
   coordinates: RouteCoordinates[],
-  routeDistance: number,
+  activeRouteDistance: number,
 ): RouteCoordinates | null => {
   if (waypoint.type === 'start') {
     return getCoordinatesFromPosition(0, coordinates);
   }
   if (waypoint.type === 'end') {
-    return getCoordinatesFromPosition(routeDistance, coordinates);
+    return getCoordinatesFromPosition(activeRouteDistance, coordinates);
   }
   return getCoordinatesFromPosition(waypoint.position, coordinates);
 };
 
 export const useWaypoints = ({
   isMapLoaded,
-  routeCoordinates,
-  routeDistance,
-  waypoints,
+  activeRouteCoordinates,
+  activeRouteDistance,
+  currentWaypoints,
   activeWaypoint,
-  panelIsOpen,
-  isAnimatingPanel,
-  hasMadeChanges,
+  waypointPanelIsOpen,
+  waypointPanelIsAnimating,
+  hasMadeWaypointChanges,
   editWaypointType,
   editWaypointCoordinates,
   isEditingRouteCoordinates,
@@ -63,7 +63,7 @@ export const useWaypoints = ({
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
-  const panelIsOpenRef = useRef(panelIsOpen);
+  const panelIsOpenRef = useRef(waypointPanelIsOpen);
 
   // Reset edit waypoint type when active waypoint changes
   useEffect(() => {
@@ -73,11 +73,11 @@ export const useWaypoints = ({
 
   // Reset edit waypoint type when panel closes
   useEffect(() => {
-    if (!panelIsOpen) {
+    if (!waypointPanelIsOpen) {
       setEditWaypointType(null);
       setEditWaypointCoordinates(null);
     }
-  }, [panelIsOpen, setEditWaypointType, setEditWaypointCoordinates]);
+  }, [waypointPanelIsOpen, setEditWaypointType, setEditWaypointCoordinates]);
 
   // Draw waypoints
   useEffect(() => {
@@ -86,16 +86,16 @@ export const useWaypoints = ({
     }
 
     let waypointMarkers = [];
-    const isClickable = !hasMadeChanges;
+    const isClickable = !hasMadeWaypointChanges;
 
-    for (const waypoint of waypoints) {
+    for (const waypoint of currentWaypoints) {
       const isStart = waypoint.type === 'start';
       const isEnd = waypoint.type === 'end';
       const isActive = waypoint.id === activeWaypoint;
       const positionCoordinates = getPositionCoordinates(
         waypoint,
-        routeCoordinates,
-        routeDistance,
+        activeRouteCoordinates,
+        activeRouteDistance,
       );
 
       if (!positionCoordinates) {
@@ -111,6 +111,7 @@ export const useWaypoints = ({
               onClick: isClickable
                 ? () => onEditWaypoint(waypoint.id)
                 : undefined,
+              isFocused: waypoint.id === activeWaypoint,
             }),
             positionCoordinates,
           ),
@@ -124,6 +125,7 @@ export const useWaypoints = ({
               onClick: isClickable
                 ? () => onEditWaypoint(waypoint.id)
                 : undefined,
+              isFocused: waypoint.id === activeWaypoint,
             }),
             positionCoordinates,
           ),
@@ -148,7 +150,7 @@ export const useWaypoints = ({
     }
 
     // New waypoint
-    if (editWaypointCoordinates && !activeWaypoint && panelIsOpen) {
+    if (editWaypointCoordinates && !activeWaypoint && waypointPanelIsOpen) {
       waypointMarkers.push(
         addMarker(
           getWaypointMarkerElement({
@@ -168,11 +170,11 @@ export const useWaypoints = ({
   }, [
     isMapLoaded,
     activeWaypoint,
-    routeCoordinates,
-    routeDistance,
-    waypoints,
-    hasMadeChanges,
-    panelIsOpen,
+    activeRouteCoordinates,
+    activeRouteDistance,
+    currentWaypoints,
+    hasMadeWaypointChanges,
+    waypointPanelIsOpen,
     editWaypointType,
     editWaypointCoordinates,
     isEditingRouteCoordinates,
@@ -183,23 +185,23 @@ export const useWaypoints = ({
 
   // Zoom into active waypoint
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || isAnimatingPanel) {
+    if (!isMapLoaded || !mapRef.current || waypointPanelIsAnimating) {
       return;
     }
 
     const map = mapRef.current;
-    const activeWaypointDetails = waypoints.find(
+    const activeWaypointDetails = currentWaypoints.find(
       (waypoint: Waypoint) => waypoint.id === activeWaypoint,
     );
 
-    if (!activeWaypoint || !activeWaypointDetails || !panelIsOpen) {
+    if (!activeWaypoint || !activeWaypointDetails || !waypointPanelIsOpen) {
       return;
     }
 
     const positionCoordinates = getPositionCoordinates(
       activeWaypointDetails,
-      routeCoordinates,
-      routeDistance,
+      activeRouteCoordinates,
+      activeRouteDistance,
     );
 
     if (positionCoordinates) {
@@ -212,18 +214,18 @@ export const useWaypoints = ({
   }, [
     isMapLoaded,
     activeWaypoint,
-    routeCoordinates,
-    routeDistance,
-    waypoints,
-    panelIsOpen,
-    isAnimatingPanel,
+    activeRouteCoordinates,
+    activeRouteDistance,
+    currentWaypoints,
+    waypointPanelIsOpen,
+    waypointPanelIsAnimating,
     mapRef,
   ]);
 
   // Move to edit coordinates
   useEffect(() => {
-    const panelJustOpened = !panelIsOpenRef.current && panelIsOpen;
-    panelIsOpenRef.current = panelIsOpen;
+    const panelJustOpened = !panelIsOpenRef.current && waypointPanelIsOpen;
+    panelIsOpenRef.current = waypointPanelIsOpen;
 
     if (!isMapLoaded || !mapRef.current || !editWaypointCoordinates) {
       return;
@@ -245,7 +247,7 @@ export const useWaypoints = ({
     isMapLoaded,
     mapRef,
     editWaypointCoordinates,
-    panelIsOpen,
+    waypointPanelIsOpen,
     panelIsOpenRef,
   ]);
 };

@@ -228,7 +228,7 @@ export const useActiveRoute = ({
           setActiveRouteCoordinates(updatedActiveRouteCoordinates);
         }
       } catch {
-        // Ignore for now
+        // Ignore for now - Display some kind of toast
       } finally {
         if (!hasBeenCancelled) {
           setIsLoadingRouteBetweenPoints(false);

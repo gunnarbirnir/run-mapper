@@ -26,3 +26,5 @@ export const MAP_STYLES: Record<MapStyle, string> = {
   standard: 'mapbox://styles/mapbox/standard',
   satellite: 'mapbox://styles/mapbox/standard-satellite',
 };
+
+export const COORDINATES_DECIMALS = 6;

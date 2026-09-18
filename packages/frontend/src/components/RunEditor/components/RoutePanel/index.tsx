@@ -23,15 +23,15 @@ import { WaypointItem } from './WaypointItem';
 import { MapState } from '../EditorMap/hooks/useMapState';
 
 interface RoutePanelProps extends PanelState<PublicRoute> {
-  currentWaypoints: Waypoint[];
-  routeDistance: number;
-  routeCoordinates: RouteCoordinates[];
-  routeBoundingBox?: BoundingBox;
-  routeElevationStats?: ElevationStats;
+  activeRouteDistance: number;
+  activeRouteCoordinates: RouteCoordinates[];
+  activeRouteBoundingBox?: BoundingBox;
+  activeRouteElevationStats?: ElevationStats;
   isEditingRouteCoordinates: boolean;
+  currentWaypoints: Waypoint[];
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
-  setEditRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
+  setActiveRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
@@ -59,12 +59,12 @@ const routeFormSchema = z.object({
 export const RoutePanel = ({
   editId,
   currentItems,
-  currentWaypoints,
-  routeDistance,
-  routeCoordinates,
-  routeBoundingBox,
-  routeElevationStats,
+  activeRouteDistance,
+  activeRouteCoordinates,
+  activeRouteBoundingBox,
+  activeRouteElevationStats,
   isEditingRouteCoordinates,
+  currentWaypoints,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -72,7 +72,7 @@ export const RoutePanel = ({
   onDeleteItem,
   onAddWaypoint,
   onEditWaypoint,
-  setEditRouteControlPoints,
+  setActiveRouteControlPoints,
   setIsEditingRouteCoordinates,
   editRouteActionsRef,
 }: RoutePanelProps) => {
@@ -110,13 +110,14 @@ export const RoutePanel = ({
     onSubmit: ({ value }) => {
       const updatedRoute = {
         name: value.name,
-        distance: routeDistance,
+        distance: activeRouteDistance,
         displayDistance: value.displayDistance
           ? Number(value.displayDistance)
           : undefined,
-        boundingBox: routeBoundingBox || getBoundingBox(value.coordinates),
-        coordinates: routeCoordinates,
-        elevationStats: routeElevationStats ?? {
+        boundingBox:
+          activeRouteBoundingBox || getBoundingBox(value.coordinates),
+        coordinates: activeRouteCoordinates,
+        elevationStats: activeRouteElevationStats ?? {
           elevationGain: 0,
           elevationLoss: 0,
           netElevation: 0,
@@ -169,7 +170,7 @@ export const RoutePanel = ({
 
   const saveRouteCoordinates = useCallback(() => {
     onCoordinatesChange(
-      routeCoordinates.map((coordinate) => ({
+      activeRouteCoordinates.map((coordinate) => ({
         ...coordinate,
         elevation: coordinate.elevation ?? 0,
         distance: coordinate.distance ?? 0,
@@ -178,28 +179,28 @@ export const RoutePanel = ({
     onCoordinatesBlur();
     setIsEditingRouteCoordinates(false);
   }, [
-    routeCoordinates,
+    activeRouteCoordinates,
     onCoordinatesChange,
     onCoordinatesBlur,
     setIsEditingRouteCoordinates,
   ]);
 
   const cancelEditRouteCoordinates = useCallback(() => {
-    setEditRouteControlPoints(coordinatesValue);
+    setActiveRouteControlPoints(coordinatesValue);
     setIsEditingRouteCoordinates(false);
   }, [
     coordinatesValue,
-    setEditRouteControlPoints,
+    setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
   ]);
 
   const handleCancelEditRouteCoordinates = useCallback(() => {
-    if (isSameRoute(coordinatesValue, routeCoordinates)) {
+    if (isSameRoute(coordinatesValue, activeRouteCoordinates)) {
       cancelEditRouteCoordinates();
     } else {
       setCoordinatesDialogOpen(true);
     }
-  }, [coordinatesValue, routeCoordinates, cancelEditRouteCoordinates]);
+  }, [coordinatesValue, activeRouteCoordinates, cancelEditRouteCoordinates]);
 
   useEffect(() => {
     editRouteActionsRef.current.onSave = saveRouteCoordinates;
@@ -235,7 +236,7 @@ export const RoutePanel = ({
     <SidePanel.Content
       key={editId ?? 'new-route'}
       title={isEditing ? 'Edit route' : 'Add route'}
-      onClose={handleOnClose}
+      onClose={!isEditingRouteCoordinates ? handleOnClose : undefined}
     >
       <Form className="space-y-8" onSubmit={submitForm}>
         <section className="space-y-5">
@@ -273,8 +274,8 @@ export const RoutePanel = ({
         <ItemsSection
           title="Coordinates"
           emptyText={
-            routeDistance
-              ? `Route distance: ${formatNumber(routeDistance, 2)} km`
+            activeRouteDistance
+              ? `Route distance: ${formatNumber(activeRouteDistance, 2)} km`
               : 'The route itself is created in the map. Click the button below to start editing the route.'
           }
           showEmptyText
@@ -311,21 +312,17 @@ export const RoutePanel = ({
           emptyText="Waypoints are notable locations along the route. Start and End are default."
           showEmptyText={hasDefaultWaypoints}
           buttonLabel="Add waypoint"
-          onAddClick={onAddWaypoint}
+          onAddClick={!isEditingRouteCoordinates ? onAddWaypoint : undefined}
         >
           {currentWaypoints.length > 0 ? (
-            <motion.div
-              layout
-              key={editId ?? 'new-route'}
-              className="space-y-3"
-            >
+            <motion.div layout className="space-y-3">
               {currentWaypoints
-                .sort(sortWaypoints(routeDistance))
+                .sort(sortWaypoints(activeRouteDistance))
                 .map((waypoint) => (
                   <WaypointItem
                     key={waypoint.id}
                     waypoint={waypoint}
-                    error={waypoint.position > routeDistance}
+                    error={waypoint.position > activeRouteDistance}
                     onEditWaypoint={onEditWaypoint}
                   />
                 ))}
@@ -346,7 +343,12 @@ export const RoutePanel = ({
               </Button>
             )}
           />
-          <Button color="gray" className="w-full" onClick={handleOnClose}>
+          <Button
+            color="gray"
+            className="w-full"
+            onClick={handleOnClose}
+            disabled={isEditingRouteCoordinates}
+          >
             Cancel
           </Button>
           {isEditing && (
