@@ -91,6 +91,7 @@ export const RootPanel = ({
     !hasSubmittedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
+  const isCreatingRun = isSubmitting && !isEditing;
 
   return (
     <SidePanel.Content
@@ -245,7 +246,7 @@ export const RootPanel = ({
             onClose={() => (isDeleting ? null : setIsDeleteDialogOpen(false))}
           />
         )}
-        <LeavePageDialog isDirty={!isDefaultValue} />
+        <LeavePageDialog shouldBlock={!isDefaultValue && !isCreatingRun} />
       </Form>
     </SidePanel.Content>
   );
