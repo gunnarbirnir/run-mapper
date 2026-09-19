@@ -48,3 +48,7 @@ export const WAYPOINT_VALUES = [
   'restrooms',
   'end',
 ] as const;
+
+export const DISTANCE_DECIMALS = 5;
+export const COORDINATES_DECIMALS = 6;
+export const ELEVATION_DECIMALS = 2;

@@ -4,12 +4,12 @@ import type {
   PublicRun,
   PointOfInterest,
   Waypoint,
-  Coordinates,
   CoordinatesWithId,
   EditorRun,
   DirectionsResponse,
   RouteData,
   RouteCoordinates,
+  ElevationStats,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
 import {
@@ -25,20 +25,30 @@ import {
   getElevationStats,
   haversineDistance,
 } from './route.js';
+import {
+  DISTANCE_DECIMALS,
+  COORDINATES_DECIMALS,
+  ELEVATION_DECIMALS,
+} from '../config/constants.js';
 
 // Sanitize fetched data in service layer
 
-const DEFAULT_COORDINATES: Coordinates = { lat: 0, lng: 0 };
+// Reykjavík
 const DEFAULT_BOUNDING_BOX: BoundingBox = [
-  DEFAULT_COORDINATES,
-  DEFAULT_COORDINATES,
+  { lat: 64.02, lng: -22.17 },
+  { lat: 64.21, lng: -21.52 },
 ];
-const DISTANCE_DECIMALS = 5;
-const COORDINATES_DECIMALS = 6;
+const DEFAULT_ELEVATION_STATS: ElevationStats = {
+  elevationGain: 0,
+  elevationLoss: 0,
+  netElevation: 0,
+  maxElevation: 0,
+  minElevation: 0,
+};
 
 export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   return {
-    id: runData.id,
+    id: runData.id || generateId(),
     name: runData.name || 'Untitled Run',
     isPublic: runData.isPublic ?? false,
     publicSlug: runData.publicSlug ?? '',
@@ -50,57 +60,61 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
 
 const sanitizePointsOfInterest = (
   pointOfInterest: PointOfInterest,
-): PointOfInterest => {
-  return {
-    id: pointOfInterest.id,
-    name: pointOfInterest.name || 'Untitled POI',
-    description: pointOfInterest.description,
-    coordinates: isValidCoordinates(pointOfInterest.coordinates)
-      ? pointOfInterest.coordinates
-      : DEFAULT_COORDINATES,
-    type: pointOfInterest.type ?? 'expo',
-  };
+): PointOfInterest | null => {
+  return isValidCoordinates(pointOfInterest.coordinates)
+    ? {
+        id: pointOfInterest.id || generateId(),
+        name: pointOfInterest.name || 'Untitled POI',
+        description: pointOfInterest.description,
+        coordinates: pointOfInterest.coordinates,
+        type: pointOfInterest.type || 'expo',
+      }
+    : null;
 };
 
-const sanitizeWaypoint = (waypoint: Waypoint): Waypoint => {
-  return {
-    id: waypoint.id,
-    name: waypoint.name || 'Untitled Waypoint',
-    description: waypoint.description,
-    coordinates: isValidCoordinates(waypoint.coordinates)
-      ? waypoint.coordinates
-      : DEFAULT_COORDINATES,
-    type: waypoint.type ?? 'energy',
-    position: waypoint.position ?? 0,
-    amenities: waypoint.amenities ?? [],
-  };
+const sanitizeWaypoint = (waypoint: Waypoint): Waypoint | null => {
+  return isValidCoordinates(waypoint.coordinates)
+    ? {
+        id: waypoint.id || generateId(),
+        name: waypoint.name || 'Untitled Waypoint',
+        description: waypoint.description,
+        coordinates: waypoint.coordinates,
+        type: waypoint.type || 'energy',
+        position: waypoint.position ?? 0,
+        amenities: waypoint.amenities ?? [],
+      }
+    : null;
 };
 
 const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
   return {
-    id: route.id,
+    id: route.id || generateId(),
     name: route.name || 'Untitled Route',
     boundingBox: isValidBoundingBox(route.boundingBox)
-      ? ([route.boundingBox[0], route.boundingBox[1]] as BoundingBox)
+      ? route.boundingBox
       : DEFAULT_BOUNDING_BOX,
     coordinates: route.coordinates.filter(isValidRouteCoordinates),
-    waypoints: route.waypoints.map(sanitizeWaypoint),
+    waypoints: route.waypoints
+      .map(sanitizeWaypoint)
+      .filter(Boolean) as Waypoint[],
     distance: route.distance ?? 0,
     displayDistance: route.displayDistance,
-    elevationStats: route.elevationStats,
+    elevationStats: route.elevationStats ?? DEFAULT_ELEVATION_STATS,
   };
 };
 
 export const sanitizePublicRun = (runData: RunRecordWithId): PublicRun => {
   return {
-    id: runData.id,
+    id: runData.id || generateId(),
     name: runData.name || 'Untitled Run',
     defaultRouteId:
       runData.defaultRouteId ??
       // Find shortest route once distance is part of route data
       (runData.routes.length > 0 ? runData.routes[0].id : undefined),
     publicSlug: runData.publicSlug ?? '',
-    pointsOfInterest: runData.pointsOfInterest.map(sanitizePointsOfInterest),
+    pointsOfInterest: runData.pointsOfInterest
+      .map(sanitizePointsOfInterest)
+      .filter(Boolean) as PointOfInterest[],
     routes: runData.routes.map(sanitizePublicRoute),
   };
 };
@@ -125,8 +139,8 @@ export const sanitizeRouteBetweenPoints = (
   return directionsResponse.routes[0].geometry.coordinates
     .map((coordinate) => ({
       id: generateId(),
-      lng: coordinate[0],
-      lat: coordinate[1],
+      lng: roundNumber(coordinate[0], COORDINATES_DECIMALS),
+      lat: roundNumber(coordinate[1], COORDINATES_DECIMALS),
     }))
     .filter(isValidCoordinates);
 };
@@ -142,7 +156,7 @@ export const sanitizeRouteData = (
     lng: roundNumber(coord.lng, COORDINATES_DECIMALS),
     lat: roundNumber(coord.lat, COORDINATES_DECIMALS),
     isControlPoint: coord.isControlPoint ?? false,
-    elevation: coord.elevation ?? 0,
+    elevation: roundNumber(coord.elevation ?? 0, ELEVATION_DECIMALS),
     distance: roundNumber(
       (cumulativeDistance +=
         index === 0 ? 0 : haversineDistance(coordinates[index - 1], coord)),

@@ -52,8 +52,14 @@ export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
 export const isValidRouteCoordinates = (
   value: unknown,
 ): value is RouteCoordinates => {
+  const routeCoordinates = value as RouteCoordinates;
+
   return (
-    isValidCoordinates(value) && 'id' in value && 'isControlPoint' in value
+    typeof routeCoordinates.id === 'string' &&
+    typeof routeCoordinates.isControlPoint === 'boolean' &&
+    isValidCoordinates(routeCoordinates) &&
+    isFiniteNumber(routeCoordinates.elevation) &&
+    isFiniteNumber(routeCoordinates.distance)
   );
 };
 

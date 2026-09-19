@@ -4,6 +4,9 @@ import {
   MAX_RUN_ROUTES,
   MAX_ROUTE_COORDINATES,
   MAX_ROUTE_WAYPOINTS,
+  COORDINATES_DECIMALS,
+  ELEVATION_DECIMALS,
+  DISTANCE_DECIMALS,
 } from '../config/constants.js';
 import {
   RouteCoordinates,
@@ -11,7 +14,6 @@ import {
   PointOfInterest,
   Waypoint,
   PublicRoute,
-  Coordinates,
   EditorRun,
   RouteData,
 } from '../types/index.js';
@@ -32,6 +34,7 @@ import {
   isFiniteNumber,
   generateImageSeed,
   generateId,
+  roundNumber,
 } from './index.js';
 import {
   calculateDistance,
@@ -107,7 +110,14 @@ export const validatePointsOfInterestBody = (
     };
   }
 
-  if (type !== undefined && !isValidPointOfInterestType(type)) {
+  const normalizedCoordinates = {
+    lat: roundNumber(coordinates.lat, COORDINATES_DECIMALS),
+    lng: roundNumber(coordinates.lng, COORDINATES_DECIMALS),
+  };
+
+  const normalizedType = type ?? 'expo';
+
+  if (!isValidPointOfInterestType(normalizedType)) {
     return {
       ok: false,
       error: {
@@ -118,25 +128,29 @@ export const validatePointsOfInterestBody = (
     };
   }
 
-  const normalizedType = type ?? 'expo';
-
   return {
     ok: true,
     value: {
-      id: isUpdate ? id : generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
+      coordinates: normalizedCoordinates,
       description,
-      coordinates,
     },
   };
 };
 
-export const validateWaypointBody = (
-  rawBody: unknown,
-  coordinates: Coordinates[],
+export const validateWaypointBody = ({
+  rawBody,
+  coordinates,
+  distance,
   isUpdate = false,
-): ValidationResult<Waypoint> => {
+}: {
+  rawBody: unknown;
+  coordinates: RouteCoordinates[];
+  distance: number;
+  isUpdate?: boolean;
+}): ValidationResult<Waypoint> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
       ok: false,
@@ -200,11 +214,7 @@ export const validateWaypointBody = (
   }
 
   const normalizedPosition =
-    type === 'start'
-      ? 0
-      : type === 'end'
-        ? calculateDistance(coordinates)
-        : position;
+    type === 'start' ? 0 : type === 'end' ? distance : (position ?? 0);
 
   if (!isFiniteNumber(normalizedPosition) || normalizedPosition < 0) {
     return {
@@ -261,13 +271,13 @@ export const validateWaypointBody = (
   return {
     ok: true,
     value: {
-      id: isUpdate ? id : generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
-      description,
       coordinates: normalizedCoordinates,
       position: normalizedPosition,
       amenities: normalizedAmenities,
+      description,
     },
   };
 };
@@ -349,7 +359,7 @@ export const validateRouteBody = (
     };
   }
 
-  const normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
+  let normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
 
   if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
     return {
@@ -374,6 +384,14 @@ export const validateRouteBody = (
     };
   }
 
+  normalizedCoordinates = normalizedCoordinates.map((coordinate) => ({
+    ...coordinate,
+    lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
+    lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
+    elevation: roundNumber(coordinate.elevation, ELEVATION_DECIMALS),
+    distance: roundNumber(coordinate.distance, DISTANCE_DECIMALS),
+  }));
+
   if (waypoints !== undefined && !Array.isArray(waypoints)) {
     return {
       ok: false,
@@ -385,13 +403,15 @@ export const validateRouteBody = (
     };
   }
 
+  const routeDistance = calculateDistance(normalizedCoordinates);
   const normalizedWaypoints: Waypoint[] = [];
-  for (const waypoint of waypoints) {
-    const validation = validateWaypointBody(
-      waypoint,
-      normalizedCoordinates,
+  for (const waypoint of waypoints ?? []) {
+    const validation = validateWaypointBody({
+      rawBody: waypoint,
+      coordinates: normalizedCoordinates,
       isUpdate,
-    );
+      distance: routeDistance,
+    });
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -441,9 +461,9 @@ export const validateRouteBody = (
   return {
     ok: true,
     value: {
-      id: isUpdate ? id : generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
-      distance: calculateDistance(normalizedCoordinates),
+      distance: routeDistance,
       displayDistance,
       boundingBox: calculatedBoundingBox,
       coordinates: normalizedCoordinates,
@@ -512,6 +532,8 @@ export const validateCreateRunBody = (
     };
   }
 
+  const normalizedIsPublic = isPublic === true;
+
   if (typeof publicSlug !== 'string') {
     return {
       ok: false,
@@ -524,7 +546,6 @@ export const validateCreateRunBody = (
   }
 
   const normalizedPublicSlug = normalizePublicSlug(publicSlug);
-  const normalizedIsPublic = isPublic === true;
 
   if (!isValidPublicSlug(normalizedPublicSlug)) {
     return {
@@ -550,7 +571,7 @@ export const validateCreateRunBody = (
   }
 
   const normalizedPointsOfInterest: PointOfInterest[] = [];
-  for (const pointOfInterest of pointsOfInterest) {
+  for (const pointOfInterest of pointsOfInterest ?? []) {
     const validation = validatePointsOfInterestBody(pointOfInterest);
     if (!validation.ok) {
       return validation as ErrResult;
@@ -581,7 +602,7 @@ export const validateCreateRunBody = (
   }
 
   const normalizedRoutes: PublicRoute[] = [];
-  for (const route of routes) {
+  for (const route of routes ?? []) {
     const validation = validateRouteBody(route);
     if (!validation.ok) {
       return validation as ErrResult;
@@ -672,7 +693,7 @@ export const validateUpdateRunBody = (
   }
 
   const normalizedPointsOfInterest: PointOfInterest[] = [];
-  for (const pointOfInterest of pointsOfInterest) {
+  for (const pointOfInterest of pointsOfInterest ?? []) {
     const validation = validatePointsOfInterestBody(pointOfInterest, true);
     if (!validation.ok) {
       return validation as ErrResult;
@@ -703,7 +724,7 @@ export const validateUpdateRunBody = (
   }
 
   const normalizedRoutes: PublicRoute[] = [];
-  for (const route of routes) {
+  for (const route of routes ?? []) {
     const validation = validateRouteBody(route, true);
     if (!validation.ok) {
       return validation as ErrResult;

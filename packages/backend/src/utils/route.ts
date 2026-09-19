@@ -3,6 +3,12 @@ import type {
   Coordinates,
   ElevationStats,
 } from '../types/index.js';
+import {
+  ELEVATION_DECIMALS,
+  DISTANCE_DECIMALS,
+  COORDINATES_DECIMALS,
+} from '../config/constants.js';
+import { roundNumber } from './index.js';
 
 export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
   const minLat = Math.min(...coordinates.map((c) => c.lat));
@@ -11,8 +17,14 @@ export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
   const maxLng = Math.max(...coordinates.map((c) => c.lng));
 
   return [
-    { lat: minLat, lng: minLng },
-    { lat: maxLat, lng: maxLng },
+    {
+      lat: roundNumber(minLat, COORDINATES_DECIMALS),
+      lng: roundNumber(minLng, COORDINATES_DECIMALS),
+    },
+    {
+      lat: roundNumber(maxLat, COORDINATES_DECIMALS),
+      lng: roundNumber(maxLng, COORDINATES_DECIMALS),
+    },
   ];
 };
 
@@ -48,7 +60,7 @@ export const calculateDistance = (coordinates: Coordinates[]): number => {
     totalDistance += haversineDistance(coordinates[i], coordinates[i + 1]);
   }
 
-  return totalDistance;
+  return roundNumber(totalDistance, DISTANCE_DECIMALS);
 };
 
 export const getCoordinatesFromPosition = (
@@ -72,7 +84,10 @@ export const getCoordinatesFromPosition = (
     }
   }
 
-  return closestCoordinate;
+  return {
+    lat: roundNumber(closestCoordinate.lat, COORDINATES_DECIMALS),
+    lng: roundNumber(closestCoordinate.lng, COORDINATES_DECIMALS),
+  };
 };
 
 export const calculateElevationGain = (elevations: number[]): number => {
@@ -88,7 +103,7 @@ export const calculateElevationGain = (elevations: number[]): number => {
     }
   }
 
-  return totalGain;
+  return roundNumber(totalGain, ELEVATION_DECIMALS);
 };
 
 export const calculateElevationLoss = (elevations: number[]): number => {
@@ -104,7 +119,7 @@ export const calculateElevationLoss = (elevations: number[]): number => {
     }
   }
 
-  return totalLoss;
+  return roundNumber(totalLoss, ELEVATION_DECIMALS);
 };
 
 export const calculateMaxElevation = (
@@ -120,7 +135,7 @@ export const calculateMaxElevation = (
     }
   }
 
-  return { value: maxValue, index: maxIndex };
+  return { value: roundNumber(maxValue, ELEVATION_DECIMALS), index: maxIndex };
 };
 
 export const calculateMinElevation = (
@@ -136,7 +151,7 @@ export const calculateMinElevation = (
     }
   }
 
-  return { value: minValue, index: minIndex };
+  return { value: roundNumber(minValue, ELEVATION_DECIMALS), index: minIndex };
 };
 
 export const getElevationStats = (
