@@ -33,6 +33,7 @@ interface SidePanelContainerProps {
   activeRouteCoordinates: RouteCoordinates[];
   activeRouteBoundingBox?: BoundingBox;
   activeRouteElevationStats?: ElevationStats;
+  activeRouteError: Error | null;
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
@@ -60,6 +61,7 @@ export const SidePanelContainer = ({
   activeRouteBoundingBox,
   activeRouteElevationStats,
   activeRouteCoordinates,
+  activeRouteError,
   rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
@@ -183,6 +185,7 @@ export const SidePanelContainer = ({
               activeRouteCoordinates={activeRouteCoordinates}
               activeRouteBoundingBox={activeRouteBoundingBox}
               activeRouteElevationStats={activeRouteElevationStats}
+              activeRouteError={activeRouteError}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               currentWaypoints={waypointPanelState.currentItems}
               onAddWaypoint={handleAddWaypoint}

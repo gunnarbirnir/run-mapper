@@ -359,7 +359,19 @@ export const validateRouteBody = (
     };
   }
 
-  let normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
+  const normalizedCoordinates: RouteCoordinates[] = (coordinates ?? []).map(
+    (coordinate) => ({
+      ...coordinate,
+      lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
+      lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
+      elevation: coordinate.elevation
+        ? roundNumber(coordinate.elevation, ELEVATION_DECIMALS)
+        : undefined,
+      distance: coordinate.distance
+        ? roundNumber(coordinate.distance, DISTANCE_DECIMALS)
+        : undefined,
+    }),
+  );
 
   if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
     return {
@@ -383,14 +395,6 @@ export const validateRouteBody = (
       },
     };
   }
-
-  normalizedCoordinates = normalizedCoordinates.map((coordinate) => ({
-    ...coordinate,
-    lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
-    lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
-    elevation: roundNumber(coordinate.elevation, ELEVATION_DECIMALS),
-    distance: roundNumber(coordinate.distance, DISTANCE_DECIMALS),
-  }));
 
   if (waypoints !== undefined && !Array.isArray(waypoints)) {
     return {

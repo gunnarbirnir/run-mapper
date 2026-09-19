@@ -71,6 +71,7 @@ export const useActiveRoute = ({
   const [isLoadingRouteBetweenPoints, setIsLoadingRouteBetweenPoints] =
     useState(false);
   const [isLoadingRouteData, setIsLoadingRouteData] = useState(false);
+  const [activeRouteError, setActiveRouteError] = useState<Error | null>(null);
 
   const activeRouteCoordinatesValue = useMemo(
     () =>
@@ -95,6 +96,7 @@ export const useActiveRoute = ({
     setRouteData(null);
     setIsLoadingRouteBetweenPoints(false);
     setIsLoadingRouteData(false);
+    setActiveRouteError(null);
     cachedRouteBetweenPointsRef.current = {};
   }, []);
 
@@ -195,6 +197,8 @@ export const useActiveRoute = ({
               updatedActiveRouteCoordinates.push(...cachedRouteBetweenPoints);
             } else {
               setIsLoadingRouteBetweenPoints(true);
+              setActiveRouteError(null);
+
               const { data: routeBetweenPoints } =
                 await fetchRouteBetweenPoints({
                   startLat: previousPoint.lat,
@@ -228,7 +232,9 @@ export const useActiveRoute = ({
           setActiveRouteCoordinates(updatedActiveRouteCoordinates);
         }
       } catch {
-        // Ignore for now - Display some kind of toast
+        setActiveRouteError(
+          new Error('Failed to update active route coordinates'),
+        );
       } finally {
         if (!hasBeenCancelled) {
           setIsLoadingRouteBetweenPoints(false);
@@ -255,6 +261,8 @@ export const useActiveRoute = ({
       if (activeRouteCoordinates.length > 0) {
         try {
           setIsLoadingRouteData(true);
+          setActiveRouteError(null);
+
           const { data: routeData } = await fetchRouteData(
             activeRouteCoordinates,
           );
@@ -263,7 +271,7 @@ export const useActiveRoute = ({
             setRouteData(routeData);
           }
         } catch {
-          // Ignore for now
+          setActiveRouteError(new Error('Failed to update route data'));
         } finally {
           if (!hasBeenCancelled) {
             setIsLoadingRouteData(false);
@@ -297,6 +305,7 @@ export const useActiveRoute = ({
     selectedRoutePoint,
     isLoadingRouteBetweenPoints,
     isLoadingRouteData,
+    activeRouteError,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
     setSelectedRoutePoint,

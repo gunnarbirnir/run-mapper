@@ -89,6 +89,7 @@ export const RunEditor = ({
     activeRouteDistance,
     activeRouteBoundingBox,
     activeRouteElevationStats,
+    activeRouteError,
     isEditingRouteCoordinates,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
@@ -109,6 +110,7 @@ export const RunEditor = ({
           activeRouteElevationStats={activeRouteElevationStats}
           activeRouteCoordinates={activeRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
+          activeRouteError={activeRouteError}
           // Panel states
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}

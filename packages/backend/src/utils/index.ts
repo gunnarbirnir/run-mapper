@@ -57,9 +57,7 @@ export const isValidRouteCoordinates = (
   return (
     typeof routeCoordinates.id === 'string' &&
     typeof routeCoordinates.isControlPoint === 'boolean' &&
-    isValidCoordinates(routeCoordinates) &&
-    isFiniteNumber(routeCoordinates.elevation) &&
-    isFiniteNumber(routeCoordinates.distance)
+    isValidCoordinates(routeCoordinates)
   );
 };
 

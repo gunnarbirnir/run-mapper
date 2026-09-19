@@ -4,7 +4,7 @@ import { useCallback, useMemo, useEffect, useState } from 'react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
-import { Button, Dialog, Form, SidePanel } from '~/primitives';
+import { Button, Dialog, Form, SidePanel, StatusMessage } from '~/primitives';
 import {
   BoundingBox,
   RouteCoordinates,
@@ -27,6 +27,7 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   activeRouteCoordinates: RouteCoordinates[];
   activeRouteBoundingBox?: BoundingBox;
   activeRouteElevationStats?: ElevationStats;
+  activeRouteError: Error | null;
   isEditingRouteCoordinates: boolean;
   currentWaypoints: Waypoint[];
   onAddWaypoint: () => void;
@@ -63,6 +64,7 @@ export const RoutePanel = ({
   activeRouteCoordinates,
   activeRouteBoundingBox,
   activeRouteElevationStats,
+  activeRouteError,
   isEditingRouteCoordinates,
   currentWaypoints,
   onClose,
@@ -305,6 +307,11 @@ export const RoutePanel = ({
             >
               Edit coordinates
             </Button>
+          )}
+          {activeRouteError && (
+            <StatusMessage autoClear status="error" className="mt-3">
+              {activeRouteError.message}
+            </StatusMessage>
           )}
         </ItemsSection>
         <ItemsSection

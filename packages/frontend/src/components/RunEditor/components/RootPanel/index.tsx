@@ -191,34 +191,32 @@ export const RootPanel = ({
               {error.message}
             </StatusMessage>
           )}
-          <div className="flex flex-col gap-3">
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={!canSubmit || isDefaultValue}
+            isLoading={isSubmitting}
+          >
+            {isEditing ? 'Save run' : 'Create run'}
+          </Button>
+          <Button
+            className="w-full"
+            linkTo="/runs"
+            color="gray"
+            disabled={isSubmitting}
+          >
+            Back to runs
+          </Button>
+          {isEditing && (
             <Button
+              color="errorOutline"
               className="w-full"
-              type="submit"
-              disabled={!canSubmit || isDefaultValue}
-              isLoading={isSubmitting}
-            >
-              {isEditing ? 'Save run' : 'Create run'}
-            </Button>
-            <Button
-              className="w-full"
-              linkTo="/runs"
-              color="gray"
+              onClick={() => setIsDeleteDialogOpen(true)}
               disabled={isSubmitting}
             >
-              Back to runs
+              {isSmallScreen ? 'Delete' : 'Delete run'}
             </Button>
-            {isEditing && (
-              <Button
-                color="errorOutline"
-                className="w-full"
-                onClick={() => setIsDeleteDialogOpen(true)}
-                disabled={isSubmitting}
-              >
-                {isSmallScreen ? 'Delete' : 'Delete run'}
-              </Button>
-            )}
-          </div>
+          )}
         </section>
         {onDeleteRun && (
           <Dialog
