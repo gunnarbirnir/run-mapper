@@ -298,7 +298,7 @@ export const validateRouteBody = (
   }
 
   const body = rawBody as PublicRoute;
-  const { id, name, displayDistance, coordinates, waypoints } = body;
+  const { id, name, displayDistance, coordinates = [], waypoints } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -359,32 +359,7 @@ export const validateRouteBody = (
     };
   }
 
-  const normalizedCoordinates: RouteCoordinates[] = (coordinates ?? []).map(
-    (coordinate) => ({
-      ...coordinate,
-      lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
-      lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
-      elevation: coordinate.elevation
-        ? roundNumber(coordinate.elevation, ELEVATION_DECIMALS)
-        : undefined,
-      distance: coordinate.distance
-        ? roundNumber(coordinate.distance, DISTANCE_DECIMALS)
-        : undefined,
-    }),
-  );
-
-  if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
-    return {
-      ok: false,
-      error: {
-        status: 400,
-        error: 'Invalid payload',
-        message: `routes.coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
-      },
-    };
-  }
-
-  if (!normalizedCoordinates.every(isValidRouteCoordinates)) {
+  if (!coordinates.every(isValidRouteCoordinates())) {
     return {
       ok: false,
       error: {
@@ -395,6 +370,27 @@ export const validateRouteBody = (
       },
     };
   }
+
+  if (coordinates.length > MAX_ROUTE_COORDINATES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes.coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
+      },
+    };
+  }
+
+  const normalizedCoordinates: RouteCoordinates[] = coordinates.map(
+    (coordinate) => ({
+      ...coordinate,
+      lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
+      lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
+      elevation: roundNumber(coordinate.elevation ?? 0, ELEVATION_DECIMALS),
+      distance: roundNumber(coordinate.distance ?? 0, DISTANCE_DECIMALS),
+    }),
+  );
 
   if (waypoints !== undefined && !Array.isArray(waypoints)) {
     return {
@@ -802,7 +798,7 @@ export const validateRouteDataBody = (
     };
   }
 
-  if (!normalizedCoordinates.every(isValidRouteCoordinates)) {
+  if (!normalizedCoordinates.every(isValidRouteCoordinates(false))) {
     return {
       ok: false,
       error: {

@@ -48,10 +48,10 @@ const routeFormSchema = z.object({
       z.object({
         id: z.string(),
         isControlPoint: z.boolean(),
-        elevation: z.number(),
-        distance: z.number(),
         lat: z.number(),
         lng: z.number(),
+        elevation: z.number().or(z.undefined()),
+        distance: z.number().or(z.undefined()),
       }),
     )
     .min(2, 'At least 2 coordinates are required'),
@@ -174,8 +174,9 @@ export const RoutePanel = ({
     onCoordinatesChange(
       activeRouteCoordinates.map((coordinate) => ({
         ...coordinate,
-        elevation: coordinate.elevation ?? 0,
-        distance: coordinate.distance ?? 0,
+        // Required for types to match
+        elevation: coordinate.elevation,
+        distance: coordinate.distance,
       })),
     );
     onCoordinatesBlur();

@@ -93,7 +93,7 @@ const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
     boundingBox: isValidBoundingBox(route.boundingBox)
       ? route.boundingBox
       : DEFAULT_BOUNDING_BOX,
-    coordinates: route.coordinates.filter(isValidRouteCoordinates),
+    coordinates: route.coordinates.filter(isValidRouteCoordinates()),
     waypoints: route.waypoints
       .map(sanitizeWaypoint)
       .filter(Boolean) as Waypoint[],

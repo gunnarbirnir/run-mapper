@@ -49,17 +49,23 @@ export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
   return isValidCoordinates(value[0]) && isValidCoordinates(value[1]);
 };
 
-export const isValidRouteCoordinates = (
-  value: unknown,
-): value is RouteCoordinates => {
-  const routeCoordinates = value as RouteCoordinates;
+export const isValidRouteCoordinates =
+  (calculationsRequired = true) =>
+  (value: unknown): value is RouteCoordinates => {
+    const routeCoordinates = value as RouteCoordinates;
+    const isValidCalc = (val: unknown) => isFiniteNumber(val) && val >= 0;
+    const calculationsValid =
+      !calculationsRequired ||
+      (isValidCalc(routeCoordinates.elevation) &&
+        isValidCalc(routeCoordinates.distance));
 
-  return (
-    typeof routeCoordinates.id === 'string' &&
-    typeof routeCoordinates.isControlPoint === 'boolean' &&
-    isValidCoordinates(routeCoordinates)
-  );
-};
+    return (
+      typeof routeCoordinates.id === 'string' &&
+      typeof routeCoordinates.isControlPoint === 'boolean' &&
+      isValidCoordinates(routeCoordinates) &&
+      calculationsValid
+    );
+  };
 
 export const isValidWaypointType = (value: unknown): value is WaypointType => {
   return WAYPOINT_VALUES.includes(value as WaypointType);
