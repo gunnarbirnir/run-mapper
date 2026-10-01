@@ -1,6 +1,12 @@
 import { useField, useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
-import { useCallback, useMemo, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useEffect,
+  useState,
+  useLayoutEffect,
+} from 'react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
@@ -91,8 +97,9 @@ export const RoutePanel = ({
   const [routeDistanceCached, setRouteDistanceCached] =
     useState(activeRouteDistance);
 
-  useEffect(() => {
-    if (!isAnimatingPanel && showPanel) {
+  // Layout effect to prevent flicker of invalid waypoints
+  useLayoutEffect(() => {
+    if (!isAnimatingPanel || showPanel) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRouteDistanceCached(activeRouteDistance);
     }
@@ -118,6 +125,13 @@ export const RoutePanel = ({
   const hasDefaultWaypoints = useMemo(() => {
     return isUnchangedDefaultWaypoints(currentWaypoints);
   }, [currentWaypoints]);
+  const sortedWaypoints = useMemo(
+    () => [...currentWaypoints].sort(sortWaypoints),
+    [currentWaypoints],
+  );
+  const waypointLayoutDependency = sortedWaypoints
+    .map((waypoint) => waypoint.id)
+    .join();
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -342,12 +356,17 @@ export const RoutePanel = ({
           buttonLabel="Add waypoint"
           onAddClick={!isEditingRouteCoordinates ? onAddWaypoint : undefined}
         >
-          {currentWaypoints.length > 0 ? (
-            <motion.div layout className="space-y-3">
-              {currentWaypoints.sort(sortWaypoints).map((waypoint) => (
+          {sortedWaypoints.length > 0 ? (
+            <motion.div
+              layout
+              layoutDependency={waypointLayoutDependency}
+              className="space-y-3"
+            >
+              {sortedWaypoints.map((waypoint) => (
                 <WaypointItem
                   key={waypoint.id}
                   waypoint={waypoint}
+                  layoutDependency={waypointLayoutDependency}
                   error={
                     !['start', 'end'].includes(waypoint.type) &&
                     waypoint.position > routeDistanceCached

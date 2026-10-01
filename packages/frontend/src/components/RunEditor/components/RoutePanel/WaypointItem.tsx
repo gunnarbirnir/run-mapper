@@ -9,17 +9,20 @@ import { cn } from '~/utils';
 interface WaypointItemProps {
   waypoint: Waypoint;
   error?: boolean;
+  layoutDependency?: string;
   onEditWaypoint: (id: string) => void;
 }
 
 export const WaypointItem = ({
   waypoint: { id, name, type },
   error = false,
+  layoutDependency,
   onEditWaypoint,
 }: WaypointItemProps) => {
   return (
     <motion.div
       layout
+      layoutDependency={layoutDependency}
       transition={{
         ease: DEFAULT_EASING,
         duration: DEFAULT_FADE_IN_DURATION,
