@@ -14,6 +14,7 @@ interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
   selectedRoutePoint: string | null;
   activeRouteControlPoints: RouteCoordinates[];
+  isLoadingRouteBetweenPoints: boolean;
   setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
@@ -22,6 +23,7 @@ export const RouteCoordinatesToolbar = ({
   isEditingRouteCoordinates,
   selectedRoutePoint,
   activeRouteControlPoints,
+  isLoadingRouteBetweenPoints,
   setActiveRouteControlPoints,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
@@ -105,7 +107,11 @@ export const RouteCoordinatesToolbar = ({
             </div>
             <div className="flex items-center gap-2">
               <Tooltip label="Save">
-                <RoundButton onClick={onSave} color="success">
+                <RoundButton
+                  onClick={onSave}
+                  color="success"
+                  disabled={isLoadingRouteBetweenPoints}
+                >
                   <Icon name="checkmark" className="size-5.5" />
                 </RoundButton>
               </Tooltip>

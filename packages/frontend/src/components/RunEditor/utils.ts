@@ -35,24 +35,19 @@ export const isUnchangedDefaultWaypoints = (waypoints: Waypoint[]) => {
   );
 };
 
-export const sortWaypoints =
-  (routeDistance: number) => (a: Waypoint, b: Waypoint) => {
-    const getSortValue = (w: Waypoint) => {
-      return {
-        primary:
-          w.type === 'start'
-            ? 0
-            : w.type === 'end'
-              ? routeDistance
-              : w.position || 0,
-        secondary: w.type === 'start' ? -1 : w.type === 'end' ? 1 : 0,
-      };
+export const sortWaypoints = (a: Waypoint, b: Waypoint) => {
+  const getSortValue = (w: Waypoint) => {
+    return {
+      primary:
+        w.type === 'start' ? 0 : w.type === 'end' ? Infinity : w.position || 0,
+      secondary: w.type === 'start' ? -1 : w.type === 'end' ? 1 : 0,
     };
-    const aValue = getSortValue(a);
-    const bValue = getSortValue(b);
-
-    if (aValue.primary === bValue.primary) {
-      return aValue.secondary - bValue.secondary;
-    }
-    return aValue.primary - bValue.primary;
   };
+  const aValue = getSortValue(a);
+  const bValue = getSortValue(b);
+
+  if (aValue.primary === bValue.primary) {
+    return aValue.secondary - bValue.secondary;
+  }
+  return aValue.primary - bValue.primary;
+};

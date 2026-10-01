@@ -28,6 +28,8 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   activeRouteBoundingBox?: BoundingBox;
   activeRouteElevationStats?: ElevationStats;
   activeRouteError: Error | null;
+  isLoadingRouteData: boolean;
+  isLoadingRouteBetweenPoints: boolean;
   isEditingRouteCoordinates: boolean;
   currentWaypoints: Waypoint[];
   onAddWaypoint: () => void;
@@ -66,6 +68,10 @@ export const RoutePanel = ({
   activeRouteElevationStats,
   activeRouteError,
   isEditingRouteCoordinates,
+  isLoadingRouteData,
+  isLoadingRouteBetweenPoints,
+  showPanel,
+  isAnimatingPanel,
   currentWaypoints,
   onClose,
   onUpdateItem,
@@ -81,6 +87,16 @@ export const RoutePanel = ({
   const nameId = useId('route-name');
   const distanceId = useId('route-distance');
   const [coordinatesDialogOpen, setCoordinatesDialogOpen] = useState(false);
+  // To prevent flickering when animating the panel
+  const [routeDistanceCached, setRouteDistanceCached] =
+    useState(activeRouteDistance);
+
+  useEffect(() => {
+    if (!isAnimatingPanel && showPanel) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRouteDistanceCached(activeRouteDistance);
+    }
+  }, [activeRouteDistance, isAnimatingPanel, showPanel]);
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -117,7 +133,7 @@ export const RoutePanel = ({
           ? Number(value.displayDistance)
           : undefined,
         boundingBox:
-          activeRouteBoundingBox || getBoundingBox(value.coordinates),
+          activeRouteBoundingBox ?? getBoundingBox(value.coordinates),
         coordinates: activeRouteCoordinates,
         elevationStats: activeRouteElevationStats ?? {
           elevationGain: 0,
@@ -144,7 +160,8 @@ export const RoutePanel = ({
   const isDefaultValue =
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
     !hasMadeWaypointChanges;
-  const disableSubmit = isDefaultValue || isEditingRouteCoordinates;
+  const disableSubmit =
+    isDefaultValue || isEditingRouteCoordinates || isLoadingRouteData;
 
   const {
     state: { value: coordinatesValue },
@@ -189,7 +206,9 @@ export const RoutePanel = ({
   ]);
 
   const cancelEditRouteCoordinates = useCallback(() => {
-    setActiveRouteControlPoints(coordinatesValue);
+    setActiveRouteControlPoints(
+      coordinatesValue.filter((coordinate) => coordinate.isControlPoint),
+    );
     setIsEditingRouteCoordinates(false);
   }, [
     coordinatesValue,
@@ -277,8 +296,8 @@ export const RoutePanel = ({
         <ItemsSection
           title="Coordinates"
           emptyText={
-            activeRouteDistance
-              ? `Route distance: ${formatNumber(activeRouteDistance, 2)} km`
+            routeDistanceCached
+              ? `Route distance: ${formatNumber(routeDistanceCached, 2)} km`
               : 'The route itself is created in the map. Click the button below to start editing the route.'
           }
           showEmptyText
@@ -288,6 +307,7 @@ export const RoutePanel = ({
               <Button
                 color="success"
                 size="small"
+                disabled={isLoadingRouteBetweenPoints}
                 onClick={saveRouteCoordinates}
               >
                 Save
@@ -324,16 +344,17 @@ export const RoutePanel = ({
         >
           {currentWaypoints.length > 0 ? (
             <motion.div layout className="space-y-3">
-              {currentWaypoints
-                .sort(sortWaypoints(activeRouteDistance))
-                .map((waypoint) => (
-                  <WaypointItem
-                    key={waypoint.id}
-                    waypoint={waypoint}
-                    error={waypoint.position > activeRouteDistance}
-                    onEditWaypoint={onEditWaypoint}
-                  />
-                ))}
+              {currentWaypoints.sort(sortWaypoints).map((waypoint) => (
+                <WaypointItem
+                  key={waypoint.id}
+                  waypoint={waypoint}
+                  error={
+                    !['start', 'end'].includes(waypoint.type) &&
+                    waypoint.position > routeDistanceCached
+                  }
+                  onEditWaypoint={onEditWaypoint}
+                />
+              ))}
             </motion.div>
           ) : null}
         </ItemsSection>

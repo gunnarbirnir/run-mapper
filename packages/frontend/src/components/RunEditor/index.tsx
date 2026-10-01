@@ -91,6 +91,8 @@ export const RunEditor = ({
     activeRouteElevationStats,
     activeRouteError,
     isEditingRouteCoordinates,
+    isLoadingRouteData,
+    isLoadingRouteBetweenPoints,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
   } = activeRouteState;
@@ -111,6 +113,8 @@ export const RunEditor = ({
           activeRouteCoordinates={activeRouteCoordinates}
           isEditingRouteCoordinates={isEditingRouteCoordinates}
           activeRouteError={activeRouteError}
+          isLoadingRouteData={isLoadingRouteData}
+          isLoadingRouteBetweenPoints={isLoadingRouteBetweenPoints}
           // Panel states
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}

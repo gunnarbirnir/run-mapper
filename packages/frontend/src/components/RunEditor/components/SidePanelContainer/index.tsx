@@ -34,6 +34,8 @@ interface SidePanelContainerProps {
   activeRouteBoundingBox?: BoundingBox;
   activeRouteElevationStats?: ElevationStats;
   activeRouteError: Error | null;
+  isLoadingRouteData: boolean;
+  isLoadingRouteBetweenPoints: boolean;
   rootPanelState: RootPanelState;
   routePanelState: PanelState<PublicRoute>;
   pointOfInterestPanelState: PanelState<PointOfInterest>;
@@ -62,6 +64,8 @@ export const SidePanelContainer = ({
   activeRouteElevationStats,
   activeRouteCoordinates,
   activeRouteError,
+  isLoadingRouteData,
+  isLoadingRouteBetweenPoints,
   rootPanelState,
   routePanelState,
   pointOfInterestPanelState,
@@ -185,6 +189,8 @@ export const SidePanelContainer = ({
               activeRouteCoordinates={activeRouteCoordinates}
               activeRouteBoundingBox={activeRouteBoundingBox}
               activeRouteElevationStats={activeRouteElevationStats}
+              isLoadingRouteData={isLoadingRouteData}
+              isLoadingRouteBetweenPoints={isLoadingRouteBetweenPoints}
               activeRouteError={activeRouteError}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               currentWaypoints={waypointPanelState.currentItems}

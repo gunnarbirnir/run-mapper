@@ -66,6 +66,7 @@ export const EditorMap = ({
   isEditingRouteCoordinates,
   selectedRoutePoint,
   isLoadingRouteData,
+  isLoadingRouteBetweenPoints,
   // Panel states
   rootPanelIsAnimating,
   routePanelIsOpen,
@@ -237,6 +238,7 @@ export const EditorMap = ({
         isEditingRouteCoordinates={isEditingRouteCoordinates}
         selectedRoutePoint={selectedRoutePoint}
         activeRouteControlPoints={activeRouteControlPoints}
+        isLoadingRouteBetweenPoints={isLoadingRouteBetweenPoints}
         setActiveRouteControlPoints={setActiveRouteControlPoints}
         editRouteActionsRef={editRouteActionsRef}
       />
