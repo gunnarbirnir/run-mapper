@@ -75,7 +75,10 @@ export interface EditorRun extends PublicRun {
   isPublic: boolean;
 }
 
-export type RunUpdate = Omit<EditorRun, 'id' | 'createdAt' | 'updatedAt'>;
+export type RunUpdate = Omit<
+  EditorRun,
+  'id' | 'createdAt' | 'updatedAt' | 'isPublic'
+>;
 
 export interface ListRun {
   id: string;

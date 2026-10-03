@@ -14,9 +14,6 @@ import type { AuthContext } from '../middleware/auth.js';
  * Thin layer that delegates to services and formats responses
  */
 export class RunController {
-  /**
-   * GET /runs/list - List all runs for authenticated user
-   */
   async getRunsList(c: AuthContext) {
     try {
       const userId = c.user?.uid;
@@ -50,9 +47,6 @@ export class RunController {
     }
   }
 
-  /**
-   * GET /runs/editor/:id - Get a specific run for authenticated user
-   */
   async getUserRun(c: AuthContext) {
     try {
       const userId = c.user?.uid;
@@ -96,9 +90,6 @@ export class RunController {
     }
   }
 
-  /**
-   * POST /runs/editor - Create a new run
-   */
   async createRun(c: AuthContext) {
     try {
       const userId = c.user?.uid;
@@ -179,9 +170,6 @@ export class RunController {
     }
   }
 
-  /**
-   * PUT /runs/editor/:id - Update existing run
-   */
   async updateRun(c: AuthContext) {
     try {
       const userId = c.user?.uid;
@@ -259,9 +247,6 @@ export class RunController {
     }
   }
 
-  /**
-   * DELETE /runs/editor/:id - Delete a run
-   */
   async deleteRun(c: AuthContext) {
     try {
       const userId = c.user?.uid;
@@ -305,9 +290,6 @@ export class RunController {
     }
   }
 
-  /**
-   * GET /runs/public/:slug - Get a public run by slug
-   */
   async getPublicRun(c: Context) {
     try {
       const slug = normalizePublicSlug(c.req.param('slug'));
@@ -345,6 +327,90 @@ export class RunController {
         {
           success: false,
           error: 'Failed to fetch public run',
+          message: 'An unexpected error occurred',
+        },
+        500,
+      );
+    }
+  }
+
+  async publishRun(c: AuthContext) {
+    try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
+      const runId = c.req.param('id');
+      const published = await runService.publishRun(runId, userId);
+      if (!published) {
+        return c.json(
+          {
+            success: false,
+            error: 'Run not found',
+          },
+          404,
+        );
+      }
+
+      return c.json({
+        success: true,
+        data: { id: runId },
+      });
+    } catch (error) {
+      console.error('Error publishing run:', error);
+      return c.json(
+        {
+          success: false,
+          error: 'Failed to publish run',
+          message: 'An unexpected error occurred',
+        },
+        500,
+      );
+    }
+  }
+
+  async unpublishRun(c: AuthContext) {
+    try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
+      const runId = c.req.param('id');
+      const unpublished = await runService.unpublishRun(runId, userId);
+      if (!unpublished) {
+        return c.json(
+          {
+            success: false,
+            error: 'Run not found',
+          },
+          404,
+        );
+      }
+
+      return c.json({
+        success: true,
+        data: { id: runId },
+      });
+    } catch (error) {
+      console.error('Error unpublishing run:', error);
+      return c.json(
+        {
+          success: false,
+          error: 'Failed to unpublish run',
           message: 'An unexpected error occurred',
         },
         500,

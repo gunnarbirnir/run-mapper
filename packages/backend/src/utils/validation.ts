@@ -491,7 +491,6 @@ export const validateCreateRunBody = (
   const {
     name,
     // defaultRouteId,
-    isPublic,
     publicSlug,
     pointsOfInterest,
     routes,
@@ -520,19 +519,6 @@ export const validateCreateRunBody = (
       },
     };
   }
-
-  if (isPublic !== undefined && typeof isPublic !== 'boolean') {
-    return {
-      ok: false,
-      error: {
-        status: 400,
-        error: 'Invalid payload',
-        message: 'isPublic must be a boolean',
-      },
-    };
-  }
-
-  const normalizedIsPublic = isPublic === true;
 
   if (typeof publicSlug !== 'string') {
     return {
@@ -625,7 +611,7 @@ export const validateCreateRunBody = (
     ok: true,
     value: {
       name: normalizedName,
-      isPublic: normalizedIsPublic,
+      isPublic: false,
       publicSlug: normalizedPublicSlug,
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,

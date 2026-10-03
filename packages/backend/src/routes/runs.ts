@@ -15,6 +15,12 @@ runs.get('/editor/:id', (c: AuthContext) => runController.getUserRun(c));
 runs.post('/editor', (c: AuthContext) => runController.createRun(c));
 runs.put('/editor/:id', (c: AuthContext) => runController.updateRun(c));
 runs.delete('/editor/:id', (c: AuthContext) => runController.deleteRun(c));
+runs.put('/editor/publish/:id', (c: AuthContext) =>
+  runController.publishRun(c),
+);
+runs.put('/editor/unpublish/:id', (c: AuthContext) =>
+  runController.unpublishRun(c),
+);
 
 // Public read-only route by slug
 runs.get('/public/:slug', (c) => runController.getPublicRun(c));

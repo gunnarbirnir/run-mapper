@@ -22,8 +22,11 @@ interface RunEditorProps {
   error?: Error | null;
   successMessage?: string | null;
   isDeleting?: boolean;
+  isUpdatingPublicStatus?: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
+  onPublishRun?: () => Promise<unknown>;
+  onUnpublishRun?: () => Promise<unknown>;
 }
 
 export const RunEditor = ({
@@ -31,8 +34,11 @@ export const RunEditor = ({
   error,
   successMessage,
   isDeleting = false,
+  isUpdatingPublicStatus = false,
   onSubmit,
   onDeleteRun,
+  onPublishRun,
+  onUnpublishRun,
 }: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
@@ -165,7 +171,12 @@ export const RunEditor = ({
             onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
             onEditWaypoint={rootPanelState.onEditWaypoint}
           />
-          <EditorFooter />
+          <EditorFooter
+            existingRun={existingRun}
+            isUpdatingPublicStatus={isUpdatingPublicStatus}
+            onPublishRun={onPublishRun}
+            onUnpublishRun={onUnpublishRun}
+          />
         </div>
       </div>
     </IdProvider>

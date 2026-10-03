@@ -6,9 +6,6 @@ import type { RunRecordWithId, RunRecord } from '../types/index.js';
  * Pure data access, no business logic
  */
 export class RunRepository {
-  /**
-   * Get all runs for a user
-   */
   async findByUserId(userId: string): Promise<RunRecordWithId[]> {
     const runsSnapshot = await db
       .collection('runs')
@@ -21,9 +18,6 @@ export class RunRepository {
     })) as RunRecordWithId[];
   }
 
-  /**
-   * Get a run by ID
-   */
   async findById(runId: string): Promise<RunRecordWithId | null> {
     const runDoc = await db.collection('runs').doc(runId).get();
     if (!runDoc.exists) {
@@ -36,9 +30,6 @@ export class RunRepository {
     } as RunRecordWithId;
   }
 
-  /**
-   * Get a run by ID that belongs to a specific user
-   */
   async findByIdAndUserId(
     runId: string,
     userId: string,
@@ -50,18 +41,15 @@ export class RunRepository {
     return run;
   }
 
-  /**
-   * Create a new run
-   */
   async create(runData: RunRecord): Promise<{ id: string }> {
     const runRef = await db.collection('runs').add(runData);
     return { id: runRef.id };
   }
 
-  /**
-   * Update a run's public status and slug
-   */
-  async update(runId: string, runData: RunRecord): Promise<RunRecordWithId> {
+  async update(
+    runId: string,
+    runData: Partial<RunRecord>,
+  ): Promise<RunRecordWithId> {
     const runRef = db.collection('runs').doc(runId);
     await runRef.update(runData);
     const updatedRunDoc = await runRef.get();
@@ -72,9 +60,6 @@ export class RunRepository {
     } as RunRecordWithId;
   }
 
-  /**
-   * Delete a run
-   */
   async delete(runId: string): Promise<boolean> {
     const runRef = db.collection('runs').doc(runId);
     const runDoc = await runRef.get();
@@ -87,9 +72,6 @@ export class RunRepository {
     return true;
   }
 
-  /**
-   * Check if a public slug is already in use
-   */
   async slugExists(slug: string, excludeRunId?: string): Promise<boolean> {
     const runsSnapshot = await db
       .collection('runs')
@@ -110,9 +92,6 @@ export class RunRepository {
     return true;
   }
 
-  /**
-   * Find a public run by slug
-   */
   async findRunBySlug(slug: string): Promise<RunRecordWithId | null> {
     const runsSnapshot = await db
       .collection('runs')

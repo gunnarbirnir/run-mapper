@@ -76,7 +76,6 @@ export const RootPanel = ({
     onSubmit: async ({ value }) => {
       const updatedRun = {
         name: value.name,
-        isPublic: true,
         publicSlug: value.publicSlug,
         routes: currentRoutes,
         pointsOfInterest: currentPointsOfInterest,

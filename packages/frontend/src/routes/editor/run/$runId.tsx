@@ -14,8 +14,25 @@ export const Route = createFileRoute('/editor/run/$runId')({
 function ExistingRunEditor() {
   const { runId } = Route.useParams();
   const navigate = useNavigate();
+  const [updatedRunData, setUpdatedRunData] = useState<Partial<EditorRun>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [editorError, setEditorError] = useState<Error | null>(null);
   const encodedRunId = encodeURIComponent(runId);
+
+  const handleSuccess = useCallback(
+    (message: string) => {
+      setSuccessMessage(message);
+      setEditorError(null);
+    },
+    [setSuccessMessage, setEditorError],
+  );
+  const handleError = useCallback(
+    (error: Error) => {
+      setSuccessMessage(null);
+      setEditorError(error);
+    },
+    [setSuccessMessage, setEditorError],
+  );
 
   const {
     data: existingRun,
@@ -25,39 +42,56 @@ function ExistingRunEditor() {
     queryKey: ['editor-run', runId],
     queryFn: () => api.get(`/runs/editor/${encodedRunId}`),
   });
-  const {
-    data: updatedRun,
-    mutateAsync: updateRun,
-    error: updateError,
-  } = useMutation<ApiResponse<EditorRun>, Error, RunUpdate>({
+  const { data: updatedRun, mutateAsync: updateRun } = useMutation<
+    ApiResponse<EditorRun>,
+    Error,
+    RunUpdate
+  >({
     mutationFn: (updatedRun: RunUpdate) =>
       api.put(`/runs/editor/${encodedRunId}`, updatedRun),
     onSuccess: () => {
-      setSuccessMessage('Run updated successfully');
+      handleSuccess('Run updated successfully');
     },
+    onError: handleError,
   });
-  const {
-    mutateAsync: deleteRun,
-    isPending: isDeleting,
-    error: deleteError,
-  } = useMutation<ApiResponse<void>, Error>({
+  const { mutateAsync: deleteRun, isPending: isDeleting } = useMutation<
+    ApiResponse<void>,
+    Error
+  >({
     mutationFn: () => api.delete(`/runs/editor/${encodedRunId}`),
     onSuccess: () => {
       navigate({ to: '/runs' });
     },
+    onError: handleError,
   });
-
-  const onSubmit = useCallback(
-    (updatedRun: RunUpdate) => {
-      setSuccessMessage(null);
-      return updateRun(updatedRun);
+  const { mutateAsync: publishRun, isPending: isPublishing } = useMutation<
+    ApiResponse<EditorRun>,
+    Error
+  >({
+    mutationFn: () => api.put(`/runs/editor/publish/${encodedRunId}`),
+    onSuccess: () => {
+      handleSuccess('Run published');
+      setUpdatedRunData((currentData) => ({
+        ...currentData,
+        isPublic: true,
+      }));
     },
-    [updateRun],
-  );
-  const onDeleteRun = useCallback(() => {
-    setSuccessMessage(null);
-    return deleteRun();
-  }, [deleteRun]);
+    onError: handleError,
+  });
+  const { mutateAsync: unpublishRun, isPending: isUnpublishing } = useMutation<
+    ApiResponse<EditorRun>,
+    Error
+  >({
+    mutationFn: () => api.put(`/runs/editor/unpublish/${encodedRunId}`),
+    onSuccess: () => {
+      handleSuccess('Run unpublished');
+      setUpdatedRunData((currentData) => ({
+        ...currentData,
+        isPublic: false,
+      }));
+    },
+    onError: handleError,
+  });
 
   if (error) {
     return (
@@ -70,15 +104,23 @@ function ExistingRunEditor() {
     );
   }
 
+  const currentRunData = {
+    ...(updatedRun || existingRun)?.data,
+    ...updatedRunData,
+  } as EditorRun;
+
   return (
     <PageLayout isFullWidth footerHasShadow isLoading={isLoading}>
       <RunEditor
-        existingRun={(updatedRun || existingRun)?.data}
-        error={updateError || deleteError}
+        existingRun={currentRunData}
+        error={editorError}
         successMessage={successMessage}
         isDeleting={isDeleting}
-        onSubmit={onSubmit}
-        onDeleteRun={onDeleteRun}
+        isUpdatingPublicStatus={isPublishing || isUnpublishing}
+        onSubmit={updateRun}
+        onDeleteRun={deleteRun}
+        onPublishRun={publishRun}
+        onUnpublishRun={unpublishRun}
       />
     </PageLayout>
   );
