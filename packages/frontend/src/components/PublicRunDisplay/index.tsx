@@ -18,6 +18,7 @@ import { ElevationGraph } from '../ElevationGraph';
 
 export const PublicRunDisplay = ({
   run,
+  // TODO: Handle no routes
   routeId,
   isFullscreen = false,
 }: PublicRunDisplayProps) => {

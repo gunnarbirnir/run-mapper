@@ -218,7 +218,7 @@ export const EditorMap = ({
   });
 
   return (
-    <div className="bg-secondary-100 relative flex h-full w-full flex-1">
+    <div className="bg-secondary-100 relative isolate flex h-full w-full">
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
         {showRouteStats && (

@@ -1,22 +1,30 @@
 import { useState } from 'react';
 
-import { Button, Dialog } from '~/primitives';
+import { Button, Dialog, Tooltip } from '~/primitives';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { cn } from '~/utils';
 import { EditorRun } from '~/types';
 
 interface EditorFooterProps {
   existingRun?: EditorRun;
+  hasMadeChanges: boolean;
   isUpdatingPublicStatus: boolean;
+  hidePreviewButton: boolean;
+  showPublicDisplayPreview: boolean;
   onPublishRun?: () => Promise<unknown>;
   onUnpublishRun?: () => Promise<unknown>;
+  setShowPublicDisplayPreview: (show: boolean) => void;
 }
 
 export const EditorFooter = ({
   existingRun,
+  hasMadeChanges,
   isUpdatingPublicStatus,
+  hidePreviewButton,
+  showPublicDisplayPreview,
   onPublishRun,
   onUnpublishRun,
+  setShowPublicDisplayPreview,
 }: EditorFooterProps) => {
   const { isSmallScreen, isMediumScreen } = useMediaQuery();
   const [isUnpublishDialogOpen, setIsUnpublishDialogOpen] = useState(false);
@@ -24,6 +32,7 @@ export const EditorFooter = ({
   const isPublic = Boolean(existingRun?.isPublic);
   const isEditingRun = Boolean(existingRun);
   const showLeftSection = isEditingRun && !isMediumScreen;
+  const disablePreview = !showPublicDisplayPreview && hasMadeChanges;
 
   return (
     <div
@@ -34,20 +43,35 @@ export const EditorFooter = ({
       )}
     >
       {showLeftSection && (
-        <div className="flex items-center gap-2">
-          {/* TODO: Preview run */}
-          <Button
-            color="gray"
-            disabled
-            onClick={() => console.log('Preview run')}
-          >
-            Preview
-          </Button>
-          {/* TODO: Embed run */}
-          <Button color="gray" onClick={() => console.log('Embed run')}>
-            Embed
-          </Button>
-        </div>
+        <Tooltip.Provider>
+          <div className="flex items-center gap-2">
+            {!hidePreviewButton && (
+              <Tooltip
+                disabled={showPublicDisplayPreview}
+                label={
+                  disablePreview
+                    ? 'Save changes to preview'
+                    : 'Preview public display of run'
+                }
+              >
+                <Button
+                  color={showPublicDisplayPreview ? 'black' : 'gray'}
+                  disabled={disablePreview}
+                  onClick={() =>
+                    setShowPublicDisplayPreview(!showPublicDisplayPreview)
+                  }
+                >
+                  {showPublicDisplayPreview ? 'Close preview' : 'Preview'}
+                </Button>
+              </Tooltip>
+            )}
+            <Tooltip label="Embed run on your site">
+              <Button color="gray" onClick={() => console.log('Embed run')}>
+                Embed
+              </Button>
+            </Tooltip>
+          </div>
+        </Tooltip.Provider>
       )}
       <Button
         color={isPublic ? 'errorOutline' : 'successOutline'}

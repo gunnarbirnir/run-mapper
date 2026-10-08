@@ -1,6 +1,6 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
@@ -35,6 +35,7 @@ interface RootPanelProps {
   onEditPointOfInterest: (id: string) => void;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
+  setHasMadeChanges: (hasMadeChanges: boolean) => void;
 }
 
 const rootFormSchema = z.object({
@@ -57,6 +58,7 @@ export const RootPanel = ({
   onEditPointOfInterest,
   onSubmit,
   onDeleteRun,
+  setHasMadeChanges,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
@@ -91,6 +93,10 @@ export const RootPanel = ({
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
   const isCreatingRun = isSubmitting && !isEditing;
+
+  useEffect(() => {
+    setHasMadeChanges(!isDefaultValue);
+  }, [setHasMadeChanges, isDefaultValue]);
 
   return (
     <SidePanel.Content

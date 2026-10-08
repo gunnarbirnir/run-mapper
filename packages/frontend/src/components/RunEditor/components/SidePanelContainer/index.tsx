@@ -44,6 +44,7 @@ interface SidePanelContainerProps {
   isEditingPoiCoordinates: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
+  setHasMadeChanges: (hasMadeChanges: boolean) => void;
   setActiveRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
@@ -74,6 +75,7 @@ export const SidePanelContainer = ({
   isEditingPoiCoordinates,
   onSubmit,
   onDeleteRun,
+  setHasMadeChanges,
   setActiveRouteControlPoints,
   setIsEditingRouteCoordinates,
   setEditPointOfInterestType,
@@ -158,6 +160,7 @@ export const SidePanelContainer = ({
               onEditPointOfInterest={onEditPointOfInterest}
               onSubmit={handleSubmit}
               onDeleteRun={onDeleteRun}
+              setHasMadeChanges={setHasMadeChanges}
             />
           ),
         },
