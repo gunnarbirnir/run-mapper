@@ -181,6 +181,7 @@ export const RunEditor = ({
             {showPublicDisplayPreview && existingRun && (
               <PublicDisplayPreview
                 runId={existingRun.id}
+                isPublic={existingRun.isPublic}
                 lastUpdate={existingRun.updatedAt}
                 hasMadeChanges={hasMadeChanges}
                 onClose={() => setShowPublicDisplayPreview(false)}
