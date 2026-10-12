@@ -102,6 +102,14 @@ export class RunService {
     return sanitizePublicRun(runData);
   }
 
+  async getRunPreviewById(runId: string): Promise<PublicRun | null> {
+    const runData = await runRepository.findById(runId);
+    if (!runData) {
+      return null;
+    }
+    return sanitizePublicRun(runData);
+  }
+
   async publishRun(runId: string, userId: string): Promise<boolean> {
     const runData = await runRepository.findByIdAndUserId(runId, userId);
     if (!runData) {

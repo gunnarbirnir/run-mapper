@@ -180,7 +180,7 @@ export const RunEditor = ({
             {/* TODO: Disable tabbing of map when preview is open */}
             {showPublicDisplayPreview && existingRun && (
               <PublicDisplayPreview
-                runSlug={existingRun.publicSlug}
+                runId={existingRun.id}
                 lastUpdate={existingRun.updatedAt}
                 hasMadeChanges={hasMadeChanges}
                 onClose={() => setShowPublicDisplayPreview(false)}

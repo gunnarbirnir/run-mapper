@@ -58,7 +58,7 @@ function PublicRun() {
   );
 }
 
-const Fallback = ({ children }: { children: React.ReactNode }) => {
+export const Fallback = ({ children }: { children: React.ReactNode }) => {
   return (
     <PageLayout isFullscreenDisplay>
       <div className="flex h-full w-full flex-col items-center justify-center bg-gray-50 p-6">
@@ -68,7 +68,7 @@ const Fallback = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const ErrorMessage = ({ message }: { message: string }) => {
+export const ErrorMessage = ({ message }: { message: string }) => {
   return (
     <Fallback>
       <div className="flex max-w-md flex-col items-center gap-4 text-center">

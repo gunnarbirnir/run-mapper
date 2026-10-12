@@ -24,5 +24,7 @@ runs.put('/editor/unpublish/:id', (c: AuthContext) =>
 
 // Public read-only route by slug
 runs.get('/public/:slug', (c) => runController.getPublicRun(c));
+// Unpublished run for preview in editor
+runs.get('/preview/:id', (c) => runController.getRunPreview(c));
 
 export default runs;

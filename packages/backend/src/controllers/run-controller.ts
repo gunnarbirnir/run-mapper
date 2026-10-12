@@ -334,6 +334,38 @@ export class RunController {
     }
   }
 
+  async getRunPreview(c: Context) {
+    try {
+      const runId = c.req.param('id');
+      const runPreview = await runService.getRunPreviewById(runId);
+
+      if (!runPreview) {
+        return c.json(
+          {
+            success: false,
+            error: 'Run not found',
+          },
+          404,
+        );
+      }
+
+      return c.json({
+        success: true,
+        data: runPreview,
+      });
+    } catch (error) {
+      console.error('Error fetching run preview:', error);
+      return c.json(
+        {
+          success: false,
+          error: 'Failed to fetch run preview',
+          message: 'An unexpected error occurred',
+        },
+        500,
+      );
+    }
+  }
+
   async publishRun(c: AuthContext) {
     try {
       const userId = c.user?.uid;

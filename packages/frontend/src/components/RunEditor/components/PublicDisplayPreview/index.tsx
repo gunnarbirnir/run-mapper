@@ -4,19 +4,19 @@ import { useEffect } from 'react';
 import { Text } from '~/primitives';
 
 interface PublicDisplayPreviewProps {
-  runSlug: string;
+  runId: string;
   hasMadeChanges: boolean;
   lastUpdate?: string;
   onClose: () => void;
 }
 
 export const PublicDisplayPreview = ({
-  runSlug,
+  runId,
   hasMadeChanges,
   lastUpdate,
   onClose,
 }: PublicDisplayPreviewProps) => {
-  const iframeId = `${runSlug}-public-display-preview`;
+  const iframeId = `public-display-preview-${runId}`;
 
   useEffect(() => {
     const iframe = document.getElementById(iframeId) as HTMLIFrameElement;
@@ -41,7 +41,7 @@ export const PublicDisplayPreview = ({
           id={iframeId}
           height="600"
           width="800"
-          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`}
+          src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/preview/${runId}`}
         />
       </div>
     </div>
