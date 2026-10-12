@@ -4,6 +4,11 @@ import { useEffect } from 'react';
 import { Text } from '~/primitives';
 import { cn } from '~/utils';
 
+import { WarningBanner } from './WarningBanner';
+
+const PREVIEW_HEIGHT = 600;
+const PREVIEW_WIDTH = 800;
+
 interface PublicDisplayPreviewProps {
   runId: string;
   hasMadeChanges: boolean;
@@ -59,32 +64,35 @@ export const PublicDisplayPreview = ({
   });
 
   return (
-    <div className="absolute inset-0 flex overflow-auto bg-gray-100 p-8">
-      <div className="m-auto">
-        {status ? (
-          <Text
-            className="pb-4 text-center text-sm"
-            style={{ color: status.color }}
+    <div className="absolute inset-0 flex flex-col">
+      <WarningBanner onClose={onClose} />
+      <div className="flex flex-1 overflow-auto bg-gray-100 p-8 pt-14">
+        <div className="m-auto">
+          {status ? (
+            <Text
+              className="pb-4 text-center text-sm"
+              style={{ color: status.color }}
+            >
+              {status.text}
+            </Text>
+          ) : null}
+          <div
+            style={{
+              height: PREVIEW_HEIGHT,
+              width: PREVIEW_WIDTH,
+              outlineColor: status?.color,
+            }}
+            className={cn('shadow-lg', {
+              outline: status,
+            })}
           >
-            {status.text}
-          </Text>
-        ) : null}
-        <div
-          style={{
-            height: 600,
-            width: 800,
-            outlineColor: status?.color,
-          }}
-          className={cn('shadow-lg', {
-            outline: status,
-          })}
-        >
-          <iframe
-            id={iframeId}
-            height="600"
-            width="800"
-            src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/preview/${runId}`}
-          />
+            <iframe
+              id={iframeId}
+              height={PREVIEW_HEIGHT}
+              width={PREVIEW_WIDTH}
+              src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/preview/${runId}`}
+            />
+          </div>
         </div>
       </div>
     </div>
