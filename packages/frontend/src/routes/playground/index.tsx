@@ -8,7 +8,7 @@ export const Route = createFileRoute('/playground/')({
   component: Playground,
 });
 
-export function Playground() {
+function Playground() {
   const [runSlug, setRunSlug] = useState('hauganes-marathon');
   const [runSlugInput, setRunSlugInput] = useState(runSlug);
 

@@ -9,23 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RunsRouteRouteImport } from './routes/runs/route'
-import { Route as EditorRouteRouteImport } from './routes/editor/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RunsIndexRouteImport } from './routes/runs/index'
-import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
-import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as EditorRouteRouteImport } from './routes/editor/route'
+import { Route as RunsRouteRouteImport } from './routes/runs/route'
 import { Route as R404IndexRouteImport } from './routes/404/index'
-import { Route as RunSlugRouteImport } from './routes/run/$slug'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as RunPreviewIdRouteImport } from './routes/run/preview/$id'
-import { Route as EditorRunNewRouteImport } from './routes/editor/run/new'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
+import { Route as RunSlugRouteImport } from './routes/run/$slug'
+import { Route as RunsIndexRouteImport } from './routes/runs/index'
 import { Route as EditorRunRunIdRouteImport } from './routes/editor/run/$runId'
+import { Route as EditorRunNewRouteImport } from './routes/editor/run/new'
+import { Route as RunPreviewIdRouteImport } from './routes/run/preview/$id'
 
-const RunsRouteRoute = RunsRouteRouteImport.update({
-  id: '/runs',
-  path: '/runs',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorRouteRoute = EditorRouteRouteImport.update({
@@ -33,24 +33,9 @@ const EditorRouteRoute = EditorRouteRouteImport.update({
   path: '/editor',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RunsIndexRoute = RunsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => RunsRouteRoute,
-} as any)
-const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
-  id: '/playground/',
-  path: '/playground/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeIndexRoute = HomeIndexRouteImport.update({
-  id: '/home/',
-  path: '/home/',
+const RunsRouteRoute = RunsRouteRouteImport.update({
+  id: '/runs',
+  path: '/runs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const R404IndexRoute = R404IndexRouteImport.update({
@@ -58,9 +43,9 @@ const R404IndexRoute = R404IndexRouteImport.update({
   path: '/404/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RunSlugRoute = RunSlugRouteImport.update({
-  id: '/run/$slug',
-  path: '/run/$slug',
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
@@ -68,25 +53,40 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
   path: '/auth/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RunPreviewIdRoute = RunPreviewIdRouteImport.update({
-  id: '/run/preview/$id',
-  path: '/run/preview/$id',
+const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
+  id: '/playground/',
+  path: '/playground/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const RunSlugRoute = RunSlugRouteImport.update({
+  id: '/run/$slug',
+  path: '/run/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunsIndexRoute = RunsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RunsRouteRoute,
+} as any)
+const EditorRunRunIdRoute = EditorRunRunIdRouteImport.update({
+  id: '/run/$runId',
+  path: '/run/$runId',
+  getParentRoute: () => EditorRouteRoute,
 } as any)
 const EditorRunNewRoute = EditorRunNewRouteImport.update({
   id: '/run/new',
   path: '/run/new',
   getParentRoute: () => EditorRouteRoute,
 } as any)
-const EditorRunRunIdRoute = EditorRunRunIdRouteImport.update({
-  id: '/run/$runId',
-  path: '/run/$runId',
-  getParentRoute: () => EditorRouteRoute,
+const RunPreviewIdRoute = RunPreviewIdRouteImport.update({
+  id: '/run/preview/$id',
+  path: '/run/preview/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -96,9 +96,9 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
-  '/404': typeof R404IndexRoute
-  '/home': typeof HomeIndexRoute
-  '/playground': typeof PlaygroundIndexRoute
+  '/404/': typeof R404IndexRoute
+  '/home/': typeof HomeIndexRoute
+  '/playground/': typeof PlaygroundIndexRoute
   '/runs/': typeof RunsIndexRoute
   '/editor/run/$runId': typeof EditorRunRunIdRoute
   '/editor/run/new': typeof EditorRunNewRoute
@@ -143,9 +143,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
-    | '/404'
-    | '/home'
-    | '/playground'
+    | '/404/'
+    | '/home/'
+    | '/playground/'
     | '/runs/'
     | '/editor/run/$runId'
     | '/editor/run/new'
@@ -196,11 +196,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/runs': {
-      id: '/runs'
-      path: '/runs'
-      fullPath: '/runs'
-      preLoaderRoute: typeof RunsRouteRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor': {
@@ -210,53 +210,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/runs/': {
-      id: '/runs/'
-      path: '/'
-      fullPath: '/runs/'
-      preLoaderRoute: typeof RunsIndexRouteImport
-      parentRoute: typeof RunsRouteRoute
-    }
-    '/playground/': {
-      id: '/playground/'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home/': {
-      id: '/home/'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeIndexRouteImport
+    '/runs': {
+      id: '/runs'
+      path: '/runs'
+      fullPath: '/runs'
+      preLoaderRoute: typeof RunsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/404/': {
       id: '/404/'
       path: '/404'
-      fullPath: '/404'
+      fullPath: '/404/'
       preLoaderRoute: typeof R404IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/run/$slug': {
-      id: '/run/$slug'
-      path: '/run/$slug'
-      fullPath: '/run/$slug'
-      preLoaderRoute: typeof RunSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -266,12 +231,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/run/preview/$id': {
-      id: '/run/preview/$id'
-      path: '/run/preview/$id'
-      fullPath: '/run/preview/$id'
-      preLoaderRoute: typeof RunPreviewIdRouteImport
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/home/': {
+      id: '/home/'
+      path: '/home'
+      fullPath: '/home/'
+      preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground/': {
+      id: '/playground/'
+      path: '/playground'
+      fullPath: '/playground/'
+      preLoaderRoute: typeof PlaygroundIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/run/$slug': {
+      id: '/run/$slug'
+      path: '/run/$slug'
+      fullPath: '/run/$slug'
+      preLoaderRoute: typeof RunSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runs/': {
+      id: '/runs/'
+      path: '/'
+      fullPath: '/runs/'
+      preLoaderRoute: typeof RunsIndexRouteImport
+      parentRoute: typeof RunsRouteRoute
+    }
+    '/editor/run/$runId': {
+      id: '/editor/run/$runId'
+      path: '/run/$runId'
+      fullPath: '/editor/run/$runId'
+      preLoaderRoute: typeof EditorRunRunIdRouteImport
+      parentRoute: typeof EditorRouteRoute
     }
     '/editor/run/new': {
       id: '/editor/run/new'
@@ -280,12 +280,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorRunNewRouteImport
       parentRoute: typeof EditorRouteRoute
     }
-    '/editor/run/$runId': {
-      id: '/editor/run/$runId'
-      path: '/run/$runId'
-      fullPath: '/editor/run/$runId'
-      preLoaderRoute: typeof EditorRunRunIdRouteImport
-      parentRoute: typeof EditorRouteRoute
+    '/run/preview/$id': {
+      id: '/run/preview/$id'
+      path: '/run/preview/$id'
+      fullPath: '/run/preview/$id'
+      preLoaderRoute: typeof RunPreviewIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }

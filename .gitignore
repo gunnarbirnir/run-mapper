@@ -13,6 +13,7 @@ packages/backend/.env*
 packages/frontend/.env*
 !packages/frontend/.env.example
 packages/frontend/.vercel/
+packages/frontend/.tanstack/
 
 # Yarn
 .yarn/cache

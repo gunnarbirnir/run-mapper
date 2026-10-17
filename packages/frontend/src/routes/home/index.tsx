@@ -1,34 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Text } from '~/primitives';
-import { PageLayout } from '~/components/PageLayout';
+import { Home } from '~/components/Home';
 
 export const Route = createFileRoute('/home/')({
   component: Home,
 });
-
-export function Home() {
-  return (
-    <PageLayout>
-      <PageLayout.MainContent title="Spretta">
-        <div className="mb-8 max-w-2xl">
-          <Text variant="paragraph">
-            Visualize your running routes on interactive maps with elevation
-            profiles, distance tracking, and animated playback. Share your runs
-            with a single link.
-          </Text>
-          <Text variant="paragraph" className="mt-8">
-            Here is a demo of the app:
-          </Text>
-        </div>
-        <div className="flex justify-center">
-          <iframe
-            height="700"
-            style={{ width: '100%' }}
-            src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/hauganes-marathon`}
-          />
-        </div>
-      </PageLayout.MainContent>
-    </PageLayout>
-  );
-}
