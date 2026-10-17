@@ -6,6 +6,7 @@ const runs = new Hono();
 
 runs.use('/list/*', authMiddleware);
 runs.use('/editor/*', authMiddleware);
+runs.use('/preview/*', authMiddleware);
 
 // Authenticated list route
 runs.get('/list', (c: AuthContext) => runController.getRunsList(c));
@@ -25,6 +26,6 @@ runs.put('/editor/unpublish/:id', (c: AuthContext) =>
 // Public read-only route by slug
 runs.get('/public/:slug', (c) => runController.getPublicRun(c));
 // Unpublished run for preview in editor
-runs.get('/preview/:id', (c) => runController.getRunPreview(c));
+runs.get('/preview/:id', (c: AuthContext) => runController.getRunPreview(c));
 
 export default runs;

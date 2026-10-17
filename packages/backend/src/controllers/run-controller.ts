@@ -334,8 +334,19 @@ export class RunController {
     }
   }
 
-  async getRunPreview(c: Context) {
+  async getRunPreview(c: AuthContext) {
     try {
+      const userId = c.user?.uid;
+      if (!userId) {
+        return c.json(
+          {
+            success: false,
+            error: 'User ID missing in auth context',
+          },
+          401,
+        );
+      }
+
       const runId = c.req.param('id');
       const runPreview = await runService.getRunPreviewById(runId);
 
