@@ -3,14 +3,14 @@ import { useBlocker } from '@tanstack/react-router';
 import { Dialog } from '~/primitives';
 
 interface LeavePageDialogProps {
-  isDirty: boolean;
+  shouldBlock: boolean;
 }
 
-export const LeavePageDialog = ({ isDirty }: LeavePageDialogProps) => {
+export const LeavePageDialog = ({ shouldBlock }: LeavePageDialogProps) => {
   const { proceed, reset, status } = useBlocker({
-    shouldBlockFn: () => isDirty,
+    shouldBlockFn: () => shouldBlock,
     withResolver: true,
-    enableBeforeUnload: isDirty,
+    enableBeforeUnload: shouldBlock,
   });
 
   return (

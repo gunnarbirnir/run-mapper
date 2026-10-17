@@ -3,25 +3,28 @@ import { useHotkey } from '@tanstack/react-hotkeys';
 import { useCallback } from 'react';
 
 import { Icon, RoundButton, Button, Tooltip } from '~/primitives';
-import type { Coordinates } from '~/types';
+import type { RouteCoordinates } from '~/types';
 
 import type { MapState } from '../hooks/useMapState';
+import type { ActiveRouteState } from '../hooks/useActiveRoute';
 import { useRouteUndoRedo } from '../hooks/useRouteUndoRedo';
 import { ToolbarContainer } from './ToolbarContainer';
 
 interface RouteCoordinatesToolbarProps {
   isEditingRouteCoordinates: boolean;
-  selectedRoutePoint: number | null;
-  editRouteCoordinates: Coordinates[];
-  setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
+  selectedRoutePoint: string | null;
+  activeRouteControlPoints: RouteCoordinates[];
+  isLoadingRouteBetweenPoints: boolean;
+  setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
 export const RouteCoordinatesToolbar = ({
   isEditingRouteCoordinates,
   selectedRoutePoint,
-  editRouteCoordinates,
-  setEditRouteCoordinates,
+  activeRouteControlPoints,
+  isLoadingRouteBetweenPoints,
+  setActiveRouteControlPoints,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
   const isVisible = isEditingRouteCoordinates && selectedRoutePoint === null;
@@ -29,8 +32,8 @@ export const RouteCoordinatesToolbar = ({
   const { handleUndo, handleRedo, isUndoDisabled, isRedoDisabled } =
     useRouteUndoRedo({
       initialize: isEditingRouteCoordinates,
-      editRouteCoordinates,
-      setEditRouteCoordinates,
+      activeRouteControlPoints,
+      setActiveRouteControlPoints,
     });
 
   const onSave = useCallback(() => {
@@ -42,8 +45,8 @@ export const RouteCoordinatesToolbar = ({
   }, [editRouteActionsRef]);
 
   const onClear = useCallback(() => {
-    setEditRouteCoordinates([]);
-  }, [setEditRouteCoordinates]);
+    setActiveRouteControlPoints([]);
+  }, [setActiveRouteControlPoints]);
 
   useHotkey('Enter', onSave, {
     conflictBehavior: 'replace',
@@ -104,7 +107,11 @@ export const RouteCoordinatesToolbar = ({
             </div>
             <div className="flex items-center gap-2">
               <Tooltip label="Save">
-                <RoundButton onClick={onSave} color="success">
+                <RoundButton
+                  onClick={onSave}
+                  color="success"
+                  disabled={isLoadingRouteBetweenPoints}
+                >
                   <Icon name="checkmark" className="size-5.5" />
                 </RoundButton>
               </Tooltip>

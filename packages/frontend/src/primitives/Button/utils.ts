@@ -60,7 +60,7 @@ const BUTTON_COLORS: Record<
     bg: 'bg-transparent',
     text: 'text-success-600',
     hover: 'hover:bg-success-600 hover:text-white',
-    disabled: 'border-error-300',
+    disabled: 'border-success-300',
     disabledText: 'text-success-300',
     borderColor: 'border-success-600',
   },

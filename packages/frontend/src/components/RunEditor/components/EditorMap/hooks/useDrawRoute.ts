@@ -8,64 +8,53 @@ import {
   type MutableRefObject,
 } from 'react';
 
-import type { Coordinates, PublicRoute } from '~/types';
+import type { RouteCoordinates, Bounds, BoundingBox } from '~/types';
 import {
   getLineFeature,
   getRouteLayer,
   formatBounds,
   getRoutePointElement,
 } from '~/utils/map';
-import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import { FIT_BOUNDS_CONFIG, COORDINATES_DECIMALS } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getBoundingBox } from '~/utils/route';
+import { generateId, roundNumber } from '~/utils';
 
 interface UseMapRouteProps {
-  activeRoute: PublicRoute | undefined;
-  panelIsOpen: boolean;
-  isAnimatingPanel: boolean;
+  routePanelIsOpen: boolean;
+  routePanelIsAnimating: boolean;
   waypointPanelIsOpen: boolean;
   waypointPanelIsAnimating: boolean;
   isMapLoaded: boolean;
-  isEditingCoordinates: boolean;
-  editCoordinates: Coordinates[];
-  selectedRoutePoint: number | null;
-  setEditCoordinates: Dispatch<SetStateAction<Coordinates[]>>;
-  setSelectedRoutePoint: Dispatch<SetStateAction<number | null>>;
+  isEditingRouteCoordinates: boolean;
+  activeRouteCoordinates: RouteCoordinates[];
+  selectedRoutePoint: string | null;
+  initialBounds: Bounds;
+  activeRouteBoundingBox?: BoundingBox;
+  setActiveRouteControlPoints: Dispatch<SetStateAction<RouteCoordinates[]>>;
+  setSelectedRoutePoint: Dispatch<SetStateAction<string | null>>;
   mapRef: RefObject<Map>;
   isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useDrawRoute = ({
-  activeRoute,
-  panelIsOpen,
-  isAnimatingPanel,
+  routePanelIsOpen,
+  routePanelIsAnimating,
   waypointPanelIsOpen,
   waypointPanelIsAnimating,
   isMapLoaded,
-  isEditingCoordinates,
-  editCoordinates,
+  isEditingRouteCoordinates,
+  activeRouteCoordinates,
   selectedRoutePoint,
-  setEditCoordinates,
+  initialBounds,
+  activeRouteBoundingBox,
+  setActiveRouteControlPoints,
   setSelectedRoutePoint,
   mapRef,
   isResettingBoundsRef,
 }: UseMapRouteProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
   const disableMapClickRef = useRef(false);
-
-  // Reset edit coordinates when active route changes
-  useEffect(() => {
-    setEditCoordinates(activeRoute?.coordinates ?? []);
-    setSelectedRoutePoint(null);
-  }, [activeRoute, setEditCoordinates, setSelectedRoutePoint]);
-
-  // Reset edit coordinates when panel closes
-  useEffect(() => {
-    if (!panelIsOpen) {
-      setEditCoordinates([]);
-      setSelectedRoutePoint(null);
-    }
-  }, [panelIsOpen, setEditCoordinates, setSelectedRoutePoint]);
 
   // Draw route
   useEffect(() => {
@@ -79,7 +68,7 @@ export const useDrawRoute = ({
 
     const drawRoute = () => {
       const source = map.getSource(routeLayer.source);
-      const routeLineFeature = getLineFeature(editCoordinates);
+      const routeLineFeature = getLineFeature(activeRouteCoordinates);
 
       if (source) {
         (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
@@ -102,21 +91,22 @@ export const useDrawRoute = ({
     };
 
     const drawRoutePoints = () => {
-      // TODO: Only route points
-      routePointMarkers = editCoordinates.map((coordinate, index) =>
-        addMarker(
-          getRoutePointElement({
-            isSelected: selectedRoutePoint === index,
-            onClick: () => setSelectedRoutePoint(index),
-            onEnter: () => (disableMapClickRef.current = true),
-            onLeave: () => (disableMapClickRef.current = false),
-          }),
-          {
-            lng: coordinate.lng,
-            lat: coordinate.lat,
-          },
-        ),
-      );
+      routePointMarkers = activeRouteCoordinates
+        .filter((coordinate) => coordinate.isControlPoint)
+        .map((coordinate) =>
+          addMarker(
+            getRoutePointElement({
+              isSelected: selectedRoutePoint === coordinate.id,
+              onClick: () => setSelectedRoutePoint(coordinate.id),
+              onEnter: () => (disableMapClickRef.current = true),
+              onLeave: () => (disableMapClickRef.current = false),
+            }),
+            {
+              lng: coordinate.lng,
+              lat: coordinate.lat,
+            },
+          ),
+        );
     };
 
     const onStyleLoad = () => {
@@ -125,11 +115,11 @@ export const useDrawRoute = ({
       }
     };
 
-    if (editCoordinates.length === 0) {
+    if (activeRouteCoordinates.length === 0) {
       clearRoute();
     } else {
       drawRoute();
-      if (isEditingCoordinates) {
+      if (isEditingRouteCoordinates) {
         drawRoutePoints();
       }
     }
@@ -142,8 +132,8 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    isEditingCoordinates,
-    editCoordinates,
+    isEditingRouteCoordinates,
+    activeRouteCoordinates,
     selectedRoutePoint,
     addMarker,
     setSelectedRoutePoint,
@@ -155,7 +145,7 @@ export const useDrawRoute = ({
     if (
       !isMapLoaded ||
       !mapRef.current ||
-      isAnimatingPanel ||
+      routePanelIsAnimating ||
       waypointPanelIsAnimating
     ) {
       return;
@@ -163,30 +153,26 @@ export const useDrawRoute = ({
 
     const map = mapRef.current;
     const bounds =
-      editCoordinates.length > 0
-        ? formatBounds(getBoundingBox(editCoordinates))
-        : null;
+      activeRouteCoordinates.length > 0
+        ? formatBounds(
+            activeRouteBoundingBox || getBoundingBox(activeRouteCoordinates),
+          )
+        : initialBounds;
 
-    if (
-      !bounds ||
-      !panelIsOpen ||
-      waypointPanelIsOpen ||
-      isEditingCoordinates
-    ) {
+    if (!routePanelIsOpen || waypointPanelIsOpen || isEditingRouteCoordinates) {
       return;
     }
 
-    map.fitBounds(bounds, {
-      duration: FIT_INITIAL_BOUNDS_DURATION,
-      padding: BOUNDS_PADDING,
-    });
+    map.fitBounds(bounds, FIT_BOUNDS_CONFIG);
     isResettingBoundsRef.current = true;
   }, [
     isMapLoaded,
-    panelIsOpen,
-    isAnimatingPanel,
-    isEditingCoordinates,
-    editCoordinates,
+    routePanelIsOpen,
+    routePanelIsAnimating,
+    initialBounds,
+    activeRouteBoundingBox,
+    isEditingRouteCoordinates,
+    activeRouteCoordinates,
     waypointPanelIsOpen,
     waypointPanelIsAnimating,
     mapRef,
@@ -195,30 +181,37 @@ export const useDrawRoute = ({
 
   // Handle update coordinates click
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !isEditingCoordinates) {
+    if (!isMapLoaded || !mapRef.current || !isEditingRouteCoordinates) {
       return;
     }
 
     const map = mapRef.current;
-    const handleClick = (e: MapMouseEvent) => {
+    const handleClick = async (e: MapMouseEvent) => {
       if (disableMapClickRef.current) {
         return;
       }
 
       const newCoordinates = {
-        lng: e.lngLat.lng,
-        lat: e.lngLat.lat,
+        id: generateId(),
+        lng: roundNumber(e.lngLat.lng, COORDINATES_DECIMALS),
+        lat: roundNumber(e.lngLat.lat, COORDINATES_DECIMALS),
+        isControlPoint: true,
       };
 
       if (selectedRoutePoint === null) {
-        setEditCoordinates((prevCoordinates) => [
+        setActiveRouteControlPoints((prevCoordinates) => [
           ...prevCoordinates,
           newCoordinates,
         ]);
       } else {
-        setEditCoordinates((prevCoordinates) => {
+        setActiveRouteControlPoints((prevCoordinates) => {
           const updatedCoordinates = [...prevCoordinates];
-          updatedCoordinates[selectedRoutePoint] = newCoordinates;
+          const index = updatedCoordinates.findIndex(
+            (coordinate) => coordinate.id === selectedRoutePoint,
+          );
+          if (index !== -1) {
+            updatedCoordinates[index] = newCoordinates;
+          }
           return updatedCoordinates;
         });
         setSelectedRoutePoint(null);
@@ -232,9 +225,10 @@ export const useDrawRoute = ({
     };
   }, [
     isMapLoaded,
-    isEditingCoordinates,
+    isEditingRouteCoordinates,
     selectedRoutePoint,
-    setEditCoordinates,
+    activeRouteCoordinates,
+    setActiveRouteControlPoints,
     setSelectedRoutePoint,
     mapRef,
     disableMapClickRef,

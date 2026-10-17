@@ -49,14 +49,23 @@ export const isValidBoundingBox = (value: unknown): value is BoundingBox => {
   return isValidCoordinates(value[0]) && isValidCoordinates(value[1]);
 };
 
-export const isValidRouteCoordinates = (
-  value: unknown,
-): value is RouteCoordinates => {
-  if (!isValidCoordinates(value)) {
-    return false;
-  }
-  return isFiniteNumber((value as RouteCoordinates).elevation);
-};
+export const isValidRouteCoordinates =
+  (calculationsRequired = true) =>
+  (value: unknown): value is RouteCoordinates => {
+    const routeCoordinates = value as RouteCoordinates;
+    const isValidCalc = (val: unknown) => isFiniteNumber(val) && val >= 0;
+    const calculationsValid =
+      !calculationsRequired ||
+      (isValidCalc(routeCoordinates.elevation) &&
+        isValidCalc(routeCoordinates.distance));
+
+    return (
+      typeof routeCoordinates.id === 'string' &&
+      typeof routeCoordinates.isControlPoint === 'boolean' &&
+      isValidCoordinates(routeCoordinates) &&
+      calculationsValid
+    );
+  };
 
 export const isValidWaypointType = (value: unknown): value is WaypointType => {
   return WAYPOINT_VALUES.includes(value as WaypointType);
@@ -74,4 +83,8 @@ export const getCurrentTimestamp = (): string => {
 
 export const generateId = (): string => {
   return crypto.randomUUID();
+};
+
+export const roundNumber = (value: number, decimals: number): number => {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 };

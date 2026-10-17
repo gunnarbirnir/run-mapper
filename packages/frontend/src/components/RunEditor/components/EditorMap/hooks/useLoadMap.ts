@@ -1,11 +1,7 @@
 import { RefObject, useEffect, MutableRefObject } from 'react';
 import mapboxgl, { Map } from 'mapbox-gl';
 
-import {
-  MAP_STYLES,
-  BOUNDS_PADDING,
-  FIT_INITIAL_BOUNDS_DURATION,
-} from '~/constants/map';
+import { MAP_STYLES, BOUNDS_PADDING, BOUNDS_MAX_ZOOM } from '~/constants/map';
 import type { Bounds } from '~/types';
 
 interface UseLoadMapProps {
@@ -13,7 +9,6 @@ interface UseLoadMapProps {
   setIsMapLoaded: (isMapLoaded: boolean) => void;
   mapRef: MutableRefObject<Map | null>;
   mapContainerRef: RefObject<HTMLDivElement>;
-  isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
 export const useLoadMap = ({
@@ -21,7 +16,6 @@ export const useLoadMap = ({
   setIsMapLoaded,
   mapRef,
   mapContainerRef,
-  isResettingBoundsRef,
 }: UseLoadMapProps) => {
   useEffect(() => {
     setIsMapLoaded(false);
@@ -29,18 +23,14 @@ export const useLoadMap = ({
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       bounds: initialBounds,
-      fitBoundsOptions: { padding: BOUNDS_PADDING },
+      fitBoundsOptions: { padding: BOUNDS_PADDING, maxZoom: BOUNDS_MAX_ZOOM },
       style: MAP_STYLES.standard,
       attributionControl: false,
       logoPosition: 'bottom-right',
     });
+
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
-      mapRef.current?.fitBounds(initialBounds, {
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-        padding: BOUNDS_PADDING,
-      });
-      isResettingBoundsRef.current = true;
     });
     mapRef.current.addControl(
       new mapboxgl.AttributionControl({ compact: true }),
@@ -50,5 +40,5 @@ export const useLoadMap = ({
       mapRef.current?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapContainerRef, mapRef, setIsMapLoaded]);
+  }, []);
 };

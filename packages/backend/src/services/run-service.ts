@@ -15,6 +15,7 @@ import {
   sanitizeListRun,
   sanitizePublicRun,
   sanitizeEditorRun,
+  sortListRuns,
 } from '../utils/sanitize.js';
 
 /**
@@ -22,17 +23,11 @@ import {
  * Orchestrates validation, repository calls, and business rules
  */
 export class RunService {
-  /**
-   * Get all runs for a user
-   */
   async getUserRuns(userId: string): Promise<ListRun[]> {
     const runs = await runRepository.findByUserId(userId);
-    return runs.map(sanitizeListRun);
+    return sortListRuns(runs.map(sanitizeListRun));
   }
 
-  /**
-   * Get a run for a user (with ownership check)
-   */
   async getRunForUser(
     runId: string,
     userId: string,
@@ -44,9 +39,6 @@ export class RunService {
     return sanitizeEditorRun(runData);
   }
 
-  /**
-   * Create a new run with validation and business logic
-   */
   async createRun(params: {
     userId: string;
     runData: CreateRunBody;
@@ -71,9 +63,6 @@ export class RunService {
     return { id, ...runToCreate };
   }
 
-  /**
-   * Update a run's public status with validation
-   */
   async updateRun(params: {
     runId: string;
     userId: string;
@@ -90,9 +79,6 @@ export class RunService {
     return runRepository.update(runId, runToUpdate);
   }
 
-  /**
-   * Delete a run (with ownership check)
-   */
   async deleteRun(runId: string, userId: string): Promise<boolean> {
     // Verify ownership
     const existingRun = await runRepository.findByIdAndUserId(runId, userId);
@@ -103,9 +89,6 @@ export class RunService {
     return runRepository.delete(runId);
   }
 
-  /**
-   * Get a public run by slug with sanitization
-   */
   async getPublicRunBySlug(slug: string): Promise<PublicRun | null> {
     const normalizedSlug = normalizePublicSlug(slug);
     if (!isValidPublicSlug(normalizedSlug)) {
@@ -118,6 +101,34 @@ export class RunService {
     }
 
     return sanitizePublicRun(runData);
+  }
+
+  async getRunPreviewById(runId: string): Promise<PublicRun | null> {
+    const runData = await runRepository.findById(runId);
+    if (!runData) {
+      return null;
+    }
+    return sanitizePublicRun(runData);
+  }
+
+  async publishRun(runId: string, userId: string): Promise<boolean> {
+    const runData = await runRepository.findByIdAndUserId(runId, userId);
+    if (!runData) {
+      return false;
+    }
+
+    await runRepository.update(runId, { isPublic: true });
+    return true;
+  }
+
+  async unpublishRun(runId: string, userId: string): Promise<boolean> {
+    const runData = await runRepository.findByIdAndUserId(runId, userId);
+    if (!runData) {
+      return false;
+    }
+
+    await runRepository.update(runId, { isPublic: false });
+    return true;
   }
 }
 

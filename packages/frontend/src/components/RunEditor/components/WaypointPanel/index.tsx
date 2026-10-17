@@ -10,6 +10,7 @@ import type {
   WaypointType,
   InnerWaypointType,
   Coordinates,
+  RouteCoordinates,
 } from '~/types';
 import { getWaypointPoiLabel, getCoordinatesFromPosition } from '~/utils/route';
 import { formatNumber, getFieldError } from '~/utils';
@@ -18,8 +19,8 @@ import { usePanelForm } from '../../hooks/usePanelForm';
 import { PanelState } from '../../hooks/usePanelState';
 
 interface WaypointPanelProps extends PanelState<Waypoint> {
-  routeDistance: number;
-  routeCoordinates: Coordinates[];
+  activeRouteDistance: number;
+  activeRouteCoordinates: RouteCoordinates[];
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
 }
@@ -44,8 +45,8 @@ const waypointTypeOptions = WAYPOINT_VALUES.map((type) => ({
 export const WaypointPanel = ({
   editId,
   currentItems,
-  routeDistance,
-  routeCoordinates,
+  activeRouteDistance,
+  activeRouteCoordinates,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
@@ -59,7 +60,7 @@ export const WaypointPanel = ({
   const descriptionId = useId('waypoint-description');
   const positionId = useId('waypoint-position');
   const amenitiesId = useId('waypoint-amenities');
-  const positionMaxValue = routeDistance || 100;
+  const positionMaxValue = activeRouteDistance || 100;
   const positionMax = formatNumber(positionMaxValue, 2, true);
 
   const formDefaultValues = useMemo(() => {
@@ -95,7 +96,7 @@ export const WaypointPanel = ({
         amenities: value.amenities as InnerWaypointType[],
         coordinates: getCoordinatesFromPosition(
           value.position,
-          routeCoordinates,
+          activeRouteCoordinates,
         ) ?? { lat: 0, lng: 0 },
       };
 
@@ -242,7 +243,7 @@ export const WaypointPanel = ({
                   field.handleChange(value);
                   const coordinates = getCoordinatesFromPosition(
                     value,
-                    routeCoordinates,
+                    activeRouteCoordinates,
                   );
                   setEditWaypointCoordinates(coordinates);
                 }}
@@ -274,14 +275,12 @@ export const WaypointPanel = ({
             selector={(state) => [
               state.canSubmit,
               state.isSubmitting,
-              state.isDefaultValue,
               state.values.name.length === 0,
               state.values.position > positionMax,
             ]}
             children={([
               canSubmit,
               isSubmitting,
-              isDefaultValue,
               invalidName,
               invalidPosition,
             ]) => (

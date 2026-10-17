@@ -8,6 +8,7 @@ type TextInputProps = {
   label: string;
   infoText?: string;
   error?: string;
+  unit?: string;
   labelClassName?: string;
   containerClassName?: string;
   onChange: (value: string) => void;
@@ -20,6 +21,7 @@ export const TextInput = ({
   placeholder,
   infoText,
   error,
+  unit,
   pattern,
   disabled,
   className,
@@ -33,24 +35,37 @@ export const TextInput = ({
       <InputLabel htmlFor={id} className={labelClassName} infoText={infoText}>
         {label}
       </InputLabel>
-      <input
-        {...props}
-        id={id}
-        type={type}
-        placeholder={placeholder || label}
-        pattern={pattern}
-        disabled={disabled}
-        className={cn(
-          'w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
-          { 'border-error-600': error, 'bg-gray-100': disabled },
-          className,
-        )}
-        onChange={(e) => {
-          if (!pattern || e.target.reportValidity()) {
-            onChange(e.target.value);
-          }
-        }}
-      />
+      <div
+        className={cn('flex w-full items-center rounded-sm', {
+          'bg-gray-200': unit,
+        })}
+      >
+        <input
+          {...props}
+          id={id}
+          type={type}
+          placeholder={placeholder || label}
+          pattern={pattern}
+          disabled={disabled}
+          className={cn(
+            'w-full flex-1 rounded-l-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400',
+            {
+              'border-error-600': error,
+              'bg-gray-100': disabled,
+              'rounded-r-sm': !unit,
+            },
+            className,
+          )}
+          onChange={(e) => {
+            if (!pattern || e.target.reportValidity()) {
+              onChange(e.target.value);
+            }
+          }}
+        />
+        {unit ? (
+          <Text className="px-3 text-sm text-gray-500">{unit}</Text>
+        ) : null}
+      </div>
       {error && <Text className="text-error-600 mt-2 text-xs">{error}</Text>}
     </div>
   );

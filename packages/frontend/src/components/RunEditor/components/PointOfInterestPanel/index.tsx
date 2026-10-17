@@ -17,6 +17,8 @@ import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
 import type { MapState } from '../EditorMap/hooks/useMapState';
 
+const COORDINATES_DISPLAY_DECIMALS = 5;
+
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
   isEditingPoiCoordinates: boolean;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
@@ -98,9 +100,11 @@ export const PointOfInterestPanel = ({
     },
   });
 
-  const isDefaultValue =
-    useStore(poiForm.store, (state) => state.isDefaultValue) &&
-    !isEditingPoiCoordinates;
+  const isDefaultValue = useStore(
+    poiForm.store,
+    (state) => state.isDefaultValue,
+  );
+  const disableSubmit = isDefaultValue || isEditingPoiCoordinates;
   const { handleChange: onLatChange, handleBlur: onLatBlur } = useField({
     form: poiForm,
     name: 'lat',
@@ -111,8 +115,10 @@ export const PointOfInterestPanel = ({
   });
 
   const submitForm = useCallback(() => {
-    poiForm.handleSubmit();
-  }, [poiForm]);
+    if (!disableSubmit) {
+      poiForm.handleSubmit();
+    }
+  }, [poiForm, disableSubmit]);
 
   const resetForm = useCallback(() => {
     poiForm.reset(formDefaultValues);
@@ -221,7 +227,12 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
-                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
+                  {field.state.value
+                    ? formatNumber(
+                        field.state.value,
+                        COORDINATES_DISPLAY_DECIMALS,
+                      )
+                    : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -229,7 +240,12 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
-                  {field.state.value ? formatNumber(field.state.value, 5) : '-'}
+                  {field.state.value
+                    ? formatNumber(
+                        field.state.value,
+                        COORDINATES_DISPLAY_DECIMALS,
+                      )
+                    : '-'}
                 </Text>
               )}
             </poiForm.Field>
@@ -261,16 +277,12 @@ export const PointOfInterestPanel = ({
         </section>
         <section className="flex flex-col gap-3">
           <poiForm.Subscribe
-            selector={(state) => [
-              state.canSubmit,
-              state.isSubmitting,
-              state.isDefaultValue,
-            ]}
-            children={([canSubmit, isSubmitting, isDefaultValue]) => (
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || isDefaultValue}
+                disabled={!canSubmit || disableSubmit}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update POI' : 'Add POI'}

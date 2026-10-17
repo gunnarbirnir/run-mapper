@@ -6,25 +6,28 @@ import {
 } from 'react';
 import type { Map } from 'mapbox-gl';
 
-import type { Bounds, Coordinates } from '~/types';
-import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import type { BoundingBox, Bounds, RouteCoordinates } from '~/types';
+import { FIT_BOUNDS_CONFIG } from '~/constants/map';
 import { getBoundingBox } from '~/utils/route';
 import { formatBounds, isSameBounds } from '~/utils/map';
 
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;
   initialBounds: Bounds;
-  routeCoordinates: Coordinates[];
+  activeRouteBoundingBox?: BoundingBox;
+  activeRouteCoordinates: RouteCoordinates[];
   setIsAtInitialBounds: (isAtInitialBounds: boolean) => void;
   mapRef: RefObject<Map>;
   fitToInitialBoundsRef: MutableRefObject<(() => void) | null>;
   isResettingBoundsRef: MutableRefObject<boolean>;
 }
 
+// Implements functionality of fit to bounds button
 export const useFitToInitialBounds = ({
   isMapLoaded,
   initialBounds,
-  routeCoordinates,
+  activeRouteBoundingBox,
+  activeRouteCoordinates,
   mapRef,
   setIsAtInitialBounds,
   fitToInitialBoundsRef,
@@ -51,8 +54,10 @@ export const useFitToInitialBounds = ({
     map.on('moveend', handleMoveEnd);
 
     const activeBounds =
-      routeCoordinates.length > 0
-        ? formatBounds(getBoundingBox(routeCoordinates))
+      activeRouteCoordinates.length > 0
+        ? formatBounds(
+            activeRouteBoundingBox || getBoundingBox(activeRouteCoordinates),
+          )
         : initialBounds;
 
     if (
@@ -64,10 +69,7 @@ export const useFitToInitialBounds = ({
     activeBoundsRef.current = activeBounds;
 
     fitToInitialBoundsRef.current = () => {
-      mapRef.current?.fitBounds(activeBounds, {
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-        padding: BOUNDS_PADDING,
-      });
+      mapRef.current?.fitBounds(activeBounds, FIT_BOUNDS_CONFIG);
       isResettingBoundsRef.current = true;
     };
 
@@ -77,7 +79,8 @@ export const useFitToInitialBounds = ({
   }, [
     isMapLoaded,
     initialBounds,
-    routeCoordinates,
+    activeRouteBoundingBox,
+    activeRouteCoordinates,
     setIsAtInitialBounds,
     mapRef,
     fitToInitialBoundsRef,

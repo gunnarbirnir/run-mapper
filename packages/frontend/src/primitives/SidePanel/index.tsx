@@ -1,12 +1,8 @@
 import { type ReactNode, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { cn, convertRemToPixels } from '~/utils';
-import {
-  DEFAULT_EASING,
-  DEFAULT_FADE_IN_DURATION,
-  PAGE_MIN_WIDTH,
-} from '~/constants';
+import { DEFAULT_EASING, PAGE_MIN_WIDTH } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useInertAttribute } from '~/hooks/useInertAttribute';
@@ -169,17 +165,9 @@ const SidePanel = ({
                     {panel.content}
                   </SidePanelItemProvider>
                 </SidePanelItem>
-                <AnimatePresence>
-                  {disabled && (
-                    <motion.div
-                      exit={{ opacity: 0 }}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.5 }}
-                      transition={{ duration: DEFAULT_FADE_IN_DURATION }}
-                      className="pointer-events-none absolute inset-0 bg-black"
-                    />
-                  )}
-                </AnimatePresence>
+                {disabled && (
+                  <div className="pointer-events-none absolute inset-0 bg-black opacity-50" />
+                )}
               </motion.div>
             );
           },

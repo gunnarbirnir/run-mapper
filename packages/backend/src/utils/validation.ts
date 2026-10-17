@@ -4,6 +4,9 @@ import {
   MAX_RUN_ROUTES,
   MAX_ROUTE_COORDINATES,
   MAX_ROUTE_WAYPOINTS,
+  COORDINATES_DECIMALS,
+  ELEVATION_DECIMALS,
+  DISTANCE_DECIMALS,
 } from '../config/constants.js';
 import {
   RouteCoordinates,
@@ -11,8 +14,8 @@ import {
   PointOfInterest,
   Waypoint,
   PublicRoute,
-  Coordinates,
   EditorRun,
+  RouteData,
 } from '../types/index.js';
 import type {
   ValidationResult,
@@ -31,15 +34,20 @@ import {
   isFiniteNumber,
   generateImageSeed,
   generateId,
+  roundNumber,
 } from './index.js';
 import {
   calculateDistance,
   getBoundingBox,
   getCoordinatesFromPosition,
+  getElevationStats,
 } from './route.js';
+
+// Validate incoming data in controller layer
 
 export const validatePointsOfInterestBody = (
   rawBody: unknown,
+  isUpdate = false,
 ): ValidationResult<PointOfInterest> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -53,7 +61,7 @@ export const validatePointsOfInterestBody = (
   }
 
   const body = rawBody as PointOfInterest;
-  const { name, description, coordinates, type } = body;
+  const { id, name, description, coordinates, type } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -102,7 +110,14 @@ export const validatePointsOfInterestBody = (
     };
   }
 
-  if (type !== undefined && !isValidPointOfInterestType(type)) {
+  const normalizedCoordinates = {
+    lat: roundNumber(coordinates.lat, COORDINATES_DECIMALS),
+    lng: roundNumber(coordinates.lng, COORDINATES_DECIMALS),
+  };
+
+  const normalizedType = type ?? 'expo';
+
+  if (!isValidPointOfInterestType(normalizedType)) {
     return {
       ok: false,
       error: {
@@ -113,24 +128,29 @@ export const validatePointsOfInterestBody = (
     };
   }
 
-  const normalizedType = type ?? 'expo';
-
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
+      coordinates: normalizedCoordinates,
       description,
-      coordinates,
     },
   };
 };
 
-export const validateWaypointBody = (
-  rawBody: unknown,
-  coordinates: Coordinates[],
-): ValidationResult<Waypoint> => {
+export const validateWaypointBody = ({
+  rawBody,
+  coordinates,
+  distance,
+  isUpdate = false,
+}: {
+  rawBody: unknown;
+  coordinates: RouteCoordinates[];
+  distance: number;
+  isUpdate?: boolean;
+}): ValidationResult<Waypoint> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
       ok: false,
@@ -143,7 +163,7 @@ export const validateWaypointBody = (
   }
 
   const body = rawBody as Waypoint;
-  const { name, description, type, position, amenities } = body;
+  const { id, name, description, type, position, amenities } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -194,11 +214,7 @@ export const validateWaypointBody = (
   }
 
   const normalizedPosition =
-    type === 'start'
-      ? 0
-      : type === 'end'
-        ? calculateDistance(coordinates)
-        : position;
+    type === 'start' ? 0 : type === 'end' ? distance : (position ?? 0);
 
   if (!isFiniteNumber(normalizedPosition) || normalizedPosition < 0) {
     return {
@@ -255,19 +271,20 @@ export const validateWaypointBody = (
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
       type: normalizedType,
-      description,
       coordinates: normalizedCoordinates,
       position: normalizedPosition,
       amenities: normalizedAmenities,
+      description,
     },
   };
 };
 
 export const validateRouteBody = (
   rawBody: unknown,
+  isUpdate = false,
 ): ValidationResult<PublicRoute> => {
   if (!rawBody || typeof rawBody !== 'object') {
     return {
@@ -281,7 +298,7 @@ export const validateRouteBody = (
   }
 
   const body = rawBody as PublicRoute;
-  const { name, displayDistance, coordinates, waypoints } = body;
+  const { id, name, displayDistance, coordinates = [], waypoints } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -342,20 +359,7 @@ export const validateRouteBody = (
     };
   }
 
-  const normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
-
-  if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
-    return {
-      ok: false,
-      error: {
-        status: 400,
-        error: 'Invalid payload',
-        message: `routes.coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
-      },
-    };
-  }
-
-  if (!normalizedCoordinates.every(isValidRouteCoordinates)) {
+  if (!coordinates.every(isValidRouteCoordinates())) {
     return {
       ok: false,
       error: {
@@ -366,6 +370,27 @@ export const validateRouteBody = (
       },
     };
   }
+
+  if (coordinates.length > MAX_ROUTE_COORDINATES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `routes.coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
+      },
+    };
+  }
+
+  const normalizedCoordinates: RouteCoordinates[] = coordinates.map(
+    (coordinate) => ({
+      ...coordinate,
+      lat: roundNumber(coordinate.lat, COORDINATES_DECIMALS),
+      lng: roundNumber(coordinate.lng, COORDINATES_DECIMALS),
+      elevation: roundNumber(coordinate.elevation ?? 0, ELEVATION_DECIMALS),
+      distance: roundNumber(coordinate.distance ?? 0, DISTANCE_DECIMALS),
+    }),
+  );
 
   if (waypoints !== undefined && !Array.isArray(waypoints)) {
     return {
@@ -378,9 +403,15 @@ export const validateRouteBody = (
     };
   }
 
+  const routeDistance = calculateDistance(normalizedCoordinates);
   const normalizedWaypoints: Waypoint[] = [];
-  for (const waypoint of waypoints) {
-    const validation = validateWaypointBody(waypoint, normalizedCoordinates);
+  for (const waypoint of waypoints ?? []) {
+    const validation = validateWaypointBody({
+      rawBody: waypoint,
+      coordinates: normalizedCoordinates,
+      isUpdate,
+      distance: routeDistance,
+    });
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -430,13 +461,14 @@ export const validateRouteBody = (
   return {
     ok: true,
     value: {
-      id: generateId(),
+      id: isUpdate && id ? id : generateId(),
       name: normalizedName,
-      distance: calculateDistance(normalizedCoordinates),
+      distance: routeDistance,
       displayDistance,
       boundingBox: calculatedBoundingBox,
       coordinates: normalizedCoordinates,
       waypoints: normalizedWaypoints,
+      elevationStats: getElevationStats(normalizedCoordinates),
     },
   };
 };
@@ -456,14 +488,7 @@ export const validateCreateRunBody = (
   }
 
   const body = rawBody as CreateRunBody;
-  const {
-    name,
-    // defaultRouteId,
-    isPublic,
-    publicSlug,
-    pointsOfInterest,
-    routes,
-  } = body;
+  const { name, publicSlug, defaultRouteId, pointsOfInterest, routes } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -489,17 +514,6 @@ export const validateCreateRunBody = (
     };
   }
 
-  if (isPublic !== undefined && typeof isPublic !== 'boolean') {
-    return {
-      ok: false,
-      error: {
-        status: 400,
-        error: 'Invalid payload',
-        message: 'isPublic must be a boolean',
-      },
-    };
-  }
-
   if (typeof publicSlug !== 'string') {
     return {
       ok: false,
@@ -512,7 +526,6 @@ export const validateCreateRunBody = (
   }
 
   const normalizedPublicSlug = normalizePublicSlug(publicSlug);
-  const normalizedIsPublic = isPublic === true;
 
   if (!isValidPublicSlug(normalizedPublicSlug)) {
     return {
@@ -526,6 +539,22 @@ export const validateCreateRunBody = (
     };
   }
 
+  if (defaultRouteId !== undefined && typeof defaultRouteId !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'defaultRouteId must be a string',
+      },
+    };
+  }
+
+  const normalizedDefaultRouteId =
+    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
+      ? defaultRouteId
+      : undefined;
+
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
       ok: false,
@@ -538,7 +567,7 @@ export const validateCreateRunBody = (
   }
 
   const normalizedPointsOfInterest: PointOfInterest[] = [];
-  for (const pointOfInterest of pointsOfInterest) {
+  for (const pointOfInterest of pointsOfInterest ?? []) {
     const validation = validatePointsOfInterestBody(pointOfInterest);
     if (!validation.ok) {
       return validation as ErrResult;
@@ -569,7 +598,7 @@ export const validateCreateRunBody = (
   }
 
   const normalizedRoutes: PublicRoute[] = [];
-  for (const route of routes) {
+  for (const route of routes ?? []) {
     const validation = validateRouteBody(route);
     if (!validation.ok) {
       return validation as ErrResult;
@@ -592,8 +621,9 @@ export const validateCreateRunBody = (
     ok: true,
     value: {
       name: normalizedName,
-      isPublic: normalizedIsPublic,
+      isPublic: false,
       publicSlug: normalizedPublicSlug,
+      defaultRouteId: normalizedDefaultRouteId,
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,
       imageSeed: generateImageSeed(),
@@ -616,13 +646,8 @@ export const validateUpdateRunBody = (
     };
   }
 
-  const body = rawBody as CreateRunBody;
-  const {
-    name,
-    // defaultRouteId,
-    pointsOfInterest,
-    routes,
-  } = body;
+  const body = rawBody as UpdateRunBody;
+  const { name, defaultRouteId, pointsOfInterest, routes } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -648,6 +673,22 @@ export const validateUpdateRunBody = (
     };
   }
 
+  if (defaultRouteId !== undefined && typeof defaultRouteId !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'defaultRouteId must be a string',
+      },
+    };
+  }
+
+  const normalizedDefaultRouteId =
+    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
+      ? defaultRouteId
+      : undefined;
+
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
       ok: false,
@@ -660,8 +701,8 @@ export const validateUpdateRunBody = (
   }
 
   const normalizedPointsOfInterest: PointOfInterest[] = [];
-  for (const pointOfInterest of pointsOfInterest) {
-    const validation = validatePointsOfInterestBody(pointOfInterest);
+  for (const pointOfInterest of pointsOfInterest ?? []) {
+    const validation = validatePointsOfInterestBody(pointOfInterest, true);
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -691,8 +732,8 @@ export const validateUpdateRunBody = (
   }
 
   const normalizedRoutes: PublicRoute[] = [];
-  for (const route of routes) {
-    const validation = validateRouteBody(route);
+  for (const route of routes ?? []) {
+    const validation = validateRouteBody(route, true);
     if (!validation.ok) {
       return validation as ErrResult;
     }
@@ -718,8 +759,67 @@ export const validateUpdateRunBody = (
       publicSlug: existingRun.publicSlug,
       imageSeed: existingRun.imageSeed ?? generateImageSeed(),
       name: normalizedName,
+      defaultRouteId: normalizedDefaultRouteId,
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,
     },
+  };
+};
+
+export const validateRouteDataBody = (
+  rawBody: unknown,
+): ValidationResult<RouteCoordinates[]> => {
+  if (!rawBody || typeof rawBody !== 'object') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'Request body must be a JSON object',
+      },
+    };
+  }
+
+  const body = rawBody as RouteData;
+  const { coordinates } = body;
+
+  if (coordinates !== undefined && !Array.isArray(coordinates)) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'coordinates must be an array',
+      },
+    };
+  }
+
+  const normalizedCoordinates: RouteCoordinates[] = coordinates ?? [];
+
+  if (normalizedCoordinates.length > MAX_ROUTE_COORDINATES) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: `coordinates must be at most ${MAX_ROUTE_COORDINATES} items`,
+      },
+    };
+  }
+
+  if (!normalizedCoordinates.every(isValidRouteCoordinates(false))) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'coordinates must be an array of valid route coordinates',
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    value: normalizedCoordinates,
   };
 };

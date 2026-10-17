@@ -28,7 +28,7 @@ export const processRunRoute = (
     }
     coordinates.push(currentCoord);
     prevCoord = currentCoord;
-    elevations.push({ value: routeCoordinate.elevation, distance });
+    elevations.push({ value: routeCoordinate.elevation ?? 0, distance });
   });
 
   return { coordinates, elevations };
@@ -147,22 +147,22 @@ export const getBoundingBox = (coordinates: Coordinates[]): BoundingBox => {
 
 export const getCoordinatesFromPosition = (
   position: number,
-  coordinates: Coordinates[],
-): Coordinates | null => {
+  coordinates: RouteCoordinates[],
+): RouteCoordinates | null => {
   if (coordinates.length === 0) {
     return null;
   }
 
-  let cumulativeDistance = 0;
   let closestCoordinate = coordinates[0];
-  let closestDelta = Math.abs(position - cumulativeDistance);
+  let closestDelta = position;
 
   for (let i = 1; i < coordinates.length; i++) {
-    cumulativeDistance += haversineDistance(coordinates[i - 1], coordinates[i]);
-    const delta = Math.abs(position - cumulativeDistance);
+    const currentCoordinate = coordinates[i];
+    const delta = Math.abs(position - (currentCoordinate.distance ?? 0));
+
     if (delta < closestDelta) {
       closestDelta = delta;
-      closestCoordinate = coordinates[i];
+      closestCoordinate = currentCoordinate;
     }
   }
 

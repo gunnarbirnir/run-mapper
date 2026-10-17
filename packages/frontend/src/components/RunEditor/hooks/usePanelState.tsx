@@ -70,7 +70,7 @@ export const usePanelState = <T extends { id: string }>({
   }, [setShowPanel]);
 
   const onAddItem = useCallback(
-    (item: Omit<T, 'id'> & { id?: string }) => {
+    (item: Omit<T, 'id'>) => {
       setCurrentItems([...currentItems, { id: generateId(), ...item } as T]);
       setShowPanel(false);
       setHasSubmittedChanges(true);

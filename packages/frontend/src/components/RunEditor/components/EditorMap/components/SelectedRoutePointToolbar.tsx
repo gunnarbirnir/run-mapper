@@ -5,18 +5,18 @@ import { useCallback } from 'react';
 import { Icon, RoundButton, Text, Tooltip } from '~/primitives';
 
 import { ToolbarContainer } from './ToolbarContainer';
-import { MapState } from '../hooks/useMapState';
+import { ActiveRouteState } from '../hooks/useActiveRoute';
 
 interface SelectedRoutePointToolbarProps {
-  selectedRoutePoint: number | null;
-  setSelectedRoutePoint: MapState['setSelectedRoutePoint'];
-  setEditRouteCoordinates: MapState['setEditRouteCoordinates'];
+  selectedRoutePoint: string | null;
+  setSelectedRoutePoint: ActiveRouteState['setSelectedRoutePoint'];
+  setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 export const SelectedRoutePointToolbar = ({
   selectedRoutePoint,
   setSelectedRoutePoint,
-  setEditRouteCoordinates,
+  setActiveRouteControlPoints,
 }: SelectedRoutePointToolbarProps) => {
   const isVisible = selectedRoutePoint !== null;
 
@@ -26,10 +26,10 @@ export const SelectedRoutePointToolbar = ({
 
   const onDelete = useCallback(() => {
     setSelectedRoutePoint(null);
-    setEditRouteCoordinates((prev) =>
-      prev.filter((_, index) => index !== selectedRoutePoint),
+    setActiveRouteControlPoints((prev) =>
+      prev.filter((coordinate) => coordinate.id !== selectedRoutePoint),
     );
-  }, [selectedRoutePoint, setSelectedRoutePoint, setEditRouteCoordinates]);
+  }, [selectedRoutePoint, setSelectedRoutePoint, setActiveRouteControlPoints]);
 
   useHotkey('Backspace', onDelete, {
     conflictBehavior: 'replace',

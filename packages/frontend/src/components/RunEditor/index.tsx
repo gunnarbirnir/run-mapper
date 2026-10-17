@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { IdProvider } from '~/context/IdContext';
 import type {
@@ -8,14 +8,11 @@ import type {
   Waypoint,
   RunUpdate,
 } from '~/types';
-import {
-  processRunRoute,
-  calculateDistance,
-  getBoundingBox,
-} from '~/utils/route';
+import { getBoundingBox } from '~/utils/route';
 
 import { EditorFooter } from './components/EditorFooter';
-import { EditorMap, useMapState } from './components/EditorMap';
+import { EditorMap, useMapState, useActiveRoute } from './components/EditorMap';
+import { PublicDisplayPreview } from './components/PublicDisplayPreview';
 import { SidePanelContainer } from './components/SidePanelContainer';
 import { usePanelState } from './hooks/usePanelState';
 import { useRootPanelState } from './hooks/useRootPanelState';
@@ -26,8 +23,11 @@ interface RunEditorProps {
   error?: Error | null;
   successMessage?: string | null;
   isDeleting?: boolean;
-  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
-  onDeleteRun?: () => void;
+  isUpdatingPublicStatus?: boolean;
+  onSubmit: (run: RunUpdate) => Promise<unknown>;
+  onDeleteRun?: () => Promise<unknown>;
+  onPublishRun?: () => Promise<unknown>;
+  onUnpublishRun?: () => Promise<unknown>;
 }
 
 export const RunEditor = ({
@@ -35,8 +35,11 @@ export const RunEditor = ({
   error,
   successMessage,
   isDeleting = false,
+  isUpdatingPublicStatus = false,
   onSubmit,
   onDeleteRun,
+  onPublishRun,
+  onUnpublishRun,
 }: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
@@ -52,37 +55,16 @@ export const RunEditor = ({
     pointOfInterestPanelState,
     waypointPanelState,
   });
+  const [showPublicDisplayPreview, setShowPublicDisplayPreview] =
+    useState(false);
+  const [hasMadeChanges, setHasMadeChanges] = useState(false);
 
-  const mapState = useMapState();
-  const {
-    editRouteCoordinates,
-    isEditingRouteCoordinates,
-    isEditingPoiCoordinates,
-    setEditRouteCoordinates,
-    setIsEditingRouteCoordinates,
-    setIsEditingPoiCoordinates,
-    setEditPointOfInterestType,
-    setEditWaypointType,
-    setEditWaypointCoordinates,
-    editRouteActionsRef,
-    onUpdatePoiCoordinatesRef,
-  } = mapState;
-  const activeRoute = useMemo(
+  const currentEditRoute = useMemo(
     () =>
       routePanelState.currentItems.find(
         (route) => route.id === routePanelState.editId,
       ),
     [routePanelState.currentItems, routePanelState.editId],
-  );
-  const { elevations: activeRouteElevations } = useMemo(
-    // TODO: use edit route
-    () => processRunRoute(activeRoute?.coordinates || []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeRoute?.id],
-  );
-  const routeDistance = useMemo(
-    () => calculateDistance(editRouteCoordinates),
-    [editRouteCoordinates],
   );
   const initialBoundingBox = useMemo(
     () =>
@@ -98,62 +80,124 @@ export const RunEditor = ({
     [pointOfInterestPanelState.currentItems, routePanelState.currentItems],
   );
 
+  const mapState = useMapState();
+  const {
+    isEditingPoiCoordinates,
+    setIsEditingPoiCoordinates,
+    setEditPointOfInterestType,
+    setEditWaypointType,
+    setEditWaypointCoordinates,
+    editRouteActionsRef,
+    onUpdatePoiCoordinatesRef,
+  } = mapState;
+  const activeRouteState = useActiveRoute({
+    panelIsOpen: routePanelState.showPanel,
+    currentEditRoute,
+  });
+  const {
+    activeRouteCoordinates,
+    activeRouteDistance,
+    activeRouteBoundingBox,
+    activeRouteElevationStats,
+    activeRouteError,
+    isEditingRouteCoordinates,
+    isLoadingRouteData,
+    isLoadingRouteBetweenPoints,
+    setActiveRouteControlPoints,
+    setIsEditingRouteCoordinates,
+  } = activeRouteState;
+
   return (
     <IdProvider baseId="run-editor">
       <div className="relative isolate flex flex-1">
         <SidePanelContainer
+          // Base props
           existingRun={existingRun}
-          routeDistance={routeDistance}
-          routeCoordinates={editRouteCoordinates}
+          error={error}
+          isDeleting={isDeleting}
+          successMessage={successMessage}
+          // Active route state
+          activeRouteDistance={activeRouteDistance}
+          activeRouteBoundingBox={activeRouteBoundingBox}
+          activeRouteElevationStats={activeRouteElevationStats}
+          activeRouteCoordinates={activeRouteCoordinates}
+          isEditingRouteCoordinates={isEditingRouteCoordinates}
+          activeRouteError={activeRouteError}
+          isLoadingRouteData={isLoadingRouteData}
+          isLoadingRouteBetweenPoints={isLoadingRouteBetweenPoints}
+          // Panel states
           rootPanelState={rootPanelState}
           routePanelState={routePanelState}
           pointOfInterestPanelState={pointOfInterestPanelState}
           waypointPanelState={waypointPanelState}
-          isEditingRouteCoordinates={isEditingRouteCoordinates}
+          // Map state
           isEditingPoiCoordinates={isEditingPoiCoordinates}
-          isDeleting={isDeleting}
-          error={error}
-          successMessage={successMessage}
-          setEditRouteCoordinates={setEditRouteCoordinates}
+          // Handlers
+          onSubmit={onSubmit}
+          onDeleteRun={onDeleteRun}
+          setHasMadeChanges={setHasMadeChanges}
+          setActiveRouteControlPoints={setActiveRouteControlPoints}
+          setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}
-          setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
-          onSubmit={onSubmit}
-          onDeleteRun={onDeleteRun}
+          // Refs
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
         />
         <div className="z-1 flex flex-1 flex-col">
-          <EditorMap
-            {...mapState}
-            activeRoute={activeRoute}
-            initialBoundingBox={initialBoundingBox}
-            activeRouteElevations={activeRouteElevations}
-            routeDistance={routeDistance}
-            rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
-            routePanelIsOpen={routePanelState.showPanel}
-            routePanelIsAnimating={routePanelState.isAnimatingPanel}
-            hasMadeRouteChanges={routePanelState.hasMadeChanges}
-            currentPointsOfInterest={pointOfInterestPanelState.currentItems}
-            activePointOfInterest={pointOfInterestPanelState.editId}
-            pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
-            pointOfInterestPanelIsAnimating={
-              pointOfInterestPanelState.isAnimatingPanel
-            }
-            hasMadePointOfInterestChanges={
-              pointOfInterestPanelState.hasMadeChanges
-            }
-            currentWaypoints={waypointPanelState.currentItems}
-            activeWaypoint={waypointPanelState.editId}
-            waypointPanelIsOpen={waypointPanelState.showPanel}
-            waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
-            hasMadeWaypointChanges={waypointPanelState.hasMadeChanges}
-            onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
-            onEditWaypoint={rootPanelState.onEditWaypoint}
+          <div className="relative flex-1">
+            <EditorMap
+              {...mapState}
+              {...activeRouteState}
+              initialBoundingBox={initialBoundingBox}
+              rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
+              // Route panel state
+              routePanelIsOpen={routePanelState.showPanel}
+              routePanelIsAnimating={routePanelState.isAnimatingPanel}
+              hasMadeRouteChanges={routePanelState.hasMadeChanges}
+              // Points of interest panel state
+              currentPointsOfInterest={pointOfInterestPanelState.currentItems}
+              activePointOfInterest={pointOfInterestPanelState.editId}
+              pointOfInterestPanelIsOpen={pointOfInterestPanelState.showPanel}
+              pointOfInterestPanelIsAnimating={
+                pointOfInterestPanelState.isAnimatingPanel
+              }
+              hasMadePointOfInterestChanges={
+                pointOfInterestPanelState.hasMadeChanges
+              }
+              // Waypoint panel state
+              currentWaypoints={waypointPanelState.currentItems}
+              activeWaypoint={waypointPanelState.editId}
+              waypointPanelIsOpen={waypointPanelState.showPanel}
+              waypointPanelIsAnimating={waypointPanelState.isAnimatingPanel}
+              hasMadeWaypointChanges={waypointPanelState.hasMadeChanges}
+              // Handlers
+              onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
+              onEditWaypoint={rootPanelState.onEditWaypoint}
+            />
+            {/* TODO: Disable tabbing of map when preview is open */}
+            {showPublicDisplayPreview && existingRun && (
+              <PublicDisplayPreview
+                runId={existingRun.id}
+                isPublic={existingRun.isPublic}
+                lastUpdate={existingRun.updatedAt}
+                hasMadeChanges={hasMadeChanges}
+                onClose={() => setShowPublicDisplayPreview(false)}
+              />
+            )}
+          </div>
+          <EditorFooter
+            existingRun={existingRun}
+            hasMadeChanges={hasMadeChanges}
+            isUpdatingPublicStatus={isUpdatingPublicStatus}
+            hidePreviewButton={!existingRun}
+            showPublicDisplayPreview={showPublicDisplayPreview}
+            setShowPublicDisplayPreview={setShowPublicDisplayPreview}
+            onPublishRun={onPublishRun}
+            onUnpublishRun={onUnpublishRun}
           />
-          <EditorFooter />
         </div>
       </div>
     </IdProvider>
