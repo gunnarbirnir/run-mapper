@@ -185,7 +185,7 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
-        <section className="mb-5 flex flex-col gap-3">
+        <section className="flex flex-col gap-3">
           {successMessage && (
             <StatusMessage autoClear status="success">
               {successMessage}

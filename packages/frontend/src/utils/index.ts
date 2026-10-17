@@ -103,3 +103,7 @@ export const getRunBasePath = (
 ) => {
   return isPreview ? `/run/preview/${run.id}` : `/run/${run.publicSlug}`;
 };
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+};

@@ -58,6 +58,15 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   };
 };
 
+export const sortListRuns = (runs: ListRun[]): ListRun[] => {
+  const getSortValue = (run: ListRun) => {
+    const updatedValue = run.updatedAt ?? run.createdAt;
+    return new Date(updatedValue).getTime();
+  };
+
+  return runs.sort((a, b) => getSortValue(b) - getSortValue(a));
+};
+
 const sanitizePointsOfInterest = (
   pointOfInterest: PointOfInterest,
 ): PointOfInterest | null => {

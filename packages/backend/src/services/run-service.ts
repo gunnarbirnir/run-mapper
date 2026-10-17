@@ -15,6 +15,7 @@ import {
   sanitizeListRun,
   sanitizePublicRun,
   sanitizeEditorRun,
+  sortListRuns,
 } from '../utils/sanitize.js';
 
 /**
@@ -24,7 +25,7 @@ import {
 export class RunService {
   async getUserRuns(userId: string): Promise<ListRun[]> {
     const runs = await runRepository.findByUserId(userId);
-    return runs.map(sanitizeListRun);
+    return sortListRuns(runs.map(sanitizeListRun));
   }
 
   async getRunForUser(
