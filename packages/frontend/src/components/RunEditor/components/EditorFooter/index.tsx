@@ -128,6 +128,7 @@ export const EditorFooter = ({
           runSlug={existingRun.publicSlug}
           runName={existingRun.name}
           isOpen={isEmbedDialogOpen}
+          routes={existingRun.routes}
           onClose={() => setIsEmbedDialogOpen(false)}
         />
       )}

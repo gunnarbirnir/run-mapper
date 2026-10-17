@@ -13,6 +13,7 @@ interface EmbedRunDialogProps {
   runSlug: string;
   runName: string;
   isOpen: boolean;
+  routes?: { id: string; name: string }[];
   onClose: () => void;
 }
 
@@ -20,24 +21,21 @@ export const EmbedRunDialog = ({
   runSlug,
   runName,
   isOpen,
+  routes,
   onClose,
 }: EmbedRunDialogProps) => {
   const [iframeHeight, setIframeHeight] = useState(DEFAULT_IFRAME_HEIGHT);
   const [iframeWidth, setIframeWidth] = useState(DEFAULT_IFRAME_WIDTH);
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  const [activeRouteId, setActiveRouteId] = useState<string | undefined>(
+    undefined,
+  );
 
-  const iframeSrc = `${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}`;
+  const iframeQueryParams = activeRouteId ? `?routeId=${activeRouteId}` : '';
+  const iframeSrc = `${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}${iframeQueryParams}`;
   const iframeId = `spretta-${runSlug}`;
   const iframeTitle = `Spretta - ${runName}`;
-  const iframeCode = `
-    <iframe
-      src="${iframeSrc}"
-      id="${iframeId}"
-      title="${iframeTitle}"
-      height="${iframeHeight}"
-      width="${iframeWidth}"
-    ></iframe>
-  `;
+  const iframeCode = `<iframe src="${iframeSrc}" id="${iframeId}" title="${iframeTitle}" height="${iframeHeight}" width="${iframeWidth}"></iframe>`;
 
   const copyIframeCode = () => {
     copyToClipboard(iframeCode);
@@ -75,7 +73,7 @@ export const EmbedRunDialog = ({
       ]}
       onClose={onClose}
     >
-      <div className="mb-8 flex items-center gap-4">
+      <div className="mb-8 grid gap-4 md:grid-cols-2">
         <Form.TextInput
           id="iframeHeight"
           name="iframeHeight"
@@ -96,6 +94,29 @@ export const EmbedRunDialog = ({
           type="number"
           onChange={(value) => setIframeWidth(Number(value))}
         />
+        {routes && (
+          <div className="md:col-span-2">
+            <Form.Dropdown
+              id="activeRouteId"
+              label="Active route"
+              infoText={
+                routes.length === 0
+                  ? 'Add a route first'
+                  : 'The active route to be displayed'
+              }
+              value={activeRouteId}
+              disabled={routes.length === 0}
+              onChange={(value) => setActiveRouteId(value || undefined)}
+              items={[
+                { label: 'Default route', value: '' },
+                ...routes.map((route) => ({
+                  label: route.name,
+                  value: route.id,
+                })),
+              ]}
+            />
+          </div>
+        )}
       </div>
       <IframeElement
         iframeSrc={iframeSrc}

@@ -41,6 +41,7 @@ interface RootPanelProps {
 const rootFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
+  defaultRouteId: z.string().or(z.undefined()),
 });
 
 export const RootPanel = ({
@@ -62,6 +63,7 @@ export const RootPanel = ({
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
+  const defaultRouteIdId = useId('default-route-id');
   const { isSmallScreen } = useMediaQuery();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isEditing = Boolean(existingRun);
@@ -70,6 +72,7 @@ export const RootPanel = ({
     defaultValues: {
       name: existingRun?.name || '',
       publicSlug: existingRun?.publicSlug || '',
+      defaultRouteId: existingRun?.defaultRouteId,
     },
     validators: {
       onBlur: rootFormSchema,
@@ -79,6 +82,7 @@ export const RootPanel = ({
       const updatedRun = {
         name: value.name,
         publicSlug: value.publicSlug,
+        defaultRouteId: value.defaultRouteId,
         routes: currentRoutes,
         pointsOfInterest: currentPointsOfInterest,
       };
@@ -144,7 +148,7 @@ export const RootPanel = ({
           onAddClick={onAddRoute}
         >
           {currentRoutes.length > 0 ? (
-            <motion.div layout className="space-y-3">
+            <motion.div layout className="mb-6 space-y-3">
               {currentRoutes
                 .sort(
                   (a, b) =>
@@ -160,6 +164,27 @@ export const RootPanel = ({
                 ))}
             </motion.div>
           ) : null}
+          <rootForm.Field name="defaultRouteId">
+            {(field) => (
+              <Form.Dropdown
+                id={defaultRouteIdId}
+                label="Default route"
+                infoText={
+                  currentRoutes.length === 0
+                    ? 'Add a route first'
+                    : 'The default route to be displayed'
+                }
+                value={field.state.value}
+                disabled={currentRoutes.length === 0}
+                onChange={(value) => field.handleChange(value ?? undefined)}
+                onBlur={field.handleBlur}
+                items={currentRoutes.map((route) => ({
+                  label: route.name,
+                  value: route.id,
+                }))}
+              />
+            )}
+          </rootForm.Field>
         </ItemsSection>
         <ItemsSection
           title="Points of interest"

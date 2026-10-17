@@ -488,13 +488,7 @@ export const validateCreateRunBody = (
   }
 
   const body = rawBody as CreateRunBody;
-  const {
-    name,
-    // defaultRouteId,
-    publicSlug,
-    pointsOfInterest,
-    routes,
-  } = body;
+  const { name, publicSlug, defaultRouteId, pointsOfInterest, routes } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -544,6 +538,22 @@ export const validateCreateRunBody = (
       },
     };
   }
+
+  if (defaultRouteId !== undefined && typeof defaultRouteId !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'defaultRouteId must be a string',
+      },
+    };
+  }
+
+  const normalizedDefaultRouteId =
+    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
+      ? defaultRouteId
+      : undefined;
 
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
@@ -613,6 +623,7 @@ export const validateCreateRunBody = (
       name: normalizedName,
       isPublic: false,
       publicSlug: normalizedPublicSlug,
+      defaultRouteId: normalizedDefaultRouteId,
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,
       imageSeed: generateImageSeed(),
@@ -636,12 +647,7 @@ export const validateUpdateRunBody = (
   }
 
   const body = rawBody as UpdateRunBody;
-  const {
-    name,
-    // defaultRouteId,
-    pointsOfInterest,
-    routes,
-  } = body;
+  const { name, defaultRouteId, pointsOfInterest, routes } = body;
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return {
@@ -666,6 +672,22 @@ export const validateUpdateRunBody = (
       },
     };
   }
+
+  if (defaultRouteId !== undefined && typeof defaultRouteId !== 'string') {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        error: 'Invalid payload',
+        message: 'defaultRouteId must be a string',
+      },
+    };
+  }
+
+  const normalizedDefaultRouteId =
+    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
+      ? defaultRouteId
+      : undefined;
 
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
@@ -737,6 +759,7 @@ export const validateUpdateRunBody = (
       publicSlug: existingRun.publicSlug,
       imageSeed: existingRun.imageSeed ?? generateImageSeed(),
       name: normalizedName,
+      defaultRouteId: normalizedDefaultRouteId,
       pointsOfInterest: normalizedPointsOfInterest,
       routes: normalizedRoutes,
     },

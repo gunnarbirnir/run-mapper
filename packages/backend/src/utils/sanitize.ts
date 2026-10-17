@@ -29,6 +29,8 @@ import {
   DISTANCE_DECIMALS,
   COORDINATES_DECIMALS,
   ELEVATION_DECIMALS,
+  POINT_OF_INTEREST_VALUES,
+  WAYPOINT_VALUES,
 } from '../config/constants.js';
 
 // Sanitize fetched data in service layer
@@ -46,6 +48,33 @@ const DEFAULT_ELEVATION_STATS: ElevationStats = {
   minElevation: 0,
 };
 
+export const sortListRuns = (runs: ListRun[]): ListRun[] => {
+  const getSortValue = (run: ListRun) => {
+    const updatedValue = run.updatedAt ?? run.createdAt;
+    return new Date(updatedValue).getTime();
+  };
+
+  return runs.sort((a, b) => getSortValue(b) - getSortValue(a));
+};
+
+export const comparePointsOfInterest = (
+  a: PointOfInterest,
+  b: PointOfInterest,
+) => {
+  return (
+    POINT_OF_INTEREST_VALUES.indexOf(a.type) -
+    POINT_OF_INTEREST_VALUES.indexOf(b.type)
+  );
+};
+
+export const compareRoutes = (a: PublicRoute, b: PublicRoute) => {
+  return (a.displayDistance ?? a.distance) - (b.displayDistance ?? b.distance);
+};
+
+export const compareWaypoints = (a: Waypoint, b: Waypoint) => {
+  return WAYPOINT_VALUES.indexOf(a.type) - WAYPOINT_VALUES.indexOf(b.type);
+};
+
 export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   return {
     id: runData.id || generateId(),
@@ -56,15 +85,6 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
     updatedAt: runData.updatedAt,
     imageSeed: runData.imageSeed ?? generateImageSeed(),
   };
-};
-
-export const sortListRuns = (runs: ListRun[]): ListRun[] => {
-  const getSortValue = (run: ListRun) => {
-    const updatedValue = run.updatedAt ?? run.createdAt;
-    return new Date(updatedValue).getTime();
-  };
-
-  return runs.sort((a, b) => getSortValue(b) - getSortValue(a));
 };
 
 const sanitizePointsOfInterest = (
@@ -103,9 +123,9 @@ const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
       ? route.boundingBox
       : DEFAULT_BOUNDING_BOX,
     coordinates: route.coordinates.filter(isValidRouteCoordinates()),
-    waypoints: route.waypoints
-      .map(sanitizeWaypoint)
-      .filter(Boolean) as Waypoint[],
+    waypoints: (
+      route.waypoints.map(sanitizeWaypoint).filter(Boolean) as Waypoint[]
+    ).sort(compareWaypoints),
     distance: route.distance ?? 0,
     displayDistance: route.displayDistance,
     elevationStats: route.elevationStats ?? DEFAULT_ELEVATION_STATS,
@@ -113,18 +133,23 @@ const sanitizePublicRoute = (route: PublicRoute): PublicRoute => {
 };
 
 export const sanitizePublicRun = (runData: RunRecordWithId): PublicRun => {
+  const orderedRoutes = runData.routes
+    .map(sanitizePublicRoute)
+    .sort(compareRoutes);
+
   return {
     id: runData.id || generateId(),
     name: runData.name || 'Untitled Run',
     defaultRouteId:
       runData.defaultRouteId ??
-      // Find shortest route once distance is part of route data
-      (runData.routes.length > 0 ? runData.routes[0].id : undefined),
+      (orderedRoutes.length > 0 ? orderedRoutes[0].id : undefined),
     publicSlug: runData.publicSlug ?? '',
-    pointsOfInterest: runData.pointsOfInterest
-      .map(sanitizePointsOfInterest)
-      .filter(Boolean) as PointOfInterest[],
-    routes: runData.routes.map(sanitizePublicRoute),
+    pointsOfInterest: (
+      runData.pointsOfInterest
+        .map(sanitizePointsOfInterest)
+        .filter(Boolean) as PointOfInterest[]
+    ).sort(comparePointsOfInterest),
+    routes: orderedRoutes,
   };
 };
 
