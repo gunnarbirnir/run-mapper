@@ -29,8 +29,9 @@ export interface MapState {
 }
 
 export interface RouteMapProps extends MapState {
-  routeId: string;
+  runId: string;
   runSlug: string;
+  routeId: string;
   boundingBox: BoundingBox;
   coordinates: Coordinates[];
   waypoints: Waypoint[];
@@ -40,6 +41,7 @@ export interface RouteMapProps extends MapState {
   hideActiveMarker?: boolean;
   activeWaypoint: string | null;
   activePointOfInterest: string | null;
+  isPreview: boolean;
   settings: RunDisplaySettings;
   onWaypointClick: (id: string | null) => void;
   onPointOfInterestClick: (id: string | null) => void;

@@ -96,3 +96,10 @@ export const getFieldError = (field: {
 export const generateId = (): string => {
   return crypto.randomUUID();
 };
+
+export const getRunBasePath = (
+  run: { id: string; publicSlug: string },
+  isPreview: boolean,
+) => {
+  return isPreview ? `/run/preview/${run.id}` : `/run/${run.publicSlug}`;
+};

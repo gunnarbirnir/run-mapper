@@ -55,6 +55,7 @@ function RunPreview() {
         routeId={activeRouteId}
         run={data.data}
         isFullscreen={isFullscreen}
+        isPreview
       />
     </PageLayout>
   );

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import type { PublicRun, PublicRoute } from '~/types';
+import { getRunBasePath } from '~/utils';
 
 const findRoute = (run: PublicRun, routeId: string) => {
   return run.routes.find((route) => route.id === routeId) as PublicRoute;
@@ -10,10 +11,12 @@ export const useRoute = ({
   run,
   routeId,
   isFullscreen,
+  isPreview,
 }: {
   run: PublicRun;
   routeId: string;
   isFullscreen: boolean;
+  isPreview: boolean;
 }) => {
   const [currentRoute, setCurrentRoute] = useState<PublicRoute>(
     findRoute(run, routeId),
@@ -22,14 +25,16 @@ export const useRoute = ({
   const handleSetCurrentRoute = useCallback(
     (updatedRouteId: string) => {
       const route = findRoute(run, updatedRouteId);
+      const basePath = getRunBasePath(run, isPreview);
+
       setCurrentRoute(route);
       history.replaceState(
         null,
         '',
-        `/run/${run.publicSlug}?${isFullscreen ? 'isFullscreen=true&' : ''}routeId=${updatedRouteId}`,
+        `${basePath}?${isFullscreen ? 'isFullscreen=true&' : ''}routeId=${updatedRouteId}`,
       );
     },
-    [run, isFullscreen],
+    [run, isFullscreen, isPreview],
   );
 
   return {

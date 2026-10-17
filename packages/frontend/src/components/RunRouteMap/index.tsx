@@ -3,6 +3,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCallback, useMemo, useRef } from 'react';
 
 import { formatBounds } from '~/utils/map';
+import { getRunBasePath } from '~/utils';
 
 import { PoweredByLabel } from './components/PoweredByLabel';
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
@@ -19,8 +20,9 @@ import type { RouteMapProps } from './types';
 
 // Can be moved into PublicRunDisplay folder
 export const RunRouteMap = ({
-  routeId,
+  runId,
   runSlug,
+  routeId,
   boundingBox,
   coordinates,
   waypoints,
@@ -33,6 +35,7 @@ export const RunRouteMap = ({
   isMapLoaded,
   isAtInitialBounds,
   isFullscreen,
+  isPreview,
   setActiveIndexRef,
   animateRouteRef,
   fitToInitialBoundsRef,
@@ -128,11 +131,12 @@ export const RunRouteMap = ({
   }, [fitToInitialBounds, onReset]);
 
   const openFullscreen = useCallback(() => {
-    window.open(
-      `/run/${runSlug}?isFullscreen=true&routeId=${routeId}`,
-      '_blank',
+    const basePath = getRunBasePath(
+      { id: runId, publicSlug: runSlug },
+      isPreview,
     );
-  }, [runSlug, routeId]);
+    window.open(`${basePath}?isFullscreen=true&routeId=${routeId}`, '_blank');
+  }, [runId, runSlug, routeId, isPreview]);
 
   useMapHotKeys({
     routeIsAnimating,
