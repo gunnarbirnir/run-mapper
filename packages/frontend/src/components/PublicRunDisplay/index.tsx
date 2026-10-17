@@ -18,13 +18,16 @@ import { ElevationGraph } from '../ElevationGraph';
 
 export const PublicRunDisplay = ({
   run,
+  // TODO: Handle no routes
   routeId,
   isFullscreen = false,
+  isPreview = false,
 }: PublicRunDisplayProps) => {
   const { route, setRoute: setActiveRoute } = useRoute({
     run,
     routeId,
     isFullscreen,
+    isPreview,
   });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
   const { coordinates, elevations } = useMemo(
@@ -64,6 +67,7 @@ export const PublicRunDisplay = ({
           <RunRouteMap
             {...mapState}
             routeId={route.id}
+            runId={run.id}
             runSlug={run.publicSlug}
             isFullscreen={isFullscreen}
             boundingBox={route.boundingBox}
@@ -76,6 +80,7 @@ export const PublicRunDisplay = ({
             hideActiveMarker={
               elevationWidgetActive || anyDrawerActive || routeIsAnimating
             }
+            isPreview={isPreview}
             settings={settings}
             onWaypointClick={setActiveWaypoint}
             onPointOfInterestClick={setActivePointOfInterest}

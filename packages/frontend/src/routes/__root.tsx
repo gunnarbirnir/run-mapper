@@ -13,7 +13,7 @@ import * as React from 'react';
 
 import appCss from '~/styles/app.css?url';
 import { useAuthProvider } from '~/hooks/useAuthProvider';
-import { NotFound } from './404';
+import { NotFound } from '~/components/NotFound';
 
 interface RootContext {
   auth: { user: User | null; isLoaded: boolean };

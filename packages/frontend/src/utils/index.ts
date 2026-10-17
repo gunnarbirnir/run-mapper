@@ -64,6 +64,10 @@ export const formatNumber = (
   return parseFloat(num.toFixed(maxDecimals));
 };
 
+export const roundNumber = (value: number, decimals: number): number => {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+};
+
 export const formatDate = (date: string) => {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, '0');
@@ -91,4 +95,15 @@ export const getFieldError = (field: {
 
 export const generateId = (): string => {
   return crypto.randomUUID();
+};
+
+export const getRunBasePath = (
+  run: { id: string; publicSlug: string },
+  isPreview: boolean,
+) => {
+  return isPreview ? `/run/preview/${run.id}` : `/run/${run.publicSlug}`;
+};
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
 };

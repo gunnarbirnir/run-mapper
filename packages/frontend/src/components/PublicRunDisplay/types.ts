@@ -6,6 +6,7 @@ export interface PublicRunDisplayProps {
   routeId: string;
   run: PublicRun;
   isFullscreen?: boolean;
+  isPreview?: boolean;
 }
 
 export interface WidgetBaseProps {

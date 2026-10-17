@@ -1,6 +1,6 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import z from 'zod';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
@@ -22,34 +22,36 @@ import { RouteItem } from './RouteItem';
 
 interface RootPanelProps {
   existingRun?: EditorRun;
-  currentRoutes: PublicRoute[];
-  currentPointsOfInterest: PointOfInterest[];
-  hasSubmittedChanges: boolean;
   error?: Error | null;
   successMessage?: string | null;
   isDeleting: boolean;
+  currentRoutes: PublicRoute[];
+  currentPointsOfInterest: PointOfInterest[];
+  hasSubmittedChanges: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
   onAddPointOfInterest: () => void;
   onEditPointOfInterest: (id: string) => void;
-  onSubmit: (run: RunUpdate) => void | Promise<unknown>;
-  onDeleteRun?: () => void;
+  onSubmit: (run: RunUpdate) => Promise<unknown>;
+  onDeleteRun?: () => Promise<unknown>;
+  setHasMadeChanges: (hasMadeChanges: boolean) => void;
 }
 
 const rootFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
+  defaultRouteId: z.string().or(z.undefined()),
 });
 
 export const RootPanel = ({
   existingRun,
-  currentRoutes,
-  currentPointsOfInterest,
-  hasSubmittedChanges,
   error,
   successMessage,
   isDeleting,
+  currentRoutes,
+  currentPointsOfInterest,
+  hasSubmittedChanges,
   onClose,
   onAddRoute,
   onEditRoute,
@@ -57,9 +59,11 @@ export const RootPanel = ({
   onEditPointOfInterest,
   onSubmit,
   onDeleteRun,
+  setHasMadeChanges,
 }: RootPanelProps) => {
   const nameId = useId('run-name');
   const publicSlugId = useId('public-slug');
+  const defaultRouteIdId = useId('default-route-id');
   const { isSmallScreen } = useMediaQuery();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isEditing = Boolean(existingRun);
@@ -68,6 +72,7 @@ export const RootPanel = ({
     defaultValues: {
       name: existingRun?.name || '',
       publicSlug: existingRun?.publicSlug || '',
+      defaultRouteId: existingRun?.defaultRouteId,
     },
     validators: {
       onBlur: rootFormSchema,
@@ -76,8 +81,8 @@ export const RootPanel = ({
     onSubmit: async ({ value }) => {
       const updatedRun = {
         name: value.name,
-        isPublic: true,
         publicSlug: value.publicSlug,
+        defaultRouteId: value.defaultRouteId,
         routes: currentRoutes,
         pointsOfInterest: currentPointsOfInterest,
       };
@@ -91,6 +96,11 @@ export const RootPanel = ({
     !hasSubmittedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
+  const isCreatingRun = isSubmitting && !isEditing;
+
+  useEffect(() => {
+    setHasMadeChanges(!isDefaultValue);
+  }, [setHasMadeChanges, isDefaultValue]);
 
   return (
     <SidePanel.Content
@@ -138,7 +148,7 @@ export const RootPanel = ({
           onAddClick={onAddRoute}
         >
           {currentRoutes.length > 0 ? (
-            <motion.div layout className="space-y-3">
+            <motion.div layout className="mb-6 space-y-3">
               {currentRoutes
                 .sort(
                   (a, b) =>
@@ -154,6 +164,27 @@ export const RootPanel = ({
                 ))}
             </motion.div>
           ) : null}
+          <rootForm.Field name="defaultRouteId">
+            {(field) => (
+              <Form.Dropdown
+                id={defaultRouteIdId}
+                label="Default route"
+                infoText={
+                  currentRoutes.length === 0
+                    ? 'Add a route first'
+                    : 'The default route to be displayed'
+                }
+                value={field.state.value}
+                disabled={currentRoutes.length === 0}
+                onChange={(value) => field.handleChange(value ?? undefined)}
+                onBlur={field.handleBlur}
+                items={currentRoutes.map((route) => ({
+                  label: route.name,
+                  value: route.id,
+                }))}
+              />
+            )}
+          </rootForm.Field>
         </ItemsSection>
         <ItemsSection
           title="Points of interest"
@@ -179,7 +210,7 @@ export const RootPanel = ({
             </motion.div>
           ) : null}
         </ItemsSection>
-        <section className="mb-5 flex flex-col gap-3">
+        <section className="flex flex-col gap-3">
           {successMessage && (
             <StatusMessage autoClear status="success">
               {successMessage}
@@ -190,34 +221,32 @@ export const RootPanel = ({
               {error.message}
             </StatusMessage>
           )}
-          <div className="flex flex-col gap-3">
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={!canSubmit || isDefaultValue}
+            isLoading={isSubmitting}
+          >
+            {isEditing ? 'Save run' : 'Create run'}
+          </Button>
+          <Button
+            className="w-full"
+            linkTo="/runs"
+            color="gray"
+            disabled={isSubmitting}
+          >
+            Back to runs
+          </Button>
+          {isEditing && (
             <Button
+              color="errorOutline"
               className="w-full"
-              type="submit"
-              disabled={!canSubmit || isDefaultValue}
-              isLoading={isSubmitting}
-            >
-              {isEditing ? 'Save run' : 'Create run'}
-            </Button>
-            <Button
-              className="w-full"
-              linkTo="/runs"
-              color="gray"
+              onClick={() => setIsDeleteDialogOpen(true)}
               disabled={isSubmitting}
             >
-              Back to runs
+              {isSmallScreen ? 'Delete' : 'Delete run'}
             </Button>
-            {isEditing && (
-              <Button
-                color="errorOutline"
-                className="w-full"
-                onClick={() => setIsDeleteDialogOpen(true)}
-                disabled={isSubmitting}
-              >
-                {isSmallScreen ? 'Delete' : 'Delete run'}
-              </Button>
-            )}
-          </div>
+          )}
         </section>
         {onDeleteRun && (
           <Dialog
@@ -229,8 +258,8 @@ export const RootPanel = ({
                 label: 'Delete',
                 color: 'errorOutline',
                 isLoading: isDeleting,
-                onClick: () => {
-                  onDeleteRun();
+                onClick: async () => {
+                  await onDeleteRun();
                   setIsDeleteDialogOpen(false);
                 },
               },
@@ -245,7 +274,7 @@ export const RootPanel = ({
             onClose={() => (isDeleting ? null : setIsDeleteDialogOpen(false))}
           />
         )}
-        <LeavePageDialog isDirty={!isDefaultValue} />
+        <LeavePageDialog shouldBlock={!isDefaultValue && !isCreatingRun} />
       </Form>
     </SidePanel.Content>
   );

@@ -6,6 +6,7 @@ import { getAllowedOrigins, isOriginAllowed } from './config/env.js';
 import { db } from './firebase/admin.js';
 import auth from './routes/auth.js';
 import runs from './routes/runs.js';
+import routing from './routes/routing.js';
 
 const allowedOrigins = getAllowedOrigins();
 
@@ -48,3 +49,4 @@ app.get('/health', async (c) => {
 
 app.route('/auth', auth);
 app.route('/runs', runs);
+app.route('/routing', routing);

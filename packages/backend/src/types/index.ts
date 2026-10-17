@@ -4,12 +4,22 @@ import {
 } from '../config/constants.js';
 
 export type Coordinates = { lat: number; lng: number };
+export type CoordinatesWithId = Coordinates & { id: string };
 export type BoundingBox = [Coordinates, Coordinates];
-export type Elevation = { value: number; distance: number };
 
-export type RouteCoordinates = Coordinates & {
-  elevation: number;
+export type RouteCoordinates = CoordinatesWithId & {
+  isControlPoint: boolean;
+  elevation?: number;
+  distance?: number;
 };
+
+export interface ElevationStats {
+  elevationGain: number;
+  elevationLoss: number;
+  netElevation: number;
+  maxElevation: number;
+  minElevation: number;
+}
 
 export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
@@ -33,13 +43,17 @@ export type PointOfInterest = {
   type: PointOfInterestType;
 };
 
-export interface PublicRoute {
-  id: string;
-  name: string;
+export interface RouteData {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
-  waypoints: Waypoint[];
   distance: number;
+  elevationStats: ElevationStats;
+}
+
+export interface PublicRoute extends RouteData {
+  id: string;
+  name: string;
+  waypoints: Waypoint[];
   displayDistance?: number;
 }
 
@@ -72,4 +86,13 @@ export interface ListRun {
   createdAt: string;
   updatedAt?: string;
   imageSeed: number;
+}
+
+export interface DirectionsResponse {
+  routes: {
+    geometry: {
+      coordinates: number[][];
+    };
+    distance: number;
+  }[];
 }

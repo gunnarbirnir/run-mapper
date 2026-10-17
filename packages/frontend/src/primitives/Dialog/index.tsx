@@ -1,5 +1,6 @@
 import { Dialog as BaseUiDialog } from '@base-ui/react/dialog';
 import { useHotkey } from '@tanstack/react-hotkeys';
+import type { ReactNode } from 'react';
 
 import { cn } from '~/utils';
 
@@ -20,6 +21,8 @@ interface DialogProps {
   description: string;
   isOpen: boolean;
   buttons?: DialogButton[];
+  size?: 'small' | 'medium' | 'large';
+  children?: ReactNode;
   onClose?: () => void;
 }
 
@@ -28,6 +31,8 @@ export const Dialog = ({
   description,
   isOpen,
   buttons,
+  size = 'small',
+  children,
   onClose,
 }: DialogProps) => {
   useHotkey(
@@ -50,7 +55,15 @@ export const Dialog = ({
     <BaseUiDialog.Root open={isOpen} onOpenChange={onClose}>
       <BaseUiDialog.Portal>
         <BaseUiDialog.Backdrop className="fixed inset-0 min-h-dvh bg-black opacity-50 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-[-webkit-touch-callout:none]:absolute" />
-        <BaseUiDialog.Popup className="fixed top-1/2 left-1/2 -mt-8 w-96 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg transition-all duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0">
+        <BaseUiDialog.Popup
+          className={cn(
+            'fixed top-1/2 left-1/2 -mt-8 w-96 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg transition-all duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0',
+            {
+              'w-120': size === 'medium',
+              'w-160': size === 'large',
+            },
+          )}
+        >
           <div
             className={cn('-mt-1.5 mb-2 flex items-start justify-between', {
               'mb-4': onClose,
@@ -70,6 +83,7 @@ export const Dialog = ({
           <Text variant="subtle" className="mb-6 text-sm text-gray-600">
             {description}
           </Text>
+          {children ? <div className="mb-6">{children}</div> : null}
           <div className="flex justify-end gap-2">
             {buttons?.map(
               ({ label, isLoading, disabled, color, onClick }, index) => (

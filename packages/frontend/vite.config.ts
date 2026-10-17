@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import tsConfigPaths from 'vite-tsconfig-paths';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -14,7 +13,6 @@ export default defineConfig(({ command }) => ({
     outDir: '.vercel',
   },
   plugins: [
-    tsConfigPaths(),
     tanstackStart({
       router: {
         routeFileIgnorePattern:
@@ -22,14 +20,15 @@ export default defineConfig(({ command }) => ({
       },
     }),
     nitro({
-      preset: 'vercel',
+      ...(command === 'build' ? { preset: 'vercel' } : {}),
     }),
     viteReact(),
     tailwindcss(),
   ],
   resolve: {
+    tsconfigPaths: true,
     alias: {
-      '~': path.resolve(__dirname, './src'),
+      '~': path.resolve(import.meta.dirname, './src'),
     },
   },
 }));

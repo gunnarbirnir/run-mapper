@@ -1,15 +1,26 @@
 import { POINT_OF_INTEREST_VALUES, WAYPOINT_VALUES } from '~/constants';
 
 export type Coordinates = { lat: number; lng: number };
+export type CoordinatesWithId = Coordinates & { id: string };
 export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
 export type Bounds = [[number, number], [number, number]];
 export type Elevation = { value: number; distance: number };
 export type NoId<T> = Omit<T, 'id'>;
 
-export type RouteCoordinates = Coordinates & {
-  elevation: number;
+export type RouteCoordinates = CoordinatesWithId & {
+  isControlPoint: boolean;
+  elevation?: number;
+  distance?: number;
 };
+
+export interface ElevationStats {
+  elevationGain: number;
+  elevationLoss: number;
+  netElevation: number;
+  maxElevation: number;
+  minElevation: number;
+}
 
 export type WaypointType = (typeof WAYPOINT_VALUES)[number];
 
@@ -35,13 +46,17 @@ export type PointOfInterest = {
   type: PointOfInterestType;
 };
 
-export interface PublicRoute {
-  id: string;
-  name: string;
+export interface RouteData {
   boundingBox: BoundingBox;
   coordinates: RouteCoordinates[];
-  waypoints: Waypoint[];
   distance: number;
+  elevationStats: ElevationStats;
+}
+
+export interface PublicRoute extends RouteData {
+  id: string;
+  name: string;
+  waypoints: Waypoint[];
   displayDistance?: number;
 }
 
@@ -60,7 +75,10 @@ export interface EditorRun extends PublicRun {
   isPublic: boolean;
 }
 
-export type RunUpdate = Omit<EditorRun, 'id' | 'createdAt' | 'updatedAt'>;
+export type RunUpdate = Omit<
+  EditorRun,
+  'id' | 'createdAt' | 'updatedAt' | 'isPublic'
+>;
 
 export interface ListRun {
   id: string;
