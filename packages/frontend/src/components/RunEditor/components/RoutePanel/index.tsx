@@ -39,6 +39,7 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   isLoadingRouteBetweenPoints: boolean;
   isEditingRouteCoordinates: boolean;
   currentWaypoints: Waypoint[];
+  activeWaypoint: string | null;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
   onViewMap: () => void;
@@ -81,6 +82,7 @@ export const RoutePanel = ({
   showPanel,
   isAnimatingPanel,
   currentWaypoints,
+  activeWaypoint,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -354,6 +356,7 @@ export const RoutePanel = ({
               <Button
                 color="secondary"
                 size="small"
+                disabled={activeWaypoint !== null}
                 onClick={() => setIsEditingRouteCoordinates(true)}
               >
                 Edit coordinates
@@ -389,6 +392,7 @@ export const RoutePanel = ({
                   key={waypoint.id}
                   waypoint={waypoint}
                   layoutDependency={waypointLayoutDependency}
+                  disabled={isEditingRouteCoordinates}
                   error={
                     !['start', 'end'].includes(waypoint.type) &&
                     waypoint.position > routeDistanceCached
@@ -426,6 +430,7 @@ export const RoutePanel = ({
               color="errorOutline"
               className="w-full"
               onClick={handleOnDelete}
+              disabled={isEditingRouteCoordinates}
             >
               Delete
             </Button>

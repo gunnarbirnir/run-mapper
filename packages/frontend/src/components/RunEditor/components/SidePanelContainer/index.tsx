@@ -198,6 +198,7 @@ export const SidePanelContainer = ({
               activeRouteError={activeRouteError}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               currentWaypoints={waypointPanelState.currentItems}
+              activeWaypoint={waypointPanelState.editId}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
               onViewMap={() => setIsViewingMapOnSmallScreen(true)}
