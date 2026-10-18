@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Map } from 'mapbox-gl';
 
 import { Coordinates, PointOfInterestType, WaypointType } from '~/types';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 export const useMapState = () => {
   const mapRef = useRef<Map | null>(null);
@@ -18,6 +19,7 @@ export const useMapState = () => {
     onCancel: () => {},
   });
 
+  const { isSmallScreen } = useMediaQuery();
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
   const [isEditingPoiCoordinates, setIsEditingPoiCoordinates] = useState(false);
@@ -28,6 +30,8 @@ export const useMapState = () => {
   );
   const [editWaypointCoordinates, setEditWaypointCoordinates] =
     useState<Coordinates | null>(null);
+  const [isViewingMap, setIsViewingMapOnSmallScreen] = useState(false);
+  const isViewingMapOnSmallScreen = isSmallScreen && isViewingMap;
 
   const fitToInitialBounds = useCallback(() => {
     fitToInitialBoundsRef.current?.();
@@ -43,6 +47,7 @@ export const useMapState = () => {
     isEditingPoiCoordinates,
     editWaypointType,
     editWaypointCoordinates,
+    isViewingMapOnSmallScreen,
     fitToInitialBounds,
     onUpdatePoiCoordinates,
     setIsMapLoaded,
@@ -51,6 +56,7 @@ export const useMapState = () => {
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
+    setIsViewingMapOnSmallScreen,
     mapRef,
     fitToInitialBoundsRef,
     isResettingBoundsRef,

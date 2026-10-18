@@ -12,6 +12,7 @@ interface EditorFooterProps {
   isUpdatingPublicStatus: boolean;
   hidePreviewButton: boolean;
   showPublicDisplayPreview: boolean;
+  isRootPanelOpen: boolean;
   onPublishRun?: () => Promise<unknown>;
   onUnpublishRun?: () => Promise<unknown>;
   setShowPublicDisplayPreview: (show: boolean) => void;
@@ -23,6 +24,7 @@ export const EditorFooter = ({
   isUpdatingPublicStatus,
   hidePreviewButton,
   showPublicDisplayPreview,
+  isRootPanelOpen,
   onPublishRun,
   onUnpublishRun,
   setShowPublicDisplayPreview,
@@ -33,7 +35,8 @@ export const EditorFooter = ({
 
   const isPublic = Boolean(existingRun?.isPublic);
   const isEditingRun = Boolean(existingRun);
-  const showLeftSection = isEditingRun && !isMediumScreen;
+  const showLeftSection =
+    isEditingRun && !isSmallScreen && !(isMediumScreen && isRootPanelOpen);
   const disablePreview = !showPublicDisplayPreview && hasMadeChanges;
 
   return (

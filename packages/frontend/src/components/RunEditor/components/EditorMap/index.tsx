@@ -9,6 +9,7 @@ import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
 import { SelectedRoutePointToolbar } from './components/SelectedRoutePointToolbar';
 import { RouteCoordinatesToolbar } from './components/RouteCoordinatesToolbar';
+import { ViewMapToolbar } from './components/ViewMapToolbar';
 import { RouteStats } from './components/RouteStats';
 import { useDrawRoute } from './hooks/useDrawRoute';
 import { useLoadMap } from './hooks/useLoadMap';
@@ -20,6 +21,7 @@ import { useResetBounds } from './hooks/useResetBounds';
 import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 type EditorMapProps = MapState &
   ActiveRouteState & {
@@ -57,6 +59,7 @@ export const EditorMap = ({
   editPointOfInterestType,
   editWaypointType,
   editWaypointCoordinates,
+  isViewingMapOnSmallScreen,
   // Active route state
   activeRouteDistance,
   activeRouteCoordinates,
@@ -95,6 +98,7 @@ export const EditorMap = ({
   setEditWaypointCoordinates,
   setActiveRouteControlPoints,
   setSelectedRoutePoint,
+  setIsViewingMapOnSmallScreen,
   // Refs
   mapRef,
   fitToInitialBoundsRef,
@@ -109,6 +113,7 @@ export const EditorMap = ({
         : DEFAULT_EDITOR_BOUNDS,
     [initialBoundingBox],
   );
+  const { isSmallScreen } = useMediaQuery();
 
   const isAnyPanelAnimating =
     rootPanelIsAnimating ||
@@ -122,7 +127,8 @@ export const EditorMap = ({
   const showRouteStats =
     activeRouteDistance > 0 &&
     !isEditingRouteCoordinates &&
-    !isLoadingRouteData;
+    !isLoadingRouteData &&
+    !isSmallScreen;
 
   useLoadMap({
     initialBounds,
@@ -192,6 +198,7 @@ export const EditorMap = ({
     hasMadeAnyChanges,
     isEditingPoiCoordinates,
     isEditingRouteCoordinates,
+    isViewingMapOnSmallScreen,
     editPointOfInterestType,
     onEditPointOfInterest,
     onUpdatePoiCoordinates,
@@ -211,7 +218,9 @@ export const EditorMap = ({
     editWaypointType,
     editWaypointCoordinates,
     isEditingRouteCoordinates,
+    isViewingMapOnSmallScreen,
     onEditWaypoint,
+    setIsViewingMapOnSmallScreen,
     setEditWaypointType,
     setEditWaypointCoordinates,
     mapRef,
@@ -250,6 +259,10 @@ export const EditorMap = ({
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}
         onClose={() => setIsEditingPoiCoordinates(false)}
+      />
+      <ViewMapToolbar
+        isVisible={isViewingMapOnSmallScreen}
+        onClose={() => setIsViewingMapOnSmallScreen(false)}
       />
     </div>
   );

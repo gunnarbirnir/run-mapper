@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { Text, RoundButton, Icon, Tooltip } from '~/primitives';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { cn } from '~/utils';
 
 interface ItemsSectionProps {
   title: string;
@@ -11,6 +12,7 @@ interface ItemsSectionProps {
   buttonLabel?: string;
   children?: ReactNode;
   className?: string;
+  emptyTextClassName?: string;
   onAddClick?: () => void;
 }
 
@@ -21,6 +23,7 @@ export const ItemsSection = ({
   showEmptyText,
   children,
   className,
+  emptyTextClassName,
   onAddClick,
 }: ItemsSectionProps) => {
   const hasItems = Boolean(children);
@@ -51,7 +54,10 @@ export const ItemsSection = ({
               ease: DEFAULT_EASING,
             }}
           >
-            <Text variant="subtle" className="mt-3 text-sm text-pretty">
+            <Text
+              variant="subtle"
+              className={cn('mt-3 text-sm text-pretty', emptyTextClassName)}
+            >
               {emptyText}
             </Text>
           </motion.div>
