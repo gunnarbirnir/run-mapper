@@ -112,7 +112,7 @@ export const RootPanel = ({
   }, [setHasMadeChanges, isDefaultValue]);
 
   useEffect(() => {
-    if (currentRoutes.length <= 1) {
+    if (currentRoutes.length === 0) {
       onDefaultRouteIdChange(null);
     } else if (
       !defaultRouteIdValue ||
