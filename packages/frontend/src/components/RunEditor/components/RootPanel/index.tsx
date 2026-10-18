@@ -174,9 +174,9 @@ export const RootPanel = ({
                     ? 'Add a route first'
                     : 'The default route to be displayed'
                 }
-                value={field.state.value}
+                value={field.state.value ?? null}
                 disabled={currentRoutes.length === 0}
-                onChange={(value) => field.handleChange(value ?? undefined)}
+                onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 items={currentRoutes.map((route) => ({
                   label: route.name,

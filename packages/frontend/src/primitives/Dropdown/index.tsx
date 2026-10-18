@@ -8,7 +8,7 @@ export interface DropdownProps {
   items: { label: string; value: string }[];
   side?: 'top' | 'bottom' | 'left' | 'right' | 'inline-end' | 'inline-start';
   align?: 'start' | 'center' | 'end';
-  value?: string;
+  value?: string | null;
   values?: string[];
   disabled?: boolean;
   placeholder?: string;

@@ -10,6 +10,7 @@ import type {
   RouteData,
   RouteCoordinates,
   ElevationStats,
+  ListRoute,
 } from '../types/index.js';
 import type { ListRun, PublicRoute } from '../types/index.js';
 import {
@@ -75,6 +76,14 @@ export const compareWaypoints = (a: Waypoint, b: Waypoint) => {
   return WAYPOINT_VALUES.indexOf(a.type) - WAYPOINT_VALUES.indexOf(b.type);
 };
 
+export const sanitizeListRoute = (route: PublicRoute): ListRoute => {
+  return {
+    id: route.id || generateId(),
+    name: route.name || 'Untitled Route',
+    distance: route.distance ?? 0,
+  };
+};
+
 export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
   return {
     id: runData.id || generateId(),
@@ -84,6 +93,7 @@ export const sanitizeListRun = (runData: RunRecordWithId): ListRun => {
     createdAt: runData.createdAt,
     updatedAt: runData.updatedAt,
     imageSeed: runData.imageSeed ?? generateImageSeed(),
+    routes: runData.routes.map(sanitizeListRoute),
   };
 };
 

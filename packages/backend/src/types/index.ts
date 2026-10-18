@@ -78,6 +78,12 @@ export type RunRecord = Omit<RunRecordWithId, 'id'>;
 
 export type EditorRun = Omit<RunRecordWithId, 'userId'>;
 
+export interface ListRoute {
+  id: string;
+  name: string;
+  distance: number;
+}
+
 export interface ListRun {
   id: string;
   name: string;
@@ -86,6 +92,7 @@ export interface ListRun {
   createdAt: string;
   updatedAt?: string;
   imageSeed: number;
+  routes: ListRoute[];
 }
 
 export interface DirectionsResponse {
