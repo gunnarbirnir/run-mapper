@@ -24,6 +24,7 @@ interface UsePointsOfInterestProps {
   hasMadeAnyChanges: boolean;
   isEditingPoiCoordinates: boolean;
   isEditingRouteCoordinates: boolean;
+  isViewingMapOnSmallScreen: boolean;
   editPointOfInterestType: PointOfInterestType | null;
   onEditPointOfInterest: (pointOfInterestId: string) => void;
   onUpdatePoiCoordinates: (coordinates: Coordinates) => void;
@@ -40,6 +41,7 @@ export const usePointsOfInterest = ({
   hasMadeAnyChanges,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  isViewingMapOnSmallScreen,
   editPointOfInterestType,
   onEditPointOfInterest,
   onUpdatePoiCoordinates,
@@ -90,7 +92,7 @@ export const usePointsOfInterest = ({
                 ? editPointOfInterestType
                 : pointOfInterest.type,
             onClick:
-              hasMadeAnyChanges || isEditingInMap
+              hasMadeAnyChanges || isEditingInMap || isViewingMapOnSmallScreen
                 ? undefined
                 : () => onEditPointOfInterest(pointOfInterest.id),
             isFocused: isActive,
@@ -135,6 +137,7 @@ export const usePointsOfInterest = ({
     hasMadeAnyChanges,
     editPointOfInterestType,
     pointOfInterestPanelIsOpen,
+    isViewingMapOnSmallScreen,
     editCoordinates,
     isEditingInMap,
     addMarker,

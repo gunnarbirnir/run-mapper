@@ -80,6 +80,12 @@ export type RunUpdate = Omit<
   'id' | 'createdAt' | 'updatedAt' | 'isPublic'
 >;
 
+export interface ListRoute {
+  id: string;
+  name: string;
+  distance: number;
+}
+
 export interface ListRun {
   id: string;
   name: string;
@@ -88,6 +94,7 @@ export interface ListRun {
   createdAt: string;
   updatedAt?: string;
   imageSeed: number;
+  routes: ListRoute[];
 }
 
 export type ApiResponse<T> = {

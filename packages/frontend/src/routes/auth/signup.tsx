@@ -3,9 +3,13 @@ import { createFileRoute } from '@tanstack/react-router';
 import { PageLayout } from '~/components/PageLayout';
 import { SignUpCard } from '~/components/SignUpCard';
 import { ShaderBackground } from '~/components/ShaderBackground';
+import { formatDocumentTitle } from '~/utils';
 
 export const Route = createFileRoute('/auth/signup')({
   component: SignUp,
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Sign up') }],
+  }),
 });
 
 function SignUp() {

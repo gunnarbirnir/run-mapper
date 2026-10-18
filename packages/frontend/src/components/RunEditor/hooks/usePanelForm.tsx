@@ -69,7 +69,8 @@ export const usePanelForm = ({
   useEffect(() => {
     resetForm();
     document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [editId, resetForm, itemId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId, itemId]);
 
   useEffect(() => {
     onHasMadeChanges(!isDefaultValue && !saveDialogOpen && !deleteDialogOpen);

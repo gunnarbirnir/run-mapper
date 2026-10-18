@@ -20,6 +20,7 @@ import {
 } from '~/types';
 import { formatNumber, getFieldError } from '~/utils';
 import { getBoundingBox, isSameRoute } from '~/utils/route';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 import { usePanelForm } from '../../hooks/usePanelForm';
 import type { PanelState } from '../../hooks/usePanelState';
@@ -38,8 +39,10 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   isLoadingRouteBetweenPoints: boolean;
   isEditingRouteCoordinates: boolean;
   currentWaypoints: Waypoint[];
+  activeWaypoint: string | null;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
+  onViewMap: () => void;
   setActiveRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
@@ -79,6 +82,7 @@ export const RoutePanel = ({
   showPanel,
   isAnimatingPanel,
   currentWaypoints,
+  activeWaypoint,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -86,6 +90,7 @@ export const RoutePanel = ({
   onDeleteItem,
   onAddWaypoint,
   onEditWaypoint,
+  onViewMap,
   setActiveRouteControlPoints,
   setIsEditingRouteCoordinates,
   editRouteActionsRef,
@@ -96,14 +101,24 @@ export const RoutePanel = ({
   // To prevent flickering when animating the panel
   const [routeDistanceCached, setRouteDistanceCached] =
     useState(activeRouteDistance);
+  const [elevationGainCached, setElevationGainCached] = useState(
+    activeRouteElevationStats?.elevationGain ?? 0,
+  );
+  const { isSmallScreen } = useMediaQuery();
 
   // Layout effect to prevent flicker of invalid waypoints
   useLayoutEffect(() => {
     if (!isAnimatingPanel || showPanel) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRouteDistanceCached(activeRouteDistance);
+      setElevationGainCached(activeRouteElevationStats?.elevationGain ?? 0);
     }
-  }, [activeRouteDistance, isAnimatingPanel, showPanel]);
+  }, [
+    activeRouteDistance,
+    activeRouteElevationStats?.elevationGain,
+    isAnimatingPanel,
+    showPanel,
+  ]);
 
   const formDefaultValues = useMemo(() => {
     const editRoute = currentItems.find((route) => route.id === editId);
@@ -312,10 +327,11 @@ export const RoutePanel = ({
           title="Coordinates"
           emptyText={
             routeDistanceCached
-              ? `Route distance: ${formatNumber(routeDistanceCached, 2)} km`
+              ? `Route distance: ${formatNumber(routeDistanceCached, 2)} km\nElevation gain: ${formatNumber(elevationGainCached, 2)} m`
               : 'The route itself is created in the map. Click the button below to start editing the route.'
           }
           showEmptyText
+          emptyTextClassName="whitespace-pre-line"
         >
           {isEditingRouteCoordinates ? (
             <div className="flex items-center gap-2">
@@ -336,13 +352,21 @@ export const RoutePanel = ({
               </Button>
             </div>
           ) : (
-            <Button
-              color="secondary"
-              size="small"
-              onClick={() => setIsEditingRouteCoordinates(true)}
-            >
-              Edit coordinates
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                color="secondary"
+                size="small"
+                disabled={activeWaypoint !== null}
+                onClick={() => setIsEditingRouteCoordinates(true)}
+              >
+                Edit coordinates
+              </Button>
+              {isSmallScreen && (
+                <Button color="gray" size="small" onClick={onViewMap}>
+                  View map
+                </Button>
+              )}
+            </div>
           )}
           {activeRouteError && (
             <StatusMessage autoClear status="error" className="mt-3">
@@ -368,6 +392,7 @@ export const RoutePanel = ({
                   key={waypoint.id}
                   waypoint={waypoint}
                   layoutDependency={waypointLayoutDependency}
+                  disabled={isEditingRouteCoordinates}
                   error={
                     !['start', 'end'].includes(waypoint.type) &&
                     waypoint.position > routeDistanceCached
@@ -405,6 +430,7 @@ export const RoutePanel = ({
               color="errorOutline"
               className="w-full"
               onClick={handleOnDelete}
+              disabled={isEditingRouteCoordinates}
             >
               Delete
             </Button>

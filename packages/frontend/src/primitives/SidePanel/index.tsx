@@ -23,12 +23,14 @@ interface SidePanelItem {
   isVisible?: boolean;
   disabled?: boolean;
   position?: number;
+
   onAnimationStart?: () => void;
   onAnimationComplete?: () => void;
 }
 
 interface SidePanelProps {
   panels: SidePanelItem[];
+  hideToggle?: boolean;
   className?: string;
   toggleClassName?: string;
   onOpen?: () => void;
@@ -39,6 +41,7 @@ interface SidePanelProps {
 const TOGGLE_WIDTH = '3.5rem';
 
 const SidePanel = ({
+  hideToggle = false,
   className,
   toggleClassName,
   onOpen,
@@ -173,7 +176,7 @@ const SidePanel = ({
           },
         )}
       </motion.div>
-      {onOpen && (
+      {onOpen && !hideToggle && (
         <motion.div
           ref={toggleRef}
           initial={false}

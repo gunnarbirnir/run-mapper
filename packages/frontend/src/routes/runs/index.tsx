@@ -7,9 +7,13 @@ import { RunCard } from '~/components/RunCard';
 import { useAuthState } from '~/hooks/useAuthState';
 import { Button, Text } from '~/primitives';
 import type { ListRun, ApiResponse } from '~/types';
+import { formatDocumentTitle } from '~/utils';
 
 export const Route = createFileRoute('/runs/')({
   component: Runs,
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Runs') }],
+  }),
 });
 
 function Runs() {

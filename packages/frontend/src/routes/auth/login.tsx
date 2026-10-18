@@ -3,11 +3,15 @@ import { createFileRoute } from '@tanstack/react-router';
 import { LoginCard } from '~/components/LoginCard';
 import { PageLayout } from '~/components/PageLayout';
 import { ShaderBackground } from '~/components/ShaderBackground';
+import { formatDocumentTitle } from '~/utils';
 
 export const Route = createFileRoute('/auth/login')({
   component: Login,
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: search.redirect as string | undefined,
+  }),
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Sign in') }],
   }),
 });
 

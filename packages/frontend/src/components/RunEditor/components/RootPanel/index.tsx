@@ -1,4 +1,4 @@
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useStore, useField } from '@tanstack/react-form';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
 import z from 'zod';
@@ -41,7 +41,7 @@ interface RootPanelProps {
 const rootFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
-  defaultRouteId: z.string().or(z.undefined()),
+  defaultRouteId: z.string().or(z.null()),
 });
 
 export const RootPanel = ({
@@ -72,22 +72,23 @@ export const RootPanel = ({
     defaultValues: {
       name: existingRun?.name || '',
       publicSlug: existingRun?.publicSlug || '',
-      defaultRouteId: existingRun?.defaultRouteId,
+      defaultRouteId: existingRun?.defaultRouteId || null,
     },
     validators: {
       onBlur: rootFormSchema,
       onSubmit: rootFormSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value, formApi }) => {
       const updatedRun = {
         name: value.name,
         publicSlug: value.publicSlug,
-        defaultRouteId: value.defaultRouteId,
+        defaultRouteId: value.defaultRouteId || undefined,
         routes: currentRoutes,
         pointsOfInterest: currentPointsOfInterest,
       };
 
       await onSubmit(updatedRun);
+      formApi.reset(value);
     },
   });
 
@@ -98,9 +99,28 @@ export const RootPanel = ({
   const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
   const isCreatingRun = isSubmitting && !isEditing;
 
+  const {
+    state: { value: defaultRouteIdValue },
+    handleChange: onDefaultRouteIdChange,
+  } = useField({
+    form: rootForm,
+    name: 'defaultRouteId',
+  });
+
   useEffect(() => {
     setHasMadeChanges(!isDefaultValue);
   }, [setHasMadeChanges, isDefaultValue]);
+
+  useEffect(() => {
+    if (currentRoutes.length === 0) {
+      onDefaultRouteIdChange(null);
+    } else if (
+      !defaultRouteIdValue ||
+      !currentRoutes.some((route) => route.id === defaultRouteIdValue)
+    ) {
+      onDefaultRouteIdChange(currentRoutes[0].id);
+    }
+  }, [currentRoutes, defaultRouteIdValue, onDefaultRouteIdChange]);
 
   return (
     <SidePanel.Content
@@ -148,43 +168,47 @@ export const RootPanel = ({
           onAddClick={onAddRoute}
         >
           {currentRoutes.length > 0 ? (
-            <motion.div layout className="mb-6 space-y-3">
-              {currentRoutes
-                .sort(
-                  (a, b) =>
-                    (a.displayDistance ?? a.distance) -
-                    (b.displayDistance ?? b.distance),
-                )
-                .map((route) => (
-                  <RouteItem
-                    key={route.id}
-                    route={route}
-                    onEditRoute={onEditRoute}
-                  />
-                ))}
-            </motion.div>
+            <>
+              <motion.div layout className="mb-6 space-y-3">
+                {currentRoutes
+                  .sort(
+                    (a, b) =>
+                      (a.displayDistance ?? a.distance) -
+                      (b.displayDistance ?? b.distance),
+                  )
+                  .map((route) => (
+                    <RouteItem
+                      key={route.id}
+                      route={route}
+                      onEditRoute={onEditRoute}
+                    />
+                  ))}
+              </motion.div>
+              {/* The outer condition is so the fallback content shows up */}
+              {currentRoutes.length > 1 ? (
+                <rootForm.Field name="defaultRouteId">
+                  {(field) => (
+                    <Form.Dropdown
+                      id={defaultRouteIdId}
+                      label="Default route"
+                      infoText={
+                        currentRoutes.length === 0
+                          ? 'Add a route first'
+                          : 'The default route to be displayed'
+                      }
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onBlur={field.handleBlur}
+                      items={currentRoutes.map((route) => ({
+                        label: route.name,
+                        value: route.id,
+                      }))}
+                    />
+                  )}
+                </rootForm.Field>
+              ) : null}
+            </>
           ) : null}
-          <rootForm.Field name="defaultRouteId">
-            {(field) => (
-              <Form.Dropdown
-                id={defaultRouteIdId}
-                label="Default route"
-                infoText={
-                  currentRoutes.length === 0
-                    ? 'Add a route first'
-                    : 'The default route to be displayed'
-                }
-                value={field.state.value}
-                disabled={currentRoutes.length === 0}
-                onChange={(value) => field.handleChange(value ?? undefined)}
-                onBlur={field.handleBlur}
-                items={currentRoutes.map((route) => ({
-                  label: route.name,
-                  value: route.id,
-                }))}
-              />
-            )}
-          </rootForm.Field>
         </ItemsSection>
         <ItemsSection
           title="Points of interest"

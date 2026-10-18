@@ -27,9 +27,7 @@ export const EmbedRunDialog = ({
   const [iframeHeight, setIframeHeight] = useState(DEFAULT_IFRAME_HEIGHT);
   const [iframeWidth, setIframeWidth] = useState(DEFAULT_IFRAME_WIDTH);
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
-  const [activeRouteId, setActiveRouteId] = useState<string | undefined>(
-    undefined,
-  );
+  const [activeRouteId, setActiveRouteId] = useState('');
 
   const iframeQueryParams = activeRouteId ? `?routeId=${activeRouteId}` : '';
   const iframeSrc = `${import.meta.env.VITE_FRONTEND_BASE_URL}/run/${runSlug}${iframeQueryParams}`;
@@ -106,7 +104,7 @@ export const EmbedRunDialog = ({
               }
               value={activeRouteId}
               disabled={routes.length === 0}
-              onChange={(value) => setActiveRouteId(value || undefined)}
+              onChange={setActiveRouteId}
               items={[
                 { label: 'Default route', value: '' },
                 ...routes.map((route) => ({

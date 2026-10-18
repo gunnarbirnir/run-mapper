@@ -6,9 +6,14 @@ import type { ApiResponse, EditorRun, RunUpdate } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
 import { RunEditor } from '~/components/RunEditor';
 import { api } from '~/service';
+import { formatDocumentTitle } from '~/utils';
+import { useSetDocumentTitle } from '~/hooks/useSetDocumentTitle';
 
 export const Route = createFileRoute('/editor/run/$runId')({
   component: ExistingRunEditor,
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Editor') }],
+  }),
 });
 
 function ExistingRunEditor() {
@@ -92,6 +97,8 @@ function ExistingRunEditor() {
     },
     onError: handleError,
   });
+
+  useSetDocumentTitle(existingRun?.data.name);
 
   if (error) {
     return (

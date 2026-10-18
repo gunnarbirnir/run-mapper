@@ -17,7 +17,16 @@ interface RunCardProps {
 const CHEVRON_TRANSLATE_X = 20;
 
 export const RunCard = ({
-  run: { id, publicSlug, name, createdAt, updatedAt, isPublic, imageSeed },
+  run: {
+    id,
+    publicSlug,
+    name,
+    createdAt,
+    updatedAt,
+    isPublic,
+    imageSeed,
+    routes,
+  },
 }: RunCardProps) => {
   const infoRef = useRef<HTMLDivElement>(null);
   const [infoIsHovered, setInfoIsHovered] = useState(false);
@@ -107,6 +116,7 @@ export const RunCard = ({
       <EmbedRunDialog
         runSlug={publicSlug}
         runName={name}
+        routes={routes}
         isOpen={isEmbedDialogOpen}
         onClose={() => setIsEmbedDialogOpen(false)}
       />

@@ -107,3 +107,7 @@ export const getRunBasePath = (
 export const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
 };
+
+export const formatDocumentTitle = (title: string) => {
+  return title ? `Spretta - ${title}` : 'Spretta';
+};

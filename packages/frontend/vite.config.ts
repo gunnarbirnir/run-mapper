@@ -13,12 +13,7 @@ export default defineConfig(({ command }) => ({
     outDir: '.vercel',
   },
   plugins: [
-    tanstackStart({
-      router: {
-        routeFileIgnorePattern:
-          command === 'build' ? '.*playground.*' : undefined,
-      },
-    }),
+    tanstackStart(),
     nitro({
       ...(command === 'build' ? { preset: 'vercel' } : {}),
     }),

@@ -83,10 +83,12 @@ export const RunEditor = ({
   const mapState = useMapState();
   const {
     isEditingPoiCoordinates,
+    isViewingMapOnSmallScreen,
     setIsEditingPoiCoordinates,
     setEditPointOfInterestType,
     setEditWaypointType,
     setEditWaypointCoordinates,
+    setIsViewingMapOnSmallScreen,
     editRouteActionsRef,
     onUpdatePoiCoordinatesRef,
   } = mapState;
@@ -132,6 +134,7 @@ export const RunEditor = ({
           waypointPanelState={waypointPanelState}
           // Map state
           isEditingPoiCoordinates={isEditingPoiCoordinates}
+          isViewingMapOnSmallScreen={isViewingMapOnSmallScreen}
           // Handlers
           onSubmit={onSubmit}
           onDeleteRun={onDeleteRun}
@@ -142,6 +145,7 @@ export const RunEditor = ({
           setEditPointOfInterestType={setEditPointOfInterestType}
           setEditWaypointType={setEditWaypointType}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
+          setIsViewingMapOnSmallScreen={setIsViewingMapOnSmallScreen}
           // Refs
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
@@ -194,6 +198,7 @@ export const RunEditor = ({
             isUpdatingPublicStatus={isUpdatingPublicStatus}
             hidePreviewButton={!existingRun}
             showPublicDisplayPreview={showPublicDisplayPreview}
+            isRootPanelOpen={rootPanelState.showRootPanel}
             setShowPublicDisplayPreview={setShowPublicDisplayPreview}
             onPublishRun={onPublishRun}
             onUnpublishRun={onUnpublishRun}

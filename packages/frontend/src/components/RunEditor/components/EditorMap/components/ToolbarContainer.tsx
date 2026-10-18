@@ -25,7 +25,7 @@ export const ToolbarContainer = ({
         ease: DEFAULT_EASING,
       }}
       className={cn(
-        'absolute left-[50%] translate-x-[-50%] rounded-full bg-white shadow-md',
+        'absolute left-[50%] translate-x-[-50%] rounded-full bg-white whitespace-nowrap shadow-md',
         className,
       )}
       style={{ bottom: spacingPx(13) }}

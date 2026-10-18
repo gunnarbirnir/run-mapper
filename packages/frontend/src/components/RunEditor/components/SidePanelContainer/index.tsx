@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { SidePanel } from '~/primitives';
 import type {
@@ -23,6 +22,7 @@ import { PointOfInterestPanel } from '../PointOfInterestPanel';
 import { RootPanel } from '../RootPanel';
 import { RoutePanel } from '../RoutePanel';
 import { WaypointPanel } from '../WaypointPanel';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 interface SidePanelContainerProps {
   existingRun?: EditorRun;
@@ -42,6 +42,7 @@ interface SidePanelContainerProps {
   waypointPanelState: PanelState<Waypoint>;
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
+  isViewingMapOnSmallScreen: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
   setHasMadeChanges: (hasMadeChanges: boolean) => void;
@@ -51,6 +52,7 @@ interface SidePanelContainerProps {
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  setIsViewingMapOnSmallScreen: (isViewing: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -73,6 +75,7 @@ export const SidePanelContainer = ({
   waypointPanelState,
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
+  isViewingMapOnSmallScreen,
   onSubmit,
   onDeleteRun,
   setHasMadeChanges,
@@ -82,6 +85,7 @@ export const SidePanelContainer = ({
   setIsEditingPoiCoordinates,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  setIsViewingMapOnSmallScreen,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -97,6 +101,11 @@ export const SidePanelContainer = ({
     onEditWaypoint,
     onAnimationComplete,
   } = rootPanelState;
+  const { isSmallScreen } = useMediaQuery();
+  const isEditingOnSmallScreen =
+    isSmallScreen && (isEditingRouteCoordinates || isEditingPoiCoordinates);
+  const showMapOnSmallScreen =
+    isViewingMapOnSmallScreen || isEditingOnSmallScreen;
 
   const handleAddWaypoint = useCallback(() => {
     onAddWaypoint();
@@ -115,25 +124,16 @@ export const SidePanelContainer = ({
     [onSubmit, routePanelState, pointOfInterestPanelState, waypointPanelState],
   );
 
-  useHotkey('P', () => {
-    if (showRootPanel) {
-      onClose();
-    } else {
-      onOpen();
-    }
-  });
-
   return (
     <SidePanel
       onOpen={onOpen}
+      hideToggle={showMapOnSmallScreen}
       className="z-10"
-      // To be below route stats
-      toggleClassName="top-16"
       panels={[
         {
           id: 'root',
           position: 0,
-          isVisible: showRootPanel,
+          isVisible: showRootPanel && !showMapOnSmallScreen,
           disabled: [
             routePanelState,
             pointOfInterestPanelState,
@@ -167,7 +167,8 @@ export const SidePanelContainer = ({
         {
           id: 'point-of-interest',
           position: 1,
-          isVisible: pointOfInterestPanelState.showPanel,
+          isVisible:
+            pointOfInterestPanelState.showPanel && !showMapOnSmallScreen,
           onAnimationComplete: pointOfInterestPanelState.onAnimationComplete,
           content: (
             <PointOfInterestPanel
@@ -182,7 +183,7 @@ export const SidePanelContainer = ({
         {
           id: 'route',
           position: 1,
-          isVisible: routePanelState.showPanel,
+          isVisible: routePanelState.showPanel && !showMapOnSmallScreen,
           disabled: waypointPanelState.hasMadeChanges,
           onAnimationComplete: routePanelState.onAnimationComplete,
           content: (
@@ -197,8 +198,10 @@ export const SidePanelContainer = ({
               activeRouteError={activeRouteError}
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               currentWaypoints={waypointPanelState.currentItems}
+              activeWaypoint={waypointPanelState.editId}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
+              onViewMap={() => setIsViewingMapOnSmallScreen(true)}
               setActiveRouteControlPoints={setActiveRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
               editRouteActionsRef={editRouteActionsRef}
@@ -208,7 +211,7 @@ export const SidePanelContainer = ({
         {
           id: 'waypoint',
           position: 2,
-          isVisible: waypointPanelState.showPanel,
+          isVisible: waypointPanelState.showPanel && !showMapOnSmallScreen,
           onAnimationComplete: waypointPanelState.onAnimationComplete,
           content: (
             <WaypointPanel

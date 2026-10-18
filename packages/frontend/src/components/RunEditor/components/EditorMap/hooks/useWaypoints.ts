@@ -1,5 +1,5 @@
 import type { Map, Marker } from 'mapbox-gl';
-import { useEffect, type RefObject, useRef } from 'react';
+import { useEffect, type RefObject, useRef, useCallback } from 'react';
 
 import type {
   Coordinates,
@@ -25,9 +25,11 @@ interface UseWaypointsProps {
   editWaypointType: WaypointType | null;
   editWaypointCoordinates: Coordinates | null;
   isEditingRouteCoordinates: boolean;
+  isViewingMapOnSmallScreen: boolean;
   onEditWaypoint: (waypointId: string) => void;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  setIsViewingMapOnSmallScreen: (isViewing: boolean) => void;
   mapRef: RefObject<Map>;
 }
 
@@ -57,9 +59,11 @@ export const useWaypoints = ({
   editWaypointType,
   editWaypointCoordinates,
   isEditingRouteCoordinates,
+  isViewingMapOnSmallScreen,
   onEditWaypoint,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  setIsViewingMapOnSmallScreen,
   mapRef,
 }: UseWaypointsProps) => {
   const { addMarker } = useMapHandlers({ mapRef });
@@ -78,6 +82,16 @@ export const useWaypoints = ({
       setEditWaypointCoordinates(null);
     }
   }, [waypointPanelIsOpen, setEditWaypointType, setEditWaypointCoordinates]);
+
+  const handleWaypointClick = useCallback(
+    (waypointId: string) => {
+      onEditWaypoint(waypointId);
+      if (isViewingMapOnSmallScreen) {
+        setIsViewingMapOnSmallScreen(false);
+      }
+    },
+    [isViewingMapOnSmallScreen, setIsViewingMapOnSmallScreen, onEditWaypoint],
+  );
 
   // Draw waypoints
   useEffect(() => {
@@ -109,7 +123,7 @@ export const useWaypoints = ({
               color: '--color-success-500',
               hoverColor: '--color-success-600',
               onClick: isClickable
-                ? () => onEditWaypoint(waypoint.id)
+                ? () => handleWaypointClick(waypoint.id)
                 : undefined,
               isFocused: waypoint.id === activeWaypoint,
             }),
@@ -123,7 +137,7 @@ export const useWaypoints = ({
               color: '--color-error-500',
               hoverColor: '--color-error-600',
               onClick: isClickable
-                ? () => onEditWaypoint(waypoint.id)
+                ? () => handleWaypointClick(waypoint.id)
                 : undefined,
               isFocused: waypoint.id === activeWaypoint,
             }),
@@ -137,7 +151,7 @@ export const useWaypoints = ({
               type:
                 isActive && editWaypointType ? editWaypointType : waypoint.type,
               onClick: isClickable
-                ? () => onEditWaypoint(waypoint.id)
+                ? () => handleWaypointClick(waypoint.id)
                 : undefined,
               isFocused: waypoint.id === activeWaypoint,
             }),
@@ -179,7 +193,7 @@ export const useWaypoints = ({
     editWaypointCoordinates,
     isEditingRouteCoordinates,
     addMarker,
-    onEditWaypoint,
+    handleWaypointClick,
     mapRef,
   ]);
 
