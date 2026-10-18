@@ -6,6 +6,8 @@ import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
 import { LoadingSpinner, Text } from '~/primitives';
+import { formatDocumentTitle } from '~/utils';
+import { useSetDocumentTitle } from '~/hooks/useSetDocumentTitle';
 
 export const Route = createFileRoute('/run/$slug')({
   ssr: false,
@@ -13,6 +15,9 @@ export const Route = createFileRoute('/run/$slug')({
   validateSearch: (search: Record<string, unknown>) => ({
     isFullscreen: search.isFullscreen === true,
     routeId: search.routeId as string | undefined,
+  }),
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Run') }],
   }),
 });
 
@@ -23,6 +28,7 @@ function PublicRun() {
     queryKey: ['public-run', slug],
     queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
+  useSetDocumentTitle(data?.data.name);
   const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
 
   if (isLoading) {

@@ -5,9 +5,13 @@ import { PageLayout } from '~/components/PageLayout';
 import { RunEditor } from '~/components/RunEditor';
 import { api } from '~/service';
 import { EditorRun, ApiResponse, RunUpdate } from '~/types';
+import { formatDocumentTitle } from '~/utils';
 
 export const Route = createFileRoute('/editor/run/new')({
   component: NewRunEditor,
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('New run') }],
+  }),
 });
 
 function NewRunEditor() {

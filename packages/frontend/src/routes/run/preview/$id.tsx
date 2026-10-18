@@ -6,6 +6,8 @@ import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
 import { LoadingSpinner } from '~/primitives';
+import { formatDocumentTitle } from '~/utils';
+import { useSetDocumentTitle } from '~/hooks/useSetDocumentTitle';
 
 import { Fallback, ErrorMessage } from '../$slug';
 
@@ -16,6 +18,9 @@ export const Route = createFileRoute('/run/preview/$id')({
     isFullscreen: search.isFullscreen === true,
     routeId: search.routeId as string | undefined,
   }),
+  head: () => ({
+    meta: [{ title: formatDocumentTitle('Run preview') }],
+  }),
 });
 
 function RunPreview() {
@@ -25,6 +30,7 @@ function RunPreview() {
     queryKey: ['run-preview', id],
     queryFn: () => api.get(`/runs/preview/${encodeURIComponent(id)}`),
   });
+  useSetDocumentTitle(data?.data.name);
   const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
 
   if (isLoading) {

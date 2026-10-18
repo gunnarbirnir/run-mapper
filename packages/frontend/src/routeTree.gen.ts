@@ -16,7 +16,6 @@ import { Route as R404IndexRouteImport } from './routes/404/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
-import { Route as PlaygroundIndexRouteImport } from './routes/playground/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
 import { Route as RunsIndexRouteImport } from './routes/runs/index'
 import { Route as EditorRunRunIdRouteImport } from './routes/editor/run/$runId'
@@ -58,11 +57,6 @@ const HomeIndexRoute = HomeIndexRouteImport.update({
   path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
-  id: '/playground/',
-  path: '/playground/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RunSlugRoute = RunSlugRouteImport.update({
   id: '/run/$slug',
   path: '/run/$slug',
@@ -98,7 +92,6 @@ export interface FileRoutesByFullPath {
   '/run/$slug': typeof RunSlugRoute
   '/404/': typeof R404IndexRoute
   '/home/': typeof HomeIndexRoute
-  '/playground/': typeof PlaygroundIndexRoute
   '/runs/': typeof RunsIndexRoute
   '/editor/run/$runId': typeof EditorRunRunIdRoute
   '/editor/run/new': typeof EditorRunNewRoute
@@ -112,7 +105,6 @@ export interface FileRoutesByTo {
   '/run/$slug': typeof RunSlugRoute
   '/404': typeof R404IndexRoute
   '/home': typeof HomeIndexRoute
-  '/playground': typeof PlaygroundIndexRoute
   '/runs': typeof RunsIndexRoute
   '/editor/run/$runId': typeof EditorRunRunIdRoute
   '/editor/run/new': typeof EditorRunNewRoute
@@ -128,7 +120,6 @@ export interface FileRoutesById {
   '/run/$slug': typeof RunSlugRoute
   '/404/': typeof R404IndexRoute
   '/home/': typeof HomeIndexRoute
-  '/playground/': typeof PlaygroundIndexRoute
   '/runs/': typeof RunsIndexRoute
   '/editor/run/$runId': typeof EditorRunRunIdRoute
   '/editor/run/new': typeof EditorRunNewRoute
@@ -145,7 +136,6 @@ export interface FileRouteTypes {
     | '/run/$slug'
     | '/404/'
     | '/home/'
-    | '/playground/'
     | '/runs/'
     | '/editor/run/$runId'
     | '/editor/run/new'
@@ -159,7 +149,6 @@ export interface FileRouteTypes {
     | '/run/$slug'
     | '/404'
     | '/home'
-    | '/playground'
     | '/runs'
     | '/editor/run/$runId'
     | '/editor/run/new'
@@ -174,7 +163,6 @@ export interface FileRouteTypes {
     | '/run/$slug'
     | '/404/'
     | '/home/'
-    | '/playground/'
     | '/runs/'
     | '/editor/run/$runId'
     | '/editor/run/new'
@@ -190,7 +178,6 @@ export interface RootRouteChildren {
   RunSlugRoute: typeof RunSlugRoute
   R404IndexRoute: typeof R404IndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
-  PlaygroundIndexRoute: typeof PlaygroundIndexRoute
   RunPreviewIdRoute: typeof RunPreviewIdRoute
 }
 
@@ -243,13 +230,6 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home/'
       preLoaderRoute: typeof HomeIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/playground/': {
-      id: '/playground/'
-      path: '/playground'
-      fullPath: '/playground/'
-      preLoaderRoute: typeof PlaygroundIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/run/$slug': {
@@ -325,7 +305,6 @@ const rootRouteChildren: RootRouteChildren = {
   RunSlugRoute: RunSlugRoute,
   R404IndexRoute: R404IndexRoute,
   HomeIndexRoute: HomeIndexRoute,
-  PlaygroundIndexRoute: PlaygroundIndexRoute,
   RunPreviewIdRoute: RunPreviewIdRoute,
 }
 export const routeTree = rootRouteImport
