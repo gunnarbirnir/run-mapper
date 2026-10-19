@@ -196,7 +196,6 @@ export const RunEditor = ({
             existingRun={existingRun}
             hasMadeChanges={hasMadeChanges}
             isUpdatingPublicStatus={isUpdatingPublicStatus}
-            hidePreviewButton={!existingRun}
             showPublicDisplayPreview={showPublicDisplayPreview}
             isRootPanelOpen={rootPanelState.showRootPanel}
             setShowPublicDisplayPreview={setShowPublicDisplayPreview}

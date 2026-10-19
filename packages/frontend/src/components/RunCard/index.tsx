@@ -6,6 +6,7 @@ import type { ListRun } from '~/types';
 import { Text, Icon, RoundButton, Tooltip } from '~/primitives';
 import { formatDate, cn } from '~/utils';
 import { DEFAULT_FADE_IN_DURATION } from '~/constants';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 import { EmbedRunDialog } from '../EmbedRunDialog';
 import { ShaderBackground } from '../ShaderBackground';
@@ -31,6 +32,7 @@ export const RunCard = ({
   const infoRef = useRef<HTMLDivElement>(null);
   const [infoIsHovered, setInfoIsHovered] = useState(false);
   const [isEmbedDialogOpen, setIsEmbedDialogOpen] = useState(false);
+  const { isSmallScreen } = useMediaQuery();
 
   useEffect(() => {
     const handleMouseEnter = () => setInfoIsHovered(true);
@@ -58,7 +60,7 @@ export const RunCard = ({
           seed={imageSeed}
           speed={0}
           lineWidth={1}
-          className="rounded-t-xl bg-gray-100"
+          className="aspect-2/1 rounded-t-xl bg-gray-100"
         />
         <div className="absolute top-4 left-4">
           <div
@@ -71,20 +73,24 @@ export const RunCard = ({
             </Text>
           </div>
         </div>
-        <div className="absolute top-3 right-3">
-          <Tooltip
-            label={isPublic ? 'Embed run on your site' : 'Publish run to embed'}
-          >
-            <RoundButton
-              color="white"
-              disabled={!isPublic}
-              className="h-10 w-10 shadow-md/20"
-              onClick={() => setIsEmbedDialogOpen(true)}
+        {!isSmallScreen && (
+          <div className="absolute top-3 right-3">
+            <Tooltip
+              label={
+                isPublic ? 'Embed run on your site' : 'Publish run to embed'
+              }
             >
-              <Icon name="link" className="size-6" />
-            </RoundButton>
-          </Tooltip>
-        </div>
+              <RoundButton
+                color="white"
+                disabled={!isPublic}
+                className="h-10 w-10 shadow-md/20"
+                onClick={() => setIsEmbedDialogOpen(true)}
+              >
+                <Icon name="link" className="size-6" />
+              </RoundButton>
+            </Tooltip>
+          </div>
+        )}
         <Link to="/editor/run/$runId" params={{ runId: id }}>
           <div
             ref={infoRef}
