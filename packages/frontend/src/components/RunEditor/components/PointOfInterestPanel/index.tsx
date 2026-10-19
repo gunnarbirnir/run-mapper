@@ -49,6 +49,7 @@ const pointOfInterestTypeOptions = POINT_OF_INTEREST_VALUES.map((type) => ({
 
 export const PointOfInterestPanel = ({
   editId,
+  showPanel,
   currentItems,
   isEditingPoiCoordinates,
   onUpdateItem,
@@ -157,6 +158,7 @@ export const PointOfInterestPanel = ({
     handleCloseDeleteDialog,
   } = usePanelForm({
     editId,
+    showPanel,
     isDefaultValue,
     onClose: closePanel,
     resetForm,

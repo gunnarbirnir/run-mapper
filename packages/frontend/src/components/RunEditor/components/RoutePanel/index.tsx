@@ -6,11 +6,19 @@ import {
   useEffect,
   useState,
   useLayoutEffect,
+  useRef,
 } from 'react';
 import z from 'zod';
 
 import { useId } from '~/hooks/useId';
-import { Button, Dialog, Form, SidePanel, StatusMessage } from '~/primitives';
+import {
+  Button,
+  Dialog,
+  Form,
+  SidePanel,
+  StatusMessage,
+  Text,
+} from '~/primitives';
 import {
   BoundingBox,
   RouteCoordinates,
@@ -40,11 +48,13 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   isEditingRouteCoordinates: boolean;
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
+  hasUpdatedRouteWaypoints: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
   onViewMap: () => void;
   setActiveRouteControlPoints: (coordinates: RouteCoordinates[]) => void;
   setIsEditingRouteCoordinates: (isEditing: boolean) => void;
+  setHasUpdatedRouteWaypoints: (hasUpdated: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
 
@@ -83,6 +93,7 @@ export const RoutePanel = ({
   isAnimatingPanel,
   currentWaypoints,
   activeWaypoint,
+  hasUpdatedRouteWaypoints,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -93,6 +104,7 @@ export const RoutePanel = ({
   onViewMap,
   setActiveRouteControlPoints,
   setIsEditingRouteCoordinates,
+  setHasUpdatedRouteWaypoints,
   editRouteActionsRef,
 }: RoutePanelProps) => {
   const nameId = useId('route-name');
@@ -105,6 +117,7 @@ export const RoutePanel = ({
     activeRouteElevationStats?.elevationGain ?? 0,
   );
   const { isSmallScreen } = useMediaQuery();
+  const previousWaypointsRef = useRef(currentWaypoints);
 
   // Layout effect to prevent flicker of invalid waypoints
   useLayoutEffect(() => {
@@ -184,11 +197,9 @@ export const RoutePanel = ({
     },
   });
 
-  // Only applies to new routes because when editing, waypoints can be saved on their own
-  const hasMadeWaypointChanges = !editId && !hasDefaultWaypoints;
   const isDefaultValue =
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
-    !hasMadeWaypointChanges;
+    !hasUpdatedRouteWaypoints;
   const disableSubmit =
     isDefaultValue || isEditingRouteCoordinates || isLoadingRouteData;
 
@@ -209,7 +220,14 @@ export const RoutePanel = ({
 
   const resetForm = useCallback(() => {
     routeForm.reset(formDefaultValues);
-  }, [formDefaultValues, routeForm]);
+    previousWaypointsRef.current = currentWaypoints;
+    setHasUpdatedRouteWaypoints(false);
+  }, [
+    currentWaypoints,
+    setHasUpdatedRouteWaypoints,
+    routeForm,
+    formDefaultValues,
+  ]);
 
   const closePanel = useCallback(() => {
     onClose();
@@ -275,6 +293,7 @@ export const RoutePanel = ({
     handleCloseDeleteDialog,
   } = usePanelForm({
     editId,
+    showPanel,
     isDefaultValue,
     onClose: closePanel,
     resetForm,
@@ -323,57 +342,69 @@ export const RoutePanel = ({
             )}
           </routeForm.Field>
         </section>
-        <ItemsSection
-          title="Coordinates"
-          emptyText={
-            routeDistanceCached
-              ? `Route distance: ${formatNumber(routeDistanceCached, 2)} km\nElevation gain: ${formatNumber(elevationGainCached, 2)} m`
-              : 'The route itself is created in the map. Click the button below to start editing the route.'
-          }
-          showEmptyText
-          emptyTextClassName="whitespace-pre-line"
-        >
-          {isEditingRouteCoordinates ? (
-            <div className="flex items-center gap-2">
-              <Button
-                color="success"
-                size="small"
-                disabled={isLoadingRouteBetweenPoints}
-                onClick={saveRouteCoordinates}
+        <routeForm.Field name="coordinates">
+          {(field) => {
+            const coordinatesError = getFieldError(field);
+            return (
+              <ItemsSection
+                title="Coordinates"
+                emptyText={
+                  routeDistanceCached
+                    ? `Route distance: ${formatNumber(routeDistanceCached, 2)} km\nElevation gain: ${formatNumber(elevationGainCached, 2)} m`
+                    : 'The route itself is created in the map. Click the button below to start editing the route.'
+                }
+                showEmptyText
+                emptyTextClassName="whitespace-pre-line"
               >
-                Save
-              </Button>
-              <Button
-                color="gray"
-                size="small"
-                onClick={handleCancelEditRouteCoordinates}
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                color="secondary"
-                size="small"
-                disabled={activeWaypoint !== null}
-                onClick={() => setIsEditingRouteCoordinates(true)}
-              >
-                Edit coordinates
-              </Button>
-              {isSmallScreen && (
-                <Button color="gray" size="small" onClick={onViewMap}>
-                  View map
-                </Button>
-              )}
-            </div>
-          )}
-          {activeRouteError && (
-            <StatusMessage autoClear status="error" className="mt-3">
-              {activeRouteError.message}
-            </StatusMessage>
-          )}
-        </ItemsSection>
+                {isEditingRouteCoordinates ? (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      color="success"
+                      size="small"
+                      disabled={isLoadingRouteBetweenPoints}
+                      onClick={saveRouteCoordinates}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="gray"
+                      size="small"
+                      onClick={handleCancelEditRouteCoordinates}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      color="secondary"
+                      size="small"
+                      disabled={activeWaypoint !== null}
+                      onClick={() => setIsEditingRouteCoordinates(true)}
+                    >
+                      Edit coordinates
+                    </Button>
+                    {isSmallScreen && (
+                      <Button color="gray" size="small" onClick={onViewMap}>
+                        View map
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {coordinatesError ? (
+                  <Text className="text-error-600 mt-3 text-xs">
+                    {coordinatesError}
+                  </Text>
+                ) : null}
+                {activeRouteError ? (
+                  <StatusMessage autoClear status="error" className="mt-3">
+                    {activeRouteError.message}
+                  </StatusMessage>
+                ) : null}
+              </ItemsSection>
+            );
+          }}
+        </routeForm.Field>
         <ItemsSection
           title="Waypoints"
           emptyText="Waypoints are notable locations along the route. Start and End are default."
@@ -448,7 +479,14 @@ export const RoutePanel = ({
             {
               label: 'Discard',
               color: 'errorOutline',
-              onClick: handleDiscardChanges,
+              onClick: () => {
+                if (editId) {
+                  onUpdateItem(editId, {
+                    waypoints: previousWaypointsRef.current,
+                  });
+                }
+                handleDiscardChanges();
+              },
             },
           ]}
           onClose={handleCloseSaveDialog}
