@@ -20,7 +20,7 @@ export const WarningBanner = ({ onClose }: WarningBannerProps) => {
         ease: DEFAULT_EASING,
         delay: SLIDE_IN_DELAY,
       }}
-      className="bg-warning-200 absolute top-0 left-0 flex w-full items-center justify-between px-4 py-2"
+      className="bg-warning-200 absolute top-0 left-0 flex w-full items-center justify-between gap-4 px-4 py-2"
     >
       <Text className="text-sm">
         This is a preview of what the run will look like on your page.

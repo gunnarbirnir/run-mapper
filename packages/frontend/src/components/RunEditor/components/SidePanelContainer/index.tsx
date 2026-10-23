@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { SidePanel } from '~/primitives';
 import type {
@@ -102,6 +102,8 @@ export const SidePanelContainer = ({
     onAnimationComplete,
   } = rootPanelState;
   const { isSmallScreen } = useMediaQuery();
+  const [hasUpdatedRouteWaypoints, setHasUpdatedRouteWaypoints] =
+    useState(false);
   const isEditingOnSmallScreen =
     isSmallScreen && (isEditingRouteCoordinates || isEditingPoiCoordinates);
   const showMapOnSmallScreen =
@@ -128,6 +130,7 @@ export const SidePanelContainer = ({
     <SidePanel
       onOpen={onOpen}
       hideToggle={showMapOnSmallScreen}
+      toggleClassName="mt-6"
       className="z-10"
       panels={[
         {
@@ -199,11 +202,13 @@ export const SidePanelContainer = ({
               isEditingRouteCoordinates={isEditingRouteCoordinates}
               currentWaypoints={waypointPanelState.currentItems}
               activeWaypoint={waypointPanelState.editId}
+              hasUpdatedRouteWaypoints={hasUpdatedRouteWaypoints}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
               onViewMap={() => setIsViewingMapOnSmallScreen(true)}
               setActiveRouteControlPoints={setActiveRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
+              setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}
               editRouteActionsRef={editRouteActionsRef}
             />
           ),
@@ -220,6 +225,7 @@ export const SidePanelContainer = ({
               activeRouteCoordinates={activeRouteCoordinates}
               setEditWaypointType={setEditWaypointType}
               setEditWaypointCoordinates={setEditWaypointCoordinates}
+              setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}
             />
           ),
         },

@@ -5,6 +5,7 @@ import { useSidePanelItemContext } from '~/primitives';
 
 interface UsePanelFormProps {
   editId: string | null;
+  showPanel: boolean;
   isDefaultValue: boolean;
   onClose: () => void;
   resetForm: () => void;
@@ -15,6 +16,7 @@ interface UsePanelFormProps {
 
 export const usePanelForm = ({
   editId,
+  showPanel,
   isDefaultValue,
   onClose,
   resetForm,
@@ -54,9 +56,8 @@ export const usePanelForm = ({
 
   const handleDiscardChanges = useCallback(() => {
     setSaveDialogOpen(false);
-    resetForm();
     onClose();
-  }, [resetForm, onClose]);
+  }, [onClose]);
 
   const handleDeleteItem = useCallback(() => {
     setDeleteDialogOpen(false);
@@ -70,7 +71,7 @@ export const usePanelForm = ({
     resetForm();
     document.getElementById(itemId)?.scrollTo({ top: 0, behavior: 'smooth' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editId, itemId]);
+  }, [editId, showPanel, itemId]);
 
   useEffect(() => {
     onHasMadeChanges(!isDefaultValue && !saveDialogOpen && !deleteDialogOpen);

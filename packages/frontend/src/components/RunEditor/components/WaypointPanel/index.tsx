@@ -23,6 +23,7 @@ interface WaypointPanelProps extends PanelState<Waypoint> {
   activeRouteCoordinates: RouteCoordinates[];
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
+  setHasUpdatedRouteWaypoints: (hasUpdated: boolean) => void;
 }
 
 const waypointFormSchema = z.object({
@@ -44,6 +45,7 @@ const waypointTypeOptions = WAYPOINT_VALUES.map((type) => ({
 
 export const WaypointPanel = ({
   editId,
+  showPanel,
   currentItems,
   activeRouteDistance,
   activeRouteCoordinates,
@@ -54,6 +56,7 @@ export const WaypointPanel = ({
   onClose,
   setEditWaypointType,
   setEditWaypointCoordinates,
+  setHasUpdatedRouteWaypoints,
 }: WaypointPanelProps) => {
   const nameId = useId('waypoint-name');
   const typeId = useId('waypoint-type');
@@ -100,6 +103,7 @@ export const WaypointPanel = ({
         ) ?? { lat: 0, lng: 0 },
       };
 
+      setHasUpdatedRouteWaypoints(true);
       if (editId) {
         onUpdateItem(editId, updatedWaypoint);
       } else {
@@ -145,6 +149,7 @@ export const WaypointPanel = ({
     handleCloseDeleteDialog,
   } = usePanelForm({
     editId,
+    showPanel,
     isDefaultValue,
     onClose,
     resetForm,

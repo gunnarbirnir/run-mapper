@@ -22,9 +22,11 @@ import { useResizeMap } from './hooks/useResizeMap';
 import { useWaypoints } from './hooks/useWaypoints';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { useInertAttribute } from '~/hooks/useInertAttribute';
 
 type EditorMapProps = MapState &
   ActiveRouteState & {
+    showPublicDisplayPreview: boolean;
     rootPanelIsAnimating: boolean;
     routePanelIsOpen: boolean;
     routePanelIsAnimating: boolean;
@@ -52,6 +54,7 @@ export const DEFAULT_EDITOR_BOUNDS: Bounds = [
 
 export const EditorMap = ({
   initialBoundingBox,
+  showPublicDisplayPreview,
   // Map state
   isMapLoaded,
   isAtInitialBounds,
@@ -105,6 +108,7 @@ export const EditorMap = ({
   isResettingBoundsRef,
   editRouteActionsRef,
 }: EditorMapProps) => {
+  const mapAreaRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const initialBounds = useMemo(
     () =>
@@ -114,6 +118,7 @@ export const EditorMap = ({
     [initialBoundingBox],
   );
   const { isSmallScreen } = useMediaQuery();
+  useInertAttribute(mapAreaRef, showPublicDisplayPreview);
 
   const isAnyPanelAnimating =
     rootPanelIsAnimating ||
@@ -227,7 +232,10 @@ export const EditorMap = ({
   });
 
   return (
-    <div className="bg-secondary-100 relative isolate flex h-full w-full">
+    <div
+      ref={mapAreaRef}
+      className="bg-secondary-100 relative isolate flex h-full w-full"
+    >
       <div ref={mapContainerRef} className="h-full w-full" />
       <AnimatePresence>
         {showRouteStats && (

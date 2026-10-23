@@ -157,6 +157,7 @@ export const RunEditor = ({
               {...activeRouteState}
               initialBoundingBox={initialBoundingBox}
               rootPanelIsAnimating={rootPanelState.isAnimatingRootPanel}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               // Route panel state
               routePanelIsOpen={routePanelState.showPanel}
               routePanelIsAnimating={routePanelState.isAnimatingPanel}
@@ -181,10 +182,10 @@ export const RunEditor = ({
               onEditPointOfInterest={rootPanelState.onEditPointOfInterest}
               onEditWaypoint={rootPanelState.onEditWaypoint}
             />
-            {/* TODO: Disable tabbing of map when preview is open */}
             {showPublicDisplayPreview && existingRun && (
               <PublicDisplayPreview
                 runId={existingRun.id}
+                runName={existingRun.name}
                 isPublic={existingRun.isPublic}
                 lastUpdate={existingRun.updatedAt}
                 hasMadeChanges={hasMadeChanges}
@@ -196,7 +197,6 @@ export const RunEditor = ({
             existingRun={existingRun}
             hasMadeChanges={hasMadeChanges}
             isUpdatingPublicStatus={isUpdatingPublicStatus}
-            hidePreviewButton={!existingRun}
             showPublicDisplayPreview={showPublicDisplayPreview}
             isRootPanelOpen={rootPanelState.showRootPanel}
             setShowPublicDisplayPreview={setShowPublicDisplayPreview}
