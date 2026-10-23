@@ -130,6 +130,7 @@ export const SidePanelContainer = ({
     <SidePanel
       onOpen={onOpen}
       hideToggle={showMapOnSmallScreen}
+      toggleClassName="mt-6"
       className="z-10"
       panels={[
         {
