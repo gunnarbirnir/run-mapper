@@ -11,6 +11,7 @@ const PREVIEW_WIDTH = 800;
 
 interface PublicDisplayPreviewProps {
   runId: string;
+  runName: string;
   hasMadeChanges: boolean;
   isPublic: boolean;
   lastUpdate?: string;
@@ -41,6 +42,7 @@ const getStatus = ({
 
 export const PublicDisplayPreview = ({
   runId,
+  runName,
   hasMadeChanges,
   isPublic,
   lastUpdate,
@@ -90,6 +92,7 @@ export const PublicDisplayPreview = ({
               id={iframeId}
               height={PREVIEW_HEIGHT}
               width={PREVIEW_WIDTH}
+              title={`Spretta - ${runName}`}
               src={`${import.meta.env.VITE_FRONTEND_BASE_URL}/run/preview/${runId}`}
             />
           </div>

@@ -54,7 +54,7 @@ export const Button = ({
 
   if (linkTo) {
     return (
-      <Link to={linkTo} className="inline-block rounded-full">
+      <Link to={linkTo} className="inline-block rounded-full" tabIndex={-1}>
         <BaseUiButton
           {...props}
           disabled={isDisabled}

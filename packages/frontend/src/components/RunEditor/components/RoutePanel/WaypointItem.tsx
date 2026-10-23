@@ -22,7 +22,7 @@ export const WaypointItem = ({
   onEditWaypoint,
 }: WaypointItemProps) => {
   return (
-    <motion.div
+    <motion.button
       layout
       layoutDependency={layoutDependency}
       transition={{
@@ -30,13 +30,15 @@ export const WaypointItem = ({
         duration: DEFAULT_FADE_IN_DURATION,
       }}
       className={cn(
-        'flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2',
+        'flex w-full items-center gap-2 rounded-lg bg-gray-100 px-3 py-2',
         {
           'bg-error-200': error,
           'cursor-pointer hover:bg-gray-200': !disabled,
         },
       )}
-      onClick={disabled ? undefined : () => onEditWaypoint(id)}
+      onClick={() => onEditWaypoint(id)}
+      disabled={disabled}
+      type="button"
     >
       <WaypointIcon type={type} />
       <Text
@@ -46,6 +48,6 @@ export const WaypointItem = ({
       >
         {name}
       </Text>
-    </motion.div>
+    </motion.button>
   );
 };

@@ -30,6 +30,7 @@ export const RunCard = ({
   },
 }: RunCardProps) => {
   const infoRef = useRef<HTMLDivElement>(null);
+  const linkRef = useRef<HTMLAnchorElement>(null);
   const [infoIsHovered, setInfoIsHovered] = useState(false);
   const [isEmbedDialogOpen, setIsEmbedDialogOpen] = useState(false);
   const { isSmallScreen } = useMediaQuery();
@@ -39,12 +40,17 @@ export const RunCard = ({
     const handleMouseLeave = () => setInfoIsHovered(false);
 
     const infoElement = infoRef.current;
+    const linkElement = linkRef.current;
     infoElement?.addEventListener('mouseenter', handleMouseEnter);
     infoElement?.addEventListener('mouseleave', handleMouseLeave);
+    linkElement?.addEventListener('focus', handleMouseEnter);
+    linkElement?.addEventListener('blur', handleMouseLeave);
 
     return () => {
       infoElement?.removeEventListener('mouseenter', handleMouseEnter);
       infoElement?.removeEventListener('mouseleave', handleMouseLeave);
+      linkElement?.removeEventListener('focus', handleMouseEnter);
+      linkElement?.removeEventListener('blur', handleMouseLeave);
     };
   }, [id]);
 
@@ -91,7 +97,12 @@ export const RunCard = ({
             </Tooltip>
           </div>
         )}
-        <Link to="/editor/run/$runId" params={{ runId: id }}>
+        <Link
+          ref={linkRef}
+          to="/editor/run/$runId"
+          params={{ runId: id }}
+          className="rounded-b-xl -outline-offset-1"
+        >
           <div
             ref={infoRef}
             className="flex items-center justify-between gap-4 p-4"
