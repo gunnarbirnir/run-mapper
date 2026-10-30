@@ -113,6 +113,7 @@ export const RoutePanel = ({
   // To prevent flickering when animating the panel
   const [routeDistanceCached, setRouteDistanceCached] =
     useState(activeRouteDistance);
+  const [cachedRouteId, setCachedRouteId] = useState(editId);
   const [elevationGainCached, setElevationGainCached] = useState(
     activeRouteElevationStats?.elevationGain ?? 0,
   );
@@ -122,10 +123,11 @@ export const RoutePanel = ({
   // Layout effect to prevent flicker of invalid waypoints
   useLayoutEffect(() => {
     if (!isAnimatingPanel || showPanel) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRouteDistanceCached(activeRouteDistance);
       setElevationGainCached(activeRouteElevationStats?.elevationGain ?? 0);
+      setCachedRouteId(editId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activeRouteDistance,
     activeRouteElevationStats?.elevationGain,
@@ -160,6 +162,11 @@ export const RoutePanel = ({
   const waypointLayoutDependency = sortedWaypoints
     .map((waypoint) => waypoint.id)
     .join();
+  const hasInvalidWaypoints = sortedWaypoints.some(
+    (waypoint) =>
+      !['start', 'end'].includes(waypoint.type) &&
+      waypoint.position > routeDistanceCached,
+  );
 
   const routeForm = useForm({
     defaultValues: formDefaultValues,
@@ -201,7 +208,10 @@ export const RoutePanel = ({
     useStore(routeForm.store, (state) => state.isDefaultValue) &&
     !hasUpdatedRouteWaypoints;
   const disableSubmit =
-    isDefaultValue || isEditingRouteCoordinates || isLoadingRouteData;
+    isDefaultValue ||
+    isEditingRouteCoordinates ||
+    isLoadingRouteData ||
+    hasInvalidWaypoints;
 
   const {
     state: { value: coordinatesValue },
@@ -426,7 +436,9 @@ export const RoutePanel = ({
                   disabled={isEditingRouteCoordinates}
                   error={
                     !['start', 'end'].includes(waypoint.type) &&
-                    waypoint.position > routeDistanceCached
+                    waypoint.position > routeDistanceCached &&
+                    // To prevent flicker when changing routes
+                    cachedRouteId === editId
                   }
                   onEditWaypoint={onEditWaypoint}
                 />

@@ -35,6 +35,7 @@ import {
   generateImageSeed,
   generateId,
   roundNumber,
+  floorNumber,
 } from './index.js';
 import {
   calculateDistance,
@@ -213,8 +214,11 @@ export const validateWaypointBody = ({
     };
   }
 
-  const normalizedPosition =
+  let normalizedPosition =
     type === 'start' ? 0 : type === 'end' ? distance : (position ?? 0);
+  if (normalizedPosition > distance) {
+    normalizedPosition = floorNumber(distance, 1);
+  }
 
   if (!isFiniteNumber(normalizedPosition) || normalizedPosition < 0) {
     return {
