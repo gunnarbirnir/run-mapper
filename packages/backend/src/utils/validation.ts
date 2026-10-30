@@ -554,10 +554,9 @@ export const validateCreateRunBody = (
     };
   }
 
-  const normalizedDefaultRouteId =
-    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
-      ? defaultRouteId
-      : undefined;
+  const defaultRouteIndex = defaultRouteId
+    ? routes.findIndex((route) => route.id === defaultRouteId)
+    : undefined;
 
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
@@ -620,6 +619,11 @@ export const validateCreateRunBody = (
       },
     };
   }
+
+  const normalizedDefaultRouteId =
+    defaultRouteIndex !== undefined && defaultRouteIndex !== -1
+      ? normalizedRoutes[defaultRouteIndex]?.id
+      : undefined;
 
   return {
     ok: true,
