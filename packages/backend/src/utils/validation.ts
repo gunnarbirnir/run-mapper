@@ -35,6 +35,7 @@ import {
   generateImageSeed,
   generateId,
   roundNumber,
+  floorNumber,
 } from './index.js';
 import {
   calculateDistance,
@@ -213,8 +214,11 @@ export const validateWaypointBody = ({
     };
   }
 
-  const normalizedPosition =
+  let normalizedPosition =
     type === 'start' ? 0 : type === 'end' ? distance : (position ?? 0);
+  if (normalizedPosition > distance) {
+    normalizedPosition = floorNumber(distance, 1);
+  }
 
   if (!isFiniteNumber(normalizedPosition) || normalizedPosition < 0) {
     return {
@@ -550,10 +554,9 @@ export const validateCreateRunBody = (
     };
   }
 
-  const normalizedDefaultRouteId =
-    defaultRouteId && routes.find((route) => route.id === defaultRouteId)
-      ? defaultRouteId
-      : undefined;
+  const defaultRouteIndex = defaultRouteId
+    ? routes.findIndex((route) => route.id === defaultRouteId)
+    : undefined;
 
   if (pointsOfInterest !== undefined && !Array.isArray(pointsOfInterest)) {
     return {
@@ -616,6 +619,11 @@ export const validateCreateRunBody = (
       },
     };
   }
+
+  const normalizedDefaultRouteId =
+    defaultRouteIndex !== undefined && defaultRouteIndex !== -1
+      ? normalizedRoutes[defaultRouteIndex]?.id
+      : undefined;
 
   return {
     ok: true,

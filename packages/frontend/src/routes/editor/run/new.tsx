@@ -28,7 +28,7 @@ function NewRunEditor() {
   });
 
   return (
-    <PageLayout isFullWidth footerHasShadow>
+    <PageLayout isFullWidth>
       <RunEditor onSubmit={mutateAsync} error={error} />
     </PageLayout>
   );

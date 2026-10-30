@@ -88,3 +88,7 @@ export const generateId = (): string => {
 export const roundNumber = (value: number, decimals: number): number => {
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 };
+
+export const floorNumber = (value: number, decimals: number): number => {
+  return Math.floor(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+};

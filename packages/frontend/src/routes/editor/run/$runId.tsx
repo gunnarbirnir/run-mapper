@@ -117,7 +117,7 @@ function ExistingRunEditor() {
   } as EditorRun;
 
   return (
-    <PageLayout isFullWidth footerHasShadow isLoading={isLoading}>
+    <PageLayout isFullWidth isLoading={isLoading}>
       <RunEditor
         existingRun={currentRunData}
         error={editorError}

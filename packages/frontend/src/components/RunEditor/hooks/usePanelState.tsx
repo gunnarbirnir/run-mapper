@@ -7,12 +7,14 @@ interface UsePanelStateProps<T> {
   existingItems?: T[];
   currentItems?: T[];
   parentPanelVisible?: boolean;
+  lastUpdated?: string;
   setCurrentItems?: (updatedItems: T[]) => void;
 }
 
 export const usePanelState = <T extends { id: string }>({
   existingItems,
   parentPanelVisible,
+  lastUpdated,
   ...props
 }: UsePanelStateProps<T> = {}) => {
   const [showPanel, setShowPanelState] = useState(false);
@@ -26,6 +28,11 @@ export const usePanelState = <T extends { id: string }>({
 
   const currentItems = props.currentItems ?? currentItemsState;
   const setCurrentItems = props.setCurrentItems ?? setCurrentItemsState;
+
+  useEffect(() => {
+    setCurrentItems(existingItems ?? []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastUpdated]);
 
   const setShowPanel = useCallback((show: boolean) => {
     setShowPanelState((prev) => {

@@ -43,12 +43,17 @@ export const RunEditor = ({
 }: RunEditorProps) => {
   const routePanelState = usePanelState<PublicRoute>({
     existingItems: existingRun?.routes,
+    lastUpdated: existingRun?.updatedAt,
   });
   const pointOfInterestPanelState = usePanelState<PointOfInterest>({
     existingItems: existingRun?.pointsOfInterest,
+    lastUpdated: existingRun?.updatedAt,
   });
   const waypointPanelState = usePanelState<Waypoint>({
-    ...useWaypointCurrentItems({ routePanelState }),
+    ...useWaypointCurrentItems({
+      routePanelState,
+    }),
+    lastUpdated: existingRun?.updatedAt,
   });
   const rootPanelState = useRootPanelState({
     routePanelState,
