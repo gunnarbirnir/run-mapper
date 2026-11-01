@@ -40,7 +40,9 @@ interface RootPanelProps {
 
 const rootFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  publicSlug: z.string().regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format'),
+  publicSlug: z
+    .string()
+    .regex(/^[a-z0-9-]{3,64}$/, 'Incorrect format (example-slug)'),
   defaultRouteId: z.string().or(z.null()),
 });
 
@@ -152,6 +154,7 @@ export const RootPanel = ({
                 name="publicSlug"
                 placeholder="example-slug"
                 infoText="Will be used in the URL for the run"
+                autoCapitalize="none"
                 value={field.state.value}
                 error={getFieldError(field)}
                 disabled={isEditing}

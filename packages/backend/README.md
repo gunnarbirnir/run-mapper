@@ -58,7 +58,7 @@ yarn start
 - Cost-focused defaults:
   - `maxInstances=1`
   - `minInstances=0`
-  - `memory=128MiB`
+  - `memory=512MiB`
   - `timeoutSeconds=15`
 
 Deploy from repo root:

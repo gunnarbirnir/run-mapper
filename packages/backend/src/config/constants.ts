@@ -7,7 +7,7 @@ export const DEFAULT_PORT = 3001;
 export const DEFAULT_FUNCTION_REGION = 'us-central1';
 export const DEFAULT_FUNCTION_MAX_INSTANCES = 1;
 export const DEFAULT_FUNCTION_TIMEOUT_SECONDS = 15;
-export const DEFAULT_FUNCTION_MEMORY = '128MiB';
+export const DEFAULT_FUNCTION_MEMORY = '512MiB';
 
 export const DEFAULT_ALLOWED_ORIGINS = [
   'https://www.spretta.fit',
