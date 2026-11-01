@@ -1,4 +1,5 @@
 import { cn } from '~/utils';
+import { useMediaQuery } from '~/hooks/useMediaQuery';
 
 import { Text } from '../Text';
 import { Icon } from '../Icon';
@@ -17,6 +18,8 @@ export const InputLabel = ({
   infoText,
   className,
 }: InputLabelProps) => {
+  const { isSmallScreen } = useMediaQuery();
+
   return (
     <div className="mb-2 flex items-center justify-between gap-2">
       <Text
@@ -26,7 +29,7 @@ export const InputLabel = ({
       >
         {children}
       </Text>
-      {infoText ? (
+      {infoText && !isSmallScreen ? (
         <Tooltip label={infoText}>
           <Icon name="info" className="size-4 text-gray-500" />
         </Tooltip>

@@ -85,7 +85,11 @@ export const EditorFooter = ({
             </div>
           </Tooltip.Provider>
         )}
-        <Tooltip disabled={!disablePublish} label="Save run before publishing">
+        <Tooltip
+          disabled={!disablePublish}
+          label="Save run before publishing"
+          triggerClassName={cn({ 'w-full': isSmallScreen })}
+        >
           <Button
             color={
               disablePublish
