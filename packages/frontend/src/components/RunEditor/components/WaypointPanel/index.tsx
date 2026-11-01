@@ -339,7 +339,10 @@ export const WaypointPanel = ({
             {
               label: 'Delete',
               color: 'errorOutline',
-              onClick: handleDeleteItem,
+              onClick: () => {
+                setHasUpdatedRouteWaypoints(true);
+                handleDeleteItem();
+              },
             },
             {
               label: 'Cancel',
