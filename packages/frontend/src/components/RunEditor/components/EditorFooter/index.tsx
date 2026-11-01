@@ -37,6 +37,7 @@ export const EditorFooter = ({
     !isSmallScreen &&
     !(isMediumScreen && isRootPanelOpen);
   const disablePreview = !showPublicDisplayPreview && hasMadeChanges;
+  const disablePublish = !existingRun;
 
   return (
     <>
@@ -84,16 +85,25 @@ export const EditorFooter = ({
             </div>
           </Tooltip.Provider>
         )}
-        <Button
-          color={isPublic ? 'errorOutline' : 'successOutline'}
-          isLoading={isUpdatingPublicStatus}
-          onClick={
-            isPublic ? () => setIsUnpublishDialogOpen(true) : onPublishRun
-          }
-          className={cn({ 'w-full': isSmallScreen })}
-        >
-          {isPublic ? 'Unpublish run' : 'Publish run'}
-        </Button>
+        <Tooltip disabled={!disablePublish} label="Save run before publishing">
+          <Button
+            color={
+              disablePublish
+                ? 'gray'
+                : isPublic
+                  ? 'errorOutline'
+                  : 'successOutline'
+            }
+            isLoading={isUpdatingPublicStatus}
+            disabled={disablePublish}
+            onClick={
+              isPublic ? () => setIsUnpublishDialogOpen(true) : onPublishRun
+            }
+            className={cn({ 'w-full': isSmallScreen })}
+          >
+            {isPublic ? 'Unpublish run' : 'Publish run'}
+          </Button>
+        </Tooltip>
         {onUnpublishRun ? (
           <Dialog
             title="Unpublish run"
