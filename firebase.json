@@ -3,7 +3,7 @@
     {
       "source": "packages/backend",
       "codebase": "api",
-      "runtime": "nodejs20",
+      "runtime": "nodejs22",
       "predeploy": ["yarn workspace spretta-backend build"]
     }
   ]
