@@ -111,3 +111,7 @@ export const copyToClipboard = (text: string) => {
 export const formatDocumentTitle = (title: string) => {
   return title ? `Spretta - ${title}` : 'Spretta';
 };
+
+export const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+};
