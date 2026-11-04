@@ -21,6 +21,7 @@ const COORDINATES_DISPLAY_DECIMALS = 5;
 
 interface PointOfInterestPanelProps extends PanelState<PointOfInterest> {
   isEditingPoiCoordinates: boolean;
+  showPublicDisplayPreview: boolean;
   setIsEditingPoiCoordinates: (isEditing: boolean) => void;
   setEditPointOfInterestType: (type: PointOfInterestType | null) => void;
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
@@ -52,6 +53,7 @@ export const PointOfInterestPanel = ({
   showPanel,
   currentItems,
   isEditingPoiCoordinates,
+  showPublicDisplayPreview,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
@@ -160,6 +162,7 @@ export const PointOfInterestPanel = ({
     editId,
     showPanel,
     isDefaultValue,
+    disableHotkeys: isEditingPoiCoordinates,
     onClose: closePanel,
     resetForm,
     submitForm,
@@ -171,6 +174,7 @@ export const PointOfInterestPanel = ({
     <SidePanel.Content
       key={editId ?? 'new-poi'}
       title={isEditing ? 'Edit POI' : 'Add POI'}
+      disableHotkeys={isEditingPoiCoordinates || showPublicDisplayPreview}
       onClose={handleOnClose}
     >
       <Form className="space-y-8" onSubmit={submitForm}>

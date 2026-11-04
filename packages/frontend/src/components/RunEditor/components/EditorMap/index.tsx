@@ -256,20 +256,24 @@ export const EditorMap = ({
         selectedRoutePoint={selectedRoutePoint}
         activeRouteControlPoints={activeRouteControlPoints}
         isLoadingRouteBetweenPoints={isLoadingRouteBetweenPoints}
+        disableHotkeys={showPublicDisplayPreview}
         setActiveRouteControlPoints={setActiveRouteControlPoints}
         editRouteActionsRef={editRouteActionsRef}
       />
       <SelectedRoutePointToolbar
         selectedRoutePoint={selectedRoutePoint}
+        disableHotkeys={showPublicDisplayPreview}
         setSelectedRoutePoint={setSelectedRoutePoint}
         setActiveRouteControlPoints={setActiveRouteControlPoints}
       />
       <PoiCoordinatesToolbar
         isVisible={isEditingPoiCoordinates}
+        disableHotkeys={showPublicDisplayPreview}
         onClose={() => setIsEditingPoiCoordinates(false)}
       />
       <ViewMapToolbar
         isVisible={isViewingMapOnSmallScreen}
+        disableHotkeys={showPublicDisplayPreview}
         onClose={() => setIsViewingMapOnSmallScreen(false)}
       />
     </div>

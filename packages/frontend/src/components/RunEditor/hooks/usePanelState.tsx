@@ -84,7 +84,7 @@ export const usePanelState = <T extends { id: string }>({
   );
 
   const onUpdateItem = useCallback(
-    (updateId: string, update: Partial<T>, hasSubmittedChanges = true) => {
+    (updateId: string, update: Partial<T>, updateSubmitStatus = true) => {
       setCurrentItems(
         currentItems.map((currentItem) =>
           currentItem.id === updateId
@@ -93,7 +93,7 @@ export const usePanelState = <T extends { id: string }>({
         ),
       );
       setShowPanel(false);
-      setHasSubmittedChanges(hasSubmittedChanges);
+      setHasSubmittedChanges((prev) => (updateSubmitStatus ? true : prev));
     },
     [currentItems, setCurrentItems, setShowPanel],
   );

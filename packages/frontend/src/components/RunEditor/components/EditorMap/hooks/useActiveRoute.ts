@@ -101,6 +101,7 @@ export const useActiveRoute = ({
     setIsLoadingRouteData(false);
     setCoordinatesError(null);
     setRouteDataError(null);
+    setRouteHasBeenEdited(false);
     cachedRouteBetweenPointsRef.current = {};
   }, []);
 
@@ -232,10 +233,12 @@ export const useActiveRoute = ({
           activeRouteControlPointsRef.current = activeRouteControlPoints;
         }
       } catch {
-        setActiveRouteControlPoints(activeRouteControlPointsRef.current);
-        setCoordinatesError(
-          new Error('Failed to update active route coordinates'),
-        );
+        if (!hasBeenCancelled) {
+          setActiveRouteControlPoints(activeRouteControlPointsRef.current);
+          setCoordinatesError(
+            new Error('Failed to update active route coordinates'),
+          );
+        }
       } finally {
         if (!hasBeenCancelled) {
           setIsLoadingRouteBetweenPoints(false);
@@ -272,7 +275,9 @@ export const useActiveRoute = ({
             setRouteData(routeData);
           }
         } catch {
-          setRouteDataError(new Error('Failed to update route data'));
+          if (!hasBeenCancelled) {
+            setRouteDataError(new Error('Failed to update route data'));
+          }
         } finally {
           if (!hasBeenCancelled) {
             setIsLoadingRouteData(false);

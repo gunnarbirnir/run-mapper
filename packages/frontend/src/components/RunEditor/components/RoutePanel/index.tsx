@@ -49,6 +49,7 @@ interface RoutePanelProps extends PanelState<PublicRoute> {
   currentWaypoints: Waypoint[];
   activeWaypoint: string | null;
   hasUpdatedRouteWaypoints: boolean;
+  showPublicDisplayPreview: boolean;
   onAddWaypoint: () => void;
   onEditWaypoint: (waypointId: string) => void;
   onViewMap: () => void;
@@ -95,6 +96,7 @@ export const RoutePanel = ({
   currentWaypoints,
   activeWaypoint,
   hasUpdatedRouteWaypoints,
+  showPublicDisplayPreview,
   onClose,
   onUpdateItem,
   onAddItem,
@@ -312,6 +314,7 @@ export const RoutePanel = ({
     editId,
     showPanel,
     isDefaultValue,
+    disableHotkeys: isEditingRouteCoordinates,
     onClose: closePanel,
     resetForm,
     submitForm,
@@ -323,7 +326,8 @@ export const RoutePanel = ({
     <SidePanel.Content
       key={editId ?? 'new-route'}
       title={isEditing ? 'Edit route' : 'Add route'}
-      onClose={!isEditingRouteCoordinates ? handleOnClose : undefined}
+      disableHotkeys={isEditingRouteCoordinates || showPublicDisplayPreview}
+      onClose={handleOnClose}
     >
       <Form className="space-y-8" onSubmit={submitForm}>
         <section className="space-y-5">

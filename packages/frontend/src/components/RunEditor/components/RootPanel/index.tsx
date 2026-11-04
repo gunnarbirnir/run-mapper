@@ -29,6 +29,7 @@ interface RootPanelProps {
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
   hasSubmittedChanges: boolean;
+  showPublicDisplayPreview: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
@@ -55,6 +56,7 @@ export const RootPanel = ({
   currentRoutes,
   currentPointsOfInterest,
   hasSubmittedChanges,
+  showPublicDisplayPreview,
   onClose,
   onAddRoute,
   onEditRoute,
@@ -129,6 +131,7 @@ export const RootPanel = ({
     <SidePanel.Content
       key={existingRun?.id ?? 'new-run'}
       title={existingRun ? 'Edit run' : 'New run'}
+      disableHotkeys={showPublicDisplayPreview}
       onClose={onClose}
     >
       <Form className="space-y-8" onSubmit={rootForm.handleSubmit}>

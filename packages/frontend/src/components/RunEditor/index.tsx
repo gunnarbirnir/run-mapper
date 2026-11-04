@@ -119,6 +119,7 @@ export const RunEditor = ({
     <IdProvider baseId="run-editor">
       <div className="relative isolate flex flex-1">
         <SidePanelContainer
+          showPublicDisplayPreview={showPublicDisplayPreview}
           // Base props
           existingRun={existingRun}
           error={error}

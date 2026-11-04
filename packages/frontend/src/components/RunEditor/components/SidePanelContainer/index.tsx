@@ -44,6 +44,7 @@ interface SidePanelContainerProps {
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
   isViewingMapOnSmallScreen: boolean;
+  showPublicDisplayPreview: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
   setHasMadeChanges: (hasMadeChanges: boolean) => void;
@@ -78,6 +79,7 @@ export const SidePanelContainer = ({
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
   isViewingMapOnSmallScreen,
+  showPublicDisplayPreview,
   onSubmit,
   onDeleteRun,
   setHasMadeChanges,
@@ -156,9 +158,10 @@ export const SidePanelContainer = ({
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               hasSubmittedChanges={
                 routePanelState.hasSubmittedChanges ||
-                pointOfInterestPanelState.hasSubmittedChanges ||
-                waypointPanelState.hasSubmittedChanges
+                pointOfInterestPanelState.hasSubmittedChanges
+                // Waypoints don't need to be checked because they're part of the route
               }
+              showPublicDisplayPreview={showPublicDisplayPreview}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
@@ -180,6 +183,7 @@ export const SidePanelContainer = ({
             <PointOfInterestPanel
               {...pointOfInterestPanelState}
               isEditingPoiCoordinates={isEditingPoiCoordinates}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               setEditPointOfInterestType={setEditPointOfInterestType}
               setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
               onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
@@ -206,6 +210,7 @@ export const SidePanelContainer = ({
               currentWaypoints={waypointPanelState.currentItems}
               activeWaypoint={waypointPanelState.editId}
               hasUpdatedRouteWaypoints={hasUpdatedRouteWaypoints}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
               onViewMap={() => setIsViewingMapOnSmallScreen(true)}
@@ -227,6 +232,7 @@ export const SidePanelContainer = ({
               {...waypointPanelState}
               activeRouteDistance={activeRouteDistance}
               activeRouteCoordinates={activeRouteCoordinates}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               setEditWaypointType={setEditWaypointType}
               setEditWaypointCoordinates={setEditWaypointCoordinates}
               setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}

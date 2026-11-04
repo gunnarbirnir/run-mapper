@@ -7,16 +7,18 @@ import { ToolbarContainer } from './ToolbarContainer';
 
 interface PoiCoordinatesToolbarProps {
   isVisible: boolean;
+  disableHotkeys?: boolean;
   onClose: () => void;
 }
 
 export const PoiCoordinatesToolbar = ({
   isVisible,
+  disableHotkeys = false,
   onClose,
 }: PoiCoordinatesToolbarProps) => {
   useHotkey('Escape', onClose, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
 
   return (

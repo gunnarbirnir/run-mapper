@@ -9,12 +9,14 @@ import { ActiveRouteState } from '../hooks/useActiveRoute';
 
 interface SelectedRoutePointToolbarProps {
   selectedRoutePoint: string | null;
+  disableHotkeys?: boolean;
   setSelectedRoutePoint: ActiveRouteState['setSelectedRoutePoint'];
   setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
 }
 
 export const SelectedRoutePointToolbar = ({
   selectedRoutePoint,
+  disableHotkeys = false,
   setSelectedRoutePoint,
   setActiveRouteControlPoints,
 }: SelectedRoutePointToolbarProps) => {
@@ -32,12 +34,12 @@ export const SelectedRoutePointToolbar = ({
   }, [selectedRoutePoint, setSelectedRoutePoint, setActiveRouteControlPoints]);
 
   useHotkey('Backspace', onDelete, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
   useHotkey('Escape', onClose, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
 
   return (

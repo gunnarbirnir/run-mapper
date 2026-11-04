@@ -66,7 +66,7 @@ export const PublicDisplayPreview = ({
   }, [lastUpdate, iframeId, initialLastUpdate]);
 
   useHotkey('Escape', onClose, {
-    conflictBehavior: 'replace',
+    conflictBehavior: 'allow',
   });
 
   return (
