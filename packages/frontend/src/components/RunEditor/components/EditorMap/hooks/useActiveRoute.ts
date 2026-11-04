@@ -54,6 +54,8 @@ export const useActiveRoute = ({
   const cachedRouteBetweenPointsRef = useRef<
     Record<string, RouteCoordinates[]>
   >({});
+  const activeRouteControlPointsRef = useRef<RouteCoordinates[]>([]);
+  const routeEditId = currentEditRoute?.id;
 
   const [activeRouteCoordinates, setActiveRouteCoordinates] = useState<
     RouteCoordinates[]
@@ -71,7 +73,8 @@ export const useActiveRoute = ({
   const [isLoadingRouteBetweenPoints, setIsLoadingRouteBetweenPoints] =
     useState(false);
   const [isLoadingRouteData, setIsLoadingRouteData] = useState(false);
-  const [activeRouteError, setActiveRouteError] = useState<Error | null>(null);
+  const [coordinatesError, setCoordinatesError] = useState<Error | null>(null);
+  const [routeDataError, setRouteDataError] = useState<Error | null>(null);
 
   const activeRouteCoordinatesValue = useMemo(
     () =>
@@ -96,7 +99,8 @@ export const useActiveRoute = ({
     setRouteData(null);
     setIsLoadingRouteBetweenPoints(false);
     setIsLoadingRouteData(false);
-    setActiveRouteError(null);
+    setCoordinatesError(null);
+    setRouteDataError(null);
     cachedRouteBetweenPointsRef.current = {};
   }, []);
 
@@ -159,13 +163,8 @@ export const useActiveRoute = ({
     cachedRouteBetweenPointsRef.current = getUpdatedCachedRoutes(
       currentEditRouteCoordinates,
     );
-  }, [currentEditRoute, resetActiveRoute]);
-
-  useEffect(() => {
-    if (isEditingRouteCoordinates) {
-      setRouteHasBeenEdited(true);
-    }
-  }, [isEditingRouteCoordinates]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeEditId, resetActiveRoute]);
 
   useEffect(() => {
     if (routeData) {
@@ -197,7 +196,7 @@ export const useActiveRoute = ({
               updatedActiveRouteCoordinates.push(...cachedRouteBetweenPoints);
             } else {
               setIsLoadingRouteBetweenPoints(true);
-              setActiveRouteError(null);
+              setCoordinatesError(null);
 
               const { data: routeBetweenPoints } =
                 await fetchRouteBetweenPoints({
@@ -230,9 +229,11 @@ export const useActiveRoute = ({
 
         if (!hasBeenCancelled) {
           setActiveRouteCoordinates(updatedActiveRouteCoordinates);
+          activeRouteControlPointsRef.current = activeRouteControlPoints;
         }
       } catch {
-        setActiveRouteError(
+        setActiveRouteControlPoints(activeRouteControlPointsRef.current);
+        setCoordinatesError(
           new Error('Failed to update active route coordinates'),
         );
       } finally {
@@ -261,7 +262,7 @@ export const useActiveRoute = ({
       if (activeRouteCoordinates.length > 0) {
         try {
           setIsLoadingRouteData(true);
-          setActiveRouteError(null);
+          setRouteDataError(null);
 
           const { data: routeData } = await fetchRouteData(
             activeRouteCoordinates,
@@ -271,14 +272,16 @@ export const useActiveRoute = ({
             setRouteData(routeData);
           }
         } catch {
-          setActiveRouteError(new Error('Failed to update route data'));
+          setRouteDataError(new Error('Failed to update route data'));
         } finally {
           if (!hasBeenCancelled) {
             setIsLoadingRouteData(false);
+            setRouteHasBeenEdited(false);
           }
         }
       } else {
         setRouteData(null);
+        setRouteHasBeenEdited(false);
       }
     };
 
@@ -305,10 +308,11 @@ export const useActiveRoute = ({
     selectedRoutePoint,
     isLoadingRouteBetweenPoints,
     isLoadingRouteData,
-    activeRouteError,
+    activeRouteError: coordinatesError ?? routeDataError,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
     setSelectedRoutePoint,
+    setRouteHasBeenEdited,
   };
 };
 

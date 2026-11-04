@@ -229,7 +229,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lat: </strong>
-                  {field.state.value
+                  {field.state.value !== undefined
                     ? formatNumber(
                         field.state.value,
                         COORDINATES_DISPLAY_DECIMALS,
@@ -242,7 +242,7 @@ export const PointOfInterestPanel = ({
               {(field) => (
                 <Text variant="subtle" className="text-sm">
                   <strong className="font-medium text-gray-900">lng: </strong>
-                  {field.state.value
+                  {field.state.value !== undefined
                     ? formatNumber(
                         field.state.value,
                         COORDINATES_DISPLAY_DECIMALS,

@@ -25,11 +25,11 @@ export const WarningBanner = ({ onClose }: WarningBannerProps) => {
       <Text className="text-sm">
         This is a preview of what the run will look like on your page.
       </Text>
-      <a href="#" onClick={onClose}>
-        <Text className="text-sm underline underline-offset-2 hover:text-gray-500">
+      <button type="button" onClick={onClose}>
+        <Text className="cursor-pointer text-sm underline underline-offset-2 hover:text-gray-500">
           Close preview
         </Text>
-      </a>
+      </button>
     </motion.div>
   );
 };

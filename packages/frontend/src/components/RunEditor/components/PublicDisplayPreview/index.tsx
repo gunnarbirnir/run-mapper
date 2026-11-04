@@ -1,5 +1,5 @@
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Text } from '~/primitives';
 import { cn } from '~/utils';
@@ -53,13 +53,17 @@ export const PublicDisplayPreview = ({
     hasMadeChanges,
     isPublic,
   });
+  const [initialLastUpdate] = useState(lastUpdate);
 
   useEffect(() => {
+    if (lastUpdate === initialLastUpdate) {
+      return;
+    }
     const iframe = document.getElementById(iframeId) as HTMLIFrameElement;
     if (iframe) {
       iframe.contentWindow?.location.reload();
     }
-  }, [lastUpdate, iframeId]);
+  }, [lastUpdate, iframeId, initialLastUpdate]);
 
   useHotkey('Escape', onClose, {
     conflictBehavior: 'replace',

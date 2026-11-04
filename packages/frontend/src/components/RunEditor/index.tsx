@@ -7,6 +7,7 @@ import type {
   PublicRoute,
   Waypoint,
   RunUpdate,
+  SuccessMessage,
 } from '~/types';
 import { getBoundingBox } from '~/utils/route';
 
@@ -21,7 +22,7 @@ import { useWaypointCurrentItems } from './hooks/useWaypointCurrentItems';
 interface RunEditorProps {
   existingRun?: EditorRun;
   error?: Error | null;
-  successMessage?: string | null;
+  successMessage?: SuccessMessage | null;
   isDeleting?: boolean;
   isUpdatingPublicStatus?: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
@@ -53,7 +54,6 @@ export const RunEditor = ({
     ...useWaypointCurrentItems({
       routePanelState,
     }),
-    lastUpdated: existingRun?.updatedAt,
   });
   const rootPanelState = useRootPanelState({
     routePanelState,
@@ -112,6 +112,7 @@ export const RunEditor = ({
     isLoadingRouteBetweenPoints,
     setActiveRouteControlPoints,
     setIsEditingRouteCoordinates,
+    setRouteHasBeenEdited,
   } = activeRouteState;
 
   return (
@@ -151,6 +152,7 @@ export const RunEditor = ({
           setEditWaypointType={setEditWaypointType}
           setEditWaypointCoordinates={setEditWaypointCoordinates}
           setIsViewingMapOnSmallScreen={setIsViewingMapOnSmallScreen}
+          setRouteHasBeenEdited={setRouteHasBeenEdited}
           // Refs
           editRouteActionsRef={editRouteActionsRef}
           onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}

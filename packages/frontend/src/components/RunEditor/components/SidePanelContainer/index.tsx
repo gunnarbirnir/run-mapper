@@ -13,6 +13,7 @@ import type {
   RouteCoordinates,
   RunUpdate,
   ElevationStats,
+  SuccessMessage,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -28,7 +29,7 @@ interface SidePanelContainerProps {
   existingRun?: EditorRun;
   isDeleting: boolean;
   error?: Error | null;
-  successMessage?: string | null;
+  successMessage?: SuccessMessage | null;
   activeRouteDistance: number;
   activeRouteCoordinates: RouteCoordinates[];
   activeRouteBoundingBox?: BoundingBox;
@@ -53,6 +54,7 @@ interface SidePanelContainerProps {
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   setIsViewingMapOnSmallScreen: (isViewing: boolean) => void;
+  setRouteHasBeenEdited: (hasBeenEdited: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -86,6 +88,7 @@ export const SidePanelContainer = ({
   setEditWaypointType,
   setEditWaypointCoordinates,
   setIsViewingMapOnSmallScreen,
+  setRouteHasBeenEdited,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -209,6 +212,7 @@ export const SidePanelContainer = ({
               setActiveRouteControlPoints={setActiveRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
               setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}
+              setRouteHasBeenEdited={setRouteHasBeenEdited}
               editRouteActionsRef={editRouteActionsRef}
             />
           ),
