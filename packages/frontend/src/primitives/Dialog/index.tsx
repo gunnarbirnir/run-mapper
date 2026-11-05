@@ -1,6 +1,6 @@
 import { Dialog as BaseUiDialog } from '@base-ui/react/dialog';
 import { useHotkey } from '@tanstack/react-hotkeys';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import { cn } from '~/utils';
 
@@ -35,19 +35,23 @@ export const Dialog = ({
   children,
   onClose,
 }: DialogProps) => {
+  const [popupElement, setPopupElement] = useState<HTMLDivElement | null>(null);
+
   useHotkey(
     'Enter',
     () => {
       buttons?.[0]?.onClick?.();
     },
     {
+      target: popupElement,
       enabled:
         isOpen &&
         buttons &&
         buttons.length > 0 &&
         !buttons[0]?.isLoading &&
-        !buttons[0]?.disabled,
-      conflictBehavior: 'replace',
+        !buttons[0]?.disabled &&
+        Boolean(popupElement),
+      conflictBehavior: 'allow',
     },
   );
 
@@ -56,6 +60,7 @@ export const Dialog = ({
       <BaseUiDialog.Portal>
         <BaseUiDialog.Backdrop className="fixed inset-0 min-h-dvh bg-black opacity-50 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-[-webkit-touch-callout:none]:absolute" />
         <BaseUiDialog.Popup
+          ref={setPopupElement}
           className={cn(
             'fixed top-1/2 left-1/2 -mt-8 w-96 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg transition-all duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0',
             {

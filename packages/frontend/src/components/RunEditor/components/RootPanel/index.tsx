@@ -12,6 +12,7 @@ import type {
   PointOfInterest,
   PublicRoute,
   RunUpdate,
+  SuccessMessage,
 } from '~/types';
 import { getFieldError } from '~/utils';
 
@@ -23,11 +24,12 @@ import { RouteItem } from './RouteItem';
 interface RootPanelProps {
   existingRun?: EditorRun;
   error?: Error | null;
-  successMessage?: string | null;
+  successMessage?: SuccessMessage | null;
   isDeleting: boolean;
   currentRoutes: PublicRoute[];
   currentPointsOfInterest: PointOfInterest[];
   hasSubmittedChanges: boolean;
+  showPublicDisplayPreview: boolean;
   onClose: () => void;
   onAddRoute: () => void;
   onEditRoute: (id: string) => void;
@@ -54,6 +56,7 @@ export const RootPanel = ({
   currentRoutes,
   currentPointsOfInterest,
   hasSubmittedChanges,
+  showPublicDisplayPreview,
   onClose,
   onAddRoute,
   onEditRoute,
@@ -128,6 +131,7 @@ export const RootPanel = ({
     <SidePanel.Content
       key={existingRun?.id ?? 'new-run'}
       title={existingRun ? 'Edit run' : 'New run'}
+      disableHotkeys={showPublicDisplayPreview}
       onClose={onClose}
     >
       <Form className="space-y-8" onSubmit={rootForm.handleSubmit}>
@@ -173,7 +177,7 @@ export const RootPanel = ({
           {currentRoutes.length > 0 ? (
             <>
               <motion.div layout className="mb-6 space-y-3">
-                {currentRoutes
+                {[...currentRoutes]
                   .sort(
                     (a, b) =>
                       (a.displayDistance ?? a.distance) -
@@ -221,7 +225,7 @@ export const RootPanel = ({
         >
           {currentPointsOfInterest.length > 0 ? (
             <motion.div layout className="space-y-3">
-              {currentPointsOfInterest
+              {[...currentPointsOfInterest]
                 .sort(
                   (a, b) =>
                     POINT_OF_INTEREST_VALUES.indexOf(a.type) -
@@ -239,14 +243,16 @@ export const RootPanel = ({
         </ItemsSection>
         <section className="flex flex-col gap-3">
           {successMessage && (
-            <StatusMessage autoClear status="success">
-              {successMessage}
+            <StatusMessage
+              autoClear
+              status="success"
+              clearDependencies={[successMessage.timestamp]}
+            >
+              {successMessage.message}
             </StatusMessage>
           )}
           {error && (
-            <StatusMessage autoClear status="error">
-              {error.message}
-            </StatusMessage>
+            <StatusMessage status="error">{error.message}</StatusMessage>
           )}
           <Button
             className="w-full"

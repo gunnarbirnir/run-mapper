@@ -7,13 +7,18 @@ import { ToolbarContainer } from './ToolbarContainer';
 
 interface ViewMapToolbarProps {
   isVisible: boolean;
+  disableHotkeys?: boolean;
   onClose: () => void;
 }
 
-export const ViewMapToolbar = ({ isVisible, onClose }: ViewMapToolbarProps) => {
+export const ViewMapToolbar = ({
+  isVisible,
+  disableHotkeys = false,
+  onClose,
+}: ViewMapToolbarProps) => {
   useHotkey('Escape', onClose, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
 
   return (

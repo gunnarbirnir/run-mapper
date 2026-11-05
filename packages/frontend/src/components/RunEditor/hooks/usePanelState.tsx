@@ -46,7 +46,6 @@ export const usePanelState = <T extends { id: string }>({
 
   useLayoutEffect(() => {
     if (!parentPanelVisible) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPanel(false);
     }
   }, [parentPanelVisible, setShowPanel]);
@@ -67,7 +66,6 @@ export const usePanelState = <T extends { id: string }>({
 
   useEffect(() => {
     if (!showPanel && !isAnimatingPanel) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditId(null);
     }
   }, [showPanel, isAnimatingPanel]);
@@ -86,7 +84,7 @@ export const usePanelState = <T extends { id: string }>({
   );
 
   const onUpdateItem = useCallback(
-    (updateId: string, update: Partial<T>) => {
+    (updateId: string, update: Partial<T>, updateSubmitStatus = true) => {
       setCurrentItems(
         currentItems.map((currentItem) =>
           currentItem.id === updateId
@@ -95,7 +93,7 @@ export const usePanelState = <T extends { id: string }>({
         ),
       );
       setShowPanel(false);
-      setHasSubmittedChanges(true);
+      setHasSubmittedChanges((prev) => (updateSubmitStatus ? true : prev));
     },
     [currentItems, setCurrentItems, setShowPanel],
   );

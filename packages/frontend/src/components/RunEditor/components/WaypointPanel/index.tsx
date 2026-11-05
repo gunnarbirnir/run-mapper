@@ -21,6 +21,7 @@ import { PanelState } from '../../hooks/usePanelState';
 interface WaypointPanelProps extends PanelState<Waypoint> {
   activeRouteDistance: number;
   activeRouteCoordinates: RouteCoordinates[];
+  showPublicDisplayPreview: boolean;
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   setHasUpdatedRouteWaypoints: (hasUpdated: boolean) => void;
@@ -49,6 +50,7 @@ export const WaypointPanel = ({
   currentItems,
   activeRouteDistance,
   activeRouteCoordinates,
+  showPublicDisplayPreview,
   onUpdateItem,
   onAddItem,
   onDeleteItem,
@@ -162,6 +164,7 @@ export const WaypointPanel = ({
     <SidePanel.Content
       key={editId ?? 'new-waypoint'}
       title={editId ? 'Edit waypoint' : 'Add waypoint'}
+      disableHotkeys={showPublicDisplayPreview}
       onClose={handleOnClose}
     >
       <Form className="space-y-8" onSubmit={submitForm}>

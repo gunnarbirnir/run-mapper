@@ -18,7 +18,7 @@ import {
 import { FIT_BOUNDS_CONFIG, COORDINATES_DECIMALS } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getBoundingBox } from '~/utils/route';
-import { generateId, roundNumber } from '~/utils';
+import { generateId, roundNumber, isTouchDevice } from '~/utils';
 
 interface UseMapRouteProps {
   routePanelIsOpen: boolean;
@@ -188,6 +188,10 @@ export const useDrawRoute = ({
     const map = mapRef.current;
     const handleClick = async (e: MapMouseEvent) => {
       if (disableMapClickRef.current) {
+        if (isTouchDevice()) {
+          // Touch devices don't trigger onLeave above
+          disableMapClickRef.current = false;
+        }
         return;
       }
 

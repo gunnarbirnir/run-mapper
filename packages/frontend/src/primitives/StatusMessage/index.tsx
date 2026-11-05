@@ -9,6 +9,7 @@ interface StatusMessageProps {
   children: string;
   autoClear?: boolean;
   className?: string;
+  clearDependencies?: unknown[];
 }
 
 const CLEAR_DELAY = 3000;
@@ -24,11 +25,11 @@ export const StatusMessage = ({
   children,
   autoClear = false,
   className,
+  clearDependencies = [],
 }: StatusMessageProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVisible(true);
 
     if (!autoClear) {
@@ -39,7 +40,8 @@ export const StatusMessage = ({
     return () => {
       clearTimeout(timeout);
     };
-  }, [autoClear, children, status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoClear, children, status, ...clearDependencies]);
 
   return (
     <AnimatePresence>

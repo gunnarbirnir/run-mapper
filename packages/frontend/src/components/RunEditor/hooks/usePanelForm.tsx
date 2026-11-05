@@ -7,6 +7,7 @@ interface UsePanelFormProps {
   editId: string | null;
   showPanel: boolean;
   isDefaultValue: boolean;
+  disableHotkeys?: boolean;
   onClose: () => void;
   resetForm: () => void;
   submitForm: () => void;
@@ -18,6 +19,7 @@ export const usePanelForm = ({
   editId,
   showPanel,
   isDefaultValue,
+  disableHotkeys = false,
   onClose,
   resetForm,
   submitForm,
@@ -87,7 +89,7 @@ export const usePanelForm = ({
       }
     },
     {
-      enabled: isTopVisibleItem,
+      enabled: isTopVisibleItem && !disableHotkeys,
       conflictBehavior: 'allow',
     },
   );

@@ -13,6 +13,7 @@ import type {
   RouteCoordinates,
   RunUpdate,
   ElevationStats,
+  SuccessMessage,
 } from '~/types';
 
 import { type PanelState } from '../../hooks/usePanelState';
@@ -28,7 +29,7 @@ interface SidePanelContainerProps {
   existingRun?: EditorRun;
   isDeleting: boolean;
   error?: Error | null;
-  successMessage?: string | null;
+  successMessage?: SuccessMessage | null;
   activeRouteDistance: number;
   activeRouteCoordinates: RouteCoordinates[];
   activeRouteBoundingBox?: BoundingBox;
@@ -43,6 +44,7 @@ interface SidePanelContainerProps {
   isEditingRouteCoordinates: boolean;
   isEditingPoiCoordinates: boolean;
   isViewingMapOnSmallScreen: boolean;
+  showPublicDisplayPreview: boolean;
   onSubmit: (run: RunUpdate) => Promise<unknown>;
   onDeleteRun?: () => Promise<unknown>;
   setHasMadeChanges: (hasMadeChanges: boolean) => void;
@@ -53,6 +55,7 @@ interface SidePanelContainerProps {
   setEditWaypointType: (type: WaypointType | null) => void;
   setEditWaypointCoordinates: (coordinates: Coordinates | null) => void;
   setIsViewingMapOnSmallScreen: (isViewing: boolean) => void;
+  setRouteHasBeenEdited: (hasBeenEdited: boolean) => void;
   editRouteActionsRef: MapState['editRouteActionsRef'];
   onUpdatePoiCoordinatesRef: MapState['onUpdatePoiCoordinatesRef'];
 }
@@ -76,6 +79,7 @@ export const SidePanelContainer = ({
   isEditingRouteCoordinates,
   isEditingPoiCoordinates,
   isViewingMapOnSmallScreen,
+  showPublicDisplayPreview,
   onSubmit,
   onDeleteRun,
   setHasMadeChanges,
@@ -86,6 +90,7 @@ export const SidePanelContainer = ({
   setEditWaypointType,
   setEditWaypointCoordinates,
   setIsViewingMapOnSmallScreen,
+  setRouteHasBeenEdited,
   editRouteActionsRef,
   onUpdatePoiCoordinatesRef,
 }: SidePanelContainerProps) => {
@@ -153,9 +158,10 @@ export const SidePanelContainer = ({
               currentPointsOfInterest={pointOfInterestPanelState.currentItems}
               hasSubmittedChanges={
                 routePanelState.hasSubmittedChanges ||
-                pointOfInterestPanelState.hasSubmittedChanges ||
-                waypointPanelState.hasSubmittedChanges
+                pointOfInterestPanelState.hasSubmittedChanges
+                // Waypoints don't need to be checked because they're part of the route
               }
+              showPublicDisplayPreview={showPublicDisplayPreview}
               onClose={onClose}
               onAddRoute={onAddRoute}
               onEditRoute={onEditRoute}
@@ -177,6 +183,7 @@ export const SidePanelContainer = ({
             <PointOfInterestPanel
               {...pointOfInterestPanelState}
               isEditingPoiCoordinates={isEditingPoiCoordinates}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               setEditPointOfInterestType={setEditPointOfInterestType}
               setIsEditingPoiCoordinates={setIsEditingPoiCoordinates}
               onUpdatePoiCoordinatesRef={onUpdatePoiCoordinatesRef}
@@ -203,12 +210,14 @@ export const SidePanelContainer = ({
               currentWaypoints={waypointPanelState.currentItems}
               activeWaypoint={waypointPanelState.editId}
               hasUpdatedRouteWaypoints={hasUpdatedRouteWaypoints}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               onAddWaypoint={handleAddWaypoint}
               onEditWaypoint={onEditWaypoint}
               onViewMap={() => setIsViewingMapOnSmallScreen(true)}
               setActiveRouteControlPoints={setActiveRouteControlPoints}
               setIsEditingRouteCoordinates={setIsEditingRouteCoordinates}
               setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}
+              setRouteHasBeenEdited={setRouteHasBeenEdited}
               editRouteActionsRef={editRouteActionsRef}
             />
           ),
@@ -223,6 +232,7 @@ export const SidePanelContainer = ({
               {...waypointPanelState}
               activeRouteDistance={activeRouteDistance}
               activeRouteCoordinates={activeRouteCoordinates}
+              showPublicDisplayPreview={showPublicDisplayPreview}
               setEditWaypointType={setEditWaypointType}
               setEditWaypointCoordinates={setEditWaypointCoordinates}
               setHasUpdatedRouteWaypoints={setHasUpdatedRouteWaypoints}

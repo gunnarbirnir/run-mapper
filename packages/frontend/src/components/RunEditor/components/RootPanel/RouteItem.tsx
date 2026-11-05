@@ -14,9 +14,10 @@ export const RouteItem = ({
   route: { id, name, distance, displayDistance },
   onEditRoute,
 }: RouteItemProps) => {
-  const formattedDistance = displayDistance
-    ? `${formatNumber(displayDistance, 2)} km`
-    : `${formatNumber(distance, 2)} km`;
+  const formattedDistance =
+    displayDistance !== undefined
+      ? `${formatNumber(displayDistance, 2)} km`
+      : `${formatNumber(distance, 2)} km`;
 
   return (
     <motion.button

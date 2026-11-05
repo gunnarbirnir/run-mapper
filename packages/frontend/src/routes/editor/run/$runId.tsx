@@ -2,7 +2,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
 
-import type { ApiResponse, EditorRun, RunUpdate } from '~/types';
+import type {
+  ApiResponse,
+  EditorRun,
+  RunUpdate,
+  SuccessMessage,
+} from '~/types';
 import { PageLayout } from '~/components/PageLayout';
 import { RunEditor } from '~/components/RunEditor';
 import { api } from '~/service';
@@ -20,13 +25,15 @@ function ExistingRunEditor() {
   const { runId } = Route.useParams();
   const navigate = useNavigate();
   const [updatedRunData, setUpdatedRunData] = useState<Partial<EditorRun>>({});
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<SuccessMessage | null>(
+    null,
+  );
   const [editorError, setEditorError] = useState<Error | null>(null);
   const encodedRunId = encodeURIComponent(runId);
 
   const handleSuccess = useCallback(
     (message: string) => {
-      setSuccessMessage(message);
+      setSuccessMessage({ message, timestamp: Date.now() });
       setEditorError(null);
     },
     [setSuccessMessage, setEditorError],

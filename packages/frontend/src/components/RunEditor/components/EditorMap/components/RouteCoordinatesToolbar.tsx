@@ -15,6 +15,7 @@ interface RouteCoordinatesToolbarProps {
   selectedRoutePoint: string | null;
   activeRouteControlPoints: RouteCoordinates[];
   isLoadingRouteBetweenPoints: boolean;
+  disableHotkeys?: boolean;
   setActiveRouteControlPoints: ActiveRouteState['setActiveRouteControlPoints'];
   editRouteActionsRef: MapState['editRouteActionsRef'];
 }
@@ -24,6 +25,7 @@ export const RouteCoordinatesToolbar = ({
   selectedRoutePoint,
   activeRouteControlPoints,
   isLoadingRouteBetweenPoints,
+  disableHotkeys = false,
   setActiveRouteControlPoints,
   editRouteActionsRef,
 }: RouteCoordinatesToolbarProps) => {
@@ -49,12 +51,12 @@ export const RouteCoordinatesToolbar = ({
   }, [setActiveRouteControlPoints]);
 
   useHotkey('Enter', onSave, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
   useHotkey('Escape', onCancel, {
-    conflictBehavior: 'replace',
-    enabled: isVisible,
+    conflictBehavior: 'allow',
+    enabled: isVisible && !disableHotkeys,
   });
   useHotkey(
     {
@@ -62,8 +64,8 @@ export const RouteCoordinatesToolbar = ({
     },
     handleUndo,
     {
-      conflictBehavior: 'replace',
-      enabled: isVisible && !isUndoDisabled,
+      conflictBehavior: 'allow',
+      enabled: isVisible && !isUndoDisabled && !disableHotkeys,
     },
   );
   useHotkey(
@@ -72,8 +74,8 @@ export const RouteCoordinatesToolbar = ({
     },
     handleRedo,
     {
-      conflictBehavior: 'replace',
-      enabled: isVisible && !isRedoDisabled,
+      conflictBehavior: 'allow',
+      enabled: isVisible && !isRedoDisabled && !disableHotkeys,
     },
   );
 

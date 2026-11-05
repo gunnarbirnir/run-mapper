@@ -14,6 +14,7 @@ export interface SidePanelContentProps {
   title?: string;
   children?: ReactNode;
   animateCloseButton?: boolean;
+  disableHotkeys?: boolean;
   onClose?: () => void;
 }
 
@@ -21,6 +22,7 @@ export const SidePanelContent = memo(function SidePanelContent({
   title,
   children,
   animateCloseButton = true,
+  disableHotkeys = false,
   ...props
 }: SidePanelContentProps) {
   const [isFirstRender, setIsFirstRender] = useState(true);
@@ -34,15 +36,10 @@ export const SidePanelContent = memo(function SidePanelContent({
     }
   }, [isFirstRender]);
 
-  useHotkey(
-    'Escape',
-    () => {
-      if (onClose) {
-        onClose();
-      }
-    },
-    { conflictBehavior: 'allow' },
-  );
+  useHotkey('Escape', () => onClose?.(), {
+    enabled: Boolean(onClose) && !disableHotkeys,
+    conflictBehavior: 'allow',
+  });
 
   return (
     <>
