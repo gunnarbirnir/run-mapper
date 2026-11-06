@@ -2,10 +2,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { PublicRunDisplay } from '~/components/PublicRunDisplay';
+import { RunFallback, RunErrorMessage } from '~/components/RunFallback';
 import { api } from '~/service';
 import type { ApiResponse, PublicRun } from '~/types';
 import { PageLayout } from '~/components/PageLayout';
-import { LoadingSpinner, Text } from '~/primitives';
+import { LoadingSpinner } from '~/primitives';
 import { formatDocumentTitle } from '~/utils';
 import { useSetDocumentTitle } from '~/hooks/useSetDocumentTitle';
 
@@ -33,9 +34,9 @@ function PublicRun() {
 
   if (isLoading) {
     return (
-      <Fallback>
+      <RunFallback>
         <LoadingSpinner className="text-primary-500 size-10" />
-      </Fallback>
+      </RunFallback>
     );
   }
 
@@ -43,13 +44,13 @@ function PublicRun() {
     data?.data.routes.find((route) => route.id === initialRouteId) === undefined
   ) {
     return (
-      <ErrorMessage message="The route you're looking for was not found." />
+      <RunErrorMessage message="The route you're looking for was not found." />
     );
   }
 
   if (error) {
     return (
-      <ErrorMessage message="Something went wrong, please try again later." />
+      <RunErrorMessage message="Something went wrong, please try again later." />
     );
   }
 
@@ -63,29 +64,3 @@ function PublicRun() {
     </PageLayout>
   );
 }
-
-export const Fallback = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <PageLayout isFullscreenDisplay>
-      <div className="flex h-full w-full flex-col items-center justify-center bg-gray-50 p-6">
-        {children}
-      </div>
-    </PageLayout>
-  );
-};
-
-export const ErrorMessage = ({ message }: { message: string }) => {
-  return (
-    <Fallback>
-      <div className="flex max-w-md flex-col items-center gap-4 text-center">
-        <Text
-          element="h1"
-          className="text-primary-500 mb-0 text-4xl font-extrabold"
-        >
-          Error
-        </Text>
-        <Text variant="paragraph">{message}</Text>
-      </div>
-    </Fallback>
-  );
-};

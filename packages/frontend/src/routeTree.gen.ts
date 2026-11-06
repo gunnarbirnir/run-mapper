@@ -13,10 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EditorRouteRouteImport } from './routes/editor/route'
 import { Route as RunsRouteRouteImport } from './routes/runs/route'
 import { Route as R404IndexRouteImport } from './routes/404/index'
+import { Route as AuthErrorRouteImport } from './routes/auth/error'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as RunSlugRouteImport } from './routes/run/$slug'
+import { Route as RunPreviewRouteRouteImport } from './routes/run/preview/route'
 import { Route as RunsIndexRouteImport } from './routes/runs/index'
 import { Route as EditorRunRunIdRouteImport } from './routes/editor/run/$runId'
 import { Route as EditorRunNewRouteImport } from './routes/editor/run/new'
@@ -42,6 +44,11 @@ const R404IndexRoute = R404IndexRouteImport.update({
   path: '/404/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthErrorRoute = AuthErrorRouteImport.update({
+  id: '/auth/error',
+  path: '/auth/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
@@ -62,6 +69,11 @@ const RunSlugRoute = RunSlugRouteImport.update({
   path: '/run/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RunPreviewRouteRoute = RunPreviewRouteRouteImport.update({
+  id: '/run/preview',
+  path: '/run/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RunsIndexRoute = RunsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -78,15 +90,17 @@ const EditorRunNewRoute = EditorRunNewRouteImport.update({
   getParentRoute: () => EditorRouteRoute,
 } as any)
 const RunPreviewIdRoute = RunPreviewIdRouteImport.update({
-  id: '/run/preview/$id',
-  path: '/run/preview/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RunPreviewRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteRouteWithChildren
   '/runs': typeof RunsRouteRouteWithChildren
+  '/run/preview': typeof RunPreviewRouteRouteWithChildren
+  '/auth/error': typeof AuthErrorRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
@@ -100,6 +114,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteRouteWithChildren
+  '/run/preview': typeof RunPreviewRouteRouteWithChildren
+  '/auth/error': typeof AuthErrorRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
@@ -115,6 +131,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteRouteWithChildren
   '/runs': typeof RunsRouteRouteWithChildren
+  '/run/preview': typeof RunPreviewRouteRouteWithChildren
+  '/auth/error': typeof AuthErrorRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/run/$slug': typeof RunSlugRoute
@@ -131,6 +149,8 @@ export interface FileRouteTypes {
     | '/'
     | '/editor'
     | '/runs'
+    | '/run/preview'
+    | '/auth/error'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/editor'
+    | '/run/preview'
+    | '/auth/error'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
@@ -158,6 +180,8 @@ export interface FileRouteTypes {
     | '/'
     | '/editor'
     | '/runs'
+    | '/run/preview'
+    | '/auth/error'
     | '/auth/login'
     | '/auth/signup'
     | '/run/$slug'
@@ -173,12 +197,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditorRouteRoute: typeof EditorRouteRouteWithChildren
   RunsRouteRoute: typeof RunsRouteRouteWithChildren
+  RunPreviewRouteRoute: typeof RunPreviewRouteRouteWithChildren
+  AuthErrorRoute: typeof AuthErrorRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   RunSlugRoute: typeof RunSlugRoute
   R404IndexRoute: typeof R404IndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
-  RunPreviewIdRoute: typeof RunPreviewIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -211,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof R404IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/error': {
+      id: '/auth/error'
+      path: '/auth/error'
+      fullPath: '/auth/error'
+      preLoaderRoute: typeof AuthErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login': {
       id: '/auth/login'
       path: '/auth/login'
@@ -239,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RunSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/run/preview': {
+      id: '/run/preview'
+      path: '/run/preview'
+      fullPath: '/run/preview'
+      preLoaderRoute: typeof RunPreviewRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/runs/': {
       id: '/runs/'
       path: '/'
@@ -262,10 +301,10 @@ declare module '@tanstack/react-router' {
     }
     '/run/preview/$id': {
       id: '/run/preview/$id'
-      path: '/run/preview/$id'
+      path: '/$id'
       fullPath: '/run/preview/$id'
       preLoaderRoute: typeof RunPreviewIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof RunPreviewRouteRoute
     }
   }
 }
@@ -296,16 +335,29 @@ const RunsRouteRouteWithChildren = RunsRouteRoute._addFileChildren(
   RunsRouteRouteChildren,
 )
 
+interface RunPreviewRouteRouteChildren {
+  RunPreviewIdRoute: typeof RunPreviewIdRoute
+}
+
+const RunPreviewRouteRouteChildren: RunPreviewRouteRouteChildren = {
+  RunPreviewIdRoute: RunPreviewIdRoute,
+}
+
+const RunPreviewRouteRouteWithChildren = RunPreviewRouteRoute._addFileChildren(
+  RunPreviewRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRouteRoute: EditorRouteRouteWithChildren,
   RunsRouteRoute: RunsRouteRouteWithChildren,
+  RunPreviewRouteRoute: RunPreviewRouteRouteWithChildren,
+  AuthErrorRoute: AuthErrorRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   RunSlugRoute: RunSlugRoute,
   R404IndexRoute: R404IndexRoute,
   HomeIndexRoute: HomeIndexRoute,
-  RunPreviewIdRoute: RunPreviewIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
