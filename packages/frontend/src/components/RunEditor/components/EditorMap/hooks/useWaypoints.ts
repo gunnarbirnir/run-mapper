@@ -9,7 +9,10 @@ import type {
 } from '~/types';
 import { getCoordinatesFromPosition } from '~/utils/route';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
+import {
+  FLY_TO_WAYPOINT_POI_DURATION,
+  WAYPOINT_POI_ZOOM,
+} from '~/constants/map';
 
 import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
 
@@ -221,8 +224,8 @@ export const useWaypoints = ({
     if (positionCoordinates) {
       map.flyTo({
         center: [positionCoordinates.lng, positionCoordinates.lat],
-        zoom: WAYPOINT_ZOOM,
-        duration: FLY_TO_WAYPOINT_DURATION,
+        zoom: WAYPOINT_POI_ZOOM,
+        duration: FLY_TO_WAYPOINT_POI_DURATION,
       });
     }
   }, [
@@ -248,13 +251,13 @@ export const useWaypoints = ({
     if (panelJustOpened) {
       mapRef.current.flyTo({
         center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
-        zoom: WAYPOINT_ZOOM,
-        duration: FLY_TO_WAYPOINT_DURATION,
+        zoom: WAYPOINT_POI_ZOOM,
+        duration: FLY_TO_WAYPOINT_POI_DURATION,
       });
     } else {
       mapRef.current.jumpTo({
         center: [editWaypointCoordinates.lng, editWaypointCoordinates.lat],
-        zoom: WAYPOINT_ZOOM,
+        zoom: WAYPOINT_POI_ZOOM,
       });
     }
   }, [

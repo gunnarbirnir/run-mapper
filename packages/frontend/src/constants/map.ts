@@ -1,10 +1,10 @@
-import type { MapStyle } from '~/types';
+import type { Bounds, MapStyle } from '~/types';
 
 export const LINE_WIDTH = 4;
 export const LINE_OPACITY = 1;
 
 export const BOUNDS_MAX_ZOOM = 14;
-export const WAYPOINT_ZOOM = 14;
+export const WAYPOINT_POI_ZOOM = 14;
 
 export const BOUNDS_PADDING = {
   top: 80,
@@ -14,7 +14,7 @@ export const BOUNDS_PADDING = {
 };
 
 export const FIT_INITIAL_BOUNDS_DURATION = 200;
-export const FLY_TO_WAYPOINT_DURATION = 300;
+export const FLY_TO_WAYPOINT_POI_DURATION = 300;
 
 export const FIT_BOUNDS_CONFIG = {
   duration: FIT_INITIAL_BOUNDS_DURATION,
@@ -28,3 +28,9 @@ export const MAP_STYLES: Record<MapStyle, string> = {
 };
 
 export const COORDINATES_DECIMALS = 6;
+
+// Reykjavík
+export const DEFAULT_MAP_BOUNDS: Bounds = [
+  [-22.17, 64.02],
+  [-21.52, 64.21],
+];

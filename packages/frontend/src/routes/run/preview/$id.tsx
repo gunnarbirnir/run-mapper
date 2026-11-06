@@ -31,7 +31,7 @@ function RunPreview() {
     queryFn: () => api.get(`/runs/preview/${encodeURIComponent(id)}`),
   });
   useSetDocumentTitle(data?.data.name);
-  const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
+  const initialRouteId = routeId ?? data?.data.defaultRouteId;
 
   if (isLoading) {
     return (
@@ -42,7 +42,7 @@ function RunPreview() {
   }
 
   if (
-    data?.data.routes.find((route) => route.id === activeRouteId) === undefined
+    data?.data.routes.find((route) => route.id === initialRouteId) === undefined
   ) {
     return (
       <ErrorMessage message="The route you're looking for was not found." />
@@ -58,7 +58,7 @@ function RunPreview() {
   return (
     <PageLayout isFullscreenDisplay>
       <PublicRunDisplay
-        routeId={activeRouteId}
+        initialRouteId={initialRouteId}
         run={data.data}
         isFullscreen={isFullscreen}
         isPreview

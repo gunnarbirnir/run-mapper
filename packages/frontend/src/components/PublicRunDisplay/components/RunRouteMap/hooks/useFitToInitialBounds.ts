@@ -2,7 +2,7 @@ import { type RefObject, useEffect, type MutableRefObject } from 'react';
 import type { Map } from 'mapbox-gl';
 
 import type { Bounds } from '~/types';
-import { FIT_INITIAL_BOUNDS_DURATION, BOUNDS_PADDING } from '~/constants/map';
+import { FIT_BOUNDS_CONFIG } from '~/constants/map';
 
 interface UseFitToInitialBoundsProps {
   isMapLoaded: boolean;
@@ -40,10 +40,7 @@ export const useFitToInitialBounds = ({
     map.on('moveend', handleMoveEnd);
 
     fitToInitialBoundsRef.current = () => {
-      mapRef.current?.fitBounds(bounds, {
-        padding: BOUNDS_PADDING,
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-      });
+      mapRef.current?.fitBounds(bounds, FIT_BOUNDS_CONFIG);
       isResettingBoundsRef.current = true;
     };
 

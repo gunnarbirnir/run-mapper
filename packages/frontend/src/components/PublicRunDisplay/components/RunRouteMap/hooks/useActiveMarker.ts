@@ -1,14 +1,14 @@
 import type { Map } from 'mapbox-gl';
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 
-import { Coordinates } from '~/types';
+import { RouteCoordinates } from '~/types';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 
 import { getActiveMarkerElement } from '../utils';
 
 interface UseActiveMarkerProps {
   isMapLoaded: boolean;
-  coordinates: Coordinates[];
+  coordinates: RouteCoordinates[];
   hideActiveMarker: boolean;
   mapRef: RefObject<Map>;
   setActiveIndexRef: MutableRefObject<

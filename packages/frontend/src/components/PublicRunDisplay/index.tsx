@@ -1,41 +1,34 @@
-import { useMemo, useRef } from 'react';
-import { RunRouteMap, useMapState } from '~/components/RunRouteMap';
+import { useRef } from 'react';
 
 import {
   PUBLIC_RUN_DISPLAY_MIN_WIDTH,
   PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
 } from '~/constants';
 import { cn } from '~/utils';
-import { processRunRoute } from '~/utils/route';
 import { IdProvider } from '~/context/IdContext';
 
 import { useRoute } from './hooks/useRoute';
 import { useRunDisplayState } from './hooks/useRunDisplayState';
 import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
-import { RouteOverlay } from './components/RouteOverlay';
-import { ElevationGraph } from '../ElevationGraph';
+import { RunRouteMap, useMapState } from './components/RunRouteMap';
+// import { RouteOverlay } from './components/RouteOverlay';
+// import { ElevationGraph } from '../ElevationGraph';
 
 export const PublicRunDisplay = ({
   run,
-  // TODO: Handle no routes
-  routeId,
+  initialRouteId,
   isFullscreen = false,
   isPreview = false,
 }: PublicRunDisplayProps) => {
-  const { route, setRoute: setActiveRoute } = useRoute({
+  const { route /* , setRoute: setActiveRoute */ } = useRoute({
     run,
-    routeId,
+    initialRouteId,
     isFullscreen,
     isPreview,
   });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
-  const { coordinates, elevations } = useMemo(
-    () => processRunRoute(route.coordinates),
-    [route.coordinates],
-  );
-
-  const runDisplayState = useRunDisplayState();
+  const runDisplayState = useRunDisplayState(route?.id);
   const {
     activeWaypoint,
     activePointOfInterest,
@@ -47,7 +40,7 @@ export const PublicRunDisplay = ({
   } = runDisplayState;
   const settings = useSettings();
   const mapState = useMapState();
-  const { routeIsAnimating, setActiveMarkerIndex } = mapState;
+  const { routeIsAnimating /* , setActiveMarkerIndex */ } = mapState;
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
 
@@ -66,34 +59,30 @@ export const PublicRunDisplay = ({
         <div className="flex-1">
           <RunRouteMap
             {...mapState}
-            routeId={route.id}
             runId={run.id}
             runSlug={run.publicSlug}
             isFullscreen={isFullscreen}
-            boundingBox={route.boundingBox}
-            coordinates={coordinates}
-            waypoints={route.waypoints}
+            isPreview={isPreview}
+            route={route}
             pointsOfInterest={run.pointsOfInterest}
-            elevations={elevations}
             activeWaypoint={activeWaypoint}
             activePointOfInterest={activePointOfInterest}
             hideActiveMarker={
               elevationWidgetActive || anyDrawerActive || routeIsAnimating
             }
-            isPreview={isPreview}
             settings={settings}
             onWaypointClick={setActiveWaypoint}
             onPointOfInterestClick={setActivePointOfInterest}
             onReset={resetState}
           />
         </div>
-        <ElevationGraph
+        {/* <ElevationGraph
           elevations={elevations}
           isExpanded={elevationWidgetActive}
           isTooltipActive={!anyDrawerActive}
           onActiveIndexChange={setActiveMarkerIndex}
-        />
-        <RouteOverlay
+        /> */}
+        {/* <RouteOverlay
           {...runDisplayState}
           routes={run.routes}
           routeId={route.id}
@@ -104,7 +93,7 @@ export const PublicRunDisplay = ({
           publicRunDisplayRef={publicRunDisplayRef}
           settings={settings}
           setActiveRoute={setActiveRoute}
-        />
+        /> */}
       </div>
     </IdProvider>
   );

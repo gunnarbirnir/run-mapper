@@ -9,6 +9,7 @@ interface MapActionButtonProps {
   disabled?: boolean;
   children: ReactNode;
   buttonClassName?: string;
+  tabIndex?: number;
   onClick: () => void;
 }
 
@@ -18,6 +19,7 @@ export const MapActionButton = ({
   disabled = false,
   children,
   buttonClassName,
+  tabIndex,
   onClick,
 }: MapActionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,7 @@ export const MapActionButton = ({
             buttonClassName,
           )}
           style={{ width: buttonSize, height: buttonSize }}
+          tabIndex={tabIndex}
         >
           <>{children}</>
         </RoundButton>

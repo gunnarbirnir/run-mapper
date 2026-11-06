@@ -3,8 +3,8 @@ import type { Map } from 'mapbox-gl';
 import { Icon, Tooltip } from '~/primitives';
 import { useMapZoom } from '~/hooks/useMapZoom';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { MapActionButton } from '~/components/MapActionButton';
 
-import { MapActionButton } from './MapActionButton';
 import { RefObject } from 'react';
 
 interface ActionButtonsContainerProps {

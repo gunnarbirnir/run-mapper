@@ -29,7 +29,7 @@ function PublicRun() {
     queryFn: () => api.get(`/runs/public/${encodeURIComponent(slug)}`),
   });
   useSetDocumentTitle(data?.data.name);
-  const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
+  const initialRouteId = routeId ?? data?.data.defaultRouteId;
 
   if (isLoading) {
     return (
@@ -40,7 +40,7 @@ function PublicRun() {
   }
 
   if (
-    data?.data.routes.find((route) => route.id === activeRouteId) === undefined
+    data?.data.routes.find((route) => route.id === initialRouteId) === undefined
   ) {
     return (
       <ErrorMessage message="The route you're looking for was not found." />
@@ -56,7 +56,7 @@ function PublicRun() {
   return (
     <PageLayout isFullscreenDisplay>
       <PublicRunDisplay
-        routeId={activeRouteId}
+        initialRouteId={initialRouteId}
         run={data.data}
         isFullscreen={isFullscreen}
       />

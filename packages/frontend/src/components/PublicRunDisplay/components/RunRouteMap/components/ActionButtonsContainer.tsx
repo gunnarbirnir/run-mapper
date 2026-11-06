@@ -4,8 +4,7 @@ import type { RefObject } from 'react';
 import { Icon, Tooltip } from '~/primitives';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useMapZoom } from '~/hooks/useMapZoom';
-
-import { MapActionButton } from '../components/MapActionButton';
+import { MapActionButton } from '~/components/MapActionButton';
 
 interface ActionButtonsContainerProps {
   isMapLoaded: boolean;
@@ -15,6 +14,9 @@ interface ActionButtonsContainerProps {
   openFullscreen: () => void;
   mapRef: RefObject<Map>;
 }
+
+// Should come after drawers
+const BASE_TAB_INDEX = 30;
 
 export const ActionButtonsContainer = ({
   isMapLoaded,
@@ -33,18 +35,11 @@ export const ActionButtonsContainer = ({
 
   return (
     <Tooltip.Provider>
-      {/* <MapActionButton
-          index={mapActionButtonIndex++}
-          tooltipLabel="Play"
-          disabled={routeIsAnimating}
-          onClick={playRoute}
-        >
-          <Icon name="play" className="size-5" />
-        </MapActionButton> */}
       <MapActionButton
         index={mapActionButtonIndex++}
         tooltipLabel="Reset"
         disabled={isAtInitialBounds}
+        tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
         onClick={resetRoute}
       >
         <Icon name="reset" className="size-4.5" />
@@ -54,6 +49,7 @@ export const ActionButtonsContainer = ({
           <MapActionButton
             index={mapActionButtonIndex++}
             tooltipLabel="Zoom in"
+            tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
             onClick={zoomIn}
             disabled={!canZoomIn}
           >
@@ -62,6 +58,7 @@ export const ActionButtonsContainer = ({
           <MapActionButton
             index={mapActionButtonIndex++}
             tooltipLabel="Zoom out"
+            tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
             onClick={zoomOut}
             disabled={!canZoomOut}
           >
@@ -73,6 +70,7 @@ export const ActionButtonsContainer = ({
         <MapActionButton
           index={mapActionButtonIndex++}
           tooltipLabel="Fullscreen"
+          tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
           onClick={openFullscreen}
         >
           <Icon name="externalLink" className="size-5" />

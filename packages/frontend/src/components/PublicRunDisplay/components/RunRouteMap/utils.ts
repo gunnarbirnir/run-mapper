@@ -23,11 +23,14 @@ export const getActiveMarkerElement = (): HTMLElement => {
 export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
   const waypointAmenities: InnerWaypointType[] =
     waypoint.amenities && waypoint.amenities.length > 0
-      ? [waypoint.type as InnerWaypointType, ...waypoint.amenities].filter(
-          (amenity, index, self) => {
-            return self.findIndex((a) => a === amenity) === index;
-          },
-        )
+      ? [
+          ...((waypoint.type !== 'start' && waypoint.type !== 'end'
+            ? [waypoint.type]
+            : []) as InnerWaypointType[]),
+          ...waypoint.amenities,
+        ].filter((amenity, index, self) => {
+          return self.findIndex((a) => a === amenity) === index;
+        })
       : [];
 
   return new mapboxgl.Popup({
@@ -36,7 +39,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
     offset: 16,
     className: 'waypoint-poi-popup',
   }).setHTML(
-    `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3 pt-2">
+    `<div class="flex flex-col gap-1 max-w-60 max-h-60 overflow-y-auto p-3 pt-2 ${waypointAmenities.length > 0 ? 'min-w-30' : 'min-w-25'}">
       <h2 class="text-base font-medium text-gray-900">${waypoint.name}</h2>
       <div class="flex items-center gap-1">
         <div class="size-4 text-gray-500">
@@ -110,7 +113,7 @@ export const getPointOfInterestTooltip = (
   return tooltip;
 };
 
-const ROUTE_ANIMATION_DURATION_FACTOR = 0.6;
+const ROUTE_ANIMATION_DURATION_FACTOR = 3;
 const MIN_ROUTE_ANIMATION_DURATION = 1000;
 const MAX_ROUTE_ANIMATION_DURATION = 3000;
 

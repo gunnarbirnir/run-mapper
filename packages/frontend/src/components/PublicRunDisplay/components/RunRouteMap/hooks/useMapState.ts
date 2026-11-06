@@ -1,8 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
-import type { MapState } from '../types';
-
-export const useMapState = (): MapState => {
+export const useMapState = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [routeIsAnimating, setRouteIsAnimating] = useState(false);
   const [isAtInitialBounds, setIsAtInitialBounds] = useState(true);
@@ -13,10 +11,6 @@ export const useMapState = (): MapState => {
   >(null);
   const fitToInitialBoundsRef = useRef<(() => void) | null>(null);
   const isResettingBoundsRef = useRef(false);
-
-  const animateRoute = useCallback(() => {
-    animateRouteRef.current?.();
-  }, [animateRouteRef]);
 
   const setActiveMarkerIndex = useCallback(
     (updatedIndex: number | null) => {
@@ -40,8 +34,9 @@ export const useMapState = (): MapState => {
     setActiveIndexRef,
     fitToInitialBoundsRef,
     isResettingBoundsRef,
-    animateRoute,
     setActiveMarkerIndex,
     fitToInitialBounds,
   };
 };
+
+export type MapState = ReturnType<typeof useMapState>;
