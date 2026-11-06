@@ -24,10 +24,12 @@ export const useElevationGraphHeight = (isExpanded = false) => {
       : isLargeScreen
         ? 'lg'
         : 'xl';
+  const expandedHeight = convertRemToPixels(EXPANDED[size]);
+  const compactHeight = convertRemToPixels(COMPACT[size]);
 
   return {
-    height: convertRemToPixels(isExpanded ? EXPANDED[size] : COMPACT[size]),
-    compactHeight: convertRemToPixels(COMPACT[size]),
-    expandedHeight: convertRemToPixels(EXPANDED[size]),
+    height: isExpanded ? expandedHeight : compactHeight,
+    compactHeight,
+    expandedHeight,
   };
 };

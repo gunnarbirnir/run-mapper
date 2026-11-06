@@ -7,7 +7,7 @@ export const Route = createFileRoute('/auth/error')({
   component: AuthError,
 });
 
-export function AuthError() {
+function AuthError() {
   useSetDocumentTitle('Authentication error');
 
   return (

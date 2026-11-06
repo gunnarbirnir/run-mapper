@@ -13,7 +13,7 @@ import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
 import { RunRouteMap, useMapState } from './components/RunRouteMap';
 // import { RouteOverlay } from './components/RouteOverlay';
-// import { ElevationGraph } from '../ElevationGraph';
+import { ElevationGraph } from './components/ElevationGraph';
 
 export const PublicRunDisplay = ({
   run,
@@ -40,7 +40,7 @@ export const PublicRunDisplay = ({
   } = runDisplayState;
   const settings = useSettings();
   const mapState = useMapState();
-  const { routeIsAnimating /* , setActiveMarkerIndex */ } = mapState;
+  const { routeIsAnimating, setActiveMarkerIndex } = mapState;
   const elevationWidgetActive = activeWidget === 'elevation';
   const anyDrawerActive = Boolean(activeDrawer);
 
@@ -76,12 +76,12 @@ export const PublicRunDisplay = ({
             onReset={resetState}
           />
         </div>
-        {/* <ElevationGraph
-          elevations={elevations}
+        <ElevationGraph
+          route={route}
           isExpanded={elevationWidgetActive}
           isTooltipActive={!anyDrawerActive}
           onActiveIndexChange={setActiveMarkerIndex}
-        /> */}
+        />
         {/* <RouteOverlay
           {...runDisplayState}
           routes={run.routes}
