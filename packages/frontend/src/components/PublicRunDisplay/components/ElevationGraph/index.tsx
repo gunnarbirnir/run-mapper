@@ -9,15 +9,12 @@ import {
 } from 'recharts';
 import { motion } from 'motion/react';
 
-import {
-  WIDGET_ANIMATION_DURATION,
-  DEFAULT_FADE_IN_DURATION,
-  DEFAULT_EASING,
-} from '~/constants';
-import { getCssVariableValue, spacingPx } from '~/utils';
+import { DEFAULT_FADE_IN_DURATION, DEFAULT_EASING } from '~/constants';
+import { formatNumber, getCssVariableValue, spacingPx } from '~/utils';
 import type { PublicRoute } from '~/types';
 import { useId } from '~/hooks/useId';
 
+import { WIDGET_ANIMATION_DURATION } from '../../constants';
 import { useElevationGraphHeight } from '../../hooks/useElevationGraphHeight';
 import { getActiveIndexValue, getElevationGraphData } from './utils';
 import { GraphTooltip } from './GraphTooltip';
@@ -185,7 +182,7 @@ export const ElevationGraph = ({
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
               ticks={xTicks}
               tick={{ fill: textColor, fontSize: xsText }}
-              tickFormatter={(value) => `${value.toFixed(1)} km`}
+              tickFormatter={(value) => `${formatNumber(value, 1)} km`}
               tickLine={false}
               tickMargin={spacingPx(1)}
             />
@@ -197,7 +194,7 @@ export const ElevationGraph = ({
               axisLine={{ stroke: gridColor, strokeWidth: AXIS_LINE_WIDTH }}
               ticks={yTicks}
               tick={{ fill: textColor, fontSize: xsText }}
-              tickFormatter={(value) => `${value.toFixed(0)} m`}
+              tickFormatter={(value) => `${formatNumber(value, 0)} m`}
               tickLine={false}
               tickMargin={spacingPx(1)}
             />

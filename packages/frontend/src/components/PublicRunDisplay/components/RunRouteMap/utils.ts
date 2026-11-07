@@ -11,6 +11,7 @@ import {
   getWaypointPoiIcon,
   getWaypointPoiIconSize,
   getWaypointPoiLabel,
+  isInnerWaypoint,
 } from '~/utils/route';
 
 export const getActiveMarkerElement = (): HTMLElement => {
@@ -24,7 +25,7 @@ export const getWaypointTooltip = (waypoint: Waypoint): Popup => {
   const waypointAmenities: InnerWaypointType[] =
     waypoint.amenities && waypoint.amenities.length > 0
       ? [
-          ...((waypoint.type !== 'start' && waypoint.type !== 'end'
+          ...((isInnerWaypoint(waypoint)
             ? [waypoint.type]
             : []) as InnerWaypointType[]),
           ...waypoint.amenities,

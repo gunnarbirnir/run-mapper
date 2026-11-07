@@ -8,6 +8,7 @@ import {
 } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 import { getMarkerElement, getWaypointMarkerElement } from '~/utils/map';
+import { isInnerWaypoint } from '~/utils/route';
 
 import { getWaypointTooltip, getTooltipLatOffset } from '../utils';
 
@@ -84,9 +85,7 @@ export const useWaypoints = ({
     }
 
     if (showWaypoints) {
-      for (const waypoint of waypoints.filter(
-        (waypoint) => waypoint.type !== 'start' && waypoint.type !== 'end',
-      )) {
+      for (const waypoint of waypoints.filter(isInnerWaypoint)) {
         popups[waypoint.id] = getWaypointTooltip(waypoint);
         waypointMarkers.push(
           addMarker(

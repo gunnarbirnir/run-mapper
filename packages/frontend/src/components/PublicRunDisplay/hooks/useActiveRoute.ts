@@ -10,7 +10,7 @@ const findRoute = (routes: PublicRoute[], routeId?: string) => {
   return routes.find((route) => route.id === routeId) ?? null;
 };
 
-export const useRoute = ({
+export const useActiveRoute = ({
   run,
   initialRouteId,
   isFullscreen,
@@ -21,16 +21,16 @@ export const useRoute = ({
   isFullscreen: boolean;
   isPreview: boolean;
 }) => {
-  const [currentRoute, setCurrentRoute] = useState<PublicRoute | null>(
+  const [activeRoute, setActiveRoute] = useState<PublicRoute | null>(
     findRoute(run.routes, initialRouteId),
   );
 
-  const handleSetCurrentRoute = useCallback(
+  const handleSetActiveRoute = useCallback(
     (updatedRouteId: string) => {
       const route = findRoute(run.routes, updatedRouteId);
       const basePath = getRunBasePath(run, isPreview);
 
-      setCurrentRoute(route);
+      setActiveRoute(route);
       history.replaceState(
         null,
         '',
@@ -41,7 +41,7 @@ export const useRoute = ({
   );
 
   return {
-    route: currentRoute,
-    setRoute: handleSetCurrentRoute,
+    activeRoute,
+    setActiveRoute: handleSetActiveRoute,
   };
 };

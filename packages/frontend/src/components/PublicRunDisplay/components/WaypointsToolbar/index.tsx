@@ -1,15 +1,15 @@
 import { motion } from 'motion/react';
 import { useCallback } from 'react';
 
-import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { spacingPx } from '~/utils';
 import { RoundButton, Icon } from '~/primitives';
 import type { Waypoint } from '~/types';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 
+import { useElevationGraphHeight } from '../../hooks/useElevationGraphHeight';
 import { useWaypointsHotkeys } from './useWaypointsHotkeys';
 
-interface WaypointsButtonsProps {
+interface WaypointsToolbarProps {
   waypoints: Waypoint[];
   activeWaypoint: string;
   setActiveWaypoint: (waypoint: string | null) => void;
@@ -19,11 +19,11 @@ const FADE_IN_DISTANCE = 20;
 // Between map action buttons and powered by label
 const TAB_INDEX = 35;
 
-export const WaypointsButtons = ({
+export const WaypointsToolbar = ({
   waypoints,
   activeWaypoint,
   setActiveWaypoint,
-}: WaypointsButtonsProps) => {
+}: WaypointsToolbarProps) => {
   const { height: graphHeight } = useElevationGraphHeight();
 
   const activeWaypointDetails = waypoints.find(
@@ -71,7 +71,7 @@ export const WaypointsButtons = ({
         ease: DEFAULT_EASING,
       }}
       // Z-index 19 to be below drawer
-      className="height-20 width-50 pointer-events-auto absolute left-[50%] z-19 flex translate-x-[-50%] items-center justify-center gap-4 rounded-full bg-white p-2 shadow-md"
+      className="height-20 pointer-events-auto absolute left-[50%] z-19 flex translate-x-[-50%] items-center justify-center gap-4 rounded-full bg-white p-2 shadow-md"
       // 8 (height of map action buttons) + 3 (spacing above elevation graph) + 2 (spacing from buttons)
       style={{ bottom: graphHeight + spacingPx(13) }}
     >

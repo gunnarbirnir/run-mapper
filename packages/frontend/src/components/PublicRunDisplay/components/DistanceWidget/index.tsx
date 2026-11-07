@@ -1,21 +1,19 @@
-import { useMemo } from 'react';
-
-import type { Coordinates } from '~/types';
-import { calculateDistance } from '~/utils/route';
+import { formatNumber } from '~/utils';
 
 import type { WidgetBaseProps } from '../../types';
 import { WidgetContainer } from '../WidgetContainer';
 
 interface DistanceWidgetProps extends WidgetBaseProps {
-  coordinates: Coordinates[];
+  distance: number;
+  displayDistance?: number;
 }
 
 export const DistanceWidget = ({
-  coordinates,
+  distance,
+  displayDistance,
   ...props
 }: DistanceWidgetProps) => {
-  const distance = useMemo(() => calculateDistance(coordinates), [coordinates]);
-  const formattedDistance = `${distance.toFixed(1)} km`;
+  const formattedDistance = `${formatNumber(displayDistance ?? distance, 1)} km`;
 
   return (
     <WidgetContainer

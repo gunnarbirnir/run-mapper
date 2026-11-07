@@ -1,15 +1,15 @@
-import { useHotkey } from '@tanstack/react-hotkeys';
 import { useMemo, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
-import {
-  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
-  POINT_OF_INTEREST_VALUES,
-} from '~/constants';
+import { POINT_OF_INTEREST_VALUES } from '~/constants';
 import { Drawer, Text } from '~/primitives';
 import type { PointOfInterest, Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
+import {
+  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+  DRAWER_ANIMATION_DURATION,
+} from '../../constants';
 import { PointOfInterestGroup } from './PointOfInterestGroup';
 import { NotVisibleWarning } from './NotVisibleWarning';
 import { WaypointsTimeline } from './WaypointsTimeline';
@@ -21,7 +21,8 @@ interface PointsOfInterestDrawerProps {
   waypoints: Waypoint[];
   showPointsOfInterest: boolean;
   showWaypoints: boolean;
-  onOpen: () => void;
+  hasPointsOfInterest: boolean;
+  hasWaypoints: boolean;
   onClose: () => void;
   setActivePointOfInterest: (poiId: string, fromDrawer: boolean) => void;
   setActiveWaypoint: (waypointId: string, fromDrawer: boolean) => void;
@@ -38,7 +39,8 @@ export const PointsOfInterestDrawer = ({
   waypoints,
   showPointsOfInterest,
   showWaypoints,
-  onOpen,
+  hasPointsOfInterest,
+  hasWaypoints,
   onClose,
   setActivePointOfInterest,
   setActiveWaypoint,
@@ -89,14 +91,6 @@ export const PointsOfInterestDrawer = ({
     });
   }, []);
 
-  useHotkey('I', () => {
-    if (isOpen) {
-      onClose();
-    } else {
-      onOpen();
-    }
-  });
-
   return (
     <Drawer
       title="Points of interest"
@@ -105,52 +99,65 @@ export const PointsOfInterestDrawer = ({
       minWidth={PUBLIC_RUN_DISPLAY_MIN_WIDTH}
       className="pointer-events-auto z-20"
       hideCloseButton={!isSmallScreen}
+      animationDuration={DRAWER_ANIMATION_DURATION}
       onClose={onClose}
     >
-      <AnimatePresence>
-        {!showPointsOfInterest && (
-          <NotVisibleWarning
-            className="mb-3"
+      {hasPointsOfInterest ? (
+        <>
+          <AnimatePresence>
+            {!showPointsOfInterest && (
+              <NotVisibleWarning
+                className="mb-3"
+                tabIndex={TAB_INDEX}
+                onShowClick={setShowPointsOfInterest}
+              >
+                Points of interest are not visible. Click to show.
+              </NotVisibleWarning>
+            )}
+          </AnimatePresence>
+          <div className="flex flex-col gap-1">
+            {poiGroups.map((poiGroup) => (
+              <PointOfInterestGroup
+                key={poiGroup[0].type}
+                pointsOfInterest={poiGroup}
+                isClickable={showPointsOfInterest}
+                isExpanded={Boolean(expandedGroups[poiGroup[0].type])}
+                tabIndex={TAB_INDEX}
+                toggleExpanded={handleSetExpanded}
+                setActivePointOfInterest={handleSetActivePointOfInterest}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <Text variant="subtle" className="text-sm">
+          There are no points of interest in this run.
+        </Text>
+      )}
+      {hasWaypoints && (
+        <>
+          <Text variant="label" className="mt-6 mb-2">
+            Waypoints
+          </Text>
+          <AnimatePresence>
+            {!showWaypoints && (
+              <NotVisibleWarning
+                className="mb-3"
+                tabIndex={TAB_INDEX}
+                onShowClick={setShowWaypoints}
+              >
+                Waypoints are not visible. Click to show.
+              </NotVisibleWarning>
+            )}
+          </AnimatePresence>
+          <WaypointsTimeline
+            waypoints={waypoints}
+            isClickable={showWaypoints}
             tabIndex={TAB_INDEX}
-            onShowClick={setShowPointsOfInterest}
-          >
-            Points of interest are not visible. Click to show.
-          </NotVisibleWarning>
-        )}
-      </AnimatePresence>
-      <div className="flex flex-col gap-1">
-        {poiGroups.map((poiGroup) => (
-          <PointOfInterestGroup
-            key={poiGroup[0].type}
-            pointsOfInterest={poiGroup}
-            isClickable={showPointsOfInterest}
-            isExpanded={Boolean(expandedGroups[poiGroup[0].type])}
-            tabIndex={TAB_INDEX}
-            toggleExpanded={handleSetExpanded}
-            setActivePointOfInterest={handleSetActivePointOfInterest}
+            setActiveWaypoint={handleSetActiveWaypoint}
           />
-        ))}
-      </div>
-      <Text variant="label" className="mt-6 mb-2">
-        Waypoints
-      </Text>
-      <AnimatePresence>
-        {!showWaypoints && (
-          <NotVisibleWarning
-            className="mb-3"
-            tabIndex={TAB_INDEX}
-            onShowClick={setShowWaypoints}
-          >
-            Waypoints are not visible. Click to show.
-          </NotVisibleWarning>
-        )}
-      </AnimatePresence>
-      <WaypointsTimeline
-        waypoints={waypoints}
-        isClickable={showWaypoints}
-        tabIndex={TAB_INDEX}
-        setActiveWaypoint={handleSetActiveWaypoint}
-      />
+        </>
+      )}
     </Drawer>
   );
 };

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { cn } from '~/utils';
-import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
+import { DEFAULT_EASING } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
 import { useInertAttribute } from '~/hooks/useInertAttribute';
@@ -20,6 +20,7 @@ interface DrawerProps {
   minWidth?: number;
   disablePadding?: boolean;
   hideCloseButton?: boolean;
+  animationDuration?: number;
   className?: string;
   titleSectionClassName?: string;
   onClose?: () => void;
@@ -35,6 +36,7 @@ export const Drawer = ({
   className,
   titleSectionClassName,
   hideCloseButton = false,
+  animationDuration = 0.1,
   onClose,
 }: DrawerProps) => {
   const ref = useRef<HTMLElement>(null);
@@ -69,7 +71,7 @@ export const Drawer = ({
       style={{ width: activeWidth, right: -activeWidth }}
       animate={{ right: isOpen ? 0 : -activeWidth }}
       transition={{
-        duration: isOpen || isAnimating ? DRAWER_ANIMATION_DURATION : 0,
+        duration: isOpen || isAnimating ? animationDuration : 0,
         ease: DEFAULT_EASING,
       }}
       onAnimationComplete={() => {

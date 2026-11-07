@@ -1,19 +1,19 @@
 import { useRef } from 'react';
 
-import {
-  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
-  PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
-} from '~/constants';
 import { cn } from '~/utils';
 import { IdProvider } from '~/context/IdContext';
 
-import { useRoute } from './hooks/useRoute';
+import { useActiveRoute } from './hooks/useActiveRoute';
 import { useRunDisplayState } from './hooks/useRunDisplayState';
 import { useSettings } from './hooks/useSettings';
 import type { PublicRunDisplayProps } from './types';
 import { RunRouteMap, useMapState } from './components/RunRouteMap';
-// import { RouteOverlay } from './components/RouteOverlay';
+import { RouteOverlay } from './components/RouteOverlay';
 import { ElevationGraph } from './components/ElevationGraph';
+import {
+  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+  PUBLIC_RUN_DISPLAY_MIN_HEIGHT,
+} from './constants';
 
 export const PublicRunDisplay = ({
   run,
@@ -21,14 +21,14 @@ export const PublicRunDisplay = ({
   isFullscreen = false,
   isPreview = false,
 }: PublicRunDisplayProps) => {
-  const { route /* , setRoute: setActiveRoute */ } = useRoute({
+  const { activeRoute, setActiveRoute } = useActiveRoute({
     run,
     initialRouteId,
     isFullscreen,
     isPreview,
   });
   const publicRunDisplayRef = useRef<HTMLDivElement>(null);
-  const runDisplayState = useRunDisplayState(route?.id);
+  const runDisplayState = useRunDisplayState(activeRoute?.id);
   const {
     activeWaypoint,
     activePointOfInterest,
@@ -63,7 +63,7 @@ export const PublicRunDisplay = ({
             runSlug={run.publicSlug}
             isFullscreen={isFullscreen}
             isPreview={isPreview}
-            route={route}
+            route={activeRoute}
             pointsOfInterest={run.pointsOfInterest}
             activeWaypoint={activeWaypoint}
             activePointOfInterest={activePointOfInterest}
@@ -77,23 +77,20 @@ export const PublicRunDisplay = ({
           />
         </div>
         <ElevationGraph
-          route={route}
+          route={activeRoute}
           isExpanded={elevationWidgetActive}
           isTooltipActive={!anyDrawerActive}
           onActiveIndexChange={setActiveMarkerIndex}
         />
-        {/* <RouteOverlay
+        <RouteOverlay
           {...runDisplayState}
           routes={run.routes}
-          routeId={route.id}
-          coordinates={coordinates}
-          elevations={elevations}
-          waypoints={route.waypoints}
+          activeRoute={activeRoute}
           pointsOfInterest={run.pointsOfInterest}
           publicRunDisplayRef={publicRunDisplayRef}
           settings={settings}
           setActiveRoute={setActiveRoute}
-        /> */}
+        />
       </div>
     </IdProvider>
   );

@@ -2,13 +2,15 @@ import { motion } from 'motion/react';
 
 import { Dropdown, Tooltip } from '~/primitives';
 import { spacingPx, cn } from '~/utils';
-import { DRAWER_ANIMATION_DURATION, DEFAULT_EASING } from '~/constants';
+import { DEFAULT_EASING } from '~/constants';
 import type { PublicRoute } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
+import { DRAWER_ANIMATION_DURATION } from '../../constants';
+
 interface RouteDropdownProps {
   routes: PublicRoute[];
-  activeRouteId: string;
+  activeRouteId?: string;
   size: number;
   buttonCount: number;
   setActiveRoute: (routeId: string) => void;

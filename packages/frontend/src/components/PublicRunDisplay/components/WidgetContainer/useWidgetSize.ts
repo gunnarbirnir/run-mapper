@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState, type SetStateAction } from 'react';
 
-import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
 import { useFontLoaded } from '~/hooks/useFontLoaded';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { spacingPx } from '~/utils';
+
+import { useElevationGraphHeight } from '../../hooks/useElevationGraphHeight';
 
 const MODAL_MAX_HEIGHT = 300;
 const MODAL_MAX_WIDTH = 600;

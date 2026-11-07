@@ -1,7 +1,7 @@
 import { RefObject, useState } from 'react';
 
 import { useElementSize } from '~/hooks/useElementSize';
-import type { Coordinates, Elevation } from '~/types';
+import type { ElevationStats } from '~/types';
 import { Tooltip } from '~/primitives';
 
 import { DistanceWidget } from '../DistanceWidget';
@@ -14,8 +14,9 @@ interface OverlayWidgetsProps {
   openWidget: WidgetType | null;
   expandedWidget: WidgetType | null;
   visibleWidgets: Record<WidgetType, boolean>;
-  coordinates: Coordinates[];
-  elevations: Elevation[];
+  distance: number;
+  displayDistance?: number;
+  elevationStats?: ElevationStats;
   setActiveWidget: (widget: WidgetType | null) => void;
 }
 
@@ -25,19 +26,20 @@ export const OverlayWidgets = ({
   openWidget,
   expandedWidget,
   visibleWidgets,
-  coordinates,
-  elevations,
+  distance,
+  displayDistance,
+  elevationStats,
   setActiveWidget,
 }: OverlayWidgetsProps) => {
   const publicRunDisplaySize = useElementSize(publicRunDisplayRef);
   const [widgetSizes, setWidgetSizes] = useState<number[]>([]);
+  let widgetIndex = 0;
 
   const getWidgetProps = (widget: WidgetType) => {
     return {
       widgetType: widget,
       widgetSizes,
       publicRunDisplaySize,
-      showGraphWhileActive: widget === 'elevation',
       isActive: activeWidget === widget,
       isOpen: openWidget === widget,
       isExpanded: expandedWidget === widget,
@@ -54,15 +56,16 @@ export const OverlayWidgets = ({
     <Tooltip.Provider>
       {visibleWidgets.distance && (
         <DistanceWidget
-          index={0}
-          coordinates={coordinates}
+          index={widgetIndex++}
+          distance={distance}
+          displayDistance={displayDistance}
           {...getWidgetProps('distance')}
         />
       )}
       {visibleWidgets.elevation && (
         <ElevationWidget
-          index={1}
-          elevations={elevations}
+          index={widgetIndex++}
+          elevationStats={elevationStats}
           {...getWidgetProps('elevation')}
         />
       )}
