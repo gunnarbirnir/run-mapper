@@ -2,7 +2,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { POINT_OF_INTEREST_VALUES } from '~/constants';
-import { Drawer, Text } from '~/primitives';
+import { Drawer, Text, StatusMessage, TextButton } from '~/primitives';
 import type { PointOfInterest, Waypoint } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 
@@ -11,7 +11,6 @@ import {
   DRAWER_ANIMATION_DURATION,
 } from '../../constants';
 import { PointOfInterestGroup } from './PointOfInterestGroup';
-import { NotVisibleWarning } from './NotVisibleWarning';
 import { WaypointsTimeline } from './WaypointsTimeline';
 
 interface PointsOfInterestDrawerProps {
@@ -106,13 +105,22 @@ export const PointsOfInterestDrawer = ({
         <>
           <AnimatePresence>
             {!showPointsOfInterest && (
-              <NotVisibleWarning
+              <StatusMessage
+                status="warning"
                 className="mb-3"
                 tabIndex={TAB_INDEX}
-                onShowClick={setShowPointsOfInterest}
+                hideCloseButton={true}
               >
-                Points of interest are not visible. Click to show.
-              </NotVisibleWarning>
+                <>
+                  Points of interest are not visible.{' '}
+                  <TextButton
+                    onClick={setShowPointsOfInterest}
+                    className="text-gray-800 hover:text-gray-500"
+                  >
+                    Click to show.
+                  </TextButton>
+                </>
+              </StatusMessage>
             )}
           </AnimatePresence>
           <div className="flex flex-col gap-1">
@@ -141,13 +149,22 @@ export const PointsOfInterestDrawer = ({
           </Text>
           <AnimatePresence>
             {!showWaypoints && (
-              <NotVisibleWarning
+              <StatusMessage
+                status="warning"
                 className="mb-3"
                 tabIndex={TAB_INDEX}
-                onShowClick={setShowWaypoints}
+                hideCloseButton={true}
               >
-                Waypoints are not visible. Click to show.
-              </NotVisibleWarning>
+                <>
+                  Waypoints are not visible.{' '}
+                  <TextButton
+                    onClick={setShowWaypoints}
+                    className="text-gray-800 hover:text-gray-500"
+                  >
+                    Click to show.
+                  </TextButton>
+                </>
+              </StatusMessage>
             )}
           </AnimatePresence>
           <WaypointsTimeline
