@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 
 import { DEFAULT_EASING } from '~/constants';
-import { Text } from '~/primitives';
+import { Text, TextButton } from '~/primitives';
 
 const SLIDE_IN_DELAY = 0.2;
 const SLIDE_IN_DURATION = 0.2;
@@ -25,11 +25,7 @@ export const WarningBanner = ({ onClose }: WarningBannerProps) => {
       <Text className="text-sm">
         This is a preview of what the run will look like on your page.
       </Text>
-      <button type="button" onClick={onClose}>
-        <Text className="cursor-pointer text-sm underline underline-offset-2 hover:text-gray-500">
-          Close preview
-        </Text>
-      </button>
+      <TextButton onClick={onClose}>Close preview</TextButton>
     </motion.div>
   );
 };

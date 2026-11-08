@@ -6,6 +6,7 @@ import { cn } from '~/utils';
 
 import { RoundButton } from './RoundButton';
 import { TinyButton } from './TinyButton';
+import { TextButton } from './TextButton';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { type ButtonColor, getColorClassName } from './utils';
 
@@ -78,4 +79,4 @@ export const Button = ({
   );
 };
 
-export { RoundButton, TinyButton };
+export { RoundButton, TinyButton, TextButton };

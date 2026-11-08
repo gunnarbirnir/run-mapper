@@ -1,5 +1,5 @@
 export { Text } from './Text';
-export { Button, RoundButton, TinyButton } from './Button';
+export { Button, RoundButton, TinyButton, TextButton } from './Button';
 export { Form } from './Form';
 export { Icon, type IconName } from './Icon';
 export { Drawer } from './Drawer';
