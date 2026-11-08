@@ -101,7 +101,6 @@ export const RootPanel = ({
     useStore(rootForm.store, (state) => state.isDefaultValue) &&
     !hasSubmittedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
-  const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
   const isCreatingRun = isSubmitting && !isEditing;
 
   const {
@@ -257,7 +256,7 @@ export const RootPanel = ({
           <Button
             className="w-full"
             type="submit"
-            disabled={!canSubmit || isDefaultValue}
+            disabled={isDefaultValue}
             isLoading={isSubmitting}
           >
             {isEditing ? 'Save run' : 'Create run'}

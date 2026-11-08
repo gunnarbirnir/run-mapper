@@ -281,23 +281,15 @@ export const WaypointPanel = ({
         <section className="flex flex-col gap-3">
           <waypointForm.Subscribe
             selector={(state) => [
-              state.canSubmit,
               state.isSubmitting,
               state.values.name.length === 0,
               state.values.position > positionMax,
             ]}
-            children={([
-              canSubmit,
-              isSubmitting,
-              invalidName,
-              invalidPosition,
-            ]) => (
+            children={([isSubmitting, invalidName, invalidPosition]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={
-                  !canSubmit || isDefaultValue || invalidName || invalidPosition
-                }
+                disabled={isDefaultValue || invalidName || invalidPosition}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update waypoint' : 'Add waypoint'}

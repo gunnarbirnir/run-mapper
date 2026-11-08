@@ -283,12 +283,12 @@ export const PointOfInterestPanel = ({
         </section>
         <section className="flex flex-col gap-3">
           <poiForm.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
+            selector={(state) => [state.isSubmitting]}
+            children={([isSubmitting]) => (
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!canSubmit || disableSubmit}
+                disabled={disableSubmit}
                 isLoading={isSubmitting}
               >
                 {isEditing ? 'Update POI' : 'Add POI'}
