@@ -1,4 +1,5 @@
 import { Text } from '~/primitives';
+import { formatNumber } from '~/utils';
 
 interface GraphTooltipProps {
   payload?: {
@@ -31,8 +32,8 @@ export const GraphTooltip = ({ payload }: GraphTooltipProps) => {
 
   return (
     <div className="rounded-md bg-white/90 px-2 py-1 shadow-md/20">
-      <TooltipText label="Distance" value={`${distance.toFixed(2)} km`} />
-      <TooltipText label="Elevation" value={`${value.toFixed(1)} m`} />
+      <TooltipText label="Distance" value={`${formatNumber(distance, 2)} km`} />
+      <TooltipText label="Elevation" value={`${formatNumber(value, 1)} m`} />
     </div>
   );
 };

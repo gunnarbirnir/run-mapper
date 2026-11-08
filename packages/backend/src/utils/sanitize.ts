@@ -31,7 +31,6 @@ import {
   COORDINATES_DECIMALS,
   ELEVATION_DECIMALS,
   POINT_OF_INTEREST_VALUES,
-  WAYPOINT_VALUES,
 } from '../config/constants.js';
 
 // Sanitize fetched data in service layer
@@ -73,7 +72,7 @@ export const compareRoutes = (a: PublicRoute, b: PublicRoute) => {
 };
 
 export const compareWaypoints = (a: Waypoint, b: Waypoint) => {
-  return WAYPOINT_VALUES.indexOf(a.type) - WAYPOINT_VALUES.indexOf(b.type);
+  return a.position - b.position;
 };
 
 export const sanitizeListRoute = (route: PublicRoute): ListRoute => {

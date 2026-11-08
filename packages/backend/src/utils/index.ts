@@ -53,11 +53,13 @@ export const isValidRouteCoordinates =
   (calculationsRequired = true) =>
   (value: unknown): value is RouteCoordinates => {
     const routeCoordinates = value as RouteCoordinates;
-    const isValidCalc = (val: unknown) => isFiniteNumber(val) && val >= 0;
+    const isValidElevation = (val: unknown) => isFiniteNumber(val);
+    const isValidDistance = (val: unknown) => isFiniteNumber(val) && val >= 0;
+
     const calculationsValid =
       !calculationsRequired ||
-      (isValidCalc(routeCoordinates.elevation) &&
-        isValidCalc(routeCoordinates.distance));
+      (isValidElevation(routeCoordinates.elevation) &&
+        isValidDistance(routeCoordinates.distance));
 
     return (
       typeof routeCoordinates.id === 'string' &&

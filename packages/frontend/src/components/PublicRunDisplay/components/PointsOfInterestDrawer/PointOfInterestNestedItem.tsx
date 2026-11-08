@@ -55,9 +55,7 @@ export const PointOfInterestNestedItem = ({
         })}
         onClick={handleClick}
       >
-        <Text className="truncate text-sm text-gray-700">
-          {pointOfInterest.name}
-        </Text>
+        <Text className="truncate text-sm">{pointOfInterest.name}</Text>
       </motion.div>
     </div>
   );

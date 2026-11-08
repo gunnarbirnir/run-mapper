@@ -8,11 +8,9 @@ import { PageLayout } from '~/components/PageLayout';
 import { LoadingSpinner } from '~/primitives';
 import { formatDocumentTitle } from '~/utils';
 import { useSetDocumentTitle } from '~/hooks/useSetDocumentTitle';
-
-import { Fallback, ErrorMessage } from '../$slug';
+import { RunFallback, RunErrorMessage } from '~/components/RunFallback';
 
 export const Route = createFileRoute('/run/preview/$id')({
-  ssr: false,
   component: RunPreview,
   validateSearch: (search: Record<string, unknown>) => ({
     isFullscreen: search.isFullscreen === true,
@@ -31,34 +29,34 @@ function RunPreview() {
     queryFn: () => api.get(`/runs/preview/${encodeURIComponent(id)}`),
   });
   useSetDocumentTitle(data?.data.name);
-  const activeRouteId = routeId ?? data?.data.defaultRouteId ?? '';
+  const initialRouteId = routeId ?? data?.data.defaultRouteId;
 
   if (isLoading) {
     return (
-      <Fallback>
+      <RunFallback>
         <LoadingSpinner className="text-primary-500 size-10" />
-      </Fallback>
+      </RunFallback>
     );
   }
 
   if (
-    data?.data.routes.find((route) => route.id === activeRouteId) === undefined
+    data?.data.routes.find((route) => route.id === initialRouteId) === undefined
   ) {
     return (
-      <ErrorMessage message="The route you're looking for was not found." />
+      <RunErrorMessage message="The route you're looking for was not found." />
     );
   }
 
   if (error) {
     return (
-      <ErrorMessage message="Something went wrong, please try again later." />
+      <RunErrorMessage message="Something went wrong, please try again later." />
     );
   }
 
   return (
     <PageLayout isFullscreenDisplay>
       <PublicRunDisplay
-        routeId={activeRouteId}
+        initialRouteId={initialRouteId}
         run={data.data}
         isFullscreen={isFullscreen}
         isPreview

@@ -49,9 +49,14 @@ export class RunRepository {
   async update(
     runId: string,
     runData: Partial<RunRecord>,
+    replace = false,
   ): Promise<RunRecordWithId> {
     const runRef = db.collection('runs').doc(runId);
-    await runRef.update(runData);
+    if (replace) {
+      await runRef.set(runData);
+    } else {
+      await runRef.update(runData);
+    }
     const updatedRunDoc = await runRef.get();
 
     return {

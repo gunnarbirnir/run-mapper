@@ -2,8 +2,8 @@ import type { Map, MapMouseEvent, Marker } from 'mapbox-gl';
 import { useEffect, type RefObject, useState } from 'react';
 
 import {
-  FLY_TO_WAYPOINT_DURATION,
-  WAYPOINT_ZOOM,
+  FLY_TO_WAYPOINT_POI_DURATION,
+  WAYPOINT_POI_ZOOM,
   COORDINATES_DECIMALS,
 } from '~/constants/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
@@ -170,8 +170,8 @@ export const usePointsOfInterest = ({
         activePointOfInterestDetails.coordinates.lng,
         activePointOfInterestDetails.coordinates.lat,
       ],
-      zoom: WAYPOINT_ZOOM,
-      duration: FLY_TO_WAYPOINT_DURATION,
+      zoom: WAYPOINT_POI_ZOOM,
+      duration: FLY_TO_WAYPOINT_POI_DURATION,
     });
   }, [
     isMapLoaded,

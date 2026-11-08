@@ -3,8 +3,8 @@ import type { Map } from 'mapbox-gl';
 import { Icon, Tooltip } from '~/primitives';
 import { useMapZoom } from '~/hooks/useMapZoom';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
+import { MapActionButton, PlusMinusButton } from '~/components/MapActionButton';
 
-import { MapActionButton } from './MapActionButton';
 import { RefObject } from 'react';
 
 interface ActionButtonsContainerProps {
@@ -38,24 +38,19 @@ export const ActionButtonsContainer = ({
         <Icon name="reset" className="size-4.5" />
       </MapActionButton>
       {!isSmallScreen && (
-        <>
-          <MapActionButton
-            index={mapActionButtonIndex++}
-            tooltipLabel="Zoom in"
-            onClick={zoomIn}
-            disabled={!canZoomIn}
-          >
-            <Icon name="plus" className="size-4.5" />
-          </MapActionButton>
-          <MapActionButton
-            index={mapActionButtonIndex++}
-            tooltipLabel="Zoom out"
-            onClick={zoomOut}
-            disabled={!canZoomOut}
-          >
-            <Icon name="minus" className="size-4.5" />
-          </MapActionButton>
-        </>
+        <PlusMinusButton
+          index={mapActionButtonIndex++}
+          plus={{
+            tooltipLabel: 'Zoom in',
+            onClick: zoomIn,
+            disabled: !canZoomIn,
+          }}
+          minus={{
+            tooltipLabel: 'Zoom out',
+            onClick: zoomOut,
+            disabled: !canZoomOut,
+          }}
+        />
       )}
     </Tooltip.Provider>
   );

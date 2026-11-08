@@ -1,11 +1,13 @@
-import { Elevation } from '~/types';
+import { RouteCoordinates } from '~/types';
 
-export const processElevationData = (elevations: Elevation[]): Elevation[] => {
-  if (elevations.length === 0) {
+export const getElevationGraphData = (
+  coordinates: RouteCoordinates[],
+): { value: number; distance: number }[] => {
+  if (coordinates.length === 0) {
     return [];
   }
 
-  const elevationData: Elevation[] = [];
+  const elevationData: { value: number; distance: number }[] = [];
   let currentKm = 0;
   let closestIndex = 0;
   let closestDiff = Infinity;
@@ -17,22 +19,21 @@ export const processElevationData = (elevations: Elevation[]): Elevation[] => {
     closestDiff = Infinity;
   };
 
-  elevations.forEach((elevation, index) => {
-    const roundedKm = Math.round(elevation.distance);
+  coordinates.forEach((coord, index) => {
+    const distance = coord.distance ?? 0;
+    const roundedKm = Math.round(distance);
     if (roundedKm !== currentKm) {
       updateClosestDistance(roundedKm);
     }
 
-    const diffFromCurrent = Math.abs(elevation.distance - currentKm);
+    const diffFromCurrent = Math.abs(distance - currentKm);
     if (diffFromCurrent < closestDiff) {
       closestDiff = diffFromCurrent;
       closestIndex = index;
     }
 
-    elevationData.push({ ...elevation });
+    elevationData.push({ value: coord.elevation ?? 0, distance });
   });
-
-  updateClosestDistance();
 
   return elevationData;
 };

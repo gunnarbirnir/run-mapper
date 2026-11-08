@@ -1,10 +1,11 @@
 import { motion } from 'motion/react';
 import { useRef, type ReactNode } from 'react';
 
-import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
+import { DEFAULT_EASING } from '~/constants';
 import { type IconName } from '~/primitives';
 import { useFocusedElementHotkeys } from '~/hooks/useFocusedElementHotkeys';
 
+import { WIDGET_ANIMATION_DURATION } from '../../constants';
 import type { WidgetBaseProps } from '../../types';
 import { ModalContent } from './ModalContent';
 import { WidgetContent } from './WidgetContent';
@@ -41,6 +42,7 @@ export const WidgetContainer = ({
   const widgetRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isClickable = Boolean(children && onOpen && !isAnyOpen);
+
   useFocusedElementHotkeys({
     containerRef,
     enterEnabled: !isOpen && isClickable,
@@ -77,7 +79,7 @@ export const WidgetContainer = ({
       transition={{
         duration:
           // Does not apply on initial render or for last item
-          index + 1 < widgetSizes.length ? WIDGET_ANIMATION_DURATION : 0,
+          index < widgetSizes.length - 1 ? WIDGET_ANIMATION_DURATION : 0,
         ease: DEFAULT_EASING,
       }}
     >

@@ -3,7 +3,10 @@ import { useEffect, useRef, type RefObject } from 'react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 import type { PointOfInterest } from '~/types';
-import { FLY_TO_WAYPOINT_DURATION, WAYPOINT_ZOOM } from '~/constants/map';
+import {
+  FLY_TO_WAYPOINT_POI_DURATION,
+  WAYPOINT_POI_ZOOM,
+} from '~/constants/map';
 import { getPointOfInterestMarkerElement } from '~/utils/map';
 import { useMapHandlers } from '~/hooks/useMapHandlers';
 
@@ -31,7 +34,6 @@ export const usePointsOfInterest = ({
   mapRef,
 }: UsePointsOfInterestProps) => {
   const activePointOfInterestRef = useRef<string | null>(null);
-  const pointsOfInterestMarkersRef = useRef<Marker[]>([]);
   const popupsRef = useRef<Record<string, Popup>>({});
   const { addMarker } = useMapHandlers({ mapRef });
 
@@ -46,7 +48,7 @@ export const usePointsOfInterest = ({
       return;
     }
 
-    const pointsOfInterestMarkers = [];
+    const pointsOfInterestMarkers: (Marker | undefined)[] = [];
     const popups: Record<string, Popup> = {};
 
     if (showPointsOfInterest) {
@@ -68,15 +70,11 @@ export const usePointsOfInterest = ({
     }
 
     popupsRef.current = popups;
-    pointsOfInterestMarkersRef.current = pointsOfInterestMarkers.filter(
-      Boolean,
-    ) as Marker[];
 
     return () => {
-      pointsOfInterestMarkersRef.current.forEach((marker) => marker.remove());
+      pointsOfInterestMarkers.forEach((marker) => marker?.remove());
       Object.values(popupsRef.current).forEach((popup) => popup.remove());
       activePointOfInterestRef.current = null;
-      pointsOfInterestMarkersRef.current = [];
       popupsRef.current = {};
     };
   }, [
@@ -129,8 +127,8 @@ export const usePointsOfInterest = ({
         activePointOfInterestDetails.coordinates.lat +
           getTooltipLatOffset(activePointOfInterestDetails),
       ],
-      zoom: WAYPOINT_ZOOM,
-      duration: FLY_TO_WAYPOINT_DURATION,
+      zoom: WAYPOINT_POI_ZOOM,
+      duration: FLY_TO_WAYPOINT_POI_DURATION,
     });
   }, [
     activePointOfInterest,

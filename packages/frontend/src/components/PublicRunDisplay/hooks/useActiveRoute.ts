@@ -3,31 +3,34 @@ import { useState, useCallback } from 'react';
 import type { PublicRun, PublicRoute } from '~/types';
 import { getRunBasePath } from '~/utils';
 
-const findRoute = (run: PublicRun, routeId: string) => {
-  return run.routes.find((route) => route.id === routeId) as PublicRoute;
+const findRoute = (routes: PublicRoute[], routeId?: string) => {
+  if (!routeId) {
+    return routes.length > 0 ? routes[0] : null;
+  }
+  return routes.find((route) => route.id === routeId) ?? null;
 };
 
-export const useRoute = ({
+export const useActiveRoute = ({
   run,
-  routeId,
+  initialRouteId,
   isFullscreen,
   isPreview,
 }: {
   run: PublicRun;
-  routeId: string;
+  initialRouteId?: string;
   isFullscreen: boolean;
   isPreview: boolean;
 }) => {
-  const [currentRoute, setCurrentRoute] = useState<PublicRoute>(
-    findRoute(run, routeId),
+  const [activeRoute, setActiveRoute] = useState<PublicRoute | null>(
+    findRoute(run.routes, initialRouteId),
   );
 
-  const handleSetCurrentRoute = useCallback(
+  const handleSetActiveRoute = useCallback(
     (updatedRouteId: string) => {
-      const route = findRoute(run, updatedRouteId);
+      const route = findRoute(run.routes, updatedRouteId);
       const basePath = getRunBasePath(run, isPreview);
 
-      setCurrentRoute(route);
+      setActiveRoute(route);
       history.replaceState(
         null,
         '',
@@ -38,7 +41,7 @@ export const useRoute = ({
   );
 
   return {
-    route: currentRoute,
-    setRoute: handleSetCurrentRoute,
+    activeRoute,
+    setActiveRoute: handleSetActiveRoute,
   };
 };

@@ -7,7 +7,7 @@ import {
   useMemo,
 } from 'react';
 
-import type { Coordinates, Elevation } from '~/types';
+import type { RouteCoordinates } from '~/types';
 import { getLineFeature, getRouteLayer } from '~/utils/map';
 
 import { getRouteAnimationDuration } from '../utils';
@@ -15,63 +15,15 @@ import { getRouteAnimationDuration } from '../utils';
 interface UseMapRouteProps {
   isMapLoaded: boolean;
   mapRef: RefObject<Map>;
-  coordinates: Coordinates[];
-  elevations: Elevation[];
+  coordinates: RouteCoordinates[];
   routeIsAnimating: boolean;
   animateRouteRef: MutableRefObject<(() => void) | null>;
   setRouteIsAnimating: (routeIsAnimating: boolean) => void;
 }
 
-const ELEVATION_SPEED_FACTOR = 0.15;
-const MIN_SEGMENT_COST = 0.2;
-
-/**
- * Builds a normalized [0,1] cumulative timeline where uphill segments
- * occupy a larger portion of the timeline (slower animation) and
- * downhill segments occupy a smaller portion (faster animation).
- */
-const buildElevationTimeline = (elevations: Elevation[]): number[] => {
-  const n = elevations.length;
-  if (n < 2) return [0];
-
-  const cumulativeTime = new Array<number>(n);
-  cumulativeTime[0] = 0;
-
-  for (let i = 1; i < n; i++) {
-    const elevDiff = elevations[i].value - elevations[i - 1].value;
-    const cost = Math.max(
-      MIN_SEGMENT_COST,
-      1 + ELEVATION_SPEED_FACTOR * elevDiff,
-    );
-    cumulativeTime[i] = cumulativeTime[i - 1] + cost;
-  }
-
-  const total = cumulativeTime[n - 1];
-  for (let i = 0; i < n; i++) {
-    cumulativeTime[i] /= total;
-  }
-
-  return cumulativeTime;
-};
-
-const findTimelineIndex = (timeline: number[], target: number): number => {
-  let lo = 0;
-  let hi = timeline.length - 1;
-  while (lo < hi) {
-    const mid = (lo + hi + 1) >> 1;
-    if (timeline[mid] <= target) {
-      lo = mid;
-    } else {
-      hi = mid - 1;
-    }
-  }
-  return lo;
-};
-
 export const useMapRoute = ({
   isMapLoaded,
   coordinates,
-  elevations,
   routeIsAnimating,
   mapRef,
   animateRouteRef,
@@ -86,24 +38,27 @@ export const useMapRoute = ({
 
   // Draw route
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current) {
+    if (!isMapLoaded || !mapRef.current || !coordinates.length) {
       return;
     }
 
     const map = mapRef.current;
     let animationFrame: number | null = null;
-    isInitialLoadRef.current = true;
     const routeLayer = getRouteLayer();
 
-    const addRoute = () => {
-      if (map.getSource('route-source')) {
-        return;
+    const drawRoute = () => {
+      const source = map.getSource(routeLayer.source);
+      const routeLineFeature = getLineFeature(coordinates);
+
+      if (source) {
+        (source as mapboxgl.GeoJSONSource).setData(routeLineFeature);
+      } else {
+        map.addSource(routeLayer.source, {
+          type: 'geojson',
+          data: routeLineFeature,
+        });
+        map.addLayer(routeLayer);
       }
-      map.addSource('route-source', {
-        type: 'geojson',
-        data: getLineFeature(coordinates),
-      });
-      map.addLayer(getRouteLayer());
     };
 
     const clearRoute = () => {
@@ -119,14 +74,13 @@ export const useMapRoute = ({
       setRouteIsAnimating(true);
       clearRoute();
 
-      map.addSource('route-source', {
+      map.addSource(routeLayer.source, {
         type: 'geojson',
         data: getLineFeature(coordinates.slice(0, 1)),
       });
-      map.addLayer(getRouteLayer());
+      map.addLayer(routeLayer);
 
-      const source = map.getSource('route-source') as GeoJSONSource;
-      const timeline = buildElevationTimeline(elevations);
+      const source = map.getSource(routeLayer.source) as GeoJSONSource;
       let startTime: number | null = null;
 
       const step = (timestamp: number) => {
@@ -137,7 +91,7 @@ export const useMapRoute = ({
           (timestamp - startTime) / animationDuration,
           1,
         );
-        const index = Math.max(2, findTimelineIndex(timeline, progress));
+        const index = Math.max(2, Math.ceil(progress * coordinates.length));
 
         source.setData(getLineFeature(coordinates.slice(0, index)));
 
@@ -151,19 +105,21 @@ export const useMapRoute = ({
 
       animationFrame = requestAnimationFrame(step);
     };
+    animateRouteRef.current = animateRoute;
 
     const onStyleLoad = () => {
       if (isInitialLoadRef.current) {
         isInitialLoadRef.current = false;
         if (isVisibleRef.current) {
+          // The iframe is visible when the style loads for the first time
           animateRoute();
         }
       } else {
-        addRoute();
+        // When switching styles
+        drawRoute();
       }
     };
     map.on('style.load', onStyleLoad);
-    animateRouteRef.current = animateRoute;
 
     const handleMapVisibility = () => {
       if (
@@ -172,12 +128,14 @@ export const useMapRoute = ({
         map.isStyleLoaded()
       ) {
         isVisibleRef.current = true;
+        // The iframe is scrolled into view
         animateRoute();
       }
     };
     document.addEventListener('visibilitychange', handleMapVisibility);
 
     return () => {
+      isInitialLoadRef.current = true;
       animateRouteRef.current = null;
       if (animationFrame !== null) {
         cancelAnimationFrame(animationFrame);
@@ -188,7 +146,6 @@ export const useMapRoute = ({
   }, [
     isMapLoaded,
     coordinates,
-    elevations,
     animationDuration,
     setRouteIsAnimating,
     mapRef,

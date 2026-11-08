@@ -2,8 +2,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 
-import { BoundingBox, Bounds, PointOfInterest, Waypoint } from '~/types';
+import { BoundingBox, PointOfInterest, Waypoint } from '~/types';
 import { formatBounds } from '~/utils/map';
+import { DEFAULT_MAP_BOUNDS } from '~/constants/map';
 
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { PoiCoordinatesToolbar } from './components/PoiCoordinatesToolbar';
@@ -45,12 +46,6 @@ type EditorMapProps = MapState &
     onEditPointOfInterest: (pointOfInterestId: string) => void;
     onEditWaypoint: (waypointId: string) => void;
   };
-
-// Reykjavík
-export const DEFAULT_EDITOR_BOUNDS: Bounds = [
-  [-22.17, 64.02],
-  [-21.52, 64.21],
-];
 
 export const EditorMap = ({
   initialBoundingBox,
@@ -114,7 +109,7 @@ export const EditorMap = ({
     () =>
       initialBoundingBox
         ? formatBounds(initialBoundingBox)
-        : DEFAULT_EDITOR_BOUNDS,
+        : DEFAULT_MAP_BOUNDS,
     [initialBoundingBox],
   );
   const { isSmallScreen } = useMediaQuery();

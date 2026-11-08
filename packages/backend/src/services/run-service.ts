@@ -76,7 +76,7 @@ export class RunService {
       updatedAt: getCurrentTimestamp(),
     };
 
-    return runRepository.update(runId, runToUpdate);
+    return runRepository.update(runId, runToUpdate, true);
   }
 
   async deleteRun(runId: string, userId: string): Promise<boolean> {

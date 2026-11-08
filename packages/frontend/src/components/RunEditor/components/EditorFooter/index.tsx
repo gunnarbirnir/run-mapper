@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { Button, Dialog, Tooltip } from '~/primitives';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { cn } from '~/utils';
-import { EditorRun } from '~/types';
+import { EditorRun, PublicRoute } from '~/types';
 import { EmbedRunDialog } from '~/components/EmbedRunDialog';
 
 interface EditorFooterProps {
   existingRun?: EditorRun;
+  currentRoutes: PublicRoute[];
   hasMadeChanges: boolean;
   isUpdatingPublicStatus: boolean;
   showPublicDisplayPreview: boolean;
@@ -19,6 +20,7 @@ interface EditorFooterProps {
 
 export const EditorFooter = ({
   existingRun,
+  currentRoutes,
   hasMadeChanges,
   isUpdatingPublicStatus,
   showPublicDisplayPreview,
@@ -37,7 +39,8 @@ export const EditorFooter = ({
     !isSmallScreen &&
     !(isMediumScreen && isRootPanelOpen);
   const disablePreview = !showPublicDisplayPreview && hasMadeChanges;
-  const disablePublish = !existingRun;
+  const hasNoRoutes = currentRoutes.length === 0;
+  const disablePublish = !existingRun || hasNoRoutes;
 
   return (
     <>
@@ -87,7 +90,11 @@ export const EditorFooter = ({
         )}
         <Tooltip
           disabled={!disablePublish}
-          label="Save run before publishing"
+          label={
+            hasNoRoutes
+              ? 'Add a route before publishing'
+              : 'Save run before publishing'
+          }
           triggerClassName={cn({ 'w-full': isSmallScreen })}
         >
           <Button

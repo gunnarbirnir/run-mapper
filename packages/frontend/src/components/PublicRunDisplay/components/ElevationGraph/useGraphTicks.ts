@@ -1,21 +1,23 @@
-import { useMemo } from 'react';
-
-import type { Elevation } from '~/types';
+import type { RouteCoordinates } from '~/types';
 import { useWindowDimensions } from '~/hooks/useWindowDimensions';
-import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
-import { calculateMaxElevation, calculateMinElevation } from '~/utils/route';
+
+import { useElevationGraphHeight } from '../../hooks/useElevationGraphHeight';
 
 interface UseGraphTicksProps {
-  elevationData: Elevation[];
   isExpanded: boolean;
+  coordinates: RouteCoordinates[];
+  maxElevation: number;
+  minElevation: number;
 }
 
 const MIN_X_TICK_WIDTH = 80;
 const MIN_Y_TICK_HEIGHT = 40;
 
 export const useGraphTicks = ({
-  elevationData,
   isExpanded,
+  coordinates,
+  maxElevation,
+  minElevation,
 }: UseGraphTicksProps): {
   xTicks: number[];
   lastDistance: number;
@@ -24,8 +26,8 @@ export const useGraphTicks = ({
   const { width: windowWidth } = useWindowDimensions();
   const { height: graphHeight } = useElevationGraphHeight(isExpanded);
   const lastDistance =
-    elevationData.length > 0
-      ? elevationData[elevationData.length - 1].distance
+    coordinates.length > 0
+      ? (coordinates[coordinates.length - 1].distance ?? 0)
       : 0;
   const lastKm = Math.floor(lastDistance);
   const maxXTicks = Math.floor(windowWidth / MIN_X_TICK_WIDTH);
@@ -37,28 +39,14 @@ export const useGraphTicks = ({
     xTicks.push(tick);
   }
 
-  const maxElevation = useMemo(
-    () =>
-      calculateMaxElevation(
-        elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }],
-      ),
-    [elevationData],
-  );
-  const minElevation = useMemo(
-    () =>
-      calculateMinElevation(
-        elevationData.length > 0 ? elevationData : [{ value: 0, distance: 0 }],
-      ),
-    [elevationData],
-  );
-  const yStepSize = maxElevation.value - minElevation.value > 50 ? 10 : 5;
-  const yMax = Math.ceil(maxElevation.value / yStepSize) * yStepSize;
-  let yMin = Math.floor(minElevation.value / yStepSize) * yStepSize;
+  const yStepSize = maxElevation - minElevation > 50 ? 10 : 5;
+  const yMax = Math.ceil(maxElevation / yStepSize) * yStepSize;
+  let yMin = Math.floor(minElevation / yStepSize) * yStepSize;
   yMin = yMin < 0 ? yMin : 0;
 
   const yRange = yMax - yMin;
-  const maxTicks = Math.floor(graphHeight / MIN_Y_TICK_HEIGHT);
-  const minYTickStep = yRange / Math.max(maxTicks - 1, 1);
+  const maxYTicks = Math.floor(graphHeight / MIN_Y_TICK_HEIGHT);
+  const minYTickStep = yRange / Math.max(maxYTicks - 1, 1);
 
   // Find appropriate tick step (5, 10, or multiple of 10)
   let yTickStep: number;

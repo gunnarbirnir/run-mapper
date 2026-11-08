@@ -4,13 +4,13 @@ import { useCallback, useMemo, useRef } from 'react';
 
 import { formatBounds } from '~/utils/map';
 import { getRunBasePath } from '~/utils';
+import { DEFAULT_MAP_BOUNDS } from '~/constants/map';
 
 import { PoweredByLabel } from './components/PoweredByLabel';
 import { ActionButtonsContainer } from './components/ActionButtonsContainer';
 import { useActiveMarker } from './hooks/useActiveMarker';
 import { useFitToInitialBounds } from './hooks/useFitToInitialBounds';
 import { useLoadMap } from './hooks/useLoadMap';
-import { useMapHotKeys } from './hooks/useMapHotKeys';
 import { useMapRoute } from './hooks/useMapRoute';
 import { useMapState } from './hooks/useMapState';
 import { useMapStyle } from './hooks/useMapStyle';
@@ -18,41 +18,48 @@ import { useWaypoints } from './hooks/useWaypoints';
 import { usePointsOfInterest } from './hooks/usePointsOfInterest';
 import type { RouteMapProps } from './types';
 
-// Can be moved into PublicRunDisplay folder
 export const RunRouteMap = ({
   runId,
   runSlug,
-  routeId,
-  boundingBox,
-  coordinates,
-  waypoints,
+  isFullscreen,
+  isPreview,
+  route,
   pointsOfInterest,
-  elevations,
   activeWaypoint,
   activePointOfInterest,
   hideActiveMarker = false,
+  settings: { mapStyle, showWaypoints, showPointsOfInterest },
   routeIsAnimating,
   isMapLoaded,
   isAtInitialBounds,
-  isFullscreen,
-  isPreview,
   setActiveIndexRef,
   animateRouteRef,
   fitToInitialBoundsRef,
   isResettingBoundsRef,
-  settings: { mapStyle, showWaypoints, showPointsOfInterest },
   setIsMapLoaded,
   setIsAtInitialBounds,
   setRouteIsAnimating,
   onWaypointClick,
   onPointOfInterestClick,
   onReset,
-  animateRoute,
   fitToInitialBounds,
 }: RouteMapProps) => {
-  const bounds = useMemo(() => formatBounds(boundingBox), [boundingBox]);
   const mapRef = useRef<Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  const routeId = useMemo(() => route?.id, [route?.id]);
+  const coordinates = useMemo(
+    () => route?.coordinates ?? [],
+    [route?.coordinates],
+  );
+  const bounds = useMemo(
+    () =>
+      route?.boundingBox
+        ? formatBounds(route?.boundingBox)
+        : DEFAULT_MAP_BOUNDS,
+    [route?.boundingBox],
+  );
+  const waypoints = useMemo(() => route?.waypoints ?? [], [route?.waypoints]);
 
   useLoadMap({
     bounds,
@@ -69,10 +76,18 @@ export const RunRouteMap = ({
     mapStyle,
   });
 
+  useFitToInitialBounds({
+    isMapLoaded,
+    bounds,
+    setIsAtInitialBounds,
+    mapRef,
+    fitToInitialBoundsRef,
+    isResettingBoundsRef,
+  });
+
   useMapRoute({
     isMapLoaded,
     coordinates,
-    elevations,
     routeIsAnimating,
     mapRef,
     animateRouteRef,
@@ -110,21 +125,6 @@ export const RunRouteMap = ({
     fitToInitialBounds,
   });
 
-  useFitToInitialBounds({
-    isMapLoaded,
-    bounds,
-    setIsAtInitialBounds,
-    mapRef,
-    fitToInitialBoundsRef,
-    isResettingBoundsRef,
-  });
-
-  const playRoute = useCallback(() => {
-    fitToInitialBounds();
-    onReset();
-    animateRoute();
-  }, [fitToInitialBounds, onReset, animateRoute]);
-
   const resetRoute = useCallback(() => {
     fitToInitialBounds();
     onReset();
@@ -135,17 +135,11 @@ export const RunRouteMap = ({
       { id: runId, publicSlug: runSlug },
       isPreview,
     );
-    window.open(`${basePath}?isFullscreen=true&routeId=${routeId}`, '_blank');
+    window.open(
+      `${basePath}?isFullscreen=true${routeId ? `&routeId=${routeId}` : ''}`,
+      '_blank',
+    );
   }, [runId, runSlug, routeId, isPreview]);
-
-  useMapHotKeys({
-    routeIsAnimating,
-    isAtInitialBounds,
-    isFullscreen,
-    playRoute,
-    resetRoute,
-    openFullscreen,
-  });
 
   return (
     <div className="relative h-full w-full">

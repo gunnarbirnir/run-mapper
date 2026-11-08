@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { Text, RoundButton, Icon, Tooltip } from '~/primitives';
+import { Text, TinyButton, Tooltip } from '~/primitives';
 import { DEFAULT_EASING, DEFAULT_FADE_IN_DURATION } from '~/constants';
 import { cn } from '~/utils';
 
@@ -9,6 +9,7 @@ interface ItemsSectionProps {
   title: string;
   emptyText: string;
   showEmptyText?: boolean;
+  buttonText?: string;
   buttonLabel?: string;
   children?: ReactNode;
   className?: string;
@@ -18,6 +19,7 @@ interface ItemsSectionProps {
 
 export const ItemsSection = ({
   title,
+  buttonText = 'Add',
   buttonLabel,
   emptyText,
   showEmptyText,
@@ -34,13 +36,9 @@ export const ItemsSection = ({
         <Text element="h3">{title}</Text>
         {onAddClick && buttonLabel && (
           <Tooltip label={buttonLabel}>
-            <RoundButton
-              className="size-6"
-              onClick={onAddClick}
-              touchablePadding={8}
-            >
-              <Icon name="plus" className="size-4" />
-            </RoundButton>
+            <TinyButton icon="plus" touchablePadding={8} onClick={onAddClick}>
+              {buttonText}
+            </TinyButton>
           </Tooltip>
         )}
       </div>

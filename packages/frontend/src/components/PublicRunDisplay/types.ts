@@ -3,8 +3,8 @@ import type { SetStateAction } from 'react';
 import type { PublicRun } from '~/types';
 
 export interface PublicRunDisplayProps {
-  routeId: string;
   run: PublicRun;
+  initialRouteId?: string;
   isFullscreen?: boolean;
   isPreview?: boolean;
 }

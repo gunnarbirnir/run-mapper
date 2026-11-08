@@ -101,7 +101,6 @@ export const RootPanel = ({
     useStore(rootForm.store, (state) => state.isDefaultValue) &&
     !hasSubmittedChanges;
   const isSubmitting = useStore(rootForm.store, (state) => state.isSubmitting);
-  const canSubmit = useStore(rootForm.store, (state) => state.canSubmit);
   const isCreatingRun = isSubmitting && !isEditing;
 
   const {
@@ -171,7 +170,7 @@ export const RootPanel = ({
         <ItemsSection
           title="Routes"
           buttonLabel="Add route"
-          emptyText="Your run can have multiple routes, one for each distance. Create the first one by clicking the plus."
+          emptyText="Your run can have multiple routes, one for each distance. Create the first one by clicking the button above."
           onAddClick={onAddRoute}
         >
           {currentRoutes.length > 0 ? (
@@ -220,7 +219,7 @@ export const RootPanel = ({
         <ItemsSection
           title="Points of interest"
           buttonLabel="Add POI"
-          emptyText="Points of interest are notable locations related to your event. Create the first one by clicking the plus."
+          emptyText="Points of interest are notable locations related to your event. Create the first one by clicking the button above."
           onAddClick={onAddPointOfInterest}
         >
           {currentPointsOfInterest.length > 0 ? (
@@ -257,7 +256,7 @@ export const RootPanel = ({
           <Button
             className="w-full"
             type="submit"
-            disabled={!canSubmit || isDefaultValue}
+            disabled={isDefaultValue}
             isLoading={isSubmitting}
           >
             {isEditing ? 'Save run' : 'Create run'}

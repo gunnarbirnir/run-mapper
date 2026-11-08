@@ -1,36 +1,27 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { RefObject, useMemo, useEffect } from 'react';
-import { useHotkey } from '@tanstack/react-hotkeys';
+import { RefObject, useEffect, useMemo } from 'react';
 
-import { DEFAULT_EASING, WIDGET_ANIMATION_DURATION } from '~/constants';
-import { useElevationGraphHeight } from '~/hooks/useElevationGraphHeight';
+import { DEFAULT_EASING } from '~/constants';
 import { useId } from '~/hooks/useId';
 import { Icon, Tooltip } from '~/primitives';
-import type {
-  Coordinates,
-  Elevation,
-  PointOfInterest,
-  PublicRoute,
-  Waypoint,
-} from '~/types';
+import type { PointOfInterest, PublicRoute } from '~/types';
 import { convertRemToPixels, spacingPx } from '~/utils';
-import { getEndWaypoint, getStartWaypoint } from '~/utils/route';
+import { isInnerWaypoint } from '~/utils/route';
 
-import { OptionButton } from '../OptionButton';
-import { RouteDropdown } from '../RouteDropdown';
-import { SettingsDrawer } from '../SettingsDrawer';
-import { OverlayWidgets } from './OverlayWidgets';
-import { WaypointsButtons } from '../WaypointsButtons';
+import { WIDGET_ANIMATION_DURATION } from '../../constants';
+import { useElevationGraphHeight } from '../../hooks/useElevationGraphHeight';
 import type { RunDisplayReducerState } from '../../hooks/useRunDisplayState';
 import type { RunDisplaySettings } from '../../hooks/useSettings';
+import { OptionButton } from '../OptionButton';
 import { PointsOfInterestDrawer } from '../PointsOfInterestDrawer';
+import { RouteDropdown } from '../RouteDropdown';
+import { SettingsDrawer } from '../SettingsDrawer';
+import { WaypointsToolbar } from '../WaypointsToolbar';
+import { OverlayWidgets } from './OverlayWidgets';
 
 type RouteOverlayProps = RunDisplayReducerState & {
   routes: PublicRoute[];
-  routeId: string;
-  coordinates: Coordinates[];
-  elevations: Elevation[];
-  waypoints: Waypoint[];
+  activeRoute: PublicRoute | null;
   pointsOfInterest: PointOfInterest[];
   publicRunDisplayRef: RefObject<HTMLDivElement>;
   settings: RunDisplaySettings;
@@ -38,26 +29,23 @@ type RouteOverlayProps = RunDisplayReducerState & {
 };
 
 export const RouteOverlay = ({
+  routes,
+  activeRoute,
+  pointsOfInterest,
+  settings,
   activeWidget,
   openWidget,
   expandedWidget,
   activeDrawer,
-  routes,
-  routeId,
-  coordinates,
-  elevations,
-  publicRunDisplayRef,
-  waypoints,
-  pointsOfInterest,
   activeWaypoint,
-  settings,
+  setActiveRoute,
   setActiveWidget,
   onWidgetAnimationFinished,
   setActiveDrawer,
   setActiveWaypoint,
   setActivePointOfInterest,
-  setActiveRoute,
   resetState,
+  publicRunDisplayRef,
 }: RouteOverlayProps) => {
   const elevationWidgetActive = activeWidget === 'elevation';
   const { height: graphHeight } = useElevationGraphHeight(
@@ -76,28 +64,19 @@ export const RouteOverlay = ({
       : activeDrawer === 'points-of-interest'
         ? pointsOfInterestDrawerWidth
         : null;
-  const extendedWaypoints = useMemo(
-    () =>
-      coordinates.length > 0
-        ? [
-            getStartWaypoint(coordinates),
-            ...waypoints,
-            getEndWaypoint(coordinates),
-          ]
-        : [],
-    [coordinates, waypoints],
-  );
   let optionsButtonIndex = 0;
-  const startWaypointId = getStartWaypoint(coordinates).id;
+
+  const routeId = activeRoute?.id;
+  const waypoints = useMemo(() => activeRoute?.waypoints ?? [], [activeRoute]);
+  const hasPointsOfInterest = pointsOfInterest.length > 0;
+  const hasWaypoints = waypoints.length > 0;
+  const hasInnerWaypoints = waypoints.filter(isInnerWaypoint).length > 0;
+  const hasAnyPoiOrWaypoints = hasPointsOfInterest || hasWaypoints;
 
   // Reset state when route changes
   useEffect(() => {
     resetState();
   }, [routeId, resetState]);
-
-  useHotkey('W', () =>
-    setActiveWaypoint(activeWaypoint ? null : startWaypointId),
-  );
 
   return (
     <div className="pointer-events-none absolute isolate z-100 h-full w-full overflow-hidden">
@@ -107,8 +86,9 @@ export const RouteOverlay = ({
         openWidget={openWidget}
         expandedWidget={expandedWidget}
         visibleWidgets={settings.visibleWidgets}
-        coordinates={coordinates}
-        elevations={elevations}
+        distance={activeRoute?.distance ?? 0}
+        displayDistance={activeRoute?.displayDistance}
+        elevationStats={activeRoute?.elevationStats}
         setActiveWidget={setActiveWidget}
       />
 
@@ -129,17 +109,19 @@ export const RouteOverlay = ({
             <Icon name="settings" className="size-7.5" />
           )}
         </OptionButton>
-        <OptionButton
-          index={optionsButtonIndex++}
-          tooltipLabel="Points of interest"
-          buttonSize={optionItemSize}
-          openDrawerSize={openDrawerSize}
-          isInBackground={drawerIsOpen}
-          routeDropdownIsVisible={routes.length > 1}
-          onClick={() => setActiveDrawer('points-of-interest')}
-        >
-          <Icon name="location" className="size-6.5" />
-        </OptionButton>
+        {hasAnyPoiOrWaypoints && (
+          <OptionButton
+            index={optionsButtonIndex++}
+            tooltipLabel="Points of interest"
+            buttonSize={optionItemSize}
+            openDrawerSize={openDrawerSize}
+            isInBackground={drawerIsOpen}
+            routeDropdownIsVisible={routes.length > 1}
+            onClick={() => setActiveDrawer('points-of-interest')}
+          >
+            <Icon name="location" className="size-6.5" />
+          </OptionButton>
+        )}
       </Tooltip.Provider>
 
       <AnimatePresence>
@@ -156,8 +138,8 @@ export const RouteOverlay = ({
 
       <AnimatePresence>
         {activeWaypoint !== null && (
-          <WaypointsButtons
-            waypoints={extendedWaypoints}
+          <WaypointsToolbar
+            waypoints={waypoints}
             activeWaypoint={activeWaypoint}
             setActiveWaypoint={setActiveWaypoint}
           />
@@ -168,28 +150,35 @@ export const RouteOverlay = ({
         settings={settings}
         width={settingsDrawerWidth}
         isOpen={activeDrawer === 'settings'}
-        onOpen={() => setActiveDrawer('settings')}
+        hasInnerWaypoints={hasInnerWaypoints}
+        hasPointsOfInterest={hasPointsOfInterest}
         onClose={() => setActiveDrawer(null)}
       />
-      <PointsOfInterestDrawer
-        width={pointsOfInterestDrawerWidth}
-        isOpen={activeDrawer === 'points-of-interest'}
-        pointsOfInterest={pointsOfInterest}
-        waypoints={extendedWaypoints}
-        showPointsOfInterest={settings.showPointsOfInterest}
-        showWaypoints={settings.showWaypoints}
-        onOpen={() => setActiveDrawer('points-of-interest')}
-        onClose={() => setActiveDrawer(null)}
-        setActivePointOfInterest={setActivePointOfInterest}
-        setActiveWaypoint={setActiveWaypoint}
-        setShowPointsOfInterest={settings.toggleShowPointsOfInterest}
-        setShowWaypoints={settings.toggleShowWaypoints}
-      />
+      {hasAnyPoiOrWaypoints && (
+        <PointsOfInterestDrawer
+          width={pointsOfInterestDrawerWidth}
+          isOpen={activeDrawer === 'points-of-interest'}
+          pointsOfInterest={pointsOfInterest}
+          waypoints={waypoints}
+          showPointsOfInterest={settings.showPointsOfInterest}
+          showWaypoints={settings.showWaypoints}
+          hasPointsOfInterest={hasPointsOfInterest}
+          hasWaypoints={hasWaypoints}
+          onClose={() => setActiveDrawer(null)}
+          setActivePointOfInterest={setActivePointOfInterest}
+          setActiveWaypoint={setActiveWaypoint}
+          setShowPointsOfInterest={settings.toggleShowPointsOfInterest}
+          setShowWaypoints={settings.toggleShowWaypoints}
+        />
+      )}
 
       <motion.div
         id={overlayBackgroundId}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: activeWidget ? 1 : 0 }}
+        initial={{ opacity: 0, bottom: 0 }}
+        animate={{
+          opacity: activeWidget ? 1 : 0,
+          bottom: openWidget === 'elevation' ? graphHeight : 0,
+        }}
         transition={{
           duration: WIDGET_ANIMATION_DURATION,
           ease: DEFAULT_EASING,
@@ -197,7 +186,6 @@ export const RouteOverlay = ({
         className="absolute top-0 right-0 left-0 z-100 bg-black/50"
         style={{
           pointerEvents: activeWidget ? 'auto' : 'none',
-          bottom: openWidget === 'elevation' ? graphHeight : 0,
         }}
         onClick={activeWidget ? () => setActiveWidget(null) : undefined}
         onAnimationComplete={onWidgetAnimationFinished}

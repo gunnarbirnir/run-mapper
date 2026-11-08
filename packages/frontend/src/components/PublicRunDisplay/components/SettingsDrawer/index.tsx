@@ -1,6 +1,3 @@
-import { useHotkey } from '@tanstack/react-hotkeys';
-
-import { PUBLIC_RUN_DISPLAY_MIN_WIDTH } from '~/constants';
 import { Drawer, Radio } from '~/primitives';
 import type { MapStyle } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
@@ -9,12 +6,17 @@ import { SectionLabel } from './SectionLabel';
 import { SettingsRadio } from './SettingsRadio';
 import { VisibleToggle } from './VisibleToggle';
 import type { RunDisplaySettings } from '../../hooks/useSettings';
+import {
+  PUBLIC_RUN_DISPLAY_MIN_WIDTH,
+  DRAWER_ANIMATION_DURATION,
+} from '../../constants';
 
 interface SettingsDrawerProps {
   settings: RunDisplaySettings;
   isOpen: boolean;
   width: number;
-  onOpen: () => void;
+  hasInnerWaypoints: boolean;
+  hasPointsOfInterest: boolean;
   onClose: () => void;
 }
 
@@ -33,18 +35,11 @@ export const SettingsDrawer = ({
   },
   isOpen,
   width,
-  onOpen,
+  hasInnerWaypoints,
+  hasPointsOfInterest,
   onClose,
 }: SettingsDrawerProps) => {
   const { isSmallScreen } = useMediaQuery();
-
-  useHotkey('S', () => {
-    if (isOpen) {
-      onClose();
-    } else {
-      onOpen();
-    }
-  });
 
   return (
     <Drawer
@@ -55,6 +50,7 @@ export const SettingsDrawer = ({
       className="pointer-events-auto z-20"
       titleSectionClassName="mb-0"
       hideCloseButton={!isSmallScreen}
+      animationDuration={DRAWER_ANIMATION_DURATION}
       onClose={onClose}
     >
       <SectionLabel>Widgets</SectionLabel>
@@ -72,21 +68,29 @@ export const SettingsDrawer = ({
       >
         Elevation
       </VisibleToggle>
-      <SectionLabel>Map</SectionLabel>
-      <VisibleToggle
-        isVisible={showPointsOfInterest}
-        onToggle={toggleShowPointsOfInterest}
-        tabIndex={TAB_INDEX}
-      >
-        Points of interest
-      </VisibleToggle>
-      <VisibleToggle
-        isVisible={showWaypoints}
-        onToggle={toggleShowWaypoints}
-        tabIndex={TAB_INDEX}
-      >
-        Waypoints
-      </VisibleToggle>
+      {(hasPointsOfInterest || hasInnerWaypoints) && (
+        <>
+          <SectionLabel>Map</SectionLabel>
+          {hasPointsOfInterest && (
+            <VisibleToggle
+              isVisible={showPointsOfInterest}
+              onToggle={toggleShowPointsOfInterest}
+              tabIndex={TAB_INDEX}
+            >
+              Points of interest
+            </VisibleToggle>
+          )}
+          {hasInnerWaypoints && (
+            <VisibleToggle
+              isVisible={showWaypoints}
+              onToggle={toggleShowWaypoints}
+              tabIndex={TAB_INDEX}
+            >
+              Waypoints
+            </VisibleToggle>
+          )}
+        </>
+      )}
       <SectionLabel>Map style</SectionLabel>
       <Radio.Group
         value={mapStyle}

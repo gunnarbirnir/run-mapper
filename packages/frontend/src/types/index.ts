@@ -5,7 +5,6 @@ export type CoordinatesWithId = Coordinates & { id: string };
 export type BoundingBox = [Coordinates, Coordinates];
 // What Mapbox uses
 export type Bounds = [[number, number], [number, number]];
-export type Elevation = { value: number; distance: number };
 export type NoId<T> = Omit<T, 'id'>;
 
 export type RouteCoordinates = CoordinatesWithId & {

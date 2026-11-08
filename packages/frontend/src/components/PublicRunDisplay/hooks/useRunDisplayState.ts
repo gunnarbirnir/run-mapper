@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo } from 'react';
+import { useReducer, useCallback, useMemo, useEffect } from 'react';
 
 import type { WidgetType, DrawerType } from '../types';
 
@@ -133,7 +133,7 @@ const runDisplayReducer = (
   }
 };
 
-export const useRunDisplayState = () => {
+export const useRunDisplayState = (routeId?: string) => {
   const [state, dispatch] = useReducer(runDisplayReducer, initialState);
 
   const setActiveWidget = useCallback(
@@ -177,6 +177,10 @@ export const useRunDisplayState = () => {
   const resetState = useCallback(() => {
     dispatch({ type: 'RESET_STATE' });
   }, [dispatch]);
+
+  useEffect(() => {
+    resetState();
+  }, [routeId, resetState]);
 
   return useMemo(
     () => ({

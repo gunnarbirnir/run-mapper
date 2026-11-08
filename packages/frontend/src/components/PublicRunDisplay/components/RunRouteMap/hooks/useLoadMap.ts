@@ -5,8 +5,8 @@ import type { Bounds, MapStyle } from '~/types';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import {
   MAP_STYLES,
-  FIT_INITIAL_BOUNDS_DURATION,
-  BOUNDS_PADDING,
+  BOUNDS_MAX_ZOOM,
+  FIT_BOUNDS_CONFIG,
 } from '~/constants/map';
 
 interface UseLoadMapProps {
@@ -34,20 +34,18 @@ export const useLoadMap = ({
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current as HTMLElement,
       bounds: bounds,
-      // Commented out for small animation effect
-      /* fitBoundsOptions: {
-        padding: BOUNDS_PADDING,
-      }, */
+      fitBoundsOptions: {
+        // Commented out for small animation effect
+        // padding: BOUNDS_PADDING,
+        maxZoom: BOUNDS_MAX_ZOOM,
+      },
       style: MAP_STYLES[mapStyle],
       attributionControl: false,
       logoPosition: isSmallScreen ? 'left' : 'bottom',
     });
     mapRef.current.on('load', () => {
       setIsMapLoaded(true);
-      mapRef.current?.fitBounds(bounds, {
-        duration: FIT_INITIAL_BOUNDS_DURATION,
-        padding: BOUNDS_PADDING,
-      });
+      mapRef.current?.fitBounds(bounds, FIT_BOUNDS_CONFIG);
       isResettingBoundsRef.current = true;
     });
     mapRef.current.addControl(

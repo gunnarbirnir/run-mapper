@@ -1,93 +1,62 @@
-import { useMemo } from 'react';
-import { useHotkey } from '@tanstack/react-hotkeys';
-
-import type { Elevation } from '~/types';
-import { ListItem } from '~/primitives';
-import {
-  calculateElevationGain,
-  calculateElevationLoss,
-  calculateMaxElevation,
-  calculateMinElevation,
-} from '~/utils/route';
+import type { ElevationStats } from '~/types';
 
 import type { WidgetBaseProps } from '../../types';
 import { WidgetContainer } from '../WidgetContainer';
+import { ListItem } from './ListItem';
 
 export interface ElevationWidgetProps extends WidgetBaseProps {
-  elevations: Elevation[];
+  elevationStats?: ElevationStats;
 }
 
 export const ElevationWidget = ({
-  elevations,
+  elevationStats,
   ...props
 }: ElevationWidgetProps) => {
-  useHotkey('E', () => {
-    if (props.isOpen) {
-      props.onClose?.();
-    } else {
-      props.onOpen?.();
-    }
-  });
-
-  const elevationGain = useMemo(
-    () => calculateElevationGain(elevations),
-    [elevations],
-  );
-  const elevationLoss = useMemo(
-    () => calculateElevationLoss(elevations),
-    [elevations],
-  );
-  const maxElevation = useMemo(
-    () => calculateMaxElevation(elevations),
-    [elevations],
-  );
-  const minElevation = useMemo(
-    () => calculateMinElevation(elevations),
-    [elevations],
-  );
-
-  const formattedElevation = `${Math.round(elevationGain)} m`;
-  const formattedElevationLoss = `${Math.round(elevationLoss)} m`;
-  const formattedMaxElevation = `${Math.round(maxElevation.value)} m`;
-  const formattedMinElevation = `${Math.round(minElevation.value)} m`;
-  const formattedNetElevation = `${Math.round(elevationGain) - Math.round(elevationLoss)} m`;
+  const {
+    elevationGain = 0,
+    elevationLoss = 0,
+    netElevation = 0,
+    maxElevation = 0,
+    minElevation = 0,
+  } = elevationStats ?? {};
+  const formatStat = (stat: number) => `${Math.round(stat)} m`;
 
   return (
     <WidgetContainer
       {...props}
       title="Elevation"
-      text={formattedElevation}
-      showGraphWhileActive
+      text={formatStat(elevationGain)}
       icon="mountain"
       iconClassName="translate-y-[-4px]"
+      showGraphWhileActive
     >
       <div className="flex flex-col items-center">
         <ListItem.Container className="w-full max-w-lg px-4">
           <ListItem
             label="Elevation gain"
-            value={formattedElevation}
+            value={formatStat(elevationGain)}
             icon="arrowTrendingUp"
             iconClassName="size-5.5"
           />
           <ListItem
             label="Elevation loss"
-            value={formattedElevationLoss}
+            value={formatStat(elevationLoss)}
             icon="arrowTrendingDown"
             iconClassName="size-5.5"
           />
           <ListItem
             label="Net elevation"
-            value={formattedNetElevation}
+            value={formatStat(netElevation)}
             icon="arrowUpDown"
           />
           <ListItem
             label="Max elevation"
-            value={formattedMaxElevation}
+            value={formatStat(maxElevation)}
             icon="doubleArrow"
           />
           <ListItem
             label="Min elevation"
-            value={formattedMinElevation}
+            value={formatStat(minElevation)}
             icon="doubleArrow"
             iconClassName="rotate-180"
           />

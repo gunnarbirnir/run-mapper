@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 
 import { RoundButton, Tooltip } from '~/primitives';
 import { spacingPx, cn } from '~/utils';
-import { DEFAULT_EASING, DRAWER_ANIMATION_DURATION } from '~/constants';
+import { DEFAULT_EASING } from '~/constants';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useId } from '~/hooks/useId';
+
+import { DRAWER_ANIMATION_DURATION } from '../../constants';
 
 interface OptionButtonProps {
   id?: string;

@@ -5,6 +5,8 @@ import { Button as BaseUiButton } from '@base-ui/react/button';
 import { cn } from '~/utils';
 
 import { RoundButton } from './RoundButton';
+import { TinyButton } from './TinyButton';
+import { TextButton } from './TextButton';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { type ButtonColor, getColorClassName } from './utils';
 
@@ -77,4 +79,4 @@ export const Button = ({
   );
 };
 
-export { RoundButton };
+export { RoundButton, TinyButton, TextButton };
