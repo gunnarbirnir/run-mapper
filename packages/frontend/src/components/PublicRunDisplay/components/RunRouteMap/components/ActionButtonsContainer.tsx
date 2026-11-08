@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 import { Icon, Tooltip } from '~/primitives';
 import { useMediaQuery } from '~/hooks/useMediaQuery';
 import { useMapZoom } from '~/hooks/useMapZoom';
-import { MapActionButton } from '~/components/MapActionButton';
+import { MapActionButton, PlusMinusButton } from '~/components/MapActionButton';
 
 interface ActionButtonsContainerProps {
   isMapLoaded: boolean;
@@ -45,32 +45,27 @@ export const ActionButtonsContainer = ({
         <Icon name="reset" className="size-4.5" />
       </MapActionButton>
       {!isSmallScreen && (
-        <>
-          <MapActionButton
-            index={mapActionButtonIndex++}
-            tooltipLabel="Zoom in"
-            tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
-            onClick={zoomIn}
-            disabled={!canZoomIn}
-          >
-            <Icon name="plus" className="size-4.5" />
-          </MapActionButton>
-          <MapActionButton
-            index={mapActionButtonIndex++}
-            tooltipLabel="Zoom out"
-            tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
-            onClick={zoomOut}
-            disabled={!canZoomOut}
-          >
-            <Icon name="minus" className="size-4.5" />
-          </MapActionButton>
-        </>
+        <PlusMinusButton
+          index={mapActionButtonIndex++}
+          tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
+          plus={{
+            tooltipLabel: 'Zoom in',
+            onClick: zoomIn,
+            disabled: !canZoomIn,
+          }}
+          minus={{
+            tooltipLabel: 'Zoom out',
+            onClick: zoomOut,
+            disabled: !canZoomOut,
+          }}
+        />
       )}
       {!isFullscreen && (
         <MapActionButton
           index={mapActionButtonIndex++}
           tooltipLabel="Fullscreen"
           tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
+          combinedButtonsCount={1}
           onClick={openFullscreen}
         >
           <Icon name="externalLink" className="size-5" />

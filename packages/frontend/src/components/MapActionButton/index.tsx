@@ -3,13 +3,16 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { RoundButton, Tooltip } from '~/primitives';
 import { cn, spacingPx } from '~/utils';
 
-interface MapActionButtonProps {
+import { PlusMinusButton } from './PlusMinusButton';
+
+export interface MapActionButtonProps {
   index: number;
   tooltipLabel: string;
   disabled?: boolean;
   children: ReactNode;
   buttonClassName?: string;
   tabIndex?: number;
+  combinedButtonsCount?: number;
   onClick: () => void;
 }
 
@@ -20,6 +23,7 @@ export const MapActionButton = ({
   children,
   buttonClassName,
   tabIndex,
+  combinedButtonsCount = 0,
   onClick,
 }: MapActionButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -27,7 +31,10 @@ export const MapActionButton = ({
 
   const buttonSize = spacingPx(8);
   const baseSpacing = spacingPx(3);
-  const left = baseSpacing + index * (buttonSize + baseSpacing);
+  const left =
+    baseSpacing +
+    index * (buttonSize + baseSpacing) +
+    combinedButtonsCount * buttonSize;
 
   useEffect(() => {
     if (!isInitialized) {
@@ -60,3 +67,5 @@ export const MapActionButton = ({
     </div>
   );
 };
+
+export { PlusMinusButton };
