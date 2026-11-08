@@ -33,7 +33,7 @@ export const useActiveMarker = ({
 
   // Draw active marker
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current) {
+    if (!isMapLoaded || !mapRef.current || coordinates.length === 0) {
       return;
     }
 
