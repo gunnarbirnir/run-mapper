@@ -203,6 +203,7 @@ export const RunEditor = ({
           </div>
           <EditorFooter
             existingRun={existingRun}
+            currentRoutes={routePanelState.currentItems}
             hasMadeChanges={hasMadeChanges}
             isUpdatingPublicStatus={isUpdatingPublicStatus}
             showPublicDisplayPreview={showPublicDisplayPreview}
