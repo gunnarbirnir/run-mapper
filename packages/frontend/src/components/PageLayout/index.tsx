@@ -63,16 +63,22 @@ const MainContent = ({
   subtitle,
   children,
   className,
+  titleClassName,
 }: {
   title?: string;
   subtitle?: string;
   children: ReactNode;
   className?: string;
+  titleClassName?: string;
 }) => {
   return (
     <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
-        {title && <Text element="h1">{title}</Text>}
+        {title && (
+          <Text element="h1" className={cn('text-4xl', titleClassName)}>
+            {title}
+          </Text>
+        )}
         {subtitle && (
           <div className="max-w-2xl">
             <Text variant="paragraph">{subtitle}</Text>
@@ -89,16 +95,22 @@ const ErrorContent = ({
   message,
   children,
   className,
+  titleClassName,
 }: {
   title?: string;
   message?: string;
   children?: ReactNode;
   className?: string;
+  titleClassName?: string;
 }) => {
   return (
     <main className={cn('flex-1 p-6 pb-12', className)}>
       <div className="relative container mx-auto">
-        {title && <Text element="h1">{title}</Text>}
+        {title && (
+          <Text element="h1" className={cn('text-4xl', titleClassName)}>
+            {title}
+          </Text>
+        )}
         {message && (
           <div className="max-w-2xl">
             <Text variant="paragraph">{message}</Text>

@@ -52,8 +52,7 @@ export const WidgetContent = forwardRef<HTMLDivElement, WidgetContentProps>(
               />
             </div>
             <Text
-              variant="bold"
-              className={cn('text-sm whitespace-nowrap', {
+              className={cn('ubuntu-font text-sm font-bold whitespace-nowrap', {
                 'select-none': isClickable,
               })}
             >

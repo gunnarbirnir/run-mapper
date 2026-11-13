@@ -87,7 +87,10 @@ export const Drawer = ({
       >
         {(title || hasCloseButton) && (
           <div className="flex items-center justify-between">
-            <Text element="h2" className={cn('mb-4', titleSectionClassName)}>
+            <Text
+              element="h2"
+              className={cn('mb-4 text-lg', titleSectionClassName)}
+            >
               {title}
             </Text>
             {hasCloseButton && (

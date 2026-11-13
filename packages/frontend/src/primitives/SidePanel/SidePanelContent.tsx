@@ -46,7 +46,7 @@ export const SidePanelContent = memo(function SidePanelContent({
       {Boolean(title || onClose) && (
         <div className="mb-4 flex h-8 items-start justify-between gap-2">
           {title ? (
-            <Text element="h2" className="truncate">
+            <Text element="h2" className="truncate text-lg">
               {title}
             </Text>
           ) : (

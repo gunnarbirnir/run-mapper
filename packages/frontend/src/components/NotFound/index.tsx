@@ -10,8 +10,9 @@ export function NotFound() {
       <PageLayout.ErrorContent
         title="Page not found"
         message="The page you're looking for doesn't exist or has been moved."
+        titleClassName="text-3xl"
       >
-        <Button linkTo="/" className="mt-6">
+        <Button linkTo="/" className="mt-4">
           Go home
         </Button>
       </PageLayout.ErrorContent>

@@ -45,7 +45,9 @@ export const Button = ({
 
   const buttonContent = (
     <>
-      <div className={cn({ invisible: isLoading })}>{children}</div>
+      <div className={cn('ubuntu-font', { invisible: isLoading })}>
+        {children}
+      </div>
       {isLoading && (
         <div className="absolute top-0 left-0 flex size-full items-center justify-center">
           <LoadingSpinner />

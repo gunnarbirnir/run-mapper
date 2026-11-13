@@ -15,14 +15,23 @@ export const Text = ({
   switch (element) {
     case 'h1':
       return (
-        <h1 className={cn('mb-6 text-3xl font-bold', className)} style={style}>
+        <h1
+          className={cn(
+            'ubuntu-font mb-6 text-3xl font-bold text-gray-900',
+            className,
+          )}
+          style={style}
+        >
           {children}
         </h1>
       );
     case 'h2':
       return (
         <h2
-          className={cn('text-lg font-medium text-gray-900', className)}
+          className={cn(
+            'ubuntu-font text-xl font-bold text-gray-900',
+            className,
+          )}
           style={style}
         >
           {children}
@@ -31,7 +40,10 @@ export const Text = ({
     case 'h3':
       return (
         <h3
-          className={cn('text-base font-medium text-gray-900', className)}
+          className={cn(
+            'ubuntu-font text-base font-bold text-gray-900',
+            className,
+          )}
           style={style}
         >
           {children}
@@ -39,19 +51,37 @@ export const Text = ({
       );
     case 'h4':
       return (
-        <h4 className={className} style={style}>
+        <h4
+          className={cn(
+            'ubuntu-font text-base font-medium text-gray-900',
+            className,
+          )}
+          style={style}
+        >
           {children}
         </h4>
       );
     case 'h5':
       return (
-        <h5 className={className} style={style}>
+        <h5
+          className={cn(
+            'ubuntu-font text-base font-medium text-gray-900',
+            className,
+          )}
+          style={style}
+        >
           {children}
         </h5>
       );
     case 'h6':
       return (
-        <h6 className={className} style={style}>
+        <h6
+          className={cn(
+            'ubuntu-font text-base font-medium text-gray-900',
+            className,
+          )}
+          style={style}
+        >
           {children}
         </h6>
       );

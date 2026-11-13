@@ -23,6 +23,7 @@ interface DialogProps {
   buttons?: DialogButton[];
   size?: 'small' | 'medium' | 'large';
   children?: ReactNode;
+  titleClassName?: string;
   onClose?: () => void;
 }
 
@@ -33,6 +34,7 @@ export const Dialog = ({
   buttons,
   size = 'small',
   children,
+  titleClassName,
   onClose,
 }: DialogProps) => {
   const [popupElement, setPopupElement] = useState<HTMLDivElement | null>(null);
@@ -74,7 +76,9 @@ export const Dialog = ({
               'mb-4': onClose,
             })}
           >
-            <Text element="h2">{title}</Text>
+            <Text element="h2" className={cn('text-lg', titleClassName)}>
+              {title}
+            </Text>
             {onClose ? (
               <RoundButton
                 onClick={onClose}
