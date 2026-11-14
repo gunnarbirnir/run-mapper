@@ -34,7 +34,8 @@ export const Route = createRootRouteWithContext<RootContext>()({
       },
       {
         name: 'description',
-        content: 'Create engaging and insightful routes for your runs.',
+        content:
+          'Turn your race route into a beautiful, interactive map that runners can explore before race day. Embed it on your event page in seconds.',
       },
     ],
     links: [

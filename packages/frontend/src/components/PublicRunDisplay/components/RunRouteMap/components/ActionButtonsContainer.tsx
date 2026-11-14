@@ -65,7 +65,7 @@ export const ActionButtonsContainer = ({
           index={mapActionButtonIndex++}
           tooltipLabel="Fullscreen"
           tabIndex={BASE_TAB_INDEX + mapActionButtonIndex}
-          combinedButtonsCount={1}
+          combinedButtonsCount={isSmallScreen ? 0 : 1}
           onClick={openFullscreen}
         >
           <Icon name="externalLink" className="size-5" />
