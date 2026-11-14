@@ -31,7 +31,7 @@ export function Home() {
                 delay: fadeInStagger++ * FADE_IN_STAGGER,
               }}
             >
-              <Text element="h1" className="text-center text-5xl">
+              <Text element="h1" className="text-center text-4xl lg:text-5xl">
                 Spretta
               </Text>
             </motion.div>
@@ -47,8 +47,8 @@ export function Home() {
             >
               <Text variant="subtle" className="text-lg">
                 Turn your race route into a beautiful, interactive map that
-                runners can explore before race day. Then embed it on your event
-                page in seconds.
+                runners can explore before race day. Embed it on your event page
+                in seconds.
               </Text>
             </motion.div>
           </div>
@@ -85,9 +85,9 @@ export function Home() {
           />
         </div>
         <div className="-mb-8 px-6">
-          <div className="container mx-auto -translate-y-20">
+          <div className="container mx-auto flex -translate-y-20 flex-col items-center">
             {initialAnimationComplete && (
-              <>
+              <div className="w-full max-w-7xl">
                 <motion.div
                   initial={{ opacity: 0, y: FADE_IN_DISTANCE }}
                   animate={{ opacity: 1, y: 0 }}
@@ -115,10 +115,10 @@ export function Home() {
                   }}
                 >
                   <Text variant="subtle" className="mt-4 text-sm">
-                    This is a demo of the embedded map
+                    This is a demo of the embedded map.
                   </Text>
                 </motion.div>
-              </>
+              </div>
             )}
           </div>
         </div>
