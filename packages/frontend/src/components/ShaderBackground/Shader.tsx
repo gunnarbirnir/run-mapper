@@ -16,6 +16,7 @@ interface ShaderProps {
 
 const SCALE_DOWN_MAX_WIDTH = 800;
 const SCALE_DOWN_FACTOR = 2;
+const LINE_MAX_WIDTH = 4;
 
 export const Shader = ({
   color,
@@ -32,7 +33,10 @@ export const Shader = ({
     devicePixelRatio > 1 && containerWidth > SCALE_DOWN_MAX_WIDTH;
   const scaleFactor = scaleDownResolution ? SCALE_DOWN_FACTOR : 1;
   const shaderSize = `${100 / scaleFactor}%`;
-  const lineWidthValue = (lineWidth * devicePixelRatio) / scaleFactor;
+  const lineWidthValue = Math.min(
+    (lineWidth * devicePixelRatio) / scaleFactor,
+    LINE_MAX_WIDTH,
+  );
 
   return (
     <ShaderComponent
