@@ -11,8 +11,8 @@ import { LoadingSpinner } from '../LoadingSpinner';
 import { type ButtonColor, getColorClassName } from './utils';
 
 export type ButtonProps = {
-  children: string;
   className?: string;
+  contentClassName?: string;
   linkTo?: string;
   disabled?: boolean;
   isLoading?: boolean;
@@ -27,6 +27,7 @@ const ENABLED_CLASS_NAME = 'cursor-pointer active:scale-95';
 export const Button = ({
   children,
   className,
+  contentClassName,
   linkTo,
   disabled = false,
   isLoading = false,
@@ -45,7 +46,15 @@ export const Button = ({
 
   const buttonContent = (
     <>
-      <div className={cn('ubuntu-font', { invisible: isLoading })}>
+      <div
+        className={cn(
+          'ubuntu-font flex items-center gap-2',
+          {
+            invisible: isLoading,
+          },
+          contentClassName,
+        )}
+      >
         {children}
       </div>
       {isLoading && (
