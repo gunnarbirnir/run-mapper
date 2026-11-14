@@ -4,7 +4,7 @@ export const useElementSize = (
   ref: React.RefObject<HTMLElement>,
   dependencies: unknown[] = [],
 ) => {
-  const isClient = Boolean(window);
+  const isClient = typeof window !== 'undefined';
   const [elementSize, setElementSize] = useState<{
     width: number;
     height: number;

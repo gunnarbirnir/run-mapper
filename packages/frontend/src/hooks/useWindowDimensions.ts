@@ -7,7 +7,7 @@ const getWindowDimensions = () => {
 };
 
 export const useWindowDimensions = () => {
-  const isClient = Boolean(window);
+  const isClient = typeof window !== 'undefined';
   const [windowDimensions, setWindowDimensions] = useState(() =>
     isClient ? getWindowDimensions() : { width: 0, height: 0 },
   );
