@@ -22,7 +22,9 @@ export const PoweredByLabel = () => {
       <Icon name="spretta" style={{ width: 16, height: 16 }} />
       <Text style={{ fontSize: 12 }}>
         {isSmallScreen ? '' : 'Powered by '}
-        <strong>Spretta</strong>
+        <strong className="ubuntu-font" style={{ fontSize: 13 }}>
+          Spretta
+        </strong>
       </Text>
     </a>
   );

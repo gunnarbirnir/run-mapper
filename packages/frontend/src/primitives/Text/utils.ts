@@ -4,10 +4,6 @@ export const pGetVariantClassName = (variant: PVariant = 'default') => {
   switch (variant) {
     case 'label':
       return 'text-xs text-gray-500 uppercase tracking-wide';
-    case 'bold':
-      return 'font-bold text-gray-900';
-    case 'medium':
-      return 'font-medium text-gray-900';
     case 'subtle':
       return 'text-gray-500';
     case 'paragraph':

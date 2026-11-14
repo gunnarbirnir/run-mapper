@@ -33,7 +33,9 @@ export const ItemsSection = ({
   return (
     <section className={className}>
       <div className="flex items-center justify-between">
-        <Text element="h3">{title}</Text>
+        <Text element="h3" className="font-medium">
+          {title}
+        </Text>
         {onAddClick && buttonLabel && (
           <Tooltip label={buttonLabel}>
             <TinyButton icon="plus" touchablePadding={8} onClick={onAddClick}>

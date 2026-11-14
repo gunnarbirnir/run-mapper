@@ -30,7 +30,7 @@ export const RouteStats = ({ distance, elevationGain }: RouteStatsProps) => {
     >
       <div className="flex items-center gap-2">
         <Icon name="ruler" className="text-primary-500 size-6.5" />
-        <Text variant="bold" className="text-sm whitespace-nowrap">
+        <Text className="ubuntu-font text-sm font-bold whitespace-nowrap">
           {formattedDistance}
         </Text>
       </div>
@@ -40,7 +40,7 @@ export const RouteStats = ({ distance, elevationGain }: RouteStatsProps) => {
           name="mountain"
           className="text-primary-500 size-7 -translate-y-1"
         />
-        <Text variant="bold" className="text-sm whitespace-nowrap">
+        <Text className="ubuntu-font text-sm font-bold whitespace-nowrap">
           {formattedElevation}
         </Text>
       </div>

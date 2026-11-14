@@ -108,7 +108,7 @@ export const RunCard = ({
             className="flex items-center justify-between gap-4 p-4"
           >
             <div className="flex flex-col gap-0.5 rounded-b-xl">
-              <Text variant="bold">{name}</Text>
+              <Text element="h3">{name}</Text>
               <Text variant="subtle" className="text-sm">
                 {updatedAt
                   ? `Updated ${formatDate(updatedAt)}`

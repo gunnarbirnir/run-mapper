@@ -56,7 +56,7 @@ export const ModalContent = ({
               className={cn('text-primary-500 size-7', iconClassName)}
             />
           )}
-          <Text element="h2" className="text-lg font-medium">
+          <Text element="h2" className="text-lg">
             {title}
           </Text>
         </div>

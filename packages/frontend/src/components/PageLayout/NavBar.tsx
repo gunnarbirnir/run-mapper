@@ -38,7 +38,7 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
                   'font-bold': pathname === '/' || pathname === '/home',
                 })}
               >
-                <Text>Home</Text>
+                <Text className="ubuntu-font text-md">Home</Text>
               </Link>
               <Link
                 to="/runs"
@@ -47,7 +47,7 @@ export const NavBar = ({ isFullWidth }: NavBarProps) => {
                 }}
                 activeOptions={{ exact: true }}
               >
-                <Text>Runs</Text>
+                <Text className="ubuntu-font text-md">Runs</Text>
               </Link>
             </>
           )}

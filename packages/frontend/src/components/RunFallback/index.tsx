@@ -17,7 +17,7 @@ export const RunErrorMessage = ({ message }: { message: string }) => {
       <div className="flex max-w-md flex-col items-center gap-4 text-center">
         <Text
           element="h1"
-          className="text-primary-500 mb-0 text-4xl font-extrabold"
+          className="text-primary-500 font-4xl mb-0 text-4xl font-extrabold"
         >
           Error
         </Text>

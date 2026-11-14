@@ -58,6 +58,7 @@ export const EmbedRunDialog = ({
       description="Copy the element below and place it on your site."
       isOpen={isOpen}
       size="medium"
+      titleClassName="text-xl"
       buttons={[
         {
           label: 'Copy',
